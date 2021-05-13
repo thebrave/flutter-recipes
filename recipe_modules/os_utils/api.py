@@ -182,12 +182,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         )
 
   def enable_long_paths(self):
-    """Enables long path support in Windows.
-
-    Args:
-      env(dict): Current environment variables.
-      env_prefixes(dict): Current environment prefixes variables.
-    """
+    """Enables long path support in Windows."""
 
     if not self.m.platform.is_win:
       # noop for non windows platforms.

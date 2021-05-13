@@ -63,6 +63,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'ios_signing': self.ios_signing,
         'cocoon': self.cocoon,
         'certs': self.certs,
+        'vs_build': self.vs_build,
     }
     for dep in deps:
       if dep.get('dependency') in ['xcode', 'gems', 'swift']:
@@ -394,6 +395,31 @@ class FlutterDepsApi(recipe_api.RecipeApi):
               'powershell.exe',
               certs_path.join('install.ps1'),
           ],
+      )
+
+  def vs_build(self, env, env_prefixes, version=None):
+    """Installs visual studio build.
+
+    Args:
+      env(dict): Current environment variables.
+      env_prefixes(dict):  Current environment prefixes variables.
+    """
+    if not self.m.platform.is_win:
+      # noop for non windows platforms.
+      return
+    version = version or 'latest'
+    vs_path = self.m.path['cache'].join('vsbuild')
+    vs = self.m.cipd.EnsureFile()
+    vs.add_package("flutter/windows/vsbuild", version)
+    with self.m.step.nest('Install VSBuild'):
+      self.m.cipd.ensure(vs_path, vs)
+    paths = env_prefixes.get('PATH', [])
+    paths.insert(0, vs_path)
+    env_prefixes['PATH'] = paths
+    with self.m.context(env=env, env_prefixes=env_prefixes, cwd=vs_path):
+      self.m.step(
+          'Install VS build',
+          ['powershell.exe', vs_path.join('install.ps1')],
       )
 
   def ios_signing(self, env, env_prefixes, version=None):

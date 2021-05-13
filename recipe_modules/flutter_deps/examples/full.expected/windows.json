@@ -855,6 +855,81 @@
     "name": "Install Certs"
   },
   {
+    "cmd": [],
+    "name": "Install VSBuild"
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "ensure",
+      "-root",
+      "[CACHE]\\vsbuild",
+      "-ensure-file",
+      "flutter/windows/vsbuild latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Install VSBuild.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/windows/vsbuild\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "powershell.exe",
+      "[CACHE]\\vsbuild\\install.ps1"
+    ],
+    "cwd": "[CACHE]\\vsbuild",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\android",
+      "ANDROID_SDK_ROOT": "[CACHE]\\android",
+      "CHROME_EXECUTABLE": "[CACHE]\\chrome\\chrome\\chrome.exe",
+      "CHROME_NO_SANDBOX": "true",
+      "COCOON_PATH": "[CACHE]\\cocoon",
+      "FLUTTER_XCODE_CODE_SIGN_STYLE": "Manual",
+      "FLUTTER_XCODE_DEVELOPMENT_TEAM": "S8QB4VV633",
+      "FLUTTER_XCODE_PROVISIONING_PROFILE_SPECIFIER": "match Development *",
+      "GOPATH": "[CLEANUP]\\go_path",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]\\gradle"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\vsbuild",
+        "[CACHE]\\certs",
+        "[CACHE]\\dart_sdk",
+        "[CACHE]\\chrome\\chrome",
+        "[CACHE]\\chrome\\drivers",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[CLEANUP]\\tmp_tmp_1\\vpython",
+        "[CACHE]\\android\\platform-tools",
+        "[CACHE]\\android\\tools",
+        "[START_DIR]\\firebase",
+        "[CACHE]\\cmake\\bin",
+        "[CACHE]\\ninja",
+        "[CACHE]\\clang\\bin",
+        "[CLEANUP]\\tmp_tmp_2\\curl"
+      ]
+    },
+    "name": "Install VS build"
+  },
+  {
     "name": "$result"
   }
 ]

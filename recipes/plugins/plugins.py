@@ -5,6 +5,7 @@
 DEPS = [
     'flutter/json_util',
     'flutter/repo_util',
+    'flutter/flutter_deps',
     'recipe_engine/context',
     'recipe_engine/path',
     'recipe_engine/properties',
@@ -33,6 +34,7 @@ def RunSteps(api):
   api.json_util.validate_json(plugins_checkout_path.join('.ci'))
 
   env, env_prefixes = api.repo_util.flutter_environment(flutter_checkout_path)
+  api.flutter_deps.vs_build(env, env_prefixes)
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=flutter_checkout_path):
     with api.step.nest('prepare environment'):
@@ -45,8 +47,7 @@ def RunSteps(api):
       # Fail fast on dependencies problem.
       timeout_secs = 300
       api.step(
-          'download dependencies',
-          ['flutter', 'update-packages'],
+          'download dependencies', ['flutter', 'update-packages'],
           infra_step=True,
           timeout=timeout_secs
       )
@@ -59,16 +60,12 @@ def RunSteps(api):
                    cwd=plugins_checkout_path):
     with api.step.nest('Run plugin tests'):
       api.step(
-          'build examples', [
-              'bash', 'script/incremental_build.sh', 'build-examples',
-              '--windows'
-          ]
+          'build examples',
+          ['bash', 'script/tool_runner.sh', 'build-examples', '--windows']
       )
       api.step(
-          'drive examples', [
-              'bash', 'script/incremental_build.sh', 'drive-examples',
-              '--windows'
-          ]
+          'drive examples',
+          ['bash', 'script/tool_runner.sh', 'drive-examples', '--windows']
       )
 
 

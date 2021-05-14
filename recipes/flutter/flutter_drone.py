@@ -79,8 +79,7 @@ def RunSteps(api):
     api.retry.step(
         'download dependencies', ['flutter', 'update-packages'],
         max_attempts=2,
-        infra_step=True,
-        timeout=deps_timeout_secs
+        infra_step=True
     )
     # Load local engine information if available.
     api.flutter_deps.flutter_engine(env, env_prefixes)

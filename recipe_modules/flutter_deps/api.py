@@ -410,7 +410,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     version = version or 'latest'
     vs_path = self.m.path['cache'].join('vsbuild')
     vs = self.m.cipd.EnsureFile()
-    vs.add_package("flutter/windows/vsbuild", version)
+    vs.add_package("flutter_internal/windows/vsbuild", version)
     with self.m.step.nest('Install VSBuild'):
       self.m.cipd.ensure(vs_path, vs)
     paths = env_prefixes.get('PATH', [])

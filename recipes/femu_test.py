@@ -266,6 +266,7 @@ def BuildFuchsia(api):
 def RunSteps(api, properties, env_properties):
   cache_root = api.buildbucket.builder_cache_path
   checkout = GetCheckoutPath(api)
+  api.file.rmtree('Clobber build output', checkout.join('out'))
   api.file.ensure_directory('Ensure checkout cache', cache_root)
   api.goma.ensure()
   dart_bin = checkout.join('third_party', 'dart', 'tools', 'sdks', 'dart-sdk',

@@ -464,7 +464,7 @@ def UploadTreeMap(api, upload_dir, lib_flutter_path, android_triple):
         '--library', library_path, '--destdir', destination_dir,
         "--addr2line-binary", addr2line
     ]
-    command = ['python3', script_path]
+    command = ['python2', script_path]
     command.extend(args)
     api.step('generate treemap for %s' % upload_dir, command)
 

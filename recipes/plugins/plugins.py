@@ -32,12 +32,15 @@ def RunSteps(api):
     )
   # Validates plugins builders json format.
   api.json_util.validate_json(plugins_checkout_path.join('.ci'))
+  channel = api.properties.get('channel', 'master')
 
   env, env_prefixes = api.repo_util.flutter_environment(flutter_checkout_path)
   api.flutter_deps.vs_build(env, env_prefixes)
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=flutter_checkout_path):
     with api.step.nest('prepare environment'):
+      api.step('flutter set channel', ['flutter', 'channel', channel])
+      api.step('flutter upgrade', ['flutter', 'upgrade'])
       api.step(
           'flutter config --enable-windows-desktop',
           ['flutter', 'config', '--enable-windows-desktop'],

@@ -1,6 +1,7 @@
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 """Recipe for testing recipes."""
 
 from recipe_engine.recipe_api import Property
@@ -104,11 +105,13 @@ def RunSteps(api, remote, unittest_only):
   checkout_path = api.path['start_dir'].join('recipes')
   bb_input = api.buildbucket.build.input
   if bb_input.gerrit_changes:
-    api.git.checkout_cl(bb_input.gerrit_changes[0], checkout_path)
+    api.git.checkout_cl(
+        bb_input.gerrit_changes[0], checkout_path, onto='refs/heads/master'
+    )
     with api.context(cwd=checkout_path):
       api.git('log', 'log', '--oneline', '-n', '10')
   else:
-    api.git.checkout(remote)
+    api.git.checkout(remote, ref='refs/heads/master')
     with api.context(cwd=checkout_path):
       api.git('log', 'log', '--oneline', '-n', '10')
   api.recipe_testing.projects = ('flutter',)
@@ -120,23 +123,26 @@ def RunSteps(api, remote, unittest_only):
 
 
 def GenTests(api):
-  yield (api.status_check.test('ci') + api.properties(unittest_only=False) +
-         api.commit_queue.test_data('flutter', COMMIT_QUEUE_CFG) +
-         api.recipe_testing.affected_recipes_data(['none']) +
-         api.recipe_testing.build_data(
-             'flutter/try/flutter-foo', 'flutter', skip=True) +
-         api.recipe_testing.build_data(
-             'flutter/try/flutter-bar', 'flutter', skip=True) +
-         api.recipe_testing.build_data(
-             'flutter/try/flutter-baz', 'project', skip=True))
-  yield (api.status_check.test('cq_try') + api.properties(unittest_only=False) +
-         api.commit_queue.test_data('flutter', COMMIT_QUEUE_CFG) +
-         api.recipe_testing.affected_recipes_data(['none']) +
-         api.recipe_testing.build_data(
-             'flutter/try/flutter-foo', 'flutter', skip=True) +
-         api.recipe_testing.build_data(
-             'flutter/try/flutter-bar', 'flutter', skip=True) +
-         api.recipe_testing.build_data(
-             'flutter/try/flutter-baz', 'project', skip=True) +
-         api.buildbucket.try_build(
-             git_repo='https://flutter.googlesource.com/recipes'))
+  yield (
+      api.status_check.test('ci') + api.properties(unittest_only=False) +
+      api.commit_queue.test_data('flutter', COMMIT_QUEUE_CFG) +
+      api.recipe_testing.affected_recipes_data(['none']) + api.recipe_testing
+      .build_data('flutter/try/flutter-foo', 'flutter', skip=True) +
+      api.recipe_testing
+      .build_data('flutter/try/flutter-bar', 'flutter', skip=True) +
+      api.recipe_testing
+      .build_data('flutter/try/flutter-baz', 'project', skip=True)
+  )
+  yield (
+      api.status_check.test('cq_try') + api.properties(unittest_only=False) +
+      api.commit_queue.test_data('flutter', COMMIT_QUEUE_CFG) +
+      api.recipe_testing.affected_recipes_data(['none']) + api.recipe_testing
+      .build_data('flutter/try/flutter-foo', 'flutter', skip=True) +
+      api.recipe_testing
+      .build_data('flutter/try/flutter-bar', 'flutter', skip=True) +
+      api.recipe_testing
+      .build_data('flutter/try/flutter-baz', 'project', skip=True) +
+      api.buildbucket.try_build(
+          git_repo='https://flutter.googlesource.com/recipes'
+      )
+  )

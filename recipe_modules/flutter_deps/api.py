@@ -227,8 +227,6 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     """Installs android sdk."""
     version = version or '29.0.2'
     root_path = self.m.path['cache'].join('android')
-    self.m.file.rmtree('Clobber android cache', root_path)
-    self.m.file.ensure_directory('Ensure android cache', root_path)
     self.m.android_sdk.install(root_path, env, env_prefixes)
 
   def gems(self, env, env_prefixes, gemfile_dir):

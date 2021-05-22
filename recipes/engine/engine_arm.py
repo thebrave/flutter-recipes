@@ -153,10 +153,6 @@ def BuildLinux(api):
         '--linux-cpu=arm64')
   Build(api, 'linux_debug_arm64')
 
-  RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--target-os=linux',
-        '--linux-cpu=arm64')
-  Build(api, 'linux_debug_unopt_arm64')
-
   RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--target-os=linux',
         '--linux-cpu=arm64')
   Build(api, 'linux_profile_arm64')
@@ -168,9 +164,9 @@ def BuildLinux(api):
   UploadArtifacts(api, 'linux-arm64', [
       ICU_DATA_PATH,
       'out/linux_debug_arm64/flutter_tester',
-      'out/linux_debug_unopt_arm64/gen/flutter/lib/snapshot/isolate_snapshot.bin',
-      'out/linux_debug_unopt_arm64/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
-      'out/linux_debug_unopt_arm64/gen/frontend_server.dart.snapshot',
+      'out/linux_debug_arm64/gen/flutter/lib/snapshot/isolate_snapshot.bin',
+      'out/linux_debug_arm64/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
+      'out/linux_debug_arm64/gen/frontend_server.dart.snapshot',
   ])
 
   # Font subset

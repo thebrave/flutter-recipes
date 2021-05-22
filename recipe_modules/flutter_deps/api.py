@@ -225,9 +225,16 @@ class FlutterDepsApi(recipe_api.RecipeApi):
 
   def android_sdk(self, env, env_prefixes, version):
     """Installs android sdk."""
-    version = version or '29.0.2'
-    root_path = self.m.path['cache'].join('android')
-    self.m.android_sdk.install(root_path, env, env_prefixes)
+    version = version or 'latest'
+    android_sdk_path = self.m.path['cache'].join('android')
+    android_sdk = self.m.cipd.EnsureFile()
+    android_sdk.add_package('flutter_internal/android/sdk/${platform}', version)
+    self.m.cipd.ensure(android_sdk_path, android_sdk)
+    # Setup environment variables
+    env['ANDROID_SDK_ROOT'] = android_sdk_path
+    env['ANDROID_HOME'] = android_sdk_path
+    env['GRADLE_USER_HOME'] = self.m.path['cache'].join('gradle')
+    env['GRADLE_OPTS'] = '-Dorg.gradle.daemon=false'
 
   def gems(self, env, env_prefixes, gemfile_dir):
     """Installs android sdk.

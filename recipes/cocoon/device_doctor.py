@@ -13,7 +13,6 @@ DEPS = [
     'recipe_engine/properties',
     'recipe_engine/step',
     'recipe_engine/time',
-    'flutter/json_util',
     'repo_util',
 ]
 
@@ -26,8 +25,6 @@ def RunSteps(api):
       api.properties.get('git_url'),
       api.properties.get('git_ref'),
   )
-  # Validates cocoon builders json format.
-  api.json_util.validate_json(cocoon_dir)
 
   # Builds and uploads a new version of the device_doctor CIPD package.
   device_doctor_path = cocoon_dir.join('device_doctor')

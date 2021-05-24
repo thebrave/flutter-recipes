@@ -8,7 +8,6 @@ import re
 DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/git',
-    'flutter/json_util',
     'flutter/repo_util',
     'recipe_engine/buildbucket',
     'recipe_engine/cipd',

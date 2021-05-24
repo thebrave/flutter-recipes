@@ -25,7 +25,6 @@ DEPS = [
     'depot_tools/osx_sdk',
     'flutter/flutter_deps',
     'flutter/os_utils',
-    'flutter/json_util',
     'flutter/repo_util',
     'flutter/web_util',
     'fuchsia/goma',

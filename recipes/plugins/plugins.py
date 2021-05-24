@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 DEPS = [
-    'flutter/json_util',
     'flutter/repo_util',
     'flutter/flutter_deps',
     'recipe_engine/context',
@@ -30,10 +29,7 @@ def RunSteps(api):
         url=api.properties.get('git_url'),
         ref=api.properties.get('git_ref')
     )
-  # Validates plugins builders json format.
-  api.json_util.validate_json(plugins_checkout_path.join('.ci'))
   channel = api.properties.get('channel', 'master')
-
   env, env_prefixes = api.repo_util.flutter_environment(flutter_checkout_path)
   api.flutter_deps.vs_build(env, env_prefixes)
   with api.context(env=env, env_prefixes=env_prefixes,

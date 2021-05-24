@@ -6,7 +6,6 @@
 
 DEPS = [
     'depot_tools/git',
-    'flutter/json_util',
     'flutter/repo_util',
     'flutter/yaml',
     'recipe_engine/buildbucket',
@@ -31,9 +30,6 @@ def RunSteps(api):
       url=api.properties.get('git_url'),
       ref=api.properties.get('git_ref')
   )
-
-  # Validates engine builders json format.
-  api.json_util.validate_json(cocoon_path)
 
   # Checkout flutter/flutter at head.
   flutter_git_ref = 'refs/heads/stable'

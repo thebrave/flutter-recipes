@@ -15,7 +15,6 @@ import re
 DEPS = [
     'fuchsia/goma',
     'depot_tools/depot_tools',
-    'flutter/json_util',
     'flutter/repo_util',
     'flutter/yaml',
     'fuchsia/display_util',
@@ -276,10 +275,6 @@ def RunSteps(api, properties, env_properties):
 
   api.repo_util.engine_checkout(
       cache_root, env, env_prefixes, clobber=properties.clobber)
-
-  # Checks before building the engine. Only run on Linux.
-  if api.platform.is_linux:
-      api.json_util.validate_json(checkout.join('flutter', 'ci'))
 
   # Various scripts we run assume access to depot_tools on path for `ninja`.
   with api.context(

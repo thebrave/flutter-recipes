@@ -31,7 +31,8 @@ def RunSteps(api):
     )
   channel = api.properties.get('channel', 'master')
   env, env_prefixes = api.repo_util.flutter_environment(flutter_checkout_path)
-
+  # This is required by `flutter upgrade`
+  env['FLUTTER_GIT_URL'] = 'https://chromium.googlesource.com/external/github.com/flutter/flutter'
   with api.step.nest('Dependencies'):
     deps = api.properties.get('dependencies', [])
     api.flutter_deps.required_deps(env, env_prefixes, deps)

@@ -5,10 +5,10 @@
 from recipe_engine import recipe_api
 
 # The maximum number of characters to be included in the summary markdown.
-# Even though the max size for the markdown is 4000 bytes we are saving 100
+# Even though the max size for the markdown is 4000 bytes we are saving 500
 # bytes for addittional prefixes added automatically by LUCI like the number
 # of failed steps out of the total.
-MAX_CHARS = 3900
+MAX_CHARS = 3500
 
 # Default timeout for tests seconds
 TIMEOUT_SECS = 3600

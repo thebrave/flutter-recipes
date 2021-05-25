@@ -31,7 +31,11 @@ def RunSteps(api):
     )
   channel = api.properties.get('channel', 'master')
   env, env_prefixes = api.repo_util.flutter_environment(flutter_checkout_path)
-  api.flutter_deps.vs_build(env, env_prefixes)
+
+  with api.step.nest('Dependencies'):
+    deps = api.properties.get('dependencies', [])
+    api.flutter_deps.required_deps(env, env_prefixes, deps)
+
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=flutter_checkout_path):
     with api.step.nest('prepare environment'):

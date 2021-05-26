@@ -50,7 +50,10 @@ def RunSteps(api, properties, env_properties):
 
   # Checkout framework and analyze.
   flutter_checkout_path = api.path['cache'].join('flutter')
-  api.repo_util.checkout('flutter', checkout_path=flutter_checkout_path)
+  # Checkout flutter at master.
+  api.repo_util.checkout(
+      'flutter', checkout_path=flutter_checkout_path, ref='refs/heads/master'
+  )
   build_dir = checkout.join('out', 'host_debug_unopt')
   with api.step.nest('Framework analyze'):
     with api.context(env=env, env_prefixes=env_prefixes,

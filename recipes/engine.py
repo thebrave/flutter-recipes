@@ -165,7 +165,7 @@ def GetFuchsiaOutputFiles(product):
   ]
 
 
-def GetFuchsiaOutputDirs(product, build_mode, target_arch):
+def GetFuchsiaOutputDirs(product):
   return [
       'dart_jit_%srunner_far' % ('product_' if product else ''),
       'dart_aot_%srunner_far' % ('product_' if product else ''),
@@ -174,7 +174,7 @@ def GetFuchsiaOutputDirs(product, build_mode, target_arch):
       'dart_runner_patched_sdk',
       'flutter_runner_patched_sdk',
       'clang_x64',
-      'flutter-debug-symbols-%s-fuchsia-%s' % (build_mode, target_arch),
+      '.build-id',
   ]
 
 
@@ -824,8 +824,7 @@ def UploadFuchsiaDebugSymbols(api):
     symbol_dirs = []
     for mode in modes:
       base_dir = 'fuchsia_%s_%s' % (mode, arch)
-      symbols_basename = 'flutter-debug-symbols-%s-fuchsia-%s' % (mode, arch)
-      symbol_dir = checkout.join('out', base_dir, symbols_basename)
+      symbol_dir = checkout.join('out', base_dir, '.build-id')
       symbol_dirs.append(symbol_dir)
     UploadFuchsiaDebugSymbolsToSymbolServer(api, arch, symbol_dirs)
     with api.os_utils.make_temp_directory('FuchsiaDebugSymbols') as temp_dir:
@@ -864,7 +863,7 @@ def BuildFuchsia(api):
   for arch, build_mode in fuchsia_build_pairs:
     gn_args = ['--fuchsia', '--fuchsia-cpu', arch, '--runtime-mode', build_mode]
     product = build_mode == 'release'
-    fuchsia_output_dirs = GetFuchsiaOutputDirs(product, build_mode, arch)
+    fuchsia_output_dirs = GetFuchsiaOutputDirs(product)
     props = {
         'builds': [{
             'gn_args': gn_args,

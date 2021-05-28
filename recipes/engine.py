@@ -45,8 +45,7 @@ DEPS = [
 # Account for ~1 hour queue time when there is a high number of commits.
 DRONE_TIMEOUT_SECS = 7200
 
-OLD_BUCKET_NAME = 'flutter_infra'
-NEW_BUCKET_NAME = 'flutter_infra_release'
+BUCKET_NAME = 'flutter_infra_release'
 MAVEN_BUCKET_NAME = 'download.flutter.io'
 FUCHSIA_ARTIFACTS_BUCKET_NAME = 'fuchsia-artifacts-release'
 FUCHSIA_ARTIFACTS_DEBUG_NAMESPACE = 'debug'
@@ -467,7 +466,7 @@ def UploadTreeMap(api, upload_dir, lib_flutter_path, android_triple):
       # TODO(fujino): create SafeUploadDirectory() wrapper
       result = api.gsutil.upload(
           destination_dir,
-          OLD_BUCKET_NAME,
+          BUCKET_NAME,
           remote_name,
           args=['-r'],
           name='upload treemap for %s' % lib_flutter_path,
@@ -475,19 +474,7 @@ def UploadTreeMap(api, upload_dir, lib_flutter_path, android_triple):
       )
       result.presentation.links['Open Treemap'] = (
           'https://storage.googleapis.com/%s/%s/sizes/index.html' %
-          (OLD_BUCKET_NAME, remote_name)
-      )
-      result = api.gsutil.upload(
-          destination_dir,
-          NEW_BUCKET_NAME,
-          remote_name,
-          args=['-r'],
-          name='upload treemap for %s' % lib_flutter_path,
-          link_name=None
-      )
-      result.presentation.links['Open Treemap'] = (
-          'https://storage.googleapis.com/%s/%s/sizes/index.html' %
-          (NEW_BUCKET_NAME, remote_name)
+          (BUCKET_NAME, remote_name)
       )
 
 

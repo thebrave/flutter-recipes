@@ -107,15 +107,13 @@ def BuildBitcode(api, config, *targets):
   api.step('build %s' % ' '.join([config] + list(targets)), ninja_args)
 
 
-def RunTests(api, out_dir, android_out_dir=None, ios_out_dir=None, types='all'):
+def RunTests(api, out_dir, android_out_dir=None, types='all'):
   script_path = GetCheckoutPath(api).join('flutter', 'testing', 'run_tests.py')
   # TODO(godofredoc): use .vpython from engine when file are available.
   venv_path = api.depot_tools.root.join('.vpython')
   args = ['--variant', out_dir, '--type', types]
   if android_out_dir:
     args.extend(['--android-variant', android_out_dir])
-  if ios_out_dir:
-    args.extend(['--ios-variant', ios_out_dir])
   api.python('Host Tests for %s' % out_dir, script_path, args, venv=venv_path)
 
 
@@ -406,29 +404,6 @@ def UploadWebSdk(api, archive_name):
   )
 
 
-def AnalyzeDartUI(api):
-  RunGN(api, '--unoptimized')
-  Build(api, 'host_debug_unopt', 'generate_dart_ui')
-
-  checkout = GetCheckoutPath(api)
-  with api.context(cwd=checkout):
-    api.step('analyze dart_ui', ['/bin/bash', 'flutter/ci/analyze.sh'])
-
-
-def FormatAndDartTest(api):
-  checkout = GetCheckoutPath(api)
-  with api.context(cwd=checkout.join('flutter')):
-    format_cmd = checkout.join('flutter', 'ci', 'format.sh')
-    api.step('format and dart test', [format_cmd])
-
-
-def Lint(api):
-  checkout = GetCheckoutPath(api)
-  with api.context(cwd=checkout):
-    lint_cmd = checkout.join('flutter', 'ci', 'lint.sh')
-    api.step('lint test', [lint_cmd])
-
-
 def VerifyExportedSymbols(api):
   checkout = GetCheckoutPath(api)
   out_dir = checkout.join('out')
@@ -478,14 +453,6 @@ def UploadTreeMap(api, upload_dir, lib_flutter_path, android_triple):
       )
 
 
-def LintAndroidHost(api):
-  android_lint_path = GetCheckoutPath(api
-                                     ).join('flutter', 'tools', 'android_lint')
-  with api.step.nest('android lint'):
-    with api.context(cwd=android_lint_path):
-      api.step('dart bin/main.dart', ['dart', 'bin/main.dart'])
-
-
 def BuildLinuxAndroid(api, swarming_task_id):
   if api.properties.get('build_android_jit_release', True):
     jit_release_variants = [
@@ -513,15 +480,6 @@ def BuildLinuxAndroid(api, swarming_task_id):
         ('x86', 'android_debug_x86', 'android-x86', False, 'x86'),
         ('x64', 'android_debug_x64', 'android-x64', False, 'x86_64'),
     ]
-    # Build Android Unopt and run tests
-    RunGN(api, '--android', '--unoptimized')
-    Build(api, 'android_debug_unopt')
-    RunTests(
-        api,
-        'android_debug_unopt',
-        android_out_dir='android_debug_unopt',
-        types='java'
-    )
     for android_cpu, out_dir, artifact_dir, run_tests, abi in debug_variants:
       RunGN(api, '--android', '--android-cpu=%s' % android_cpu, '--no-lto')
       Build(api, out_dir)
@@ -695,8 +653,11 @@ def BuildLinux(api):
   RunGN(api, '--runtime-mode', 'debug', '--unoptimized')
   RunGN(api, '--runtime-mode', 'profile', '--no-lto')
   RunGN(api, '--runtime-mode', 'release')
-  Build(api, 'host_debug_unopt')
-  RunTests(api, 'host_debug_unopt', types='dart,engine')
+  # flutter/sky/packages from host_debug_unopt is needed for RunTests 'dart'
+  # type.
+  Build(api, 'host_debug_unopt', 'flutter/sky/packages')
+  Build(api, 'host_debug_unopt',
+    'flutter/lib/spirv/test/exception_shaders:spirv_compile_exception_shaders')
   Build(api, 'host_debug')
   Build(api, 'host_profile')
   RunTests(api, 'host_profile', types='engine')
@@ -706,9 +667,9 @@ def BuildLinux(api):
       api, 'linux-x64', [
           ICU_DATA_PATH,
           'out/host_debug/flutter_tester',
-          'out/host_debug_unopt/gen/flutter/lib/snapshot/isolate_snapshot.bin',
-          'out/host_debug_unopt/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
-          'out/host_debug_unopt/gen/frontend_server.dart.snapshot',
+          'out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin',
+          'out/host_debug/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
+          'out/host_debug/gen/frontend_server.dart.snapshot',
       ]
   )
   UploadArtifacts(
@@ -911,17 +872,6 @@ def BuildFuchsia(api):
     api.bucket_util.safe_upload(stamp_file, remote_file)
 
 
-def TestObservatory(api):
-  checkout = GetCheckoutPath(api)
-  flutter_tester_path = checkout.join('out/host_debug/flutter_tester')
-  empty_main_path = \
-      checkout.join('flutter/shell/testing/observatory/empty_main.dart')
-  test_path = checkout.join('flutter/shell/testing/observatory/test.dart')
-  test_cmd = ['dart', test_path, flutter_tester_path, empty_main_path]
-  with api.context(cwd=checkout):
-    api.step('test observatory and service protocol', test_cmd)
-
-
 @contextmanager
 def SetupXcode(api):
   # See cr-buildbucket.cfg for how the version is passed in.
@@ -933,12 +883,9 @@ def SetupXcode(api):
 def BuildMac(api):
   if api.properties.get('build_host', True):
     RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--full-dart-sdk')
-    RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--no-lto')
     RunGN(api, '--runtime-mode', 'profile', '--no-lto')
     RunGN(api, '--runtime-mode', 'release', '--no-lto')
 
-    Build(api, 'host_debug_unopt')
-    RunTests(api, 'host_debug_unopt', types='dart,engine')
     Build(api, 'host_debug')
     Build(api, 'host_profile')
     RunTests(api, 'host_profile', types='engine')
@@ -973,10 +920,10 @@ def BuildMac(api):
         api, 'darwin-x64', [
             ICU_DATA_PATH,
             'out/host_debug/flutter_tester',
-            'out/host_debug_unopt/gen/flutter/lib/snapshot/isolate_snapshot.bin',
-            'out/host_debug_unopt/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
-            'out/host_debug_unopt/gen/frontend_server.dart.snapshot',
-            'out/host_debug_unopt/gen_snapshot',
+            'out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin',
+            'out/host_debug/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
+            'out/host_debug/gen/frontend_server.dart.snapshot',
+            'out/host_debug/gen_snapshot',
         ]
     )
     UploadArtifacts(
@@ -1199,17 +1146,6 @@ def PackageIOSVariant(
       api.bucket_util.safe_upload(dsym_zip, remote_zip)
 
 
-def RunIosIntegrationTests(api):
-  test_dir = GetCheckoutPath(api).join('flutter', 'testing')
-  scenario_app_tests = test_dir.join('scenario_app')
-
-  with api.context(cwd=scenario_app_tests):
-    api.step(
-        'Scenario App Integration Tests',
-        ['./build_and_run_ios_tests.sh', 'ios_debug_sim']
-    )
-
-
 def BuildIOS(api):
   # Simulator doesn't use bitcode.
   # Simulator binary is needed in all runtime modes.
@@ -1217,14 +1153,6 @@ def BuildIOS(api):
   Build(api, 'ios_debug_sim')
 
   if api.properties.get('ios_debug', True):
-    # We need to build host_debug_unopt for testing
-    RunGN(api, '--unoptimized')
-    Build(api, 'host_debug_unopt')
-    Build(api, 'ios_debug_sim', 'ios_test_flutter')
-
-    RunTests(api, 'ios_debug_sim', ios_out_dir='ios_debug_sim', types='objc')
-    RunIosIntegrationTests(api)
-
     RunGNBitcode(api, '--ios', '--runtime-mode', 'debug')
     RunGNBitcode(api, '--ios', '--runtime-mode', 'debug', '--ios-cpu=arm')
 
@@ -1311,9 +1239,6 @@ def BuildWindows(api):
     RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--no-lto')
     Build(api, 'host_debug')
     RunTests(api, 'host_debug', types='engine')
-    RunGN(api, '--runtime-mode', 'debug', '--unoptimized')
-    Build(api, 'host_debug_unopt')
-    RunTests(api, 'host_debug_unopt', types='engine')
     RunGN(api, '--runtime-mode', 'profile', '--no-lto')
     Build(api, 'host_profile', 'windows', 'gen_snapshot')
     RunGN(api, '--runtime-mode', 'release', '--no-lto')
@@ -1528,19 +1453,11 @@ def RunSteps(api, properties, env_properties):
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():
 
-    # Checks before building the engine. Only run on Linux.
-    if api.platform.is_linux:
-      FormatAndDartTest(api)
-      Lint(api)
-
     api.gclient.runhooks()
 
     if api.platform.is_linux:
       if api.properties.get('build_host', True):
-        AnalyzeDartUI(api)
         BuildLinux(api)
-        TestObservatory(api)
-      LintAndroidHost(api)
       BuildLinuxAndroid(api, env_properties.SWARMING_TASK_ID)
       if api.properties.get('build_fuchsia', True):
         BuildFuchsia(api)

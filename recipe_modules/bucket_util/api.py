@@ -4,10 +4,7 @@
 
 from recipe_engine import recipe_api
 
-# TODO(godofredoc): Remove when flutter tool branches to stable.
-# https://github.com/flutter/flutter/issues/75363.
-OLD_INFRA_BUCKET_NAME = 'flutter_infra'
-NEW_INFRA_BUCKET_NAME = 'flutter_infra_release'
+INFRA_BUCKET_NAME = 'flutter_infra_release'
 
 
 class BucketUtilApi(recipe_api.RecipeApi):
@@ -29,7 +26,7 @@ class BucketUtilApi(recipe_api.RecipeApi):
       folder_name,
       zip_name,
       platform=None,
-      bucket_name=NEW_INFRA_BUCKET_NAME
+      bucket_name=INFRA_BUCKET_NAME
   ):
     """Uploads a folder to the cloud bucket
 
@@ -58,7 +55,7 @@ class BucketUtilApi(recipe_api.RecipeApi):
       zip_name,
       platform=None,
       file_paths=None,
-      bucket_name=NEW_INFRA_BUCKET_NAME
+      bucket_name=INFRA_BUCKET_NAME
   ):
     """Uploads a folder and or files to the cloud bucket
 
@@ -90,7 +87,7 @@ class BucketUtilApi(recipe_api.RecipeApi):
       self,
       local_path,
       remote_path,
-      bucket_name=NEW_INFRA_BUCKET_NAME,
+      bucket_name=INFRA_BUCKET_NAME,
       args=[],
       skip_on_duplicate=False
   ):
@@ -133,14 +130,6 @@ class BucketUtilApi(recipe_api.RecipeApi):
           return
         raise AssertionError('%s already exists on cloud storage' % cloud_path)
 
-    if bucket_name == NEW_INFRA_BUCKET_NAME:
-      self.m.gsutil.upload(
-          local_path,
-          OLD_INFRA_BUCKET_NAME,
-          remote_path,
-          args=args,
-          name='upload "%s"' % remote_path
-      )
     return self.m.gsutil.upload(
         local_path,
         bucket_name,

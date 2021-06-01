@@ -36,7 +36,7 @@ DEPS = [
 # Account for ~1 hour queue time when there is a high number of commits.
 DRONE_TIMEOUT_SECS = 7200
 
-BUCKET_NAME = 'flutter_infra'
+BUCKET_NAME = 'flutter_infra_release'
 MAVEN_BUCKET_NAME = 'download.flutter.io'
 ICU_DATA_PATH = 'third_party/icu/flutter/icudtl.dat'
 GIT_REPO = (

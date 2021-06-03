@@ -94,12 +94,7 @@ def Build(api, config, *targets):
     api.step(name, ninja_args)
 
 
-# Bitcode builds cannot use goma.
-def BuildBitcode(api, config, *targets):
-  if api.properties.get('no_bitcode', False):
-    Build(api, config, *targets)
-    return
-
+def AutoninjaBuild(api, config, *targets):
   checkout = GetCheckoutPath(api)
   build_dir = checkout.join('out/%s' % config)
   ninja_args = [api.depot_tools.autoninja_path, '-C', build_dir]
@@ -204,25 +199,6 @@ def RunGN(api, *args):
     args += ('--no-lto',)
   gn_cmd.extend(args)
   api.step('gn %s' % ' '.join(args), gn_cmd)
-
-
-# Bitcode builds cannot use goma.
-def RunGNBitcode(api, *args):
-  if api.properties.get('no_bitcode', False):
-    RunGN(api, *args)
-    return
-
-  # flutter/tools/gn assumes access to depot_tools on path for `ninja`.
-  with api.depot_tools.on_path():
-    checkout = GetCheckoutPath(api)
-    gn_cmd = [
-        'python',
-        checkout.join('flutter/tools/gn'), '--bitcode', '--no-goma'
-    ]
-    if api.properties.get('no_lto', False) and '--no-lto' not in args:
-      args += ('--no-lto',)
-    gn_cmd.extend(args)
-    api.step('gn %s' % ' '.join(args), gn_cmd)
 
 
 def NotifyPubsub(
@@ -1153,11 +1129,11 @@ def BuildIOS(api):
   Build(api, 'ios_debug_sim')
 
   if api.properties.get('ios_debug', True):
-    RunGNBitcode(api, '--ios', '--runtime-mode', 'debug')
-    RunGNBitcode(api, '--ios', '--runtime-mode', 'debug', '--ios-cpu=arm')
+    RunGN(api, '--ios', '--runtime-mode', 'debug', '--bitcode')
+    RunGN(api, '--ios', '--runtime-mode', 'debug', '--bitcode', '--ios-cpu=arm')
 
-    BuildBitcode(api, 'ios_debug')
-    BuildBitcode(api, 'ios_debug_arm')
+    Build(api, 'ios_debug')
+    Build(api, 'ios_debug_arm')
 
     BuildObjcDoc(api)
 
@@ -1166,33 +1142,32 @@ def BuildIOS(api):
     )
 
   if api.properties.get('ios_profile', True):
-    RunGNBitcode(api, '--ios', '--runtime-mode', 'profile')
-    RunGNBitcode(api, '--ios', '--runtime-mode', 'profile', '--ios-cpu=arm')
-    BuildBitcode(api, 'ios_profile')
-    BuildBitcode(api, 'ios_profile_arm')
+    RunGN(api, '--ios', '--runtime-mode', 'profile', '--bitcode')
+    RunGN(api, '--ios', '--runtime-mode', 'profile', '--bitcode', '--ios-cpu=arm')
+    Build(api, 'ios_profile')
+    Build(api, 'ios_profile_arm')
     PackageIOSVariant(
         api, 'profile', 'ios_profile', 'ios_profile_arm', 'ios_debug_sim',
         'ios-profile'
     )
 
   if api.properties.get('ios_release', True):
-    RunGNBitcode(api, '--ios', '--runtime-mode', 'release')
-    RunGNBitcode(api, '--ios', '--runtime-mode', 'release', '--ios-cpu=arm')
-    BuildBitcode(api, 'ios_release')
-    BuildBitcode(api, 'ios_release_arm')
+    RunGN(api, '--ios', '--runtime-mode', 'release', '--bitcode', '--no-goma')
+    RunGN(api, '--ios', '--runtime-mode', 'release', '--bitcode', '--no-goma', '--ios-cpu=arm')
+    AutoninjaBuild(api, 'ios_release')
+    AutoninjaBuild(api, 'ios_release_arm')
     PackageIOSVariant(
         api, 'release', 'ios_release', 'ios_release_arm', 'ios_debug_sim',
         'ios-release'
     )
 
-    if not api.properties.get('no_bitcode', False):
-      # Create a bitcode-stripped version. This will help customers who do not
-      # need bitcode, which significantly increases download size. This should
-      # be removed when bitcode is enabled by default in Flutter.
-      PackageIOSVariant(
-          api, 'release', 'ios_release', 'ios_release_arm', 'ios_debug_sim',
-          'ios-release-nobitcode', True
-      )
+    # Create a bitcode-stripped version. This will help customers who do not
+    # need bitcode, which significantly increases download size. This should
+    # be removed when bitcode is enabled by default in Flutter.
+    PackageIOSVariant(
+        api, 'release', 'ios_release', 'ios_release_arm', 'ios_debug_sim',
+        'ios-release-nobitcode', True
+    )
 
 
 def PackageWindowsDesktopVariant(api, label, bucket_name):
@@ -1504,13 +1479,15 @@ def GenTests(api):
   collect_build_output = api.buildbucket.simulated_collect_output([build])
   for platform in ('mac', 'linux', 'win'):
     for should_upload in (True, False):
-      for maven_or_bitcode in (True, False):
+      for maven in (True, False):
         for should_publish_cipd in (True, False):
           for no_lto in (True, False):
+            if maven and platform in ['mac', 'win']:
+              continue
             test = api.test(
                 '%s%s%s%s%s' % (
                     platform, '_upload' if should_upload else '',
-                    '_maven_or_bitcode' if maven_or_bitcode else '',
+                    '_maven' if maven else '',
                     '_publish_cipd' if should_publish_cipd else '',
                     '_no_lto' if no_lto else ''
                 ),
@@ -1533,7 +1510,7 @@ def GenTests(api):
                         build_android_debug=True,
                         build_android_vulkan=True,
                         build_windows_uwp=True,
-                        no_maven=maven_or_bitcode,
+                        no_maven=maven,
                         upload_packages=should_upload,
                         force_upload=True,
                         no_lto=no_lto,
@@ -1562,7 +1539,6 @@ def GenTests(api):
                       InputProperties(
                           jazzy_version='0.8.4',
                           build_ios=True,
-                          no_bitcode=maven_or_bitcode
                       )
                   )
               )

@@ -26,7 +26,7 @@ DEPS = [
     'recipe_engine/swarming',
 ]
 
-# Thirty minutes
+# Fifteen minutes
 MAX_TIMEOUT_SECS = 30 * 60
 
 
@@ -101,26 +101,12 @@ def RunSteps(api):
             test_runner_command,
             timeout_secs=MAX_TIMEOUT_SECS
         )
-        take_screenshot(api, env, 'post_test.png')
         api.logs_util.upload_logs(task_name)
         # This is to clean up leaked processes.
         api.os_utils.kill_processes()
 
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadMetrics(api, results_path)
-
-
-# TODO(dnfield): Move this to the runner once we understand how we can reliably
-# make this happen even if the runner gets killed.
-# https://github.com/flutter/flutter/issues/84015
-def take_screenshot(api, env, file_name):
-  if not api.properties.get('attached_device', False):
-    return
-
-  screenshot_path = api.path.join(env['FLUTTER_LOGS_DIR'], file_name)
-  screenshot_cmd = ['flutter', 'screenshot', '--type', 'device', '-o',
-      screenshot_path]
-  api.step('Take screenshot (%s)' % file_name, screenshot_cmd)
 
 
 def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params):
@@ -146,7 +132,6 @@ def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params):
         test_runner_command,
         timeout_secs=MAX_TIMEOUT_SECS
     )
-    take_screenshot(api, env, 'post_test.png')
     api.logs_util.upload_logs(task_name)
     # This is to clean up leaked processes.
     api.os_utils.kill_processes()
@@ -182,17 +167,6 @@ def GenTests(api):
   )
   yield api.test(
       "basic", api.properties(buildername='Linux abc', task_name='abc'),
-      api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-      api.buildbucket.ci_build(
-          project='test',
-          git_repo='git.example.com/test/repo',
-      )
-  )
-  yield api.test(
-      "basic device", api.properties(
-          buildername='Linux abc',
-          task_name='abc',
-          attached_device=True),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',

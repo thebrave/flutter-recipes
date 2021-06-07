@@ -30,6 +30,7 @@ DEPS = [
     'recipe_engine/cipd',
     'recipe_engine/context',
     'recipe_engine/file',
+    'recipe_engine/futures',
     'recipe_engine/isolated',
     'recipe_engine/json',
     'recipe_engine/path',
@@ -735,29 +736,49 @@ def UploadFuchsiaDebugSymbolsToSymbolServer(api, arch, symbol_dirs):
           )
 
 
-def UploadFuchsiaDebugSymbols(api):
+def UploadFuchsiaDebugSymbolsToCIPD(api, arch, symbol_dirs):
   checkout = GetCheckoutPath(api)
   dbg_symbols_script = str(
       checkout.join('flutter/tools/fuchsia/merge_and_upload_debug_symbols.py')
   )
   git_rev = api.buildbucket.gitiles_commit.id or 'HEAD'
+  with api.os_utils.make_temp_directory('FuchsiaDebugSymbols_%s' % arch
+                                       ) as temp_dir:
+    debug_symbols_cmd = [
+        'python', dbg_symbols_script, '--engine-version', git_rev, '--upload',
+        '--target-arch', arch, '--out-dir', temp_dir, '--symbol-dirs'
+    ] + symbol_dirs
+    api.step('Upload to CIPD for arch: %s' % arch, cmd=debug_symbols_cmd)
 
+
+def UploadFuchsiaDebugSymbols(api):
+  checkout = GetCheckoutPath(api)
   archs = ['arm64', 'x64']
   modes = ['debug', 'profile', 'release']
+
+  arch_to_symbol_dirs = {}
   for arch in archs:
     symbol_dirs = []
     for mode in modes:
       base_dir = 'fuchsia_%s_%s' % (mode, arch)
       symbol_dir = checkout.join('out', base_dir, '.build-id')
       symbol_dirs.append(symbol_dir)
-    UploadFuchsiaDebugSymbolsToSymbolServer(api, arch, symbol_dirs)
-    with api.os_utils.make_temp_directory('FuchsiaDebugSymbols') as temp_dir:
-      debug_symbols_cmd = [
-          'python', dbg_symbols_script, '--engine-version', git_rev, '--upload',
-          '--target-arch', arch, '--out-dir', temp_dir, '--symbol-dirs'
-      ] + symbol_dirs
-      api.step('Upload to CIPD for arch: %s' % arch, debug_symbols_cmd)
-  return
+    arch_to_symbol_dirs[arch] = symbol_dirs
+
+  debug_symbol_futures = []
+  for arch in archs:
+    symbol_dirs = arch_to_symbol_dirs[arch]
+    sym_server_future = api.futures.spawn(
+        UploadFuchsiaDebugSymbolsToSymbolServer, api, arch, symbol_dirs
+    )
+    debug_symbol_futures.append(sym_server_future)
+    cipd_future = api.futures.spawn(
+        UploadFuchsiaDebugSymbolsToCIPD, api, arch, symbol_dirs
+    )
+    debug_symbol_futures.append(cipd_future)
+
+  for debug_sym_future in api.futures.iwait(debug_symbol_futures):
+    debug_sym_future.result()
 
 
 def ShouldPublishToCIPD(api, package_name, git_rev):

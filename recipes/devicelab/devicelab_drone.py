@@ -15,6 +15,7 @@ DEPS = [
     'flutter/retry',
     'flutter/test_utils',
     'recipe_engine/buildbucket',
+    'recipe_engine/cas',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
@@ -53,7 +54,7 @@ def RunSteps(api):
   devicelab_path = flutter_path.join('dev', 'devicelab')
   git_branch = api.buildbucket.gitiles_commit.ref.replace('refs/heads/', '')
   # Create tmp file to store results in
-  results_path = api.path.mkstemp()
+  results_path = api.path.mkdtemp(prefix='results').join('results')
   # Run test
   runner_params = [
       '-t', task_name, '--results-file', results_path, '--luci-builder',
@@ -107,6 +108,7 @@ def RunSteps(api):
 
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadMetrics(api, results_path)
+    uploadMetricsToCas(api, results_path)
 
 
 def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params):
@@ -159,6 +161,19 @@ def uploadMetrics(api, results_path):
     api.step('upload metrics', upload_command, infra_step=True)
 
 
+def uploadMetricsToCas(api, results_path):
+  """Upload DeviceLab test performance metrics to CAS.
+
+  The hash of the CAS (content-addressed storage) upload is added as an
+  output property to the build.
+  """
+  if not api.properties.get('upload_metrics_to_cas'):
+    return
+  cas_hash = api.cas.archive('Upload metrics to CAS',
+                             api.path.dirname(results_path), results_path)
+  api.step.active_result.presentation.properties['results_cas_hash'] = cas_hash
+
+
 def GenTests(api):
   checkout_path = api.path['cleanup'].join('tmp_tmp_1', 'flutter sdk')
   yield api.test(
@@ -203,6 +218,7 @@ def GenTests(api):
           buildername='Mac abc',
           dependencies=[{'dependency': 'xcode'}],
           task_name='abc',
-          upload_metrics=True
+          upload_metrics=True,
+          upload_metrics_to_cas=True,
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path)
   )

@@ -593,19 +593,17 @@ def BuildLinuxAndroid(api, swarming_task_id):
               api, upload_dir, unstripped_lib_flutter_path, android_triple
           )
 
-    # Upload the embedding
-    for runtime_mode in ['profile', 'release']:
-      build_output_dir = out_dir % runtime_mode
-      UploadMavenArtifacts(
-          api, [
-              'out/%s/flutter_embedding_%s.jar' %
-              (build_output_dir, runtime_mode),
-              'out/%s/flutter_embedding_%s.pom' %
-              (build_output_dir, runtime_mode),
-              'out/%s/flutter_embedding_%s-sources.jar' %
-              (build_output_dir, runtime_mode),
-          ], swarming_task_id
-      )
+        # Upload the embedding
+        UploadMavenArtifacts(
+            api, [
+                'out/%s/flutter_embedding_%s.jar' %
+                (build_output_dir, runtime_mode),
+                'out/%s/flutter_embedding_%s.pom' %
+                (build_output_dir, runtime_mode),
+                'out/%s/flutter_embedding_%s-sources.jar' %
+                (build_output_dir, runtime_mode),
+            ], swarming_task_id
+        )
 
 
 def PackageLinuxDesktopVariant(api, label, bucket_name):

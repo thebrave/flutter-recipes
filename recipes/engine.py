@@ -1560,7 +1560,8 @@ def RunSteps(api, properties, env_properties):
   # Enable long path support on Windows.
   api.os_utils.enable_long_paths()
 
-  api.repo_util.engine_checkout(cache_root, env, env_prefixes)
+  clobber = api.properties.get('clobber', True)
+  api.repo_util.engine_checkout(cache_root, env, env_prefixes, clobber)
 
   # Delete derived data on mac. This is a noop for other platforms.
   api.os_utils.clean_derived_data()

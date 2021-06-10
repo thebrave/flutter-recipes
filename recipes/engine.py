@@ -409,6 +409,13 @@ def UploadTreeMap(api, upload_dir, lib_flutter_path, android_triple):
         '--library', library_path, '--destdir', destination_dir,
         "--addr2line-binary", addr2line
     ]
+
+    # additional info: https://github.com/flutter/flutter/issues/84377
+    file_command = ['file', script_path]
+    api.step('file on libflutter.so', file_command)
+    sha1sum_command = ['sha1sum', script_path]
+    api.step('sha1sum on libflutter.so', sha1sum_command)
+
     command = ['python3', script_path]
     command.extend(args)
     api.step('generate treemap for %s' % upload_dir, command)

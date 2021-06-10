@@ -48,7 +48,10 @@ def RunSteps(api):
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
   api.logs_util.initialize_logs_collection(env)
   with api.step.nest('Dependencies'):
+    api.flutter_deps.flutter_engine(env, env_prefixes)
     deps = api.properties.get('dependencies', [])
+    # TODO: If deps contains dart_sdk and we are running a local engine,
+    # we don't want to fetch it with cipd, so don't fetch it with required_deps
     api.flutter_deps.required_deps(env, env_prefixes, deps)
     api.flutter_deps.vpython(env, env_prefixes, 'latest')
   devicelab_path = flutter_path.join('dev', 'devicelab')
@@ -60,6 +63,8 @@ def RunSteps(api):
       '-t', task_name, '--results-file', results_path, '--luci-builder',
       api.properties.get('buildername')
   ]
+  if 'LOCAL_ENGINE' in env:
+    runner_params.extend(['--local-engine', env['LOCAL_ENGINE']])
   # LUCI git checkouts end up in a detached HEAD state, so branch must
   # be passed from gitiles -> test runner -> Cocoon.
   if git_branch:
@@ -221,4 +226,13 @@ def GenTests(api):
           upload_metrics=True,
           upload_metrics_to_cas=True,
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path)
+  )
+  yield api.test(
+      "local-engine", api.properties(buildername='Linux abc', task_name='abc',
+                                     isolated_hash='isolatehashlocalengine'),
+      api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.buildbucket.ci_build(
+          project='test',
+          git_repo='git.example.com/test/repo',
+      )
   )

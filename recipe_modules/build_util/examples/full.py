@@ -21,6 +21,7 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes):
     api.build_util.run_gn([], checkout)
     api.build_util.build('release', checkout, ['mytarget'])
+    api.build_util.build_autoninja('release', checkout, ['mytarget'])
 
 
 def GenTests(api):

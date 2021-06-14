@@ -1302,8 +1302,10 @@ def BuildIOS(api):
         api, '--ios', '--runtime-mode', 'release', '--bitcode', '--no-goma',
         '--ios-cpu=arm'
     )
-    AutoninjaBuild(api, 'ios_release')
-    AutoninjaBuild(api, 'ios_release_arm')
+    x64_release = api.futures.spawn(AutoninjaBuild, api, 'ios_release')
+    arm64_release = api.futures.spawn(AutoninjaBuild, api, 'ios_release_arm')
+    for rel_future in api.futures.iwait([x64_release, arm64_release]):
+      rel_future.result()
     PackageIOSVariant(
         api, 'release', 'ios_release', 'ios_release_arm', 'ios_debug_sim',
         'ios-release'

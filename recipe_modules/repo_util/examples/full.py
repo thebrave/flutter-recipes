@@ -20,6 +20,7 @@ def RunSteps(api):
   api.repo_util.checkout('engine', api.path['start_dir'].join('engine'))
   api.repo_util.checkout('cocoon', api.path['start_dir'].join('cocoon'))
   api.repo_util.checkout('packages', api.path['start_dir'].join('packages'))
+  env, env_paths = api.repo_util.engine_environment(flutter_checkout_path)
   env, env_paths = api.repo_util.flutter_environment(flutter_checkout_path)
   api.repo_util.engine_checkout(api.path['start_dir'].join('engine'), {}, {})
   with api.context(env=env, env_prefixes=env_paths):

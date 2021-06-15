@@ -52,21 +52,22 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         means the default.
     """
     available_deps = {
-        'open_jdk': self.open_jdk,
-        'goldctl': self.goldctl,
-        'curl': self.curl,
-        'chrome_and_driver': self.chrome_and_driver,
-        'dart_sdk': self.dart_sdk,
-        'go_sdk': self.go_sdk,
-        'dashing': self.dashing,
-        'vpython': self.vpython,
         'android_sdk': self.android_sdk,
-        'firebase': self.firebase,
+        'certs': self.certs,
+        'chrome_and_driver': self.chrome_and_driver,
         'clang': self.clang,
         'cmake': self.cmake,
-        'ninja': self.ninja,
+        'curl': self.curl,
+        'dart_sdk': self.dart_sdk,
+        'dashing': self.dashing,
+        'firebase': self.firebase,
+        'go_sdk': self.go_sdk,
+        'goldctl': self.goldctl,
         'ios_signing': self.ios_signing,
-        'certs': self.certs,
+        'jazzy': self.jazzy,
+        'ninja': self.ninja,
+        'open_jdk': self.open_jdk,
+        'vpython': self.vpython,
         'vs_build': self.vs_build,
     }
     for dep in deps:
@@ -223,7 +224,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     env['GRADLE_OPTS'] = '-Dorg.gradle.daemon=false'
 
   def gems(self, env, env_prefixes, gemfile_dir):
-    """Installs android sdk.
+    """Installs mac gems.
 
     Args:
       env(dict): Current environment variables.
@@ -434,3 +435,28 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env['FLUTTER_XCODE_DEVELOPMENT_TEAM'] = 'S8QB4VV633'
       env['FLUTTER_XCODE_PROVISIONING_PROFILE_SPECIFIER'
          ] = 'match Development *'
+
+  def jazzy(self, env, env_prefixes, version=None):
+    """Installs mac Jazzy.
+
+    Args:
+      env(dict): Current environment variables.
+      env_prefixes(dict):  Current environment prefixes variables.
+      gemfile_dir(Path): The path to the location of the repository gemfile.
+    """
+    version = version or '0.9.5'
+    gem_dir = self.m.path['start_dir'].join('gems')
+    with self.m.step.nest('Install jazzy'):
+      self.m.file.ensure_directory('mkdir gems', gem_dir)
+      with self.m.context(cwd=gem_dir):
+        self.m.step(
+            'install jazzy', [
+                'gem', 'install', 'jazzy:%s' % version,
+            '--install-dir', '.'
+            ]
+        )
+      env['GEM_HOME'] = gem_dir
+      paths = env_prefixes.get('PATH', [])
+      temp_paths = copy.deepcopy(paths)
+      temp_paths.append(gem_dir.join('bin'))
+      env_prefixes['PATH'] = temp_paths

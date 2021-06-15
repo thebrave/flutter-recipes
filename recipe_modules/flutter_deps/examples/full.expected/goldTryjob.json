@@ -513,6 +513,42 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "Install jazzy"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/gems"
+    ],
+    "infra_step": true,
+    "name": "Install jazzy.mkdir gems",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "gem",
+      "install",
+      "jazzy:0.9.5",
+      "--install-dir",
+      "."
+    ],
+    "cwd": "[START_DIR]/gems",
+    "name": "Install jazzy.install jazzy",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
     "name": "$result"
   }
 ]

@@ -692,6 +692,8 @@ def BuildLinuxAndroid(api, swarming_task_id):
       RunGN(api, '--android', '--android-cpu=%s' % android_cpu, '--no-lto')
       Build(api, out_dir)
       if run_tests:
+        RunGN(api, '--android', '--unoptimized', '--runtime-mode=debug', '--no-lto')
+        Build(api, out_dir, 'flutter/shell/platform/android:robolectric_tests')
         RunTests(api, out_dir, android_out_dir=out_dir, types='java')
       artifacts = ['out/%s/flutter.jar' % out_dir]
       if android_cpu in ['x86', 'x64']:

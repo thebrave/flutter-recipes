@@ -95,7 +95,7 @@ def LintAndroidHost(api):
 def BuildLinuxAndroid(api, swarming_task_id):
   # Build Android Unopt and run tests
   RunGN(api, '--android', '--unoptimized')
-  Build(api, 'android_debug_unopt')
+  Build(api, 'android_debug_unopt', 'flutter/shell/platform/android:robolectric_tests')
   RunTests(
       api,
       'android_debug_unopt',

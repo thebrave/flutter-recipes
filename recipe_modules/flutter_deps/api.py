@@ -24,17 +24,26 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env(dict): Current environment variables.
       env_prefixes(dict):  Current environment prefixes variables.
     """
-    # No-op if `isolate_hash` property is empty.
-    if self.m.properties.get('isolated_hash'):
-      isolated_hash = self.m.properties.get('isolated_hash')
-      isolated_build = self.m.properties.get('isolated_build',
-                                             'host_debug_unopt')
+    # No-op if `isolate_hash` and `local_engine_cas_hash` properties are empty
+    # TODO(https://github.com/flutter/flutter/issues/84119): Remove support
+    # for isolated downloads when uses are migrated to cas.
+    isolated_hash = self.m.properties.get('isolated_hash')
+    isolated_build = self.m.properties.get('isolated_build')
+    cas_hash = self.m.properties.get('local_engine_cas_hash')
+    local_engine = self.m.properties.get('local_engine')
+    if isolated_hash or cas_hash:
       checkout_engine = self.m.path['cleanup'].join('builder', 'src', 'out')
       # Download host_debug_unopt from the isolate.
-      self.m.isolated.download(
-          'Download for engine', isolated_hash, checkout_engine
-      )
-      local_engine = checkout_engine.join(isolated_build)
+      if cas_hash:
+        self.m.cas.download(
+            'Download engine from CAS', cas_hash, checkout_engine
+        )
+      if isolated_hash:
+        self.m.isolated.download(
+            'Download for engine', isolated_hash, checkout_engine
+        )
+      local_engine = checkout_engine.join(
+          isolated_build or local_engine or 'host_debug_unopt')
       dart_bin = local_engine.join('dart-sdk', 'bin')
       paths = env_prefixes.get('PATH', [])
       paths.insert(0, dart_bin)

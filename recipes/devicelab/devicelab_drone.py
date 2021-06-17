@@ -228,8 +228,11 @@ def GenTests(api):
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path)
   )
   yield api.test(
-      "local-engine", api.properties(buildername='Linux abc', task_name='abc',
-                                     isolated_hash='isolatehashlocalengine'),
+      "local-engine", api.properties(
+          buildername='Linux abc', task_name='abc',
+          local_engine_cas_hash='isolatehashlocalengine/22',
+          local_engine='host-release'
+      ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',

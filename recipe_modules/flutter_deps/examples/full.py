@@ -92,6 +92,11 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_path)
   )
   yield api.test(
+      'local_engine_cas', api.properties(local_engine_cas_hash='abceqwe/7',
+                                         local_engine='host-release'),
+      api.repo_util.flutter_environment_data(checkout_path)
+  )
+  yield api.test(
       'goldTryjob',
       api.properties(gold_tryjob=True, git_ref='refs/pull/1/head'),
       api.repo_util.flutter_environment_data(checkout_path)

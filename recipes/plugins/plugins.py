@@ -32,7 +32,8 @@ def RunSteps(api):
   channel = api.properties.get('channel', 'master')
   env, env_prefixes = api.repo_util.flutter_environment(flutter_checkout_path)
   # This is required by `flutter upgrade`
-  env['FLUTTER_GIT_URL'] = 'https://chromium.googlesource.com/external/github.com/flutter/flutter'
+  env['FLUTTER_GIT_URL'
+     ] = 'https://chromium.googlesource.com/external/github.com/flutter/flutter'
   with api.step.nest('Dependencies'):
     deps = api.properties.get('dependencies', [])
     api.flutter_deps.required_deps(env, env_prefixes, deps)
@@ -42,9 +43,12 @@ def RunSteps(api):
     with api.step.nest('prepare environment'):
       api.step('flutter set channel', ['flutter', 'channel', channel])
       api.step('flutter upgrade', ['flutter', 'upgrade'])
+      config_flag = '--enable-windows-uwp-desktop' if api.properties.get(
+          'uwp'
+      ) else '--enable-windows-desktop'
       api.step(
-          'flutter config --enable-windows-desktop',
-          ['flutter', 'config', '--enable-windows-desktop'],
+          'flutter config %s' % config_flag,
+          ['flutter', 'config', config_flag],
           infra_step=True,
       )
       api.step('flutter doctor', ['flutter', 'doctor'])
@@ -63,13 +67,16 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=plugins_checkout_path):
     with api.step.nest('Run plugin tests'):
+      build_drive_flag = '--winuwp' if api.properties.get(
+          'uwp'
+      ) else '--windows'
       api.step(
           'build examples',
-          ['bash', 'script/tool_runner.sh', 'build-examples', '--windows']
+          ['bash', 'script/tool_runner.sh', 'build-examples', build_drive_flag]
       )
       api.step(
           'drive examples',
-          ['bash', 'script/tool_runner.sh', 'drive-examples', '--windows']
+          ['bash', 'script/tool_runner.sh', 'drive-examples', build_drive_flag]
       )
 
 

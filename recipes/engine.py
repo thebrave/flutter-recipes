@@ -1184,7 +1184,14 @@ def BuildMac(api):
 
 
 def PackageIOSVariant(
-    api, label, arm64_out, armv7_out, sim_out, bucket_name, strip_bitcode=False
+    api,
+    label,
+    arm64_out,
+    armv7_out,
+    sim_x64_out,
+    sim_arm64_out,
+    bucket_name,
+    strip_bitcode=False
 ):
   checkout = GetCheckoutPath(api)
   out_dir = checkout.join('out')
@@ -1199,8 +1206,10 @@ def PackageIOSVariant(
       api.path.join(out_dir, arm64_out),
       '--armv7-out-dir',
       api.path.join(out_dir, armv7_out),
-      '--simulator-out-dir',
-      api.path.join(out_dir, sim_out),
+      '--simulator-x64-out-dir',
+      api.path.join(out_dir, sim_x64_out),
+      '--simulator-arm64-out-dir',
+      api.path.join(out_dir, sim_arm64_out),
   ]
 
   if strip_bitcode:
@@ -1273,7 +1282,9 @@ def BuildIOS(api):
   # Simulator doesn't use bitcode.
   # Simulator binary is needed in all runtime modes.
   RunGN(api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto')
+  RunGN(api, '--ios', '--runtime-mode', 'debug', '--simulator', '--simulator-cpu=arm64', '--no-lto', '--no-goma')
   Build(api, 'ios_debug_sim')
+  Build(api, 'ios_debug_sim_arm64')
 
   if api.properties.get('ios_debug', True):
     RunGN(api, '--ios', '--runtime-mode', 'debug', '--bitcode')
@@ -1285,7 +1296,8 @@ def BuildIOS(api):
     BuildObjcDoc(api)
 
     PackageIOSVariant(
-        api, 'debug', 'ios_debug', 'ios_debug_arm', 'ios_debug_sim', 'ios'
+        api, 'debug', 'ios_debug', 'ios_debug_arm', 'ios_debug_sim',
+        'ios_debug_sim_arm64', 'ios'
     )
 
   if api.properties.get('ios_profile', True):
@@ -1297,7 +1309,7 @@ def BuildIOS(api):
     Build(api, 'ios_profile_arm')
     PackageIOSVariant(
         api, 'profile', 'ios_profile', 'ios_profile_arm', 'ios_debug_sim',
-        'ios-profile'
+        'ios_debug_sim_arm64', 'ios-profile'
     )
 
   if api.properties.get('ios_release', True):
@@ -1312,7 +1324,7 @@ def BuildIOS(api):
       rel_future.result()
     PackageIOSVariant(
         api, 'release', 'ios_release', 'ios_release_arm', 'ios_debug_sim',
-        'ios-release'
+        'ios_debug_sim_arm64', 'ios-release'
     )
 
     # Create a bitcode-stripped version. This will help customers who do not
@@ -1320,7 +1332,7 @@ def BuildIOS(api):
     # be removed when bitcode is enabled by default in Flutter.
     PackageIOSVariant(
         api, 'release', 'ios_release', 'ios_release_arm', 'ios_debug_sim',
-        'ios-release-nobitcode', True
+        'ios_debug_sim_arm64', 'ios-release-nobitcode', True
     )
 
 

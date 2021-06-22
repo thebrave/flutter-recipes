@@ -879,7 +879,7 @@ def UploadFuchsiaDebugSymbolsToCIPD(api, arch, symbol_dirs):
         'python', dbg_symbols_script, '--engine-version', git_rev, '--upload',
         '--target-arch', arch, '--out-dir', temp_dir, '--symbol-dirs'
     ] + symbol_dirs
-    api.step('Upload to CIPD for arch: %s' % arch, cmd=debug_symbols_cmd)
+    api.step('Upload to CIPD for arch: %s' % arch, cmd=debug_symbols_cmd, infra_step=True)
 
 
 def UploadFuchsiaDebugSymbols(api):
@@ -992,7 +992,7 @@ def BuildFuchsia(api):
         '--upload',
     ]
     if ShouldPublishToCIPD(api, 'flutter/fuchsia', git_rev):
-      api.step('Upload Fuchsia Artifacts', fuchsia_package_cmd)
+      api.step('Upload Fuchsia Artifacts', fuchsia_package_cmd, infra_step=True)
       with api.step.nest('Upload Fuchsia Debug Symbols'):
         UploadFuchsiaDebugSymbols(api)
     stamp_file = api.path['cleanup'].join('fuchsia_stamp')

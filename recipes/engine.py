@@ -727,7 +727,7 @@ def BuildLinuxAndroid(api, swarming_task_id):
 
     Build(api, 'android_debug', ':dist')
     UploadSkyEngineDartPackage(api)
-    BuildJavadoc(api)
+    UploadJavadoc(api, 'android_debug')
 
   if api.properties.get('build_android_vulkan', True):
     RunGN(api, '--runtime-mode', 'release', '--android', '--enable-vulkan')
@@ -1505,20 +1505,11 @@ def BuildWindows(api):
     )
 
 
-def BuildJavadoc(api):
+def UploadJavadoc(api, variant):
   checkout = GetCheckoutPath(api)
-  with api.os_utils.make_temp_directory('BuildJavadoc') as temp_dir:
-    javadoc_cmd = [
-        checkout.join('flutter/tools/gen_javadoc.py'), '--out-dir', temp_dir
-    ]
-    with api.context(cwd=checkout):
-      api.step('build javadoc', javadoc_cmd)
-    api.zip.directory(
-        'archive javadoc', temp_dir, checkout.join('out/android_javadoc.zip')
-    )
   if api.bucket_util.should_upload_packages():
     api.bucket_util.safe_upload(
-        checkout.join('out/android_javadoc.zip'),
+        checkout.join('out/%s/zip_archives/android-javadoc.zip' % variant),
         GetCloudPath(api, 'android-javadoc.zip')
     )
 

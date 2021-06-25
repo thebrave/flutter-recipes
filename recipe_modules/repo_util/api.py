@@ -9,6 +9,8 @@ REPOS = {
         'https://chromium.googlesource.com/external/github.com/flutter/engine',
     'cocoon':
         'https://chromium.googlesource.com/external/github.com/flutter/cocoon',
+    'infra':
+      'https://flutter.googlesource.com/infra',
     'packages':
         'https://github.com/flutter/packages',
     'plugins':

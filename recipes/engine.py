@@ -789,10 +789,14 @@ def BuildLinux(api):
       archive_name='linux-x64-embedder'
   )
 
-  if BuildFontSubset(api) and api.bucket_util.should_upload_packages():
-    api.bucket_util.safe_upload(
-        'out/host_release/zip_bundles/font-subset.zip',
-        'linux-x64/font-subset.zip'
+  if BuildFontSubset(api):
+    UploadArtifacts(
+        api,
+        'linux-x64', [
+            'out/host_release/font-subset',
+            'out/host_debug/gen/const_finder.dart.snapshot',
+        ],
+        archive_name='font-subset.zip'
     )
 
   UploadFlutterPatchedSdk(api)
@@ -1094,10 +1098,14 @@ def BuildMac(api):
         ],
         archive_name='FlutterMacOS.framework.zip'
     )
-    if BuildFontSubset(api) and api.bucket_util.should_upload_packages():
-      api.bucket_util.safe_upload(
-          'out/host_release/zip_bundles/font-subset.zip',
-          'darwin-x64/font-subset.zip'
+    if BuildFontSubset(api):
+      UploadArtifacts(
+          api,
+          'darwin-x64', [
+              'out/host_release/font-subset',
+              'out/host_debug/gen/const_finder.dart.snapshot',
+          ],
+          archive_name='font-subset.zip'
       )
     # Legacy; remove once Flutter tooling is updated to use the -debug location.
     UploadArtifacts(
@@ -1377,7 +1385,7 @@ def BuildWindows(api):
     RunGN(api, '--runtime-mode', 'release', '--no-lto')
     Build(api, 'host_release', 'windows', 'gen_snapshot')
     if BuildFontSubset(api):
-      Build(api, 'host_release', 'flutter/tools/font-subset')
+      Build(api, 'host_release', 'font-subset')
 
     UploadArtifacts(
         api, 'windows-x64', [
@@ -1414,10 +1422,14 @@ def BuildWindows(api):
     # Legacy; remove once Flutter tooling is updated to use the -debug location.
     PackageWindowsDesktopVariant(api, 'host_debug', 'windows-x64')
 
-    if BuildFontSubset(api) and api.bucket_util.should_upload_packages():
-      api.bucket_util.safe_upload(
-          'out/host_release/zip_bundles/font-subset.zip',
-          'windows-x64/font-subset.zip'
+    if BuildFontSubset(api):
+      UploadArtifacts(
+          api,
+          'windows-x64', [
+              'out/host_release/font-subset.exe',
+              'out/host_debug/gen/const_finder.dart.snapshot',
+          ],
+          archive_name='font-subset.zip'
       )
 
     UploadDartSdk(api, archive_name='dart-sdk-windows-x64.zip')
@@ -1761,6 +1773,63 @@ def GenTests(api):
           )
       ),
   )
+
+  test = api.test(
+      'Linux Fuchsia skips on duplicate',
+      api.platform('linux', 64),
+      api.buildbucket.ci_build(
+          builder='Linux Engine',
+          git_repo=GIT_REPO,
+          project='flutter',
+          revision='%s' % git_revision,
+      ),
+      api.step_data(
+          'cipd search flutter/fuchsia git_revision:%s' % git_revision,
+          api.cipd.example_search('flutter/fuchsia', instances=0)
+      ),
+      collect_build_output,
+      api.properties(
+          InputProperties(
+              clobber=False,
+              goma_jobs='1024',
+              fuchsia_ctl_version='version:0.0.2',
+              build_host=False,
+              build_fuchsia=True,
+              build_android_aot=False,
+              build_android_jit_release=False,
+              build_android_debug=False,
+              build_android_vulkan=False,
+              no_maven=True,
+              upload_packages=True,
+              android_sdk_license='android_sdk_hash',
+              android_sdk_preview_license='android_sdk_preview_hash',
+              force_upload=False
+          )
+      ),
+      api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      api.properties.environ(EnvProperties(SKIP_ANDROID='TRUE')),
+  )
+  # TODO(fujino): find out why these are not getting skipped based on properties
+  for artifact in (
+      'flutter/%s/linux-x64/artifacts.zip' % (git_revision),
+      'flutter/%s/linux-x64/linux-x64-embedder' % (git_revision),
+      'flutter/%s/linux-x64-debug/linux-x64-flutter-gtk.zip' % (git_revision),
+      'flutter/%s/linux-x64-profile/linux-x64-flutter-gtk.zip' % (git_revision),
+      'flutter/%s/linux-x64-release/linux-x64-flutter-gtk.zip' % (git_revision),
+      'flutter/%s/linux-x64/linux-x64-flutter-gtk.zip' % (git_revision),
+      'flutter/%s/linux-x64/font-subset.zip' % (git_revision),
+      'flutter/%s/flutter_patched_sdk.zip' % (git_revision),
+      'flutter/%s/flutter_patched_sdk_product.zip' % (git_revision),
+      'flutter/%s/dart-sdk-linux-x64.zip' % (git_revision),
+      'flutter/%s/flutter-web-sdk-linux-x64.zip' % (git_revision),
+      'flutter/%s/fuchsia/fuchsia.stamp' % git_revision,
+  ):
+    test += api.step_data(
+        'Ensure %s does not already exist on cloud storage' % artifact,
+        retcode=1
+    )
+  yield test
+
   yield api.test(
       'Linux Fuchsia failing test',
       api.platform('linux', 64),

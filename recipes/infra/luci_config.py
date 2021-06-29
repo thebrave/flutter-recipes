@@ -5,12 +5,11 @@
 """Recipe for testing LUCI configs."""
 
 DEPS = [
-    'flutter/repo_util',
-    'recipe_engine/cipd',
+    'fuchsia/git',
+    'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
-    'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/step',
 ]
@@ -20,12 +19,17 @@ def RunSteps(api):
   start_path = api.path['start_dir']
   infra_path = start_path.join('infra')
   # Checkout flutter/infra
-  api.repo_util.checkout(
-      'infra',
-      infra_path,
-      url=api.properties.get('git_url'),
-      ref=api.properties.get('git_ref')
-  )
+  bb_input = api.buildbucket.build.input
+  if bb_input.gerrit_changes:
+    api.git.checkout_cl(
+        bb_input.gerrit_changes[0], infra_path, onto='refs/heads/main'
+    )
+  else:
+    api.git.checkout(
+        'https://flutter.googlesource.com/infra', ref='refs/heads/main'
+    )
+  with api.context(cwd=infra_path):
+    api.git('log', 'log', '--oneline', '-n', '10')
   # Validate LUCI config
   config_path = infra_path.join('config', 'main.star')
   api.step(
@@ -35,10 +39,10 @@ def RunSteps(api):
 
 
 def GenTests(api):
+  yield api.test('basic')
   yield api.test(
-      'basic', api.platform('linux', 64),
-      api.properties(
-          git_url='https://flutter.googlesource.com/flutter/infra',
-          git_ref='abc'
-      ), api.repo_util.flutter_environment_data()
+      'cq',
+      api.buildbucket.try_build(
+          git_repo='https://flutter.googlesource.com/recipes'
+      )
   )

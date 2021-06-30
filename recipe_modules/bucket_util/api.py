@@ -89,11 +89,17 @@ class BucketUtilApi(recipe_api.RecipeApi):
       remote_path,
       bucket_name=INFRA_BUCKET_NAME,
       args=[],
-      skip_on_duplicate=False
+      skip_on_duplicate=False,
+      dry_run=False,
+      add_mock=True,
   ):
     """Upload a file if it doesn't already exist, fail job otherwise.
 
     The check can be overridden with the `force_upload` property.
+
+    This method will check whether the file exists first and fail if it does
+    not. If should_upload_packages returns false, it still will assert the file
+    exists.
 
     Args:
       local_path: (str) The local path to upload.
@@ -102,11 +108,25 @@ class BucketUtilApi(recipe_api.RecipeApi):
       args: (list) Arguments to pass to gsutil.upload step.
       skip_on_duplicate: (bool)
         Whether to avoid uploading to an already existing path in the bucket.
+      dry_run: (bool) Whether to skip the upload even if should_upload_packages
+        returns true.
+      add_mock: (bool) Whether to call path.add_mock_file for the local_path.
 
     Returns:
       The result of the gsutil.upload step. Useful for verifying the exit code.
     """
-    assert (self.should_upload_packages())
+    if add_mock:
+      self.m.path.mock_add_file(local_path)
+
+    if not self.m.path.exists(local_path):
+      with self.m.step.nest('%s not found' % local_path) as presentation:
+        parent_dir = self.m.path.abs_to_path(self.m.path.dirname(local_path))
+        self.m.file.listdir('Files in parent directory of safe_upload request', parent_dir)
+        presentation.status = self.m.step.FAILURE
+        raise AssertionError('File not found %s' % local_path)
+
+    if not self.should_upload_packages() or dry_run:
+      return
 
     experimental = self.m.runtime.is_experimental
     force_upload = self.m.properties.get('force_upload', False)

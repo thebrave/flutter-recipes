@@ -47,11 +47,17 @@ def RunSteps(api):
   api.bucket_util.add_directories(package, ['sub'])
   package.zip('zipping')
 
-  if api.bucket_util.should_upload_packages():
+  api.bucket_util.safe_upload(
+      local_zip, # local_path
+      "foo", # remote_path
+      skip_on_duplicate=True)
+
+  if api.properties.get('try_bad_file', False):
     api.bucket_util.safe_upload(
-                    local_zip, # local_path
-                    "foo", # remote_path
-                    skip_on_duplicate=True)
+        temp.join('A_file_that_does_not_exist'), # local_path
+        'bar', # remote_path
+        skip_on_duplicate=True,
+        add_mock=False)
 
 
 def GenTests(api):
@@ -60,6 +66,14 @@ def GenTests(api):
       api.properties(
           upload_packages=False,
       ),
+  )
+  yield api.test(
+      'basic with fail',
+      api.properties(
+          upload_packages=False,
+          try_bad_file=True,
+      ),
+      api.expect_exception('AssertionError'), # the non-existent file
   )
   yield api.test(
       'upload_packages',

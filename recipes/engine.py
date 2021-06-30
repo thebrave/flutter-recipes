@@ -246,8 +246,7 @@ def UploadArtifacts(
     api.bucket_util.add_directories(pkg, directory_paths)
 
     pkg.zip('Zip %s %s' % (platform, archive_name))
-    if api.bucket_util.should_upload_packages():
-      api.bucket_util.safe_upload(local_zip, remote_zip)
+    api.bucket_util.safe_upload(local_zip, remote_zip)
 
 
 # Takes an artifact filename such as `flutter_embedding_release.jar`
@@ -279,10 +278,6 @@ def GetCloudMavenPath(api, artifact_filename, swarming_task_id):
 
 # Uploads the local Maven artifact.
 def UploadMavenArtifacts(api, artifacts, swarming_task_id):
-  if api.properties.get('no_maven', False):
-    return
-  if not api.bucket_util.should_upload_packages():
-    return
   checkout = GetCheckoutPath(api)
 
   for local_artifact in artifacts:
@@ -292,7 +287,8 @@ def UploadMavenArtifacts(api, artifacts, swarming_task_id):
     api.bucket_util.safe_upload(
         checkout.join(local_artifact),
         remote_artifact,
-        bucket_name=MAVEN_BUCKET_NAME
+        bucket_name=MAVEN_BUCKET_NAME,
+        dry_run=api.properties.get('no_maven', False),
     )
 
 
@@ -867,7 +863,7 @@ def UploadFuchsiaDebugSymbolsToSymbolServer(api, arch, symbol_dirs):
           )
 
 
-def UploadFuchsiaDebugSymbolsToCIPD(api, arch, symbol_dirs):
+def UploadFuchsiaDebugSymbolsToCIPD(api, arch, symbol_dirs, upload):
   checkout = GetCheckoutPath(api)
   dbg_symbols_script = str(
       checkout.join('flutter/tools/fuchsia/merge_and_upload_debug_symbols.py')
@@ -876,13 +872,17 @@ def UploadFuchsiaDebugSymbolsToCIPD(api, arch, symbol_dirs):
   with api.os_utils.make_temp_directory('FuchsiaDebugSymbols_%s' % arch
                                        ) as temp_dir:
     debug_symbols_cmd = [
-        'python', dbg_symbols_script, '--engine-version', git_rev, '--upload',
+        'python', dbg_symbols_script, '--engine-version', git_rev
+    ]
+    if upload:
+      debug_symbols_cmd += ['--upload']
+    debug_symbols_cmd += [
         '--target-arch', arch, '--out-dir', temp_dir, '--symbol-dirs'
     ] + symbol_dirs
     api.step('Upload to CIPD for arch: %s' % arch, cmd=debug_symbols_cmd, infra_step=True)
 
 
-def UploadFuchsiaDebugSymbols(api):
+def UploadFuchsiaDebugSymbols(api, upload):
   checkout = GetCheckoutPath(api)
   archs = ['arm64', 'x64']
   modes = ['debug', 'profile', 'release']
@@ -904,7 +904,7 @@ def UploadFuchsiaDebugSymbols(api):
     )
     debug_symbol_futures.append(sym_server_future)
     cipd_future = api.futures.spawn(
-        UploadFuchsiaDebugSymbolsToCIPD, api, arch, symbol_dirs
+        UploadFuchsiaDebugSymbolsToCIPD, api, arch, symbol_dirs, upload
     )
     debug_symbol_futures.append(cipd_future)
 
@@ -981,24 +981,28 @@ def BuildFuchsia(api):
           build_props['isolated_output_hash'], GetCheckoutPath(api)
       )
 
-  if (api.bucket_util.should_upload_packages() and
-      not api.runtime.is_experimental):
-    fuchsia_package_cmd = [
-        'python',
-        build_script,
-        '--engine-version',
-        git_rev,
-        '--skip-build',
-        '--upload',
-    ]
-    if ShouldPublishToCIPD(api, 'flutter/fuchsia', git_rev):
-      api.step('Upload Fuchsia Artifacts', fuchsia_package_cmd, infra_step=True)
-      with api.step.nest('Upload Fuchsia Debug Symbols'):
-        UploadFuchsiaDebugSymbols(api)
-    stamp_file = api.path['cleanup'].join('fuchsia_stamp')
-    api.file.write_text('fuchsia.stamp', stamp_file, '')
-    remote_file = GetCloudPath(api, 'fuchsia/fuchsia.stamp')
-    api.bucket_util.safe_upload(stamp_file, remote_file)
+  fuchsia_package_cmd = [
+      'python',
+      build_script,
+      '--engine-version',
+      git_rev,
+      '--skip-build',
+  ]
+
+  upload = (api.bucket_util.should_upload_packages() and
+      not api.runtime.is_experimental and
+      ShouldPublishToCIPD(api, 'flutter/fuchsia', git_rev))
+
+  if upload:
+    fuchsia_package_cmd += ['--upload']
+
+  api.step('Upload Fuchsia Artifacts', fuchsia_package_cmd, infra_step=True)
+  with api.step.nest('Upload Fuchsia Debug Symbols'):
+    UploadFuchsiaDebugSymbols(api, upload)
+  stamp_file = api.path['cleanup'].join('fuchsia_stamp')
+  api.file.write_text('fuchsia.stamp', stamp_file, '')
+  remote_file = GetCloudPath(api, 'fuchsia/fuchsia.stamp')
+  api.bucket_util.safe_upload(stamp_file, remote_file)
 
 
 @contextmanager
@@ -1274,8 +1278,7 @@ def PackageIOSVariant(
     pkg.zip('Zip Flutter.dSYM')
     remote_name = '%s/Flutter.dSYM.zip' % bucket_name
     remote_zip = GetCloudPath(api, remote_name)
-    if api.bucket_util.should_upload_packages():
-      api.bucket_util.safe_upload(dsym_zip, remote_zip)
+    api.bucket_util.safe_upload(dsym_zip, remote_zip)
 
 
 def BuildIOS(api):
@@ -1507,11 +1510,10 @@ def BuildWindows(api):
 
 def UploadJavadoc(api, variant):
   checkout = GetCheckoutPath(api)
-  if api.bucket_util.should_upload_packages():
-    api.bucket_util.safe_upload(
-        checkout.join('out/%s/zip_archives/android-javadoc.zip' % variant),
-        GetCloudPath(api, 'android-javadoc.zip')
-    )
+  api.bucket_util.safe_upload(
+      checkout.join('out/%s/zip_archives/android-javadoc.zip' % variant),
+      GetCloudPath(api, 'android-javadoc.zip')
+  )
 
 
 @contextmanager
@@ -1542,11 +1544,10 @@ def BuildObjcDoc(api):
         'archive obj-c doc', temp_dir, checkout.join('out/ios-objcdoc.zip')
     )
 
-    if api.bucket_util.should_upload_packages():
-      api.bucket_util.safe_upload(
-          checkout.join('out/ios-objcdoc.zip'),
-          GetCloudPath(api, 'ios-objcdoc.zip')
-      )
+    api.bucket_util.safe_upload(
+        checkout.join('out/ios-objcdoc.zip'),
+        GetCloudPath(api, 'ios-objcdoc.zip')
+    )
 
 
 def RunSteps(api, properties, env_properties):

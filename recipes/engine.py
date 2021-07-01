@@ -62,20 +62,6 @@ ENV_PROPERTIES = EnvProperties
 def BuildFontSubset(api):
   return api.properties.get('build_font_subset', True)
 
-def UploadFontSubset(api, platform):
-  if not BuildFontSubset(api):
-    return
-  font_subset_path = GetCheckoutPath(api).join(
-      'out',
-      'host_release',
-      'zip_archives',
-      'font-subset.zip'
-  )
-  api.bucket_util.safe_upload(
-      font_subset_path,
-      '%s/font-subset.zip' % platform
-  )
-
 
 def GetCheckoutPath(api):
   return api.path['cache'].join('builder', 'src')
@@ -780,9 +766,6 @@ def BuildLinux(api):
   Build(api, 'host_profile')
   RunTests(api, 'host_profile', types='engine')
   Build(api, 'host_release')
-  api.file.listdir(
-      'host_release zips',
-      GetCheckoutPath(api).join('out', 'host_release', 'zip_archives'))
   RunTests(api, 'host_release', types='dart,engine,benchmarks')
   UploadArtifacts(
       api, 'linux-x64', [
@@ -802,7 +785,16 @@ def BuildLinux(api):
       archive_name='linux-x64-embedder'
   )
 
-  UploadFontSubset(api, 'linux-x64')
+  if BuildFontSubset(api):
+    UploadArtifacts(
+        api,
+        'linux-x64', [
+            'out/host_release/font-subset',
+            'out/host_debug/gen/const_finder.dart.snapshot',
+        ],
+        archive_name='font-subset.zip'
+    )
+
   UploadFlutterPatchedSdk(api)
   UploadDartSdk(api, archive_name='dart-sdk-linux-x64.zip')
   UploadWebSdk(api, archive_name='flutter-web-sdk-linux-x64.zip')
@@ -1031,10 +1023,6 @@ def BuildMac(api):
     Build(api, 'host_profile')
     RunTests(api, 'host_profile', types='engine')
     Build(api, 'host_release')
-    api.file.listdir(
-        'host_release zips',
-        GetCheckoutPath(api).join('out', 'host_release', 'zip_archives'))
-
     host_debug_path = GetCheckoutPath(api).join('out', 'host_debug')
     host_profile_path = GetCheckoutPath(api).join('out', 'host_profile')
     host_release_path = GetCheckoutPath(api).join('out', 'host_release')
@@ -1114,7 +1102,15 @@ def BuildMac(api):
         ],
         archive_name='FlutterMacOS.framework.zip'
     )
-    UploadFontSubset(api, 'darwin-x64')
+    if BuildFontSubset(api):
+      UploadArtifacts(
+          api,
+          'darwin-x64', [
+              'out/host_release/font-subset',
+              'out/host_debug/gen/const_finder.dart.snapshot',
+          ],
+          archive_name='font-subset.zip'
+      )
     # Legacy; remove once Flutter tooling is updated to use the -debug location.
     UploadArtifacts(
         api,
@@ -1392,11 +1388,7 @@ def BuildWindows(api):
     RunGN(api, '--runtime-mode', 'release', '--no-lto')
     Build(api, 'host_release', 'windows', 'gen_snapshot')
     if BuildFontSubset(api):
-      Build(api, 'host_release', 'flutter/tools/font-subset')
-
-    api.file.listdir(
-        'host_release zips',
-        GetCheckoutPath(api).join('out', 'host_release', 'zip_archives'))
+      Build(api, 'host_release', 'font-subset')
 
     UploadArtifacts(
         api, 'windows-x64', [
@@ -1433,7 +1425,16 @@ def BuildWindows(api):
     # Legacy; remove once Flutter tooling is updated to use the -debug location.
     PackageWindowsDesktopVariant(api, 'host_debug', 'windows-x64')
 
-    UploadFontSubset(api, 'windows-x64')
+    if BuildFontSubset(api):
+      UploadArtifacts(
+          api,
+          'windows-x64', [
+              'out/host_release/font-subset.exe',
+              'out/host_debug/gen/const_finder.dart.snapshot',
+          ],
+          archive_name='font-subset.zip'
+      )
+
     UploadDartSdk(api, archive_name='dart-sdk-windows-x64.zip')
     UploadWebSdk(api, archive_name='flutter-web-sdk-windows-x64.zip')
 
@@ -1640,72 +1641,69 @@ def GenTests(api):
       for maven in (True, False):
         for should_publish_cipd in (True, False):
           for no_lto in (True, False):
-            for font_subset in (True, False):
-              if maven and platform in ['mac', 'win']:
-                continue
-              test = api.test(
-                  '%s%s%s%s%s%s' % (
-                      platform, '_upload' if should_upload else '',
-                      '_maven' if maven else '', '_publish_cipd'
-                      if should_publish_cipd else '', '_no_lto' if no_lto else '',
-                      '_font_subset' if font_subset else ''
-                  ),
-                  api.platform(platform, 64),
-                  api.buildbucket.ci_build(
-                      builder='%s Engine' % platform.capitalize(),
-                      git_repo=GIT_REPO,
-                      project='flutter',
-                      revision='%s' % git_revision,
-                  ),
-                  api.runtime(is_experimental=False),
+            if maven and platform in ['mac', 'win']:
+              continue
+            test = api.test(
+                '%s%s%s%s%s' % (
+                    platform, '_upload' if should_upload else '',
+                    '_maven' if maven else '', '_publish_cipd'
+                    if should_publish_cipd else '', '_no_lto' if no_lto else ''
+                ),
+                api.platform(platform, 64),
+                api.buildbucket.ci_build(
+                    builder='%s Engine' % platform.capitalize(),
+                    git_repo=GIT_REPO,
+                    project='flutter',
+                    revision='%s' % git_revision,
+                ),
+                api.runtime(is_experimental=False),
+                api.properties(
+                    **{
+                        'clobber': False,
+                        'goma_jobs': '1024',
+                        'fuchsia_ctl_version': 'version:0.0.2',
+                        'build_host': True,
+                        'build_fuchsia': True,
+                        'build_android_aot': True,
+                        'build_android_debug': True,
+                        'build_android_vulkan': True,
+                        'build_windows_uwp': True,
+                        'no_maven': maven,
+                        'upload_packages': should_upload,
+                        'force_upload': True,
+                        'no_lto': no_lto,
+                    }
+                ),
+                api.properties.environ(
+                    EnvProperties(SWARMING_TASK_ID='deadbeef')
+                ),
+            )
+            if platform == 'linux' and should_upload:
+              instances = 0 if should_publish_cipd else 1
+              test += (
+                  api.override_step_data(
+                      'cipd search flutter/fuchsia git_revision:%s' %
+                      git_revision,
+                      api.cipd.example_search(
+                          'flutter/fuchsia', instances=instances
+                      )
+                  )
+              )
+            if platform != 'win':
+              test += collect_build_output
+            if platform == 'mac':
+              test += (
                   api.properties(
                       **{
-                          'clobber': False,
-                          'goma_jobs': '1024',
-                          'fuchsia_ctl_version': 'version:0.0.2',
-                          'build_host': True,
-                          'build_fuchsia': True,
-                          'build_android_aot': True,
-                          'build_android_debug': True,
-                          'build_android_vulkan': True,
-                          'build_windows_uwp': True,
-                          'no_maven': maven,
-                          'upload_packages': should_upload,
-                          'force_upload': True,
-                          'no_lto': no_lto,
-                          'build_font_subset': font_subset,
+                          'jazzy_version': '0.8.4',
+                          'build_ios': True,
+                          'ios_debug': True,
+                          'ios_profile': True,
+                          'ios_release': True,
                       }
-                  ),
-                  api.properties.environ(
-                      EnvProperties(SWARMING_TASK_ID='deadbeef')
-                  ),
+                  )
               )
-              if platform == 'linux' and should_upload:
-                instances = 0 if should_publish_cipd else 1
-                test += (
-                    api.override_step_data(
-                        'cipd search flutter/fuchsia git_revision:%s' %
-                        git_revision,
-                        api.cipd.example_search(
-                            'flutter/fuchsia', instances=instances
-                        )
-                    )
-                )
-              if platform != 'win':
-                test += collect_build_output
-              if platform == 'mac':
-                test += (
-                    api.properties(
-                        **{
-                            'jazzy_version': '0.8.4',
-                            'build_ios': True,
-                            'ios_debug': True,
-                            'ios_profile': True,
-                            'ios_release': True,
-                        }
-                    )
-                )
-              yield test
+            yield test
 
   for should_upload in (True, False):
     yield api.test(

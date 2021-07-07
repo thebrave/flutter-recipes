@@ -54,6 +54,7 @@ SYSLOG="syslog.log"
 SSH_CONFIG="ssh_config"
 SSH_KEY="id_ed25519"
 RUN_TESTS=""
+TEST_SUITES=""
 TEST_ARGS=""
 VDL_ARGS=()
 
@@ -80,6 +81,9 @@ for arg in "$@"; do
         -t=*|--run_test=*)
         RUN_TESTS+="${arg#*=}"
         ;;
+        --test_suite=*)
+        TEST_SUITES+="${arg#*=}"
+        ;;
         -t=*|--test_args=*)
         TEST_ARGS+="${arg#*=}"
         ;;
@@ -93,6 +97,7 @@ done
 
 log "VDL Location: ${VDL_LOCATION}"
 echo "VDL Args: ${VDL_ARGS[@]}"
+echo "TEST_SUITES: ${TEST_SUITES[@]}"
 echo "RUN_TESTS: ${RUN_TESTS[@]}"
 
 # Note: This permission is required to SSH
@@ -144,6 +149,28 @@ if [[ ${_LAUNCH_EXIT_CODE} == 0 ]]; then
   log "Successfully launched virtual device proto ${VDL_PROTO}"
   ssh_to_guest "log_listener" >"${SYSLOG}" 2>&1 &
 
+  # Clear test suites if none exist.
+  if [[ -z "${TEST_SUITES}" ]]; then
+    unset TEST_SUITES
+  fi
+
+  for target in "${TEST_SUITES[@]}"; do
+    ssh_to_guest "run-test-suite fuchsia-pkg://fuchsia.com/${target}#meta/${target}.cm ${TEST_ARGS}"
+    _EXIT_CODE=$?
+    if [[ ${_EXIT_CODE} == 0 ]]; then
+      log "Test Suite ${target} Passed"
+    else
+      err_codes+=(${_EXIT_CODE})
+      log "Test Suite ${target} Failed with exit code ${_EXIT_CODE}"
+    fi
+  done
+
+  # Clear tests if none exist.
+  if [[ -z "${RUN_TESTS}" ]]; then
+    unset RUN_TESTS
+  fi
+
+  # TODO(fxbug.dev/79873): Remove after all tests are migrated to cfv2.
   for target in "${RUN_TESTS[@]}"; do
     ssh_to_guest "run-test-component fuchsia-pkg://fuchsia.com/${target}#meta/${target}.cmx ${TEST_ARGS}"
     _EXIT_CODE=$?
@@ -159,7 +186,7 @@ else
 fi
 
 if [[ ${err_codes[@]} ]]; then
-  log "Has test fails" 
+  log "Has test fails"
   exit 1
 fi
 exit 0

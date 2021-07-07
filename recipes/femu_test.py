@@ -94,7 +94,8 @@ def IsolateSymlink(api):
   checkout = GetCheckoutPath(api)
   root_dir = api.path.mkdtemp('vdl_runfiles_')
   isolate_tree = api.file.symlink_tree(root=root_dir)
-  flutter_tests = []
+  flutter_test_suites = []
+  flutter_test_fars = []
 
   def add(src, name_rel_to_root):
     isolate_tree.register_link(
@@ -148,13 +149,24 @@ def IsolateSymlink(api):
     add(
         checkout.join('out', 'fuchsia_bucket', 'flutter', 'x64', 'debug', 'aot',
                       'flutter_aot_runner-0.far'), 'flutter_aot_runner-0.far')
+    test_suites_file = checkout.join(
+      'flutter', 'testing', 'fuchsia', 'test_suites')
+    test_suites = api.file.read_text('Retrieve list of test suites',
+                                   test_suites_file).split('\n')
+    for suite in test_suites:
+      if (len(suite) > 0) and (not suite.startswith('#')):
+        add(checkout.join('out', 'fuchsia_debug_x64',
+                          '{suite}-0.far'.format(suite=suite)), suite)
+        flutter_test_suites.append(suite)
+
+    # TODO(fxbug.dev/79873): Remove after al tests are migrated to cfv2.
     test_fars_file = checkout.join('flutter', 'testing', 'fuchsia', 'test_fars')
     test_fars = api.file.read_text('Retrieve list of test FARs',
                                    test_fars_file).split('\n')
     for far in test_fars:
       if (len(far) > 0) and (not far.startswith('#')):
         add(checkout.join('out', 'fuchsia_debug_x64', far), far)
-        flutter_tests.append(far)
+        flutter_test_fars.append(far)
 
   def addTestScript():
     test_script = api.resource('run_vdl_test.sh')
@@ -171,7 +183,7 @@ def IsolateSymlink(api):
   isolated = api.isolated.isolated(isolate_tree.root)
   isolated.add_dir(isolate_tree.root)
   hash = isolated.archive('Archive FEMU Run Files')
-  return flutter_tests, root_dir, hash
+  return flutter_test_suites, flutter_test_fars, root_dir, hash
 
 
 def TestFuchsiaFEMU(api):
@@ -185,7 +197,7 @@ def TestFuchsiaFEMU(api):
     test_type: '--gtest_filter={filter}'.format(filter=gtest_filter)
     for test_type, gtest_filter in gtest_filters.json.output.items()
   }
-  flutter_tests, root_dir, isolated_hash = IsolateSymlink(api)
+  test_suites, flutter_test_fars, root_dir, isolated_hash = IsolateSymlink(api)
   cmd = ['./run_vdl_test.sh']
   # These flags will be passed through to VDL
   cmd.append('--emulator_binary_path=aemu/emulator')
@@ -215,7 +227,33 @@ def TestFuchsiaFEMU(api):
 
   with api.context(cwd=root_dir):
     with api.step.nest('FEMU Test'), api.step.defer_results():
-      for test in flutter_tests:
+      for suite in test_suites:
+        test_cmd = cmd + [
+          '--serve_packages=flutter_aot_runner-0.far,{suite}-0.far'.format(
+                  suite=suite),
+          '--test_suite={suite}'.format(suite=suite),
+          '--emulator_log',
+          api.raw_io.output_text(name='emulator_log'),
+          '--syslog',
+          api.raw_io.output_text(name='syslog')
+        ]
+        if test_args.has_key(suite):
+          test_cmd.append('--test_args={args}'.format(args=test_args[suite]))
+        api.step(
+            'Run FEMU Test Suite %s' % suite,
+            test_cmd,
+            step_test_data=(
+                lambda: api.raw_io.test_api.
+                output_text('failure', name='syslog')
+            )
+        )
+        step_result = api.step.active_result
+        step_result.presentation.logs[
+            'syslog'] = step_result.raw_io.output_texts['syslog']
+        step_result.presentation.logs[
+            'emulator_log'] = step_result.raw_io.output_texts['emulator_log']
+      # TODO(fxbug.dev/79873): Remove after al tests are migrated to cfv2.
+      for test in flutter_test_fars:
         package_name = re.search('(?P<package_name>.*)-\d+.far', test)
         if package_name and package_name.group('package_name'):
           pkg = package_name.group('package_name')
@@ -306,6 +344,12 @@ def GenTests(api):
               git_ref='refs/pull/1/head',
               clobber=False,
           ),),
+      api.step_data(
+          'Retrieve list of test suites',
+          api.file.read_text(
+              '#this is a comment\nruntime_tests\nshell_tests\ntxt_tests'
+          ),
+      ),
       api.step_data(
           'Retrieve list of test FARs',
           api.file.read_text(

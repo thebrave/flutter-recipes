@@ -1990,6 +1990,44 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
+      "[CACHE]/builder/src/flutter/testing/fuchsia/test_suites",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "Retrieve list of test suites",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@test_suites@#this is a comment@@@",
+      "@@@STEP_LOG_LINE@test_suites@runtime_tests@@@",
+      "@@@STEP_LOG_LINE@test_suites@shell_tests@@@",
+      "@@@STEP_LOG_LINE@test_suites@txt_tests@@@",
+      "@@@STEP_LOG_END@test_suites@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
       "[CACHE]/builder/src/flutter/testing/fuchsia/test_fars",
       "/path/to/tmp/"
     ],
@@ -2026,7 +2064,7 @@
       "-u",
       "RECIPE_MODULE[recipe_engine::file]/resources/symlink.py",
       "--link-json",
-      "{\"RECIPE[flutter::femu_test].resources/run_vdl_test.sh\": [\"[CLEANUP]/vdl_runfiles__tmp_1/run_vdl_test.sh\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_buildargs\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_kernel\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_fvm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files\": [\"[CLEANUP]/vdl_runfiles__tmp_1/amber-files\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/pm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/far\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/fvm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/fvm\"], \"[CACHE]/builder/aemu\": [\"[CLEANUP]/vdl_runfiles__tmp_1/aemu\"], \"[CACHE]/builder/device_spec/virtual_device.textproto\": [\"[CLEANUP]/vdl_runfiles__tmp_1/virtual_device.textproto\"], \"[CACHE]/builder/src/out/fuchsia_bucket/flutter/x64/debug/aot/flutter_aot_runner-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/flutter_aot_runner-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/fml_tests-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/fml_tests-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/test3-x.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/test3-x.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/ui_tests-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/ui_tests-0.far\"], \"[CACHE]/builder/ssh/id_ed25519\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519\"], \"[CACHE]/builder/ssh/id_ed25519.pub\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519.pub\"], \"[CACHE]/builder/ssh_config\": [\"[CLEANUP]/vdl_runfiles__tmp_1/ssh_config\"], \"[CACHE]/builder/vdl/device_launcher\": [\"[CLEANUP]/vdl_runfiles__tmp_1/device_launcher\"], \"[CACHE]/builder/zircon-authorized.zbi\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_zircona-ed25519\"]}"
+      "{\"RECIPE[flutter::femu_test].resources/run_vdl_test.sh\": [\"[CLEANUP]/vdl_runfiles__tmp_1/run_vdl_test.sh\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_buildargs\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_kernel\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_fvm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files\": [\"[CLEANUP]/vdl_runfiles__tmp_1/amber-files\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/pm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/far\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/fvm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/fvm\"], \"[CACHE]/builder/aemu\": [\"[CLEANUP]/vdl_runfiles__tmp_1/aemu\"], \"[CACHE]/builder/device_spec/virtual_device.textproto\": [\"[CLEANUP]/vdl_runfiles__tmp_1/virtual_device.textproto\"], \"[CACHE]/builder/src/out/fuchsia_bucket/flutter/x64/debug/aot/flutter_aot_runner-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/flutter_aot_runner-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/fml_tests-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/fml_tests-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/runtime_tests-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/runtime_tests\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/shell_tests-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/shell_tests\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/test3-x.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/test3-x.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/txt_tests-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/txt_tests\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/ui_tests-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/ui_tests-0.far\"], \"[CACHE]/builder/ssh/id_ed25519\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519\"], \"[CACHE]/builder/ssh/id_ed25519.pub\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519.pub\"], \"[CACHE]/builder/ssh_config\": [\"[CLEANUP]/vdl_runfiles__tmp_1/ssh_config\"], \"[CACHE]/builder/vdl/device_launcher\": [\"[CLEANUP]/vdl_runfiles__tmp_1/device_launcher\"], \"[CACHE]/builder/zircon-authorized.zbi\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_zircona-ed25519\"]}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -2192,6 +2230,148 @@
       "--enable_grpc_server=false",
       "--enable_grpc_tls=false",
       "--system_images=qemu_buildargs,qemu_kernel,qemu_fvm,qemu_zircona-ed25519,ssh_config,id_ed25519.pub,id_ed25519,amber-files",
+      "--serve_packages=flutter_aot_runner-0.far,runtime_tests-0.far",
+      "--test_suite=runtime_tests",
+      "--emulator_log",
+      "/path/to/tmp/",
+      "--syslog",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CLEANUP]/vdl_runfiles__tmp_1",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "FEMU Test.Run FEMU Test Suite runtime_tests",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@syslog@failure@@@",
+      "@@@STEP_LOG_END@syslog@@@",
+      "@@@STEP_LOG_LINE@emulator_log@@@@",
+      "@@@STEP_LOG_END@emulator_log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "./run_vdl_test.sh",
+      "--emulator_binary_path=aemu/emulator",
+      "--proto_file_path=virtual_device.textproto",
+      "--pm_tool=pm",
+      "--far_tool=far",
+      "--fvm_tool=fvm",
+      "--resize_fvm=2G",
+      "--gpu=swiftshader_indirect",
+      "--headless_mode=true",
+      "--enable_grpc_server=false",
+      "--enable_grpc_tls=false",
+      "--system_images=qemu_buildargs,qemu_kernel,qemu_fvm,qemu_zircona-ed25519,ssh_config,id_ed25519.pub,id_ed25519,amber-files",
+      "--serve_packages=flutter_aot_runner-0.far,shell_tests-0.far",
+      "--test_suite=shell_tests",
+      "--emulator_log",
+      "/path/to/tmp/",
+      "--syslog",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CLEANUP]/vdl_runfiles__tmp_1",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "FEMU Test.Run FEMU Test Suite shell_tests",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@syslog@failure@@@",
+      "@@@STEP_LOG_END@syslog@@@",
+      "@@@STEP_LOG_LINE@emulator_log@@@@",
+      "@@@STEP_LOG_END@emulator_log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "./run_vdl_test.sh",
+      "--emulator_binary_path=aemu/emulator",
+      "--proto_file_path=virtual_device.textproto",
+      "--pm_tool=pm",
+      "--far_tool=far",
+      "--fvm_tool=fvm",
+      "--resize_fvm=2G",
+      "--gpu=swiftshader_indirect",
+      "--headless_mode=true",
+      "--enable_grpc_server=false",
+      "--enable_grpc_tls=false",
+      "--system_images=qemu_buildargs,qemu_kernel,qemu_fvm,qemu_zircona-ed25519,ssh_config,id_ed25519.pub,id_ed25519,amber-files",
+      "--serve_packages=flutter_aot_runner-0.far,txt_tests-0.far",
+      "--test_suite=txt_tests",
+      "--emulator_log",
+      "/path/to/tmp/",
+      "--syslog",
+      "/path/to/tmp/",
+      "--test_args=--gtest_filter=-ParagraphTest.*"
+    ],
+    "cwd": "[CLEANUP]/vdl_runfiles__tmp_1",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "FEMU Test.Run FEMU Test Suite txt_tests",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@syslog@failure@@@",
+      "@@@STEP_LOG_END@syslog@@@",
+      "@@@STEP_LOG_LINE@emulator_log@@@@",
+      "@@@STEP_LOG_END@emulator_log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "./run_vdl_test.sh",
+      "--emulator_binary_path=aemu/emulator",
+      "--proto_file_path=virtual_device.textproto",
+      "--pm_tool=pm",
+      "--far_tool=far",
+      "--fvm_tool=fvm",
+      "--resize_fvm=2G",
+      "--gpu=swiftshader_indirect",
+      "--headless_mode=true",
+      "--enable_grpc_server=false",
+      "--enable_grpc_tls=false",
+      "--system_images=qemu_buildargs,qemu_kernel,qemu_fvm,qemu_zircona-ed25519,ssh_config,id_ed25519.pub,id_ed25519,amber-files",
       "--serve_packages=flutter_aot_runner-0.far,ui_tests-0.far",
       "--run_test=ui_tests",
       "--emulator_log",
@@ -2278,7 +2458,7 @@
   {
     "failure": {
       "failure": {},
-      "humanReason": "2 out of 2 aggregated steps failed: Step('FEMU Test.Run FEMU Test ui_tests') (retcode: 1), Step('FEMU Test.Run FEMU Test fml_tests') (retcode: 1)"
+      "humanReason": "2 out of 5 aggregated steps failed: Step('FEMU Test.Run FEMU Test ui_tests') (retcode: 1), Step('FEMU Test.Run FEMU Test fml_tests') (retcode: 1)"
     },
     "name": "$result"
   }

@@ -63,7 +63,7 @@ def RunTests(api, out_dir, android_out_dir=None, ios_out_dir=None, types='all'):
 
 def AnalyzeDartUI(api):
   RunGN(api, '--unoptimized')
-  Build(api, 'host_debug_unopt', 'generate_dart_ui', 'sky_engine', 'sky_services')
+  Build(api, 'host_debug_unopt', 'generate_dart_ui', 'sky_engine')
 
   checkout = GetCheckoutPath(api)
   with api.context(cwd=checkout):

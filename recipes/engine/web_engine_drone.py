@@ -160,8 +160,8 @@ def GenTests(api):
           goma_jobs='200',
           gcs_goldens_bucket='mybucket',
           dependencies=['chrome_driver', 'chrome', 'goldens_repo'],
-          command_args=['test', '--browser=chrome', '--integration-tests-only'],
-          command_name='chrome-integration-tests',
+          command_args=['test', '--browser=chrome', '--unit-tests-only'],
+          command_name='chrome-tests',
           isolated_hash='abceqwe'
       ), api.platform('linux', 64)
   ) + api.runtime(is_experimental=False) + api.platform.name('linux')
@@ -173,9 +173,9 @@ def GenTests(api):
           gcs_goldens_bucket='mybucket',
           dependencies=['firefox_driver', 'goldens_repo'],
           command_args=[
-              'test', '--browser=firefox', '--integration-tests-only'
+              'test', '--browser=firefox', '--unit-tests-only'
           ],
-          command_name='firefox-integration-tests',
+          command_name='firefox-tests',
           isolated_hash='abceqwe'
       ), api.platform.name('linux'), api.platform('linux', 64)
   ) + api.runtime(is_experimental=False)

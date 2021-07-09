@@ -254,16 +254,6 @@ def schedule_builds_on_linux(api, isolated_hash):
   """Schedules one subbuild per subshard."""
   reqs = []
 
-  # For running Chrome Integration tests:
-  command_name = 'chrome-integration-linux'
-  # These are the required dependencies.
-  dependencies = ['chrome', 'chrome_driver', 'goldens_repo']
-  # These are the felt commands which will be used.
-  command_args = ['test', '--browser=chrome', '--integration-tests-only']
-  addShardTask(
-      api, reqs, command_name, dependencies, command_args, isolated_hash
-  )
-
   # For running Chrome Unit tests:
   command_name = 'chrome-unit-linux'
   # These are the required dependencies.
@@ -282,16 +272,6 @@ def schedule_builds_on_linux(api, isolated_hash):
   dependencies = []
   # These are the felt commands which will be used.
   command_args = ['test', '--browser=firefox', '--unit-tests-only']
-  addShardTask(
-      api, reqs, command_name, dependencies, command_args, isolated_hash
-  )
-
-  # For running Firefox Integration tests:
-  command_name = 'firefox-integration-linux'
-  # These are the required dependencies.
-  dependencies = ['firefox_driver', 'goldens_repo']
-  # These are the felt commands which will be used.
-  command_args = ['test', '--browser=firefox', '--integration-tests-only']
   addShardTask(
       api, reqs, command_name, dependencies, command_args, isolated_hash
   )

@@ -64,8 +64,8 @@ def RunAndroidScenarioTests(api):
   api.cipd.ensure(
       android_tool_dir,
       api.cipd.EnsureFile().add_package(
-          'chromium/tools/android/avd',
-          'a1SpJpmu4ReL4-4fR02ZV4FjhWb4z3p88a408gvfFWcC'
+          'chromium/tools/android/avd/linux-amd64',
+          'e5JfdaCjazDFh5uqhkPgVeZa9oCLVimm5_8TWAENz1gC'
       )
   )
 
@@ -74,18 +74,18 @@ def RunAndroidScenarioTests(api):
   )
 
   avd_config = android_tool_dir.join(
-      'src', 'tools', 'android', 'avd', 'proto', 'generic_android28.textpb'
+      'src', 'tools', 'android', 'avd', 'proto', 'generic_android30.textpb'
   )
 
   emulator_pid = ''
   with api.context(cwd=android_tool_dir):
     api.python(
-        'Install Android emulator (API level 28)', avd_script_path,
+        'Install Android emulator (API level 30)', avd_script_path,
         ['install', '--avd-config', avd_config]
     )
 
     output = api.python(
-        'Start Android emulator (API level 28)',
+        'Start Android emulator (API level 30)',
         avd_script_path,
         ['start', '--no-read-only', '--avd-config', avd_config],
         stdout=api.raw_io.output()
@@ -179,9 +179,9 @@ def GenTests(api):
             ),
         ),
         api.step_data(
-            'Start Android emulator (API level 28)',
+            'Start Android emulator (API level 30)',
             stdout=api.raw_io.output_text(
-                'android_28_google_apis_x86|emulator-5554 started (pid: 17687)'
+                'android_30_google_apis_x86|emulator-5554 started (pid: 17687)'
             )
         )
     )
@@ -204,9 +204,9 @@ def GenTests(api):
         api.step_data('Scenario App Integration Tests', retcode=1),
         api.path.exists(scenario_failures),
         api.step_data(
-            'Start Android emulator (API level 28)',
+            'Start Android emulator (API level 30)',
             stdout=api.raw_io.output_text(
-                'android_28_google_apis_x86|emulator-5554 started (pid: 17687)'
+                'android_30_google_apis_x86|emulator-5554 started (pid: 17687)'
             )
         )
     )

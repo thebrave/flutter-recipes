@@ -17,7 +17,19 @@ def RunSteps(api):
 
 
 def GenTests(api):
-  yield api.test('passing',)
+  yield api.test('passing',
+      api.step_data(
+          'mytest',
+          stdout=api.raw_io.output_text('#success\nthis is a success'),
+      )
+  )
+  yield api.test(
+      'flaky',
+      api.step_data(
+          'mytest',
+          stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
+      )
+  )
   yield api.test(
       'failing',
       api.step_data(

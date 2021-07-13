@@ -30,6 +30,17 @@ class TestUtilsApi(recipe_api.RecipeApi):
       output.insert(0, line)
     return '\n'.join(output)
 
+  def _is_flaky(self, output):
+    """Check if test step is flaky"""
+    lines = output.splitlines()
+    lines.reverse()
+    # The flakiness status message `flaky: true` is expected to be located at the
+    # end of the stdout file. Check last 10 lines to make sure it is covered if existing.
+    for line in lines[:10]:
+      if 'flaky: true' in line:
+        return True
+    return False
+
   def is_devicelab_bot(self):
     """Whether the current bot is a devicelab bot or not."""
     return (
@@ -45,9 +56,13 @@ class TestUtilsApi(recipe_api.RecipeApi):
       command_list(list(str)): A list of strings with the command and
         parameters to execute.
       timeout_secs(int): The timeout in seconds for this step.
+
+    Returns(str): The status of the test step. A str `flaky` or `success` will 
+      be returned when step succeeds, and an exception will be thrown out when
+      step fails.
     """
     try:
-      self.m.step(
+      step = self.m.step(
           step_name,
           command_list,
           stdout=self.m.raw_io.output_text(),
@@ -66,3 +81,8 @@ class TestUtilsApi(recipe_api.RecipeApi):
           'stdout'] = self.m.step.active_result.stdout
       self.m.step.active_result.presentation.logs[
           'stderr'] = self.m.step.active_result.stderr
+    if self._is_flaky(step.stdout):
+      test_run_status = 'flaky'
+    else:
+      test_run_status = 'success'
+    return test_run_status

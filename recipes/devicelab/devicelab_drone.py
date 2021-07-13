@@ -92,8 +92,7 @@ def RunSteps(api):
               api, env, env_prefixes, flutter_path, task_name, runner_params
           )
     else:
-      with api.context(env=env,
-                       env_prefixes=env_prefixes), api.step.defer_results():
+      with api.context(env=env, env_prefixes=env_prefixes):
         api.retry.step(
             'flutter doctor',
             ['flutter', 'doctor', '--verbose'],
@@ -102,15 +101,18 @@ def RunSteps(api):
         )
         test_runner_command = ['dart', 'bin/test_runner.dart', 'test']
         test_runner_command.extend(runner_params)
-        api.test_utils.run_test(
-            'run %s' % task_name,
-            test_runner_command,
-            timeout_secs=MAX_TIMEOUT_SECS
-        )
-        api.logs_util.upload_logs(task_name)
-        # This is to clean up leaked processes.
-        api.os_utils.kill_processes()
-
+        try:
+          test_status = api.test_utils.run_test(
+              'run %s' % task_name,
+              test_runner_command,
+              timeout_secs=MAX_TIMEOUT_SECS
+          )
+        finally:
+          api.logs_util.upload_logs(task_name)
+          # This is to clean up leaked processes.
+          api.os_utils.kill_processes()
+        if test_status == 'flaky':
+          api.step('check flaky', ['echo', 'test run is flaky'])
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadMetrics(api, results_path)
     uploadMetricsToCas(api, results_path)
@@ -128,20 +130,23 @@ def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params):
   )
   api.os_utils.dismiss_dialogs()
   api.os_utils.shutdown_simulators()
-  with api.context(env=env,
-                   env_prefixes=env_prefixes), api.step.defer_results():
+  with api.context(env=env, env_prefixes=env_prefixes):
     resource_name = api.resource('runner.sh')
     api.step('Set execute permission', ['chmod', '755', resource_name])
     test_runner_command = [resource_name]
     test_runner_command.extend(runner_params)
-    api.test_utils.run_test(
-        'run %s' % task_name,
-        test_runner_command,
-        timeout_secs=MAX_TIMEOUT_SECS
-    )
-    api.logs_util.upload_logs(task_name)
-    # This is to clean up leaked processes.
-    api.os_utils.kill_processes()
+    try:
+      test_status = api.test_utils.run_test(
+          'run %s' % task_name,
+          test_runner_command,
+          timeout_secs=MAX_TIMEOUT_SECS
+      )
+    finally:
+      api.logs_util.upload_logs(task_name)
+      # This is to clean up leaked processes.
+      api.os_utils.kill_processes()
+    if test_status == 'flaky':
+      api.step('check flaky', ['echo', 'test run is flaky'])
 
 
 def uploadMetrics(api, results_path):
@@ -174,8 +179,9 @@ def uploadMetricsToCas(api, results_path):
   """
   if not api.properties.get('upload_metrics_to_cas'):
     return
-  cas_hash = api.cas.archive('Upload metrics to CAS',
-                             api.path.dirname(results_path), results_path)
+  cas_hash = api.cas.archive(
+      'Upload metrics to CAS', api.path.dirname(results_path), results_path
+  )
   api.step.active_result.presentation.properties['results_cas_hash'] = cas_hash
 
 
@@ -188,6 +194,11 @@ def GenTests(api):
   yield api.test(
       "basic", api.properties(buildername='Linux abc', task_name='abc'),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.step_data(
+          'run abc',
+          stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
+          retcode=0
+      ),
       api.buildbucket.ci_build(
           project='test',
           git_repo='git.example.com/test/repo',
@@ -200,7 +211,11 @@ def GenTests(api):
           task_name='abc',
           dependencies=[{'dependency': 'xcode'}]
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-      api.swarming.properties(bot_id='flutter-devicelab-mac-1')
+      api.step_data(
+          'run abc',
+          stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
+          retcode=0
+      ), api.swarming.properties(bot_id='flutter-devicelab-mac-1')
   )
   yield api.test(
       "xcode-chromium-mac",
@@ -228,12 +243,13 @@ def GenTests(api):
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path)
   )
   yield api.test(
-      "local-engine", api.properties(
-          buildername='Linux abc', task_name='abc',
+      "local-engine",
+      api.properties(
+          buildername='Linux abc',
+          task_name='abc',
           local_engine_cas_hash='isolatehashlocalengine/22',
           local_engine='host-release'
-      ),
-      api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',
           git_repo='git.example.com/test/repo',

@@ -33,12 +33,15 @@ def RunSteps(api, properties, env_properties):
       'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
   )
   android_home = checkout_path.join('third_party', 'android_tools', 'sdk')
-  env = {'ANDROID_HOME': str(android_home)}
+  env = {
+    'ANDROID_HOME': str(android_home),
+    'FLUTTER_PREBUILT_DART_SDK': 'True',
+  }
   env_prefixes = {'PATH': [dart_bin]}
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
   with api.depot_tools.on_path(), api.context(env=env,
                                               env_prefixes=env_prefixes):
-    api.build_util.run_gn(['--runtime-mode', 'release'], checkout_path)
+    api.build_util.run_gn(['--runtime-mode', 'release', '--prebuilt-dart-sdk'], checkout_path)
     api.build_util.build('host_release', checkout_path, [])
 
   host_release_path = checkout_path.join('out', 'host_release')

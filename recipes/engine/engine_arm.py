@@ -150,15 +150,15 @@ def PackageLinuxDesktopVariant(api, label, bucket_name):
 
 def BuildLinux(api):
   RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--target-os=linux',
-        '--linux-cpu=arm64')
+        '--linux-cpu=arm64', '--prebuilt-dart-sdk')
   Build(api, 'linux_debug_arm64')
 
   RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--target-os=linux',
-        '--linux-cpu=arm64')
+        '--linux-cpu=arm64', '--prebuilt-dart-sdk')
   Build(api, 'linux_profile_arm64')
 
   RunGN(api, '--runtime-mode', 'release', '--target-os=linux',
-        '--linux-cpu=arm64')
+        '--linux-cpu=arm64', '--prebuilt-dart-sdk')
   Build(api, 'linux_release_arm64')
 
   UploadArtifacts(api, 'linux-arm64', [
@@ -208,7 +208,11 @@ def RunSteps(api, properties, env_properties):
 
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
 
-  env = {'GOMA_DIR': api.goma.goma_dir, 'ANDROID_HOME': str(android_home)}
+  env = {
+    'GOMA_DIR': api.goma.goma_dir,
+    'ANDROID_HOME': str(android_home),
+    'FLUTTER_PREBUILT_DART_SDK': 'True',
+  }
   env_prefixes = {}
 
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)

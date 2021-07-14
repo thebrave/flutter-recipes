@@ -138,7 +138,11 @@ def RunSteps(api, properties, env_properties):
       'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
   )
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
-  env = {'GOMA_DIR': api.goma.goma_dir, 'ANDROID_HOME': str(android_home)}
+  env = {
+    'GOMA_DIR': api.goma.goma_dir,
+    'ANDROID_HOME': str(android_home),
+    'FLUTTER_PREBUILT_DART_SDK': 'True',
+  }
   env_prefixes = {'PATH': [dart_bin]}
 
   api.repo_util.engine_checkout(
@@ -147,7 +151,7 @@ def RunSteps(api, properties, env_properties):
 
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():
-    RunGN(api, '--runtime-mode', 'debug', '--unoptimized')
+    RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk')
     Build(api, 'host_debug_unopt')
 
     RunGN(api, '--android', '--android-cpu=x86', '--no-lto')

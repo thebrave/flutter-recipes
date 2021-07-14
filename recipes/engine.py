@@ -508,7 +508,7 @@ class AndroidAotVariant:
 # This variant is built on the scheduling bot to run firebase tests.
 def BuildLinuxAndroidAOTArm64Profile(api, swarming_task_id, aot_variant):
   # This shard needs to build the Dart SDK to build the profile firebase app.
-  RunGN(api, '--runtime-mode', 'profile', '--unoptimized', '--no-lto')
+  RunGN(api, '--runtime-mode', 'profile', '--unoptimized', '--no-lto', '--prebuilt-dart-sdk')
   Build(api, 'host_profile_unopt')
 
   checkout = GetCheckoutPath(api)
@@ -765,10 +765,10 @@ def PackageLinuxDesktopVariant(api, label, bucket_name):
 
 
 def BuildLinux(api):
-  RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk')
-  RunGN(api, '--runtime-mode', 'debug', '--unoptimized')
-  RunGN(api, '--runtime-mode', 'profile', '--no-lto')
-  RunGN(api, '--runtime-mode', 'release')
+  RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--prebuilt-dart-sdk')
+  RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk')
+  RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk')
+  RunGN(api, '--runtime-mode', 'release', '--prebuilt-dart-sdk')
   # flutter/sky/packages from host_debug_unopt is needed for RunTests 'dart'
   # type.
   Build(api, 'host_debug_unopt', 'flutter/sky/packages')
@@ -809,9 +809,9 @@ def BuildLinux(api):
 
   # Rebuild with fontconfig support enabled for the desktop embedding, since it
   # should be on for libflutter_linux_gtk.so, but not libflutter_engine.so.
-  RunGN(api, '--runtime-mode', 'debug', '--enable-fontconfig')
-  RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--enable-fontconfig')
-  RunGN(api, '--runtime-mode', 'release', '--enable-fontconfig')
+  RunGN(api, '--runtime-mode', 'debug', '--enable-fontconfig', '--prebuilt-dart-sdk')
+  RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--enable-fontconfig', '--prebuilt-dart-sdk')
+  RunGN(api, '--runtime-mode', 'release', '--enable-fontconfig', '--prebuilt-dart-sdk')
 
   Build(api, 'host_debug')
   Build(api, 'host_profile')
@@ -1023,9 +1023,9 @@ def SetupXcode(api):
 
 def BuildMac(api):
   if api.properties.get('build_host', True):
-    RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--full-dart-sdk')
-    RunGN(api, '--runtime-mode', 'profile', '--no-lto')
-    RunGN(api, '--runtime-mode', 'release', '--no-lto')
+    RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--full-dart-sdk', '--prebuilt-dart-sdk')
+    RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk')
+    RunGN(api, '--runtime-mode', 'release', '--no-lto', '--prebuilt-dart-sdk')
 
     Build(api, 'host_debug')
     Build(api, 'host_profile')
@@ -1384,12 +1384,12 @@ def PackageWindowsUwpDesktopVariant(api, label, bucket_name):
 
 def BuildWindows(api):
   if api.properties.get('build_host', True):
-    RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--no-lto')
+    RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--no-lto', '--prebuilt-dart-sdk')
     Build(api, 'host_debug')
     RunTests(api, 'host_debug', types='engine')
-    RunGN(api, '--runtime-mode', 'profile', '--no-lto')
+    RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk')
     Build(api, 'host_profile', 'windows', 'gen_snapshot')
-    RunGN(api, '--runtime-mode', 'release', '--no-lto')
+    RunGN(api, '--runtime-mode', 'release', '--no-lto', '--prebuilt-dart-sdk')
     Build(api, 'host_release', 'windows', 'gen_snapshot')
     if BuildFontSubset(api):
       Build(api, 'host_release', 'flutter/tools/font-subset')
@@ -1438,9 +1438,9 @@ def BuildWindows(api):
     UploadWebSdk(api, archive_name='flutter-web-sdk-windows-x64.zip')
 
   if api.properties.get('build_windows_uwp', True):
-    RunGN(api, '--runtime-mode', 'debug', '--winuwp', '--no-lto')
-    RunGN(api, '--runtime-mode', 'profile', '--winuwp')
-    RunGN(api, '--runtime-mode', 'release', '--winuwp')
+    RunGN(api, '--runtime-mode', 'debug', '--winuwp', '--no-lto', '--prebuilt-dart-sdk')
+    RunGN(api, '--runtime-mode', 'profile', '--winuwp', '--prebuilt-dart-sdk')
+    RunGN(api, '--runtime-mode', 'release', '--winuwp', '--prebuilt-dart-sdk')
     Build(api, 'winuwp_debug')
     PackageWindowsUwpDesktopVariant(api, 'winuwp_debug', 'windows-x64-debug')
     Build(api, 'winuwp_profile')
@@ -1566,7 +1566,18 @@ def RunSteps(api, properties, env_properties):
 
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
 
-  env = {'GOMA_DIR': api.goma.goma_dir, 'ANDROID_HOME': str(android_home)}
+  env = {
+    'GOMA_DIR': api.goma.goma_dir,
+    'ANDROID_HOME': str(android_home),
+  }
+
+  use_prebuilt_dart = (api.properties.get('build_host', True) or
+                       api.properties.get('build_windows_uwp', True) or
+                       api.properties.get('build_android_aot', True))
+
+  if use_prebuilt_dart:
+    env['FLUTTER_PREBUILT_DART_SDK'] = 'True'
+
   env_prefixes = {'PATH': [dart_bin]}
 
   # Add certificates and print the ones required for pub.

@@ -29,6 +29,8 @@ DEPS = [
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
+ANDROID_APIS = ['23', '30']
+
 
 def GetCheckoutPath(api):
   return api.path['cache'].join('builder', 'src')
@@ -65,7 +67,7 @@ def RunAndroidScenarioTests(api):
       android_tool_dir,
       api.cipd.EnsureFile().add_package(
           'chromium/tools/android/avd/linux-amd64',
-          'e5JfdaCjazDFh5uqhkPgVeZa9oCLVimm5_8TWAENz1gC'
+          'kaocz43G7iGnwImCCFNX1YMqHwjMDicpEG8KxTVXRYAC'
       )
   )
 
@@ -73,51 +75,52 @@ def RunAndroidScenarioTests(api):
       'src', 'tools', 'android', 'avd', 'avd.py'
   )
 
-  avd_config = android_tool_dir.join(
-      'src', 'tools', 'android', 'avd', 'proto', 'generic_android30.textpb'
-  )
-
-  emulator_pid = ''
-  with api.context(cwd=android_tool_dir):
-    api.python(
-        'Install Android emulator (API level 30)', avd_script_path,
-        ['install', '--avd-config', avd_config]
+  for api_version in ANDROID_APIS:
+    avd_config = android_tool_dir.join(
+        'src', 'tools', 'android', 'avd', 'proto', 'generic_android' + api_version + '.textpb'
     )
 
-    output = api.python(
-        'Start Android emulator (API level 30)',
-        avd_script_path,
-        ['start', '--no-read-only', '--avd-config', avd_config],
-        stdout=api.raw_io.output()
-    ).stdout
-    m = re.match('.*pid: (\d+)\)', output)
-    emulator_pid = m.group(1)
-  test_dir = engine_checkout.join('flutter', 'testing')
-  scenario_app_tests = test_dir.join('scenario_app')
-
-  # Proxies `python` since vpython cannot resolve spec files outside of the jar
-  # file containing the python scripts.
-  gradle_home_bin_dir = scenario_app_tests.join('android', 'gradle-home', 'bin')
-  with api.context(cwd=scenario_app_tests,
-                   env_prefixes={'PATH': [gradle_home_bin_dir]}):
-
-    result = api.step(
-        'Scenario App Integration Tests',
-        ['./build_and_run_android_tests.sh', 'android_debug_x86'],
-        ok_ret='all'
-    )
-    api.step('Kill emulator', ['kill', '-9', emulator_pid])
-    build_failures_dir = scenario_app_tests.join('build', 'reports', 'diff_failures')
-    if api.path.exists(build_failures_dir):
-      # Upload any diff failures.
-      # If there are any, upload them to the cloud bucket.
-      api.bucket_util.upload_folder(
-          'Upload diff failures',
-          'src/flutter/testing/scenario_app',
-          'build/reports/diff_failures',
-          'diff_failures.zip',
-          bucket_name='flutter_logs',
+    emulator_pid = ''
+    with api.context(cwd=android_tool_dir):
+      api.python(
+          'Install Android emulator (API level ' + api_version + ')', avd_script_path,
+          ['install', '--avd-config', avd_config]
       )
+
+      output = api.python(
+          'Start Android emulator (API level '+ api_version + ')',
+          avd_script_path,
+          ['start', '--no-read-only', '--avd-config', avd_config],
+          stdout=api.raw_io.output()
+      ).stdout
+      m = re.match('.*pid: (\d+)\)', output)
+      emulator_pid = m.group(1)
+    test_dir = engine_checkout.join('flutter', 'testing')
+    scenario_app_tests = test_dir.join('scenario_app')
+
+    # Proxies `python` since vpython cannot resolve spec files outside of the jar
+    # file containing the python scripts.
+    gradle_home_bin_dir = scenario_app_tests.join('android', 'gradle-home', 'bin')
+    with api.context(cwd=scenario_app_tests,
+                     env_prefixes={'PATH': [gradle_home_bin_dir]}):
+
+      result = api.step(
+          'Scenario App Integration Tests',
+          ['./build_and_run_android_tests.sh', 'android_debug_x86'],
+          ok_ret='all'
+      )
+      api.step('Kill emulator', ['kill', '-9', emulator_pid])
+      build_failures_dir = scenario_app_tests.join('build', 'reports', 'diff_failures_avd' + api_version)
+      if api.path.exists(build_failures_dir):
+        # Upload any diff failures.
+        # If there are any, upload them to the cloud bucket.
+        api.bucket_util.upload_folder(
+            'Upload diff failures',
+            'src/flutter/testing/scenario_app',
+            'build/reports/diff_failures_avd' + api_version,
+            'diff_failures.zip',
+            bucket_name='flutter_logs',
+        )
 
 
 def RunSteps(api, properties, env_properties):
@@ -160,9 +163,13 @@ def RunSteps(api, properties, env_properties):
 
 
 def GenTests(api):
-  scenario_failures = GetCheckoutPath(api).join(
-      'flutter', 'testing', 'scenario_app', 'build', 'reports', 'diff_failures'
+  scenario_failures_23 = GetCheckoutPath(api).join(
+      'flutter', 'testing', 'scenario_app', 'build', 'reports', 'diff_failures_avd23'
   )
+  scenario_failures_30 = GetCheckoutPath(api).join(
+      'flutter', 'testing', 'scenario_app', 'build', 'reports', 'diff_failures_avd30'
+  )
+  # for api_version in ANDROID_APIS:
   for upload_packages in (True, False):
     yield api.test(
         'without_failure_upload_%d' % upload_packages,
@@ -177,6 +184,12 @@ def GenTests(api):
                 goma_jobs='1024',
                 upload_packages=upload_packages,
             ),
+        ),
+        api.step_data(
+            'Start Android emulator (API level 23)',
+            stdout=api.raw_io.output_text(
+                'android_23_google_apis_x86|emulator-5554 started (pid: 17687)'
+            )
         ),
         api.step_data(
             'Start Android emulator (API level 30)',
@@ -202,7 +215,14 @@ def GenTests(api):
         ),
         # Makes the test fail.
         api.step_data('Scenario App Integration Tests', retcode=1),
-        api.path.exists(scenario_failures),
+        api.path.exists(scenario_failures_23),
+        api.path.exists(scenario_failures_30),
+        api.step_data(
+            'Start Android emulator (API level 23)',
+            stdout=api.raw_io.output_text(
+                'android_23_google_apis_x86|emulator-5554 started (pid: 17687)'
+            )
+        ),
         api.step_data(
             'Start Android emulator (API level 30)',
             stdout=api.raw_io.output_text(

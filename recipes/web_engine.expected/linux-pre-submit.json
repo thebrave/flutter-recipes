@@ -149,7 +149,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
       "GIT_HTTP_LOW_SPEED_TIME": "1800",
       "GOMA_DIR": "[CACHE]/goma/client"
@@ -222,7 +221,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -246,6 +244,58 @@
   },
   {
     "cmd": [
+      "[CACHE]/builder/src/flutter/ci/format.sh"
+    ],
+    "cwd": "[CACHE]/builder/src/flutter",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "format and dart test"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/flutter/ci/lint.sh"
+    ],
+    "cwd": "[CACHE]/builder/src",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "lint test"
+  },
+  {
+    "cmd": [
       "python",
       "-u",
       "RECIPE_REPO[depot_tools]/gclient.py",
@@ -256,7 +306,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -281,15 +330,13 @@
       "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
       "--unoptimized",
-      "--full-dart-sdk",
-      "--prebuilt-dart-sdk"
+      "--full-dart-sdk"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -305,7 +352,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "gn --unoptimized --full-dart-sdk --prebuilt-dart-sdk"
+    "name": "gn --unoptimized --full-dart-sdk"
   },
   {
     "cmd": [],
@@ -323,7 +370,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
@@ -368,7 +414,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
@@ -405,7 +450,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
@@ -459,7 +503,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
@@ -502,7 +545,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
@@ -549,7 +591,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
@@ -591,7 +632,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
@@ -631,7 +671,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -671,7 +710,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -711,7 +749,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -763,7 +800,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -797,7 +833,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -924,7 +959,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -952,7 +986,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -981,7 +1014,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -1008,7 +1040,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -1053,7 +1084,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -1088,7 +1118,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -1181,7 +1210,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -1213,7 +1241,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -1245,7 +1272,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -1277,7 +1303,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -1309,7 +1334,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
@@ -1345,7 +1369,6 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "ENGINE_PATH": "[CACHE]/builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {

@@ -62,7 +62,7 @@ def RunTests(api, out_dir, android_out_dir=None, ios_out_dir=None, types='all'):
 
 
 def AnalyzeDartUI(api):
-  RunGN(api, '--unoptimized', '--prebuilt-dart-sdk')
+  RunGN(api, '--unoptimized')
   Build(api, 'host_debug_unopt', 'generate_dart_ui', 'sky_engine')
 
   checkout = GetCheckoutPath(api)
@@ -112,7 +112,7 @@ def BuildLinuxAndroid(api, swarming_task_id):
 
 
 def BuildLinux(api):
-  RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk')
+  RunGN(api, '--runtime-mode', 'debug', '--unoptimized')
   Build(api, 'host_debug_unopt')
   RunTests(api, 'host_debug_unopt', types='dart,engine')
 
@@ -137,7 +137,7 @@ def SetupXcode(api):
 
 
 def BuildMac(api):
-  RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--no-lto', '--prebuilt-dart-sdk')
+  RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--no-lto')
   Build(api, 'host_debug_unopt')
   RunTests(api, 'host_debug_unopt', types='dart,engine')
 
@@ -160,7 +160,7 @@ def BuildIOS(api):
   Build(api, 'ios_debug_sim')
 
   # We need to build host_debug_unopt for testing
-  RunGN(api, '--unoptimized', '--prebuilt-dart-sdk')
+  RunGN(api, '--unoptimized')
   Build(api, 'host_debug_unopt')
   Build(api, 'ios_debug_sim', 'ios_test_flutter')
 
@@ -169,7 +169,7 @@ def BuildIOS(api):
 
 
 def BuildWindows(api):
-  RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk')
+  RunGN(api, '--runtime-mode', 'debug', '--unoptimized')
   Build(api, 'host_debug_unopt')
   RunTests(api, 'host_debug_unopt', types='engine')
 
@@ -208,11 +208,7 @@ def RunSteps(api, properties, env_properties):
 
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
 
-  env = {
-    'GOMA_DIR': api.goma.goma_dir,
-    'ANDROID_HOME': str(android_home),
-    'FLUTTER_PREBUILT_DART_SDK': 'True',
-  }
+  env = {'GOMA_DIR': api.goma.goma_dir, 'ANDROID_HOME': str(android_home)}
   env_prefixes = {'PATH': [dart_bin]}
 
   # Add certificates and print the ones required for pub.

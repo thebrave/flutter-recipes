@@ -243,7 +243,7 @@ def schedule_builds_on_linux(api, isolated_hash):
   # These are the required dependencies.
   dependencies = ['chrome', 'goldens_repo']
   # These are the felt commands which will be used.
-  command_args = ['test', '--browser=chrome', '--unit-tests-only']
+  command_args = ['test', '--browser=chrome']
   addShardTask(
       api, reqs, command_name, dependencies, command_args, isolated_hash
   )
@@ -255,7 +255,7 @@ def schedule_builds_on_linux(api, isolated_hash):
   # still respect to the version from browser_lock.yaml.
   dependencies = []
   # These are the felt commands which will be used.
-  command_args = ['test', '--browser=firefox', '--unit-tests-only']
+  command_args = ['test', '--browser=firefox']
   addShardTask(
       api, reqs, command_name, dependencies, command_args, isolated_hash
   )

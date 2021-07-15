@@ -79,12 +79,39 @@ for arg in "$@"; do
         shift
         ;;
         -t=*|--run_test=*)
+        # Prevent command injection. It's safer to specify every character
+        # rather than using ranges: https://unix.stackexchange.com/a/355676.
+        #
+        # https://fuchsia.dev/fuchsia-src/concepts/packages/package_url#package-name
+        # describes the set of allowed characters in package names.
+        case "${arg#*=}" in *[!0123456789abcdefghijklmnopqrstuvwxyz\-_.]*)
+          echo "Invalid argument for --run_test: ${arg#*=}"
+          exit 1
+          ;;
+        esac
         RUN_TESTS+="${arg#*=}"
         ;;
         --test_suite=*)
+        # Prevent command injection. It's safer to specify every character
+        # rather than using ranges: https://unix.stackexchange.com/a/355676.
+        #
+        # https://fuchsia.dev/fuchsia-src/concepts/packages/package_url#package-name
+        # describes the set of allowed characters in package names.
+        case "${arg#*=}" in *[!0123456789abcdefghijklmnopqrstuvwxyz\-_.]*)
+          echo "Invalid argument for --test_suite: ${arg#*=}"
+          exit 1
+          ;;
+        esac
         TEST_SUITES+="${arg#*=}"
         ;;
         -t=*|--test_args=*)
+        # Prevent command injection. It's safer to specify every character
+        # rather than using ranges: https://unix.stackexchange.com/a/355676.
+        case "${arg#*=}" in *[!0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\-_.:=*\ ]*)
+          echo "Invalid argument for --test_args: ${arg#*=}"
+          exit 1
+          ;;
+        esac
         TEST_ARGS+="${arg#*=}"
         ;;
         *)

@@ -97,7 +97,11 @@ def RunSteps(api, properties, env_properties):
       'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
   )
 
-  env = {'GOMA_DIR': api.goma.goma_dir, 'ENGINE_PATH': cache_root}
+  env = {
+    'GOMA_DIR': api.goma.goma_dir,
+    'ENGINE_PATH': cache_root,
+    'FLUTTER_PREBUILT_DART_SDK': 'True',
+  }
   env_prefixes = {'PATH': [dart_bin]}
 
   # Checkout source code and build
@@ -108,7 +112,7 @@ def RunSteps(api, properties, env_properties):
     api.gclient.runhooks()
 
     target_name = 'host_debug_unopt'
-    gn_flags = ['--unoptimized', '--full-dart-sdk']
+    gn_flags = ['--unoptimized', '--full-dart-sdk', '--prebuilt-dart-sdk']
 
     RunGN(api, *gn_flags)
     Build(api, target_name)

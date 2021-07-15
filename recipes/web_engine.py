@@ -68,20 +68,6 @@ def Build(api, config, *targets):
     api.step(name, ninja_args)
 
 
-def FormatAndDartTest(api):
-  checkout = GetCheckoutPath(api)
-  with api.context(cwd=checkout.join('flutter')):
-    format_cmd = checkout.join('flutter', 'ci', 'format.sh')
-    api.step('format and dart test', [format_cmd])
-
-
-def Lint(api):
-  checkout = GetCheckoutPath(api)
-  with api.context(cwd=checkout):
-    lint_cmd = checkout.join('flutter', 'ci', 'lint.sh')
-    api.step('lint test', [lint_cmd])
-
-
 def Archive(api, target):
   checkout = GetCheckoutPath(api)
   build_dir = checkout.join('out', target)
@@ -131,8 +117,11 @@ def RunSteps(api, properties, env_properties):
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
 
   env = {
-      'GOMA_DIR': api.goma.goma_dir, 'ANDROID_HOME': str(android_home),
-      'CHROME_NO_SANDBOX': 'true', 'ENGINE_PATH': cache_root
+      'GOMA_DIR': api.goma.goma_dir,
+      'ANDROID_HOME': str(android_home),
+      'CHROME_NO_SANDBOX': 'true',
+      'ENGINE_PATH': cache_root,
+      'FLUTTER_PREBUILT_DART_SDK': 'True',
   }
   env_prefixes = {'PATH': [dart_bin]}
 
@@ -150,15 +139,10 @@ def RunSteps(api, properties, env_properties):
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():
 
-    # Checks before building the engine. Only run on Linux.
-    if api.platform.is_linux:
-      FormatAndDartTest(api)
-      Lint(api)
-
     api.gclient.runhooks()
 
     target_name = 'host_debug_unopt'
-    gn_flags = ['--unoptimized', '--full-dart-sdk']
+    gn_flags = ['--unoptimized', '--full-dart-sdk', '--prebuilt-dart-sdk']
     # Mac needs to install xcode as part of the building process.
     additional_args = []
     felt_cmd = [

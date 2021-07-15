@@ -507,40 +507,23 @@ class AndroidAotVariant:
 
 # This variant is built on the scheduling bot to run firebase tests.
 def BuildLinuxAndroidAOTArm64Profile(api, swarming_task_id, aot_variant):
-  # This shard needs to build the Dart SDK to build the profile firebase app.
-  RunGN(api, '--runtime-mode', 'profile', '--unoptimized', '--no-lto')
-  Build(api, 'host_profile_unopt')
-
   checkout = GetCheckoutPath(api)
   build_output_dir = aot_variant.GetBuildOutDir('profile')
 
   RunGN(api, *aot_variant.GetGNArgs('profile'))
   Build(api, build_output_dir, *aot_variant.GetNinjaTargets())
 
-  with api.step.nest('Run Scenario tests on Firebase'):
-    scenario_app_dir = checkout.join('flutter', 'testing', 'scenario_app')
-    host_profile_dir = checkout.join('out', 'host_profile_unopt')
-    gen_snapshot_dir = checkout.join('out', build_output_dir, 'clang_x64')
-    with api.context(cwd=checkout):
-      compile_cmd = [
-          './flutter/testing/scenario_app/assemble_apk.sh', host_profile_dir,
-          gen_snapshot_dir
-      ]
-      api.step('Build scenario app', compile_cmd)
-      firebase_cmd = [
-          './flutter/ci/firebase_testlab.sh',
-          scenario_app_dir.join(
-              'android', 'app', 'build', 'outputs', 'apk', 'debug',
-              'app-debug.apk'
-          ),
-          api.buildbucket.gitiles_commit.id or 'testing',
-          swarming_task_id,
-      ]
+  with api.context(cwd=checkout):
+    args = [
+        '--variant', build_output_dir,
+        '--build-id', swarming_task_id,
+    ]
 
-      def firebase_func():
-        api.step('Android Firebase Test', firebase_cmd)
+    def firebase_func():
+      api.python('Android Firebase Test',
+          './flutter/ci/firebase_testlab.py', args)
 
-      api.retry.wrap(firebase_func, retriable_codes=(1, 15, 20))
+    api.retry.wrap(firebase_func, retriable_codes=(1, 15, 20))
 
 
 def BuildLinuxAndroidAOT(api, swarming_task_id):

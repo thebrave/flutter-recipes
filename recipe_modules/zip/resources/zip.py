@@ -7,6 +7,7 @@ recipe module internally. Should not be used elsewhere.
 """
 
 import json
+import hashlib
 import os
 import subprocess
 import sys
@@ -35,14 +36,18 @@ def zip_with_subprocess(root, output, entries):
       # File must exist and be inside |root|.
       assert os.path.isfile(path), path
       assert path.startswith(root), path
-      items_to_zip.append(path[len(root):])
+      file_path = path[len(root):]
+      hash_file(file_path)
+      items_to_zip.append(file_path)
     elif entry['type'] == 'dir':
       # Append trailing '/'.
       path = path.rstrip(os.path.sep) + os.path.sep
       # Directory must exist and be inside |root| or be |root| itself.
       assert os.path.isdir(path), path
       assert path.startswith(root), path
-      items_to_zip.append(path[len(root):] or '.')
+      dir_path = path[len(root):] or '.'
+      walk_dir_and_do(path, lambda p: hash_file(p))
+      items_to_zip.append(dir_path)
     else:
       raise AssertionError('Invalid entry type: %s' % (tp,))
 
@@ -53,6 +58,24 @@ def zip_with_subprocess(root, output, entries):
       cwd=root)
   proc.communicate('\n'.join(items_to_zip))
   return proc.returncode
+
+
+def walk_dir_and_do(directory_path, callback):
+    for cur, _, files in os.walk(directory_path):
+      for name in files:
+        callback(os.path.join(cur, name))
+
+
+def hash_file(file_path):
+    BUFFER_SIZE = 1 << 16 # 64kb
+    sha = hashlib.sha256()
+    with open(file_path, 'rb') as f:
+        data = f.read(BUFFER_SIZE)
+        while data:
+            sha.update(data)
+            data = f.read(BUFFER_SIZE)
+    digest = sha.hexdigest()
+    print('sha256 digest for %s is:\n%s\n' % (file_path, digest))
 
 
 def zip_with_python(root, output, entries):
@@ -77,7 +100,8 @@ def zip_with_python(root, output, entries):
         return
       if archive_name is None:
         archive_name = path[len(root):]
-      print 'Adding %s' % archive_name
+      print('Adding %s' % archive_name)
+      hash_file(path)
       zip_file.write(path, archive_name)
 
     for entry in entries:
@@ -86,9 +110,7 @@ def zip_with_python(root, output, entries):
       if tp == 'file':
         add(path, entry.get('archive_name'))
       elif tp == 'dir':
-        for cur, _, files in os.walk(path):
-          for name in files:
-            add(os.path.join(cur, name), None)
+        walk_dir_and_do(path, lambda p: add(p, None))
       else:
         raise AssertionError('Invalid entry type: %s' % (tp,))
   return 0
@@ -117,7 +139,7 @@ def main():
   # Output zip path should be an absolute path.
   assert os.path.isabs(output), output
 
-  print 'Zipping %s...' % output
+  print('Zipping %s...' % output)
   exit_code = -1
   try:
     if use_python_zip(entries):
@@ -136,7 +158,7 @@ def main():
       except:  # pylint: disable=bare-except
         pass
   if not exit_code:
-    print 'Archive size: %.1f KB' % (os.stat(output).st_size / 1024.0,)
+    print('Archive size: %.1f KB' % (os.stat(output).st_size / 1024.0,))
   return exit_code
 
 

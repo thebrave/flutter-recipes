@@ -53,9 +53,8 @@ EMULATOR_LOG="raw_emulator.log"
 SYSLOG="syslog.log"
 SSH_CONFIG="ssh_config"
 SSH_KEY="id_ed25519"
-RUN_TESTS=""
-TEST_SUITES=""
-TEST_ARGS=""
+TEST_SUITE=""
+TEST_COMMAND=""
 VDL_ARGS=()
 
 for arg in "$@"; do
@@ -78,41 +77,11 @@ for arg in "$@"; do
         SYSLOG="${2}"
         shift
         ;;
-        -t=*|--run_test=*)
-        # Prevent command injection. It's safer to specify every character
-        # rather than using ranges: https://unix.stackexchange.com/a/355676.
-        #
-        # https://fuchsia.dev/fuchsia-src/concepts/packages/package_url#package-name
-        # describes the set of allowed characters in package names.
-        case "${arg#*=}" in *[!0123456789abcdefghijklmnopqrstuvwxyz\-_.]*)
-          echo "Invalid argument for --run_test: ${arg#*=}"
-          exit 1
-          ;;
-        esac
-        RUN_TESTS+="${arg#*=}"
-        ;;
         --test_suite=*)
-        # Prevent command injection. It's safer to specify every character
-        # rather than using ranges: https://unix.stackexchange.com/a/355676.
-        #
-        # https://fuchsia.dev/fuchsia-src/concepts/packages/package_url#package-name
-        # describes the set of allowed characters in package names.
-        case "${arg#*=}" in *[!0123456789abcdefghijklmnopqrstuvwxyz\-_.]*)
-          echo "Invalid argument for --test_suite: ${arg#*=}"
-          exit 1
-          ;;
-        esac
-        TEST_SUITES+="${arg#*=}"
+        TEST_SUITE="${arg#*=}"
         ;;
-        -t=*|--test_args=*)
-        # Prevent command injection. It's safer to specify every character
-        # rather than using ranges: https://unix.stackexchange.com/a/355676.
-        case "${arg#*=}" in *[!0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\-_.:=*\ ]*)
-          echo "Invalid argument for --test_args: ${arg#*=}"
-          exit 1
-          ;;
-        esac
-        TEST_ARGS+="${arg#*=}"
+        --test_command=*)
+        TEST_COMMAND="${arg#*=}"
         ;;
         *)
         VDL_ARGS+=("${arg}")
@@ -124,8 +93,8 @@ done
 
 log "VDL Location: ${VDL_LOCATION}"
 echo "VDL Args: ${VDL_ARGS[@]}"
-echo "TEST_SUITES: ${TEST_SUITES[@]}"
-echo "RUN_TESTS: ${RUN_TESTS[@]}"
+echo "TEST_SUITE: ${TEST_SUITE}"
+echo "TEST_COMMAND: ${TEST_COMMAND}"
 
 # Note: This permission is required to SSH
 chmod 600 ${SSH_KEY}
@@ -170,50 +139,23 @@ log "Launching virtual device using VDL."
   --grpc_port="${GRPC_PORT}"
 
 _LAUNCH_EXIT_CODE=$?
-err_codes=()
+_TEST_EXIT_CODE=0
 
 if [[ ${_LAUNCH_EXIT_CODE} == 0 ]]; then
   log "Successfully launched virtual device proto ${VDL_PROTO}"
   ssh_to_guest "log_listener" >"${SYSLOG}" 2>&1 &
 
-  # Clear test suites if none exist.
-  if [[ -z "${TEST_SUITES}" ]]; then
-    unset TEST_SUITES
-  fi
-
-  for target in "${TEST_SUITES[@]}"; do
-    ssh_to_guest "run-test-suite fuchsia-pkg://fuchsia.com/${target}#meta/${target}.cm ${TEST_ARGS}"
-    _EXIT_CODE=$?
-    if [[ ${_EXIT_CODE} == 0 ]]; then
-      log "Test Suite ${target} Passed"
-    else
-      err_codes+=(${_EXIT_CODE})
-      log "Test Suite ${target} Failed with exit code ${_EXIT_CODE}"
-    fi
-  done
-
-  # Clear tests if none exist.
-  if [[ -z "${RUN_TESTS}" ]]; then
-    unset RUN_TESTS
-  fi
-
-  # TODO(fxbug.dev/79873): Remove after all tests are migrated to cfv2.
-  for target in "${RUN_TESTS[@]}"; do
-    ssh_to_guest "run-test-component fuchsia-pkg://fuchsia.com/${target}#meta/${target}.cmx ${TEST_ARGS}"
-    _EXIT_CODE=$?
-    if [[ ${_EXIT_CODE} == 0 ]]; then
-      log "${target} Passed"
-    else
-      err_codes+=(${_EXIT_CODE})
-      log "${target} Failed with exit code ${_EXIT_CODE}"
-    fi
-  done
+  ssh_to_guest "${TEST_COMMAND}"
+  _TEST_EXIT_CODE=$?
 else
   log "Failed to launch virtual device. Exit code ${_LAUNCH_EXIT_CODE}"
 fi
 
-if [[ ${err_codes[@]} ]]; then
-  log "Has test fails"
+if [[ ${_TEST_EXIT_CODE} == 0 ]]; then
+  log "Test Suite ${TEST_SUITE} Passed"
+else
+  log "Test Suite ${TEST_SUITE} Failed with exit code ${_TEST_EXIT_CODE}"
   exit 1
 fi
+
 exit 0

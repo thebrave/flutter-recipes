@@ -94,8 +94,7 @@ def IsolateSymlink(api):
   checkout = GetCheckoutPath(api)
   root_dir = api.path.mkdtemp('vdl_runfiles_')
   isolate_tree = api.file.symlink_tree(root=root_dir)
-  flutter_test_suites = []
-  flutter_test_fars = []
+  test_suites = []
 
   def add(src, name_rel_to_root):
     isolate_tree.register_link(
@@ -150,23 +149,17 @@ def IsolateSymlink(api):
         checkout.join('out', 'fuchsia_bucket', 'flutter', 'x64', 'debug', 'aot',
                       'flutter_aot_runner-0.far'), 'flutter_aot_runner-0.far')
     test_suites_file = checkout.join(
-      'flutter', 'testing', 'fuchsia', 'test_suites')
-    test_suites = api.file.read_text('Retrieve list of test suites',
-                                   test_suites_file).split('\n')
-    for suite in test_suites:
-      if (len(suite) > 0) and (not suite.startswith('#')):
-        add(checkout.join('out', 'fuchsia_debug_x64',
-                          '{suite}-0.far'.format(suite=suite)), suite)
-        flutter_test_suites.append(suite)
-
-    # TODO(fxbug.dev/79873): Remove after al tests are migrated to cfv2.
-    test_fars_file = checkout.join('flutter', 'testing', 'fuchsia', 'test_fars')
-    test_fars = api.file.read_text('Retrieve list of test FARs',
-                                   test_fars_file).split('\n')
-    for far in test_fars:
-      if (len(far) > 0) and (not far.startswith('#')):
-        add(checkout.join('out', 'fuchsia_debug_x64', far), far)
-        flutter_test_fars.append(far)
+      'flutter', 'testing', 'fuchsia', 'test_suites.yaml')
+    for suite in api.yaml.read('Retrieve list of test suites',
+                      test_suites_file, api.json.output()).json.output:
+      # Ensure command is well-formed.
+      # See https://fuchsia.dev/fuchsia-src/concepts/packages/package_url.
+      match = re.match(r'^(run-test-component|run-test-suite) fuchsia-pkg://[0-9a-z\-_\.]+/(?P<name>[0-9a-z\-_\.]+)#meta/[0-9a-z\-_\.]+(\.cm|\.cmx)( +[0-9a-zA-Z\-_*\.: =]+)?$', suite['test_command'])
+      if not match:
+        raise api.step.StepFailure('Invalid test command: %s' % suite['test_command'])
+      suite['name'] = match.group('name')
+      add(checkout.join('out', 'fuchsia_debug_x64', suite['package']), suite['package'])
+      test_suites.append(suite)
 
   def addTestScript():
     test_script = api.resource('run_vdl_test.sh')
@@ -183,21 +176,12 @@ def IsolateSymlink(api):
   isolated = api.isolated.isolated(isolate_tree.root)
   isolated.add_dir(isolate_tree.root)
   hash = isolated.archive('Archive FEMU Run Files')
-  return flutter_test_suites, flutter_test_fars, root_dir, hash
+  return test_suites, root_dir, hash
 
 
 def TestFuchsiaFEMU(api):
   """Run flutter tests on FEMU."""
-  checkout = GetCheckoutPath(api)
-  gtest_filters_file = checkout.join('flutter', 'testing', 'fuchsia',
-                                     'gtest_filters.yaml')
-  gtest_filters = api.yaml.read('Retrieve list of gtest filters',
-                                gtest_filters_file, api.json.output())
-  test_args = {
-    test_type: '--gtest_filter={filter}'.format(filter=gtest_filter)
-    for test_type, gtest_filter in gtest_filters.json.output.items()
-  }
-  test_suites, flutter_test_fars, root_dir, isolated_hash = IsolateSymlink(api)
+  test_suites, root_dir, isolated_hash = IsolateSymlink(api)
   cmd = ['./run_vdl_test.sh']
   # These flags will be passed through to VDL
   cmd.append('--emulator_binary_path=aemu/emulator')
@@ -229,18 +213,16 @@ def TestFuchsiaFEMU(api):
     with api.step.nest('FEMU Test'), api.step.defer_results():
       for suite in test_suites:
         test_cmd = cmd + [
-          '--serve_packages=flutter_aot_runner-0.far,{suite}-0.far'.format(
-                  suite=suite),
-          '--test_suite={suite}'.format(suite=suite),
+          '--serve_packages=flutter_aot_runner-0.far,%s' % suite['package'],
+          '--test_suite=%s' % suite['name'],
+          '--test_command=%s' % suite['test_command'],
           '--emulator_log',
           api.raw_io.output_text(name='emulator_log'),
           '--syslog',
           api.raw_io.output_text(name='syslog')
         ]
-        if test_args.has_key(suite):
-          test_cmd.append('--test_args={args}'.format(args=test_args[suite]))
         api.step(
-            'Run FEMU Test Suite %s' % suite,
+            'Run FEMU Test Suite %s' % suite['name'],
             test_cmd,
             step_test_data=(
                 lambda: api.raw_io.test_api.
@@ -252,37 +234,6 @@ def TestFuchsiaFEMU(api):
             'syslog'] = step_result.raw_io.output_texts['syslog']
         step_result.presentation.logs[
             'emulator_log'] = step_result.raw_io.output_texts['emulator_log']
-      # TODO(fxbug.dev/79873): Remove after al tests are migrated to cfv2.
-      for test in flutter_test_fars:
-        package_name = re.search('(?P<package_name>.*)-\d+.far', test)
-        if package_name and package_name.group('package_name'):
-          pkg = package_name.group('package_name')
-          test_cmd = cmd[:]
-          test_cmd.append(
-              '--serve_packages=flutter_aot_runner-0.far,{test}'.format(
-                  test=test))
-          test_cmd.append('--run_test={pkg}'.format(pkg=pkg))
-          if test_args.has_key(pkg):
-            test_cmd.append('--test_args={args}'.format(args=test_args[pkg]))
-          api.step(
-              'Run FEMU Test %s' % pkg,
-              test_cmd + [
-                  '--emulator_log',
-                  api.raw_io.output_text(name='emulator_log'),
-                  '--syslog',
-                  api.raw_io.output_text(name='syslog'),
-              ],
-              step_test_data=(
-                  lambda: api.raw_io.test_api.
-                  output_text('failure', name='syslog')
-              )
-          )
-          step_result = api.step.active_result
-          step_result.presentation.logs[
-              'syslog'] = step_result.raw_io.output_texts['syslog']
-          step_result.presentation.logs[
-              'emulator_log'] = step_result.raw_io.output_texts['emulator_log']
-
 
 def BuildFuchsia(api):
   """
@@ -345,35 +296,31 @@ def GenTests(api):
               clobber=False,
           ),),
       api.step_data(
-          'Retrieve list of test suites',
-          api.file.read_text(
-              '#this is a comment\nruntime_tests\nshell_tests\ntxt_tests'
-          ),
+          'Retrieve list of test suites.parse',
+          api.json.output([{
+            'package': 'v2_test-123.far',
+            'test_command': 'run-test-suite fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b'
+          }, {
+            'package': 'v1_test_component-321.far',
+            'test_command': 'run-test-component fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b'
+          }])
       ),
       api.step_data(
-          'Retrieve list of test FARs',
-          api.file.read_text(
-              '#this is a comment\nui_tests-0.far\nfml_tests-0.far\ntest3-x.far'
-          ),
-      ),
-      api.step_data(
-          'Retrieve list of gtest filters.parse',
-          api.json.output({
-            'txt_tests': '-ParagraphTest.*',
-            'fml_tests': '-MessageLoop.TimeSensistiveTest_*:FileTest.CanTruncateAndWrite:FileTest.CreateDirectoryStructure'
-          })
-      ),
-      api.step_data(
-          'Retrieve list of gtest filters.read',
-          api.file.read_text('''txt_tests: -ParagraphTest.*
-fml_tests: -MessageLoop.TimeSensistiveTest_*:FileTest.CanTruncateAndWrite:FileTest.CreateDirectoryStructure''')
+          'Retrieve list of test suites.read',
+          api.file.read_text('''# This is a comment.
+- package: v2_test-123.far
+  test_command: run-test-suite fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b
+
+# Legacy cfv1 test
+- package: v1_test_component-321.far
+  test_command: run-test-component fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b''')
       ),
       api.step_data(
           'Read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
-      api.step_data('FEMU Test.Run FEMU Test ui_tests', retcode=1),
-      api.step_data('FEMU Test.Run FEMU Test fml_tests', retcode=1),
+      api.step_data('FEMU Test.Run FEMU Test Suite v2_test', retcode=1),
+      api.step_data('FEMU Test.Run FEMU Test Suite v1_test_component', retcode=1),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
       api.platform('linux', 64),
       api.path.exists(
@@ -416,18 +363,6 @@ fml_tests: -MessageLoop.TimeSensistiveTest_*:FileTest.CanTruncateAndWrite:FileTe
               vdl_version='g3-revision:vdl_fuchsia_xxxxxxxx_RC00',
           ),),
       api.step_data(
-          'Retrieve list of gtest filters.parse',
-          api.json.output({
-            'txt_tests': '-ParagraphTest.*',
-            'fml_tests': '-MessageLoop.TimeSensistiveTest_*:FileTest.CanTruncateAndWrite:FileTest.CreateDirectoryStructure'
-          })
-      ),
-      api.step_data(
-          'Retrieve list of gtest filters.read',
-          api.file.read_text('''txt_tests: -ParagraphTest.*
-fml_tests: -MessageLoop.TimeSensistiveTest_*:FileTest.CanTruncateAndWrite:FileTest.CreateDirectoryStructure''')
-      ),
-      api.step_data(
           'Read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
@@ -441,6 +376,79 @@ fml_tests: -MessageLoop.TimeSensistiveTest_*:FileTest.CanTruncateAndWrite:FileTe
           ),
           api.path['cache'].join(
               'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
+          ),
+          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
+          api.path['cache'].join('builder/ssh/id_ed25519'),
+          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
+          api.path['cache'].join('builder/ssh/ssh_host_key'),
+      ),
+  )
+
+  yield api.test(
+      'dangerous_test_commands',
+      api.properties(
+          InputProperties(
+              goma_jobs='1024',
+              build_fuchsia=True,
+              test_fuchsia=True,
+              git_url='https://github.com/flutter/engine',
+              git_ref='refs/pull/1/head',
+              clobber=False,
+          ),),
+      api.step_data(
+          'Retrieve list of test suites.parse',
+          api.json.output([{
+            'package': 'ordinary_package1.far',
+            'test_command': 'suspicious command'
+          }, {
+            'package': 'ordinary_package2.far',
+            'test_command': 'run-test-suite fuchsia-pkg://fuchsia.com/ordinary_package2#meta/ordinary_package2.cmx; suspicious command'
+          }, {
+            'package': 'ordinary_package3.far',
+            'test_command': 'run-test-suite fuchsia-pkg://fuchsia.com/ordinary_package3#meta/ordinary_package3.cmx $(suspicious command)'
+          }, {
+            'package': 'ordinary_package4.far',
+            'test_command': 'run-test-suite fuchsia-pkg://fuchsia.com/ordinary_package4#meta/ordinary_package4.cmx `suspicious command`'
+          }])
+      ),
+      api.step_data(
+          'Retrieve list of test suites.read',
+          api.file.read_text('''
+- package: ordinary_package1.far
+  test_command: suspicious command
+- package: ordinary_package2.far
+  test_command: run-test-suite fuchsia-pkg://fuchsia.com/ordinary_package2#meta/ordinary_package2.cmx; suspicious command
+- package: ordinary_package3.far
+  test_command: run-test-suite fuchsia-pkg://fuchsia.com/ordinary_package3#meta/ordinary_package3.cmx $(suspicious command)
+- package: ordinary_package4.far
+  test_command: run-test-suite fuchsia-pkg://fuchsia.com/ordinary_package4#meta/ordinary_package4.cmx `suspicious command`''')
+      ),
+      api.step_data(
+          'Read manifest',
+          api.file.read_json({'id': '0.20200101.0.1'}),
+      ),
+      api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      api.platform('linux', 64),
+      api.path.exists(
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
           ),
           api.path['cache'].join(
               'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),

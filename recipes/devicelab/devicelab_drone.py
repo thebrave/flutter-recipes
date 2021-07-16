@@ -19,6 +19,7 @@ DEPS = [
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
+    'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
     'recipe_engine/runtime',
@@ -112,7 +113,7 @@ def RunSteps(api):
           # This is to clean up leaked processes.
           api.os_utils.kill_processes()
         if test_status == 'flaky':
-          api.step('check flaky', ['echo', 'test run is flaky'])
+            check_flaky(api)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadMetrics(api, results_path)
     uploadMetricsToCas(api, results_path)
@@ -146,8 +147,16 @@ def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params):
       # This is to clean up leaked processes.
       api.os_utils.kill_processes()
     if test_status == 'flaky':
-      api.step('check flaky', ['echo', 'test run is flaky'])
+      check_flaky(api)
 
+def check_flaky(api):
+  if api.platform.is_win:
+    api.step('check flaky',
+          ['powershell.exe', 'echo "test run is flaky"'],
+          infra_step=True,
+    )
+  else:
+    api.step('check flaky', ['echo', 'test run is flaky'], infra_step=True,)
 
 def uploadMetrics(api, results_path):
   """Upload DeviceLab test performance metrics to Cocoon.
@@ -202,7 +211,8 @@ def GenTests(api):
       api.buildbucket.ci_build(
           project='test',
           git_repo='git.example.com/test/repo',
-      )
+      ),
+      api.platform.name('linux')
   )
   yield api.test(
       "xcode-devicelab",
@@ -229,8 +239,14 @@ def GenTests(api):
   yield api.test(
       "post-submit",
       api.properties(
-          buildername='Linux abc', task_name='abc', upload_metrics=True
-      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path)
+          buildername='Windows abc', task_name='abc', upload_metrics=True
+      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.step_data(
+          'run abc',
+          stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
+          retcode=0
+      ),
+      api.platform.name('win'),
   )
   yield api.test(
       "upload-metrics-mac",

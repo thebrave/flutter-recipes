@@ -71,15 +71,15 @@ def RunSteps(api):
           ['flutter', 'update-packages'],
           infra_step=True,
       )
-    api.adhoc_validation.run(
-        api.properties.get('validation_name'),
-        api.properties.get('validation'), env, env_prefixes,
-        api.properties.get('secrets', {})
-    )
-    # This is to clean up leaked processes.
-    api.os_utils.kill_processes()
-    # Collect memory/cpu/process after task execution.
-    api.os_utils.collect_os_info()
+      api.adhoc_validation.run(
+          api.properties.get('validation_name'),
+          api.properties.get('validation'), env, env_prefixes,
+          api.properties.get('secrets', {})
+      )
+      # This is to clean up leaked processes.
+      api.os_utils.kill_processes()
+      # Collect memory/cpu/process after task execution.
+      api.os_utils.collect_os_info()
 
 
 def GenTests(api):

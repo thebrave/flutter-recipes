@@ -310,6 +310,31 @@
     "name": "lint test"
   },
   {
+    "cmd": [
+      "[CACHE]/builder/src/flutter/ci/licenses.sh"
+    ],
+    "cwd": "[CACHE]/builder/src",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "licenses check"
+  },
+  {
     "cmd": [],
     "name": "ensure goma (2)"
   },
@@ -367,6 +392,8 @@
       "python",
       "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
+      "--runtime-mode",
+      "debug",
       "--unoptimized",
       "--prebuilt-dart-sdk",
       "--no-lto"
@@ -390,7 +417,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "gn --unoptimized --prebuilt-dart-sdk --no-lto"
+    "name": "gn --runtime-mode debug --unoptimized --prebuilt-dart-sdk --no-lto"
   },
   {
     "cmd": [],
@@ -444,8 +471,7 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/host_debug_unopt",
-      "sky_engine"
+      "[CACHE]/builder/src/out/host_debug_unopt"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -470,7 +496,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "build host_debug_unopt sky_engine"
+    "name": "build host_debug_unopt"
   },
   {
     "cmd": [],
@@ -829,10 +855,17 @@
   },
   {
     "cmd": [
-      "/bin/bash",
-      "flutter/ci/analyze.sh"
+      "vpython",
+      "-vpython-spec",
+      "RECIPE_REPO[depot_tools]/.vpython",
+      "-u",
+      "[CACHE]/builder/src/flutter/testing/run_tests.py",
+      "--variant",
+      "host_debug_unopt",
+      "--type",
+      "dart,engine"
     ],
-    "cwd": "[CACHE]/builder/src",
+    "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
@@ -851,40 +884,13 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "analyze dart_ui"
-  },
-  {
-    "cmd": [
-      "[CACHE]/builder/src/flutter/ci/licenses.sh"
-    ],
-    "cwd": "[CACHE]/builder/src",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "name": "licenses check"
+    "name": "Host Tests for host_debug_unopt"
   },
   {
     "cmd": [
       "python",
       "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
-      "--runtime-mode",
-      "debug",
       "--unoptimized",
       "--prebuilt-dart-sdk",
       "--no-lto"
@@ -908,7 +914,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "gn --runtime-mode debug --unoptimized --prebuilt-dart-sdk --no-lto"
+    "name": "gn --unoptimized --prebuilt-dart-sdk --no-lto"
   },
   {
     "cmd": [],
@@ -962,7 +968,8 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/host_debug_unopt"
+      "[CACHE]/builder/src/out/host_debug_unopt",
+      "sky_engine"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -987,7 +994,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "build host_debug_unopt"
+    "name": "build host_debug_unopt sky_engine"
   },
   {
     "cmd": [],
@@ -1249,17 +1256,10 @@
   },
   {
     "cmd": [
-      "vpython",
-      "-vpython-spec",
-      "RECIPE_REPO[depot_tools]/.vpython",
-      "-u",
-      "[CACHE]/builder/src/flutter/testing/run_tests.py",
-      "--variant",
-      "host_debug_unopt",
-      "--type",
-      "dart,engine"
+      "/bin/bash",
+      "flutter/ci/analyze.sh"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CACHE]/builder/src",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
@@ -1278,7 +1278,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "Host Tests for host_debug_unopt"
+    "name": "analyze dart_ui"
   },
   {
     "cmd": [

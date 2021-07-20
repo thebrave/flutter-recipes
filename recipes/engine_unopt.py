@@ -237,9 +237,9 @@ def RunSteps(api, properties, env_properties):
     if api.platform.is_linux:
       FormatAndDartTest(api)
       Lint(api)
-      AnalyzeDartUI(api)
       CheckLicenses(api)
       BuildLinux(api)
+      AnalyzeDartUI(api)
       TestObservatory(api)
       LintAndroidHost(api)
       BuildLinuxAndroid(api, env_properties.SWARMING_TASK_ID)

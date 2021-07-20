@@ -149,7 +149,7 @@ def RunIosIntegrationTests(api):
   with api.context(cwd=scenario_app_tests):
     api.step(
         'Scenario App Integration Tests',
-        ['./build_and_run_ios_tests.sh', 'ios_debug_sim']
+        ['./run_ios_tests.sh', 'ios_debug_sim']
     )
 
 
@@ -158,10 +158,6 @@ def BuildIOS(api):
   # Simulator binary is needed in all runtime modes.
   RunGN(api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto')
   Build(api, 'ios_debug_sim')
-
-  # We need to build host_debug_unopt for testing
-  RunGN(api, '--unoptimized', '--prebuilt-dart-sdk')
-  Build(api, 'host_debug_unopt')
   Build(api, 'ios_debug_sim', 'ios_test_flutter')
 
   RunTests(api, 'ios_debug_sim', ios_out_dir='ios_debug_sim', types='objc')

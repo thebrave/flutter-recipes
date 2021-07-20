@@ -71,6 +71,7 @@ def RunSteps(api):
   if git_branch:
     # git_branch is set only when the build was triggered by buildbucket.
     runner_params.extend(['--git-branch', git_branch])
+  test_status = ''
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     api.retry.step(
         'flutter doctor',
@@ -84,12 +85,12 @@ def RunSteps(api):
       api.os_utils.clean_derived_data()
       if str(api.swarming.bot_id).startswith('flutter-devicelab'):
         with api.devicelab_osx_sdk('ios'):
-          mac_test(
+          test_status = mac_test(
               api, env, env_prefixes, flutter_path, task_name, runner_params
           )
       else:
         with api.osx_sdk('ios'):
-          mac_test(
+          test_status = mac_test(
               api, env, env_prefixes, flutter_path, task_name, runner_params
           )
     else:
@@ -113,9 +114,12 @@ def RunSteps(api):
           # This is to clean up leaked processes.
           api.os_utils.kill_processes()
         if test_status == 'flaky':
-            check_flaky(api)
+          check_flaky(api)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
-    uploadMetrics(api, results_path)
+    uploadResults(
+        api, results_path, test_status == 'flaky', git_branch,
+        api.properties.get('buildername')
+    )
     uploadMetricsToCas(api, results_path)
 
 
@@ -148,24 +152,51 @@ def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params):
       api.os_utils.kill_processes()
     if test_status == 'flaky':
       check_flaky(api)
+  return test_status
+
 
 def check_flaky(api):
   if api.platform.is_win:
-    api.step('check flaky',
-          ['powershell.exe', 'echo "test run is flaky"'],
-          infra_step=True,
+    api.step(
+        'check flaky',
+        ['powershell.exe', 'echo "test run is flaky"'],
+        infra_step=True,
     )
   else:
-    api.step('check flaky', ['echo', 'test run is flaky'], infra_step=True,)
+    api.step(
+        'check flaky',
+        ['echo', 'test run is flaky'],
+        infra_step=True,
+    )
 
-def uploadMetrics(api, results_path):
-  """Upload DeviceLab test performance metrics to Cocoon.
+
+def uploadResults(
+    api,
+    results_path,
+    is_test_flaky,
+    git_branch,
+    builder_name,
+    test_status='Succeeded'
+):
+  """Upload DeviceLab test results to Cocoon.
 
   luci-auth only gurantees a service account token life of 3 minutes. To work
   around this limitation, results uploading is separate from the the test run.
+
+  Only post-submit tests upload results to Cocoon. If `upload_metrics: true`, generated
+  test metrics will be uploaded to Cocoon. Otherwise, only test flaky status will be
+  updated to Cocoon.
   """
-  if not api.properties.get('upload_metrics') or api.runtime.is_experimental:
+  if api.runtime.is_experimental or api.properties.get('git_url'):
     return
+  runner_params = ['--test-flaky', is_test_flaky]
+  if not api.properties.get('upload_metrics'):
+    runner_params.extend([
+        '--git-branch', git_branch, '--luci-builder', builder_name,
+        '--test-status', test_status
+    ])
+  else:
+    runner_params.extend(['--results-file', results_path])
   with api.step.nest('Upload metrics'):
     service_account = api.service_account.default()
     access_token = service_account.get_access_token()
@@ -173,11 +204,10 @@ def uploadMetrics(api, results_path):
     api.file.write_text(
         "write token", access_token_path, access_token, include_log=False
     )
-    upload_command = [
-        'dart', 'bin/test_runner.dart', 'upload-metrics', '--results-file',
-        results_path, '--service-account-token-file', access_token_path
-    ]
-    api.step('upload metrics', upload_command, infra_step=True)
+    runner_params.extend(['--service-account-token-file', access_token_path])
+    upload_command = ['dart', 'bin/test_runner.dart', 'upload-metrics']
+    upload_command.extend(runner_params)
+    api.step('upload results', upload_command, infra_step=True)
 
 
 def uploadMetricsToCas(api, results_path):
@@ -201,7 +231,8 @@ def GenTests(api):
       api.expect_exception('ValueError'),
   )
   yield api.test(
-      "basic", api.properties(buildername='Linux abc', task_name='abc'),
+      "basic",
+      api.properties(buildername='Linux abc', task_name='abc'),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
           'run abc',
@@ -212,7 +243,8 @@ def GenTests(api):
           project='test',
           git_repo='git.example.com/test/repo',
       ),
-      api.platform.name('linux')
+      api.platform.name('linux'),
+      api.runtime(is_experimental=True),
   )
   yield api.test(
       "xcode-devicelab",
@@ -240,7 +272,8 @@ def GenTests(api):
       "post-submit",
       api.properties(
           buildername='Windows abc', task_name='abc', upload_metrics=True
-      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      ),
+      api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
           'run abc',
           stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),

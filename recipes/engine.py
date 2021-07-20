@@ -507,10 +507,6 @@ class AndroidAotVariant:
 
 # This variant is built on the scheduling bot to run firebase tests.
 def BuildLinuxAndroidAOTArm64Profile(api, swarming_task_id, aot_variant):
-  # This shard needs to build the Dart SDK to build the profile firebase app.
-  RunGN(api, '--runtime-mode', 'profile', '--unoptimized', '--no-lto', '--prebuilt-dart-sdk')
-  Build(api, 'host_profile_unopt')
-
   checkout = GetCheckoutPath(api)
   build_output_dir = aot_variant.GetBuildOutDir('profile')
 

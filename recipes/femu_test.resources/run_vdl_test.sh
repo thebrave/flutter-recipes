@@ -149,6 +149,7 @@ if [[ ${_LAUNCH_EXIT_CODE} == 0 ]]; then
   _TEST_EXIT_CODE=$?
 else
   log "Failed to launch virtual device. Exit code ${_LAUNCH_EXIT_CODE}"
+  exit 1
 fi
 
 if [[ ${_TEST_EXIT_CODE} == 0 ]]; then

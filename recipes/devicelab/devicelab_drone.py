@@ -187,7 +187,8 @@ def uploadResults(
   test metrics will be uploaded to Cocoon. Otherwise, only test flaky status will be
   updated to Cocoon.
   """
-  if api.runtime.is_experimental or api.properties.get('git_url'):
+  if api.runtime.is_experimental or api.properties.get(
+      'git_url') or api.properties.get('pool') == 'luci.flutter.staging':
     return
   runner_params = ['--test-flaky', is_test_flaky]
   if not api.properties.get('upload_metrics'):

@@ -103,7 +103,7 @@ def RunAndroidScenarioTests(api):
 
     result = api.step(
         'Scenario App Integration Tests',
-        ['./build_and_run_android_tests.sh', 'android_debug_x86'],
+        ['./run_android_tests.sh', 'android_debug_x86'],
         ok_ret='all'
     )
     api.step('Kill emulator', ['kill', '-9', emulator_pid])
@@ -148,9 +148,6 @@ def RunSteps(api, properties, env_properties):
 
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():
-    RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk')
-    Build(api, 'host_debug_unopt')
-
     RunGN(api, '--android', '--android-cpu=x86', '--no-lto')
     Build(api, 'android_debug_x86')
 

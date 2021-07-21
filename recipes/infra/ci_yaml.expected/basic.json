@@ -1,0 +1,434 @@
+[
+  {
+    "cmd": [],
+    "name": "Checkout flutter/flutter"
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[START_DIR]/flutter",
+      "--url",
+      "https://chromium.googlesource.com/external/github.com/flutter/flutter"
+    ],
+    "name": "Checkout flutter/flutter.git setup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "stable",
+      "--recurse-submodules",
+      "--progress",
+      "--tags"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+    },
+    "infra_step": true,
+    "name": "Checkout flutter/flutter.git fetch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "name": "Checkout flutter/flutter.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "name": "Checkout flutter/flutter.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"deadbeef\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "name": "Checkout flutter/flutter.git clean",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "name": "Checkout flutter/flutter.submodule sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "name": "Checkout flutter/flutter.submodule update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Checkout flutter/cocoon"
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[START_DIR]/cocoon",
+      "--url",
+      "https://chromium.googlesource.com/external/github.com/flutter/cocoon"
+    ],
+    "name": "Checkout flutter/cocoon.git setup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "master",
+      "--recurse-submodules",
+      "--progress",
+      "--tags"
+    ],
+    "cwd": "[START_DIR]/cocoon",
+    "env": {
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+    },
+    "infra_step": true,
+    "name": "Checkout flutter/cocoon.git fetch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[START_DIR]/cocoon",
+    "infra_step": true,
+    "name": "Checkout flutter/cocoon.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/cocoon",
+    "infra_step": true,
+    "name": "Checkout flutter/cocoon.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"deadbeef\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/cocoon",
+    "infra_step": true,
+    "name": "Checkout flutter/cocoon.git clean",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/cocoon",
+    "infra_step": true,
+    "name": "Checkout flutter/cocoon.submodule sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[START_DIR]/cocoon",
+    "infra_step": true,
+    "name": "Checkout flutter/cocoon.submodule update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Checkout flutter/infra"
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[START_DIR]/infra",
+      "--url",
+      "https://flutter.googlesource.com/infra"
+    ],
+    "name": "Checkout flutter/infra.git setup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "main",
+      "--recurse-submodules",
+      "--progress",
+      "--tags"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "env": {
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+    },
+    "infra_step": true,
+    "name": "Checkout flutter/infra.git fetch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "Checkout flutter/infra.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "Checkout flutter/infra.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"deadbeef\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "Checkout flutter/infra.git clean",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "Checkout flutter/infra.submodule sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "Checkout flutter/infra.submodule update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "flutter",
+      "doctor"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "name": "flutter doctor"
+  },
+  {
+    "cmd": [
+      "dart",
+      "[START_DIR]/cocoon/app_dart/bin/generate_jspb.dart",
+      "engine",
+      "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "name": "generate jspb"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "{\"hello\": \"world\"}",
+      "[START_DIR]/infra/config/engine_config.json"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "write jspb",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@engine_config.json@{\"hello\": \"world\"}@@@",
+      "@@@STEP_LOG_END@engine_config.json@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "lucicfg",
+      "generate",
+      "config/main.star"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "name": "luci generate"
+  },
+  {
+    "cmd": [
+      "git",
+      "diff"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "name": "git diff"
+  },
+  {
+    "name": "$result"
+  }
+]

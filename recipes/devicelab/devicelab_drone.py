@@ -188,7 +188,7 @@ def uploadResults(
   updated to Cocoon.
   """
   if api.runtime.is_experimental or api.properties.get(
-      'git_url') or api.properties.get('pool') == 'luci.flutter.staging':
+      'git_url') or 'staging' in builder_name:
     return
   runner_params = ['--test-flaky', is_test_flaky]
   if not api.properties.get('upload_metrics'):

@@ -103,7 +103,7 @@ def IsolateSymlink(api):
     )
 
   def addVDLFiles():
-    vdl_version = api.properties.get('vdl_version', 'g3-revision:vdl_fuchsia_20210316_RC00')
+    vdl_version = api.properties.get('vdl_version', 'g3-revision:vdl_fuchsia_20210722_RC00')
     api.vdl.set_vdl_cipd_tag(tag=str(vdl_version))
     add(api.vdl.vdl_path, 'device_launcher')
     add(api.vdl.aemu_dir, 'aemu')
@@ -192,8 +192,6 @@ def TestFuchsiaFEMU(api):
   cmd.append('--resize_fvm=2G')
   cmd.append('--gpu=swiftshader_indirect')
   cmd.append('--headless_mode=true')
-  cmd.append('--enable_grpc_server=false')
-  cmd.append('--enable_grpc_tls=false')
   cmd.append(
       '--system_images=' \
       '{build_args},{kernel},{fvm},{zircona},{ssh_config},{ssh_id_public},' \

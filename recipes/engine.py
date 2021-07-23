@@ -990,10 +990,6 @@ def BuildFuchsia(api):
   api.step('Upload Fuchsia Artifacts', fuchsia_package_cmd, infra_step=True)
   with api.step.nest('Upload Fuchsia Debug Symbols'):
     UploadFuchsiaDebugSymbols(api, upload)
-  stamp_file = api.path['cleanup'].join('fuchsia_stamp')
-  api.file.write_text('fuchsia.stamp', stamp_file, '')
-  remote_file = GetCloudPath(api, 'fuchsia/fuchsia.stamp')
-  api.bucket_util.safe_upload(stamp_file, remote_file)
 
 
 @contextmanager
@@ -1785,10 +1781,6 @@ def GenTests(api):
       api.step_data(
           'cipd search flutter/fuchsia git_revision:%s' % git_revision,
           api.cipd.example_search('flutter/fuchsia', instances=0)
-      ),
-      api.step_data(
-          'Ensure flutter/%s/fuchsia/fuchsia.stamp does not already exist on cloud storage' % git_revision,
-          retcode=1
       ),
       collect_build_output,
       api.properties(

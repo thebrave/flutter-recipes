@@ -4,7 +4,11 @@
 
 """Recipe for updating flutter/infra with ci.yaml changes."""
 
+from PB.go.chromium.org.luci.common.proto.gerrit import gerrit as gerrit_pb2
+
 DEPS = [
+    'fuchsia/auto_roller',
+    'fuchsia/cl_util',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -29,7 +33,7 @@ def RunSteps(api):
   flutter_git_ref = 'refs/heads/stable'
   api.repo_util.checkout('flutter', flutter_path, ref=flutter_git_ref)
 
-  # CHeckout latest version of flutter/cocoon.
+  # Checkout latest version of flutter/cocoon.
   api.repo_util.checkout(
       'cocoon',
       cocoon_path,
@@ -43,33 +47,45 @@ def RunSteps(api):
       ref='refs/heads/main'
   )
 
+  # gitiles commit info
+  commit_sha = api.buildbucket.gitiles_commit.id
+  gitiles_repo = api.buildbucket.gitiles_commit.project
+  repo = gitiles_repo.split("/")[-1]
+
   # The context adds dart-sdk tools to PATH and sets PUB_CACHE.
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
-  with api.context(env=env, env_prefixes=env_prefixes, cwd=start_path):
+  with api.context(env=env, env_prefixes=env_prefixes, cwd=cocoon_path.join('app_dart')):
     api.step('flutter doctor', cmd=['flutter', 'doctor'])
+    api.step('pub get', cmd=['pub', 'get'])
     generate_jspb_path = cocoon_path.join('app_dart', 'bin', 'generate_jspb.dart')
-    # gitiles commit info
-    ref = api.buildbucket.gitiles_commit.id
-    gitiles_repo = api.buildbucket.gitiles_commit.project
-    repo = gitiles_repo.split("/")[-1]
     infra_config_path = infra_path.join('config', '%s_config.json' % repo)
     # Generate_jspb
-    jspb_step = api.step('generate jspb', cmd=['dart', generate_jspb_path, repo, ref], stdout=api.raw_io.output_text(), stderr=api.raw_io.output_text())
+    jspb_step = api.step('generate jspb', cmd=['dart', generate_jspb_path, repo, commit_sha], stdout=api.raw_io.output_text(), stderr=api.raw_io.output_text())
     api.file.write_raw('write jspb', infra_config_path, jspb_step.stdout)
   with api.context(cwd=infra_path):
     # Generate luci configs
     api.step('luci generate', cmd=['lucicfg', 'generate', 'config/main.star'])
-    api.step('git diff', cmd=['git', 'diff'])
+    api.auto_roller.attempt_roll(
+        gerrit_host = 'flutter-review.googlesource.com',
+        gerrit_project = 'infra',
+        repo_dir = infra_path,
+        commit_message = 'Roll %s to %s' % (repo, commit_sha),
+        # TODO(chillers): Change to oncall group. https://github.com/flutter/flutter/issues/86945
+        cc_on_failure = 'chillers@google.com',
+        dry_run = True,
+    )
 
 
 def GenTests(api):
   yield api.test(
       'basic',
       api.buildbucket.ci_build(
-          git_repo='https://chromium.googlesource.com/external/github.com/flutter/engine'
+          git_repo='https://chromium.googlesource.com/external/github.com/flutter/engine',
+          revision = 'abc123'
       ),
       api.repo_util.flutter_environment_data(
           api.path['start_dir'].join('flutter')
       ),
-      api.step_data('generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}'))
+      api.step_data('generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}')),
+      api.auto_roller.success()
   )

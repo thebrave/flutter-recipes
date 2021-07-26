@@ -439,6 +439,21 @@
   },
   {
     "cmd": [
+      "cp",
+      "[START_DIR]/cocoon/app_dart/lib/src/model/proto/internal/scheduler.proto",
+      "[START_DIR]/infra/config/lib/ci_yaml"
+    ],
+    "name": "Roll scheduler.proto"
+  },
+  {
+    "cmd": [
+      "bash",
+      "[START_DIR]/infra/config/lib/ci_yaml/compile_proto.sh"
+    ],
+    "name": "Compile scheduler.proto"
+  },
+  {
+    "cmd": [
       "lucicfg",
       "generate",
       "config/main.star"
@@ -485,7 +500,7 @@
     "cmd": [],
     "name": "calculate Change-Id",
     "~followup_annotations": [
-      "@@@STEP_TEXT@I27ec3e6a65adbbeb0f5d0b74ef7036a069efcfe8@@@"
+      "@@@STEP_TEXT@I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c@@@"
     ]
   },
   {
@@ -520,7 +535,7 @@
     "cmd": [
       "git",
       "hash-object",
-      "diff --git a/foo.txt b/foo.txt\n--- a/foo.txt\n+++ b/foo.txt\n@@ -16 +16 @@\n-        foo = 5\n+        foo = 6\ndiff --git a/bar.txt b/bar.txt\n--- a/bar.txt\n+++ b/bar.txt\n@@ -5 +5 @@\n-        bar = 0\n+        bar = 1\n####builder####dry-run####"
+      "diff --git a/foo.txt b/foo.txt\n--- a/foo.txt\n+++ b/foo.txt\n@@ -16 +16 @@\n-        foo = 5\n+        foo = 6\ndiff --git a/bar.txt b/bar.txt\n--- a/bar.txt\n+++ b/bar.txt\n@@ -5 +5 @@\n-        bar = 0\n+        bar = 1\n####builder########"
     ],
     "cwd": "[START_DIR]/infra",
     "infra_step": true,
@@ -590,7 +605,7 @@
       "-host",
       "https://flutter-review.googlesource.com",
       "-input",
-      "{\"params\": {\"o\": [\"CURRENT_COMMIT\", \"CURRENT_REVISION\", \"MESSAGES\"], \"q\": \"change:infra~main~I27ec3e6a65adbbeb0f5d0b74ef7036a069efcfe8\"}}",
+      "{\"params\": {\"o\": [\"CURRENT_COMMIT\", \"CURRENT_REVISION\", \"MESSAGES\"], \"q\": \"change:infra~main~I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c\"}}",
       "-output",
       "/path/to/tmp/json"
     ],
@@ -608,7 +623,7 @@
       "@@@STEP_LOG_LINE@json.input@      \"CURRENT_REVISION\", @@@",
       "@@@STEP_LOG_LINE@json.input@      \"MESSAGES\"@@@",
       "@@@STEP_LOG_LINE@json.input@    ], @@@",
-      "@@@STEP_LOG_LINE@json.input@    \"q\": \"change:infra~main~I27ec3e6a65adbbeb0f5d0b74ef7036a069efcfe8\"@@@",
+      "@@@STEP_LOG_LINE@json.input@    \"q\": \"change:infra~main~I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c\"@@@",
       "@@@STEP_LOG_LINE@json.input@  }@@@",
       "@@@STEP_LOG_LINE@json.input@}@@@",
       "@@@STEP_LOG_END@json.input@@@"
@@ -619,7 +634,7 @@
       "git",
       "commit",
       "-m",
-      "Roll engine to abc123\n\nRoller-URL: https://ci.chromium.org/b/8945511751514863184\nCq-Cl-Tag: roller-builder:builder\nCq-Cl-Tag: roller-bid:8945511751514863184\nCQ-Do-Not-Cancel-Tryjobs: true\nChange-Id: I27ec3e6a65adbbeb0f5d0b74ef7036a069efcfe8",
+      "Roll engine to abc123\n\nRoller-URL: https://ci.chromium.org/b/8945511751514863184\nCq-Cl-Tag: roller-builder:builder\nCq-Cl-Tag: roller-bid:8945511751514863184\nCQ-Do-Not-Cancel-Tryjobs: true\nChange-Id: I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c",
       "-a"
     ],
     "cwd": "[START_DIR]/infra",
@@ -633,14 +648,14 @@
       "--push-option",
       "nokeycheck",
       "origin",
-      "HEAD:refs/for/main%l=Commit-Queue+1"
+      "HEAD:refs/for/main%l=Commit-Queue+2,l=Code-Review+2"
     ],
     "cwd": "[START_DIR]/infra",
     "infra_step": true,
     "name": "git push",
     "timeout": 180,
     "~followup_annotations": [
-      "@@@STEP_LINK@gerrit link@https://flutter-review.googlesource.com/q/infra~main~I27ec3e6a65adbbeb0f5d0b74ef7036a069efcfe8@@@"
+      "@@@STEP_LINK@gerrit link@https://flutter-review.googlesource.com/q/infra~main~I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c@@@"
     ]
   },
   {
@@ -654,7 +669,7 @@
       "-host",
       "https://flutter-review.googlesource.com",
       "-input",
-      "{\"change_id\": \"infra~main~I27ec3e6a65adbbeb0f5d0b74ef7036a069efcfe8\", \"params\": {\"o\": [\"CURRENT_REVISION\"]}}",
+      "{\"change_id\": \"infra~main~I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c\", \"params\": {\"o\": [\"CURRENT_REVISION\"]}}",
       "-output",
       "/path/to/tmp/json"
     ],
@@ -675,7 +690,7 @@
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
       "@@@STEP_LOG_LINE@json.input@{@@@",
-      "@@@STEP_LOG_LINE@json.input@  \"change_id\": \"infra~main~I27ec3e6a65adbbeb0f5d0b74ef7036a069efcfe8\", @@@",
+      "@@@STEP_LOG_LINE@json.input@  \"change_id\": \"infra~main~I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c\", @@@",
       "@@@STEP_LOG_LINE@json.input@  \"params\": {@@@",
       "@@@STEP_LOG_LINE@json.input@    \"o\": [@@@",
       "@@@STEP_LOG_LINE@json.input@      \"CURRENT_REVISION\"@@@",
@@ -683,36 +698,7 @@
       "@@@STEP_LOG_LINE@json.input@  }@@@",
       "@@@STEP_LOG_LINE@json.input@}@@@",
       "@@@STEP_LOG_END@json.input@@@",
-      "@@@STEP_LINK@gerrit link@https://flutter-review.googlesource.com/q/infra~main~I27ec3e6a65adbbeb0f5d0b74ef7036a069efcfe8@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/cipd/infra/tools/luci/gerrit/pinned-gerrit-version/gerrit",
-      "change-abandon",
-      "-host",
-      "https://flutter-review.googlesource.com",
-      "-input",
-      "{\"change_id\": \"infra~main~I27ec3e6a65adbbeb0f5d0b74ef7036a069efcfe8\", \"input\": {\"message\": \"Dry run passed.\"}}",
-      "-output",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[START_DIR]/infra",
-    "name": "abandon roll",
-    "timeout": 600,
-    "~followup_annotations": [
-      "@@@STEP_TEXT@dry run passed@@@",
-      "@@@STEP_LOG_END@json.output (invalid)@@@",
-      "@@@STEP_LOG_LINE@json.output (exception)@No JSON object could be decoded@@@",
-      "@@@STEP_LOG_END@json.output (exception)@@@",
-      "@@@STEP_LOG_LINE@json.input@{@@@",
-      "@@@STEP_LOG_LINE@json.input@  \"change_id\": \"infra~main~I27ec3e6a65adbbeb0f5d0b74ef7036a069efcfe8\", @@@",
-      "@@@STEP_LOG_LINE@json.input@  \"input\": {@@@",
-      "@@@STEP_LOG_LINE@json.input@    \"message\": \"Dry run passed.\"@@@",
-      "@@@STEP_LOG_LINE@json.input@  }@@@",
-      "@@@STEP_LOG_LINE@json.input@}@@@",
-      "@@@STEP_LOG_END@json.input@@@",
-      "@@@STEP_LINK@gerrit link@https://flutter-review.googlesource.com/q/infra~main~I27ec3e6a65adbbeb0f5d0b74ef7036a069efcfe8@@@"
+      "@@@STEP_LINK@gerrit link@https://flutter-review.googlesource.com/q/infra~main~I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c@@@"
     ]
   },
   {

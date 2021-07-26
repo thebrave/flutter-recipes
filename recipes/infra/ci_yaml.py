@@ -62,18 +62,25 @@ def RunSteps(api):
     # Generate_jspb
     jspb_step = api.step('generate jspb', cmd=['dart', generate_jspb_path, repo, commit_sha], stdout=api.raw_io.output_text(), stderr=api.raw_io.output_text())
     api.file.write_raw('write jspb', infra_config_path, jspb_step.stdout)
+
+  # Roll scheduler.proto
+  scheduler_proto_src = cocoon_path.join('app_dart', 'lib', 'src', 'model', 'proto', 'internal', 'scheduler.proto')
+  scheduler_proto_dst = infra_path.join('config', 'lib', 'ci_yaml')
+  api.step('Roll scheduler.proto', ['cp', scheduler_proto_src, scheduler_proto_dst])
+  api.step('Compile scheduler.proto', ['bash', scheduler_proto_dst.join('compile_proto.sh')])
+
   with api.context(cwd=infra_path):
     # Generate luci configs
     api.step('luci generate', cmd=['lucicfg', 'generate', 'config/main.star'])
-    api.auto_roller.attempt_roll(
+    change = api.auto_roller.attempt_roll(
         gerrit_host = 'flutter-review.googlesource.com',
         gerrit_project = 'infra',
         repo_dir = infra_path,
         commit_message = 'Roll %s to %s' % (repo, commit_sha),
         # TODO(chillers): Change to oncall group. https://github.com/flutter/flutter/issues/86945
         cc_on_failure = 'chillers@google.com',
-        dry_run = True,
     )
+    return api.auto_roller.raw_result(change)
 
 
 def GenTests(api):

@@ -11,8 +11,6 @@ from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from google.protobuf import struct_pb2
 
 DEPS = [
-    'fuchsia/gcloud',
-    'fuchsia/goma',
     'depot_tools/depot_tools',
     'depot_tools/gclient',
     'depot_tools/git',
@@ -21,10 +19,11 @@ DEPS = [
     'flutter/os_utils',
     'flutter/repo_util',
     'flutter/zip',
+    'fuchsia/gcloud',
+    'fuchsia/goma',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
-    'recipe_engine/isolated',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',

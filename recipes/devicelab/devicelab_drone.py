@@ -170,6 +170,20 @@ def check_flaky(api):
     )
 
 
+def shouldNotUpdate(api, builder_name, git_branch):
+  """Check if a post submit builder should update results to cocoon.
+
+  Test results will be sent to cocoon only when test is post-submit, when test
+  runs in prod pool, and when test is from master branch.
+  """
+  supported_branches = ['master']
+  if api.runtime.is_experimental or api.properties.get(
+      'git_url') or 'staging' in builder_name or git_branch not in supported_branches:
+    return True
+  else:
+    return False
+
+
 def uploadResults(
     api,
     results_path,
@@ -187,8 +201,7 @@ def uploadResults(
   test metrics will be uploaded to Cocoon. Otherwise, only test flaky status will be
   updated to Cocoon.
   """
-  if api.runtime.is_experimental or api.properties.get(
-      'git_url') or 'staging' in builder_name:
+  if shouldNotUpdate(api, builder_name, git_branch):
     return
   runner_params = ['--test-flaky', is_test_flaky]
   if not api.properties.get('upload_metrics'):
@@ -254,6 +267,9 @@ def GenTests(api):
           task_name='abc',
           dependencies=[{'dependency': 'xcode'}]
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.buildbucket.ci_build(
+          git_ref='refs/heads/master',
+      ),
       api.step_data(
           'run abc',
           stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
@@ -266,6 +282,9 @@ def GenTests(api):
           buildername='Mac abc',
           task_name='abc',
           dependencies=[{'dependency': 'xcode'}]
+      ),
+      api.buildbucket.ci_build(
+          git_ref='refs/heads/master',
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
   )
@@ -280,6 +299,9 @@ def GenTests(api):
           stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
           retcode=0
       ),
+      api.buildbucket.ci_build(
+          git_ref='refs/heads/master',
+      ),
       api.platform.name('win'),
   )
   yield api.test(
@@ -290,7 +312,10 @@ def GenTests(api):
           task_name='abc',
           upload_metrics=True,
           upload_metrics_to_cas=True,
-      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path)
+      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.buildbucket.ci_build(
+          git_ref='refs/heads/master',
+      )
   )
   yield api.test(
       "local-engine",
@@ -303,5 +328,6 @@ def GenTests(api):
       api.buildbucket.ci_build(
           project='test',
           git_repo='git.example.com/test/repo',
+          git_ref='refs/heads/master',
       )
   )

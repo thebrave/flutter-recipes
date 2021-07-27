@@ -11,8 +11,6 @@ from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from google.protobuf import struct_pb2
 
 DEPS = [
-    'fuchsia/gcloud',
-    'fuchsia/goma',
     'depot_tools/bot_update',
     'depot_tools/depot_tools',
     'depot_tools/gclient',
@@ -25,11 +23,13 @@ DEPS = [
     'flutter/repo_util',
     'flutter/zip',
     'fuchsia/display_util',
+    'fuchsia/gcloud',
+    'fuchsia/goma',
     'recipe_engine/buildbucket',
+    'recipe_engine/cas',
     'recipe_engine/cipd',
     'recipe_engine/context',
     'recipe_engine/file',
-    'recipe_engine/isolated',
     'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/platform',
@@ -907,9 +907,9 @@ def BuildFuchsia(api):
       raise_on_failure=True,
   )
   for build_id in builds:
-    api.isolated.download(
+    api.cas.download(
         'Download for build %s' % build_id,
-        builds[build_id].output.properties['isolated_output_hash'],
+        builds[build_id].output.properties['cas_output_hash'],
         GetCheckoutPath(api)
     )
 
@@ -1565,7 +1565,7 @@ def RunSteps(api, properties, env_properties):
 def GenTests(api):
   git_revision = 'abcd1234'
   output_props = struct_pb2.Struct()
-  output_props['isolated_output_hash'] = 'deadbeef'
+  output_props['cas_output_hash'] = 'deadbeef'
   build = api.buildbucket.try_build_message(
       builder='Linux Drone', project='flutter'
   )

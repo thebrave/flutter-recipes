@@ -1572,6 +1572,9 @@ def RunSteps(api, properties, env_properties):
   # Delete derived data on mac. This is a noop for other platforms.
   api.os_utils.clean_derived_data()
 
+  api.flutter_deps.required_deps(
+      env, env_prefixes, api.properties.get('dependencies', [])
+  )
   # Various scripts we run assume access to depot_tools on path for `ninja`.
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():

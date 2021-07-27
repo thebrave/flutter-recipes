@@ -88,12 +88,12 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       dep_funct(env, env_prefixes, dep.get('version'))
 
   def open_jdk(self, env, env_prefixes, version):
-    """Downloads OpenJdk CIPD package and updates environment variables.
+    """Downloads OpenJDK CIPD package and updates environment variables.
 
     Args:
       env(dict): Current environment variables.
       env_prefixes(dict):  Current environment prefixes variables.
-      version(str): The OpenJdk version to install.
+      version(str): The OpenJDK version to install.
     """
     version = version or 'version:1.8.0u202-b08'
     with self.m.step.nest('OpenJDK dependency'):

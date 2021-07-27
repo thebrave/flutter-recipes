@@ -334,6 +334,34 @@
   },
   {
     "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/protoc",
+      "-ensure-file",
+      "infra/3pp/tools/protoc/${platform} version:2@3.17.3",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@3.17.3\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/protoc/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
       "flutter",
       "doctor"
     ],
@@ -443,6 +471,11 @@
       "[START_DIR]/cocoon/app_dart/lib/src/model/proto/internal/scheduler.proto",
       "[START_DIR]/infra/config/lib/ci_yaml"
     ],
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/protoc/bin"
+      ]
+    },
     "name": "Roll scheduler.proto"
   },
   {
@@ -450,6 +483,11 @@
       "bash",
       "[START_DIR]/infra/config/lib/ci_yaml/compile_proto.sh"
     ],
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/protoc/bin"
+      ]
+    },
     "name": "Compile scheduler.proto"
   },
   {

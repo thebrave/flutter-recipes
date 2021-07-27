@@ -10,6 +10,7 @@ DEPS = [
     'fuchsia/auto_roller',
     'fuchsia/cl_util',
     'recipe_engine/buildbucket',
+    'recipe_engine/cipd',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/json',
@@ -47,6 +48,15 @@ def RunSteps(api):
       ref='refs/heads/main'
   )
 
+  # Install protoc to compile latest scheduler.proto
+  protoc_path = start_path.join('protoc')
+  api.cipd.ensure(
+      protoc_path,
+      api.cipd.EnsureFile().add_package(
+          'infra/3pp/tools/protoc/${platform}', 'version:2@3.17.3'
+      )
+  )
+
   # gitiles commit info
   commit_sha = api.buildbucket.gitiles_commit.id
   gitiles_repo = api.buildbucket.gitiles_commit.project
@@ -63,11 +73,12 @@ def RunSteps(api):
     jspb_step = api.step('generate jspb', cmd=['dart', generate_jspb_path, repo, commit_sha], stdout=api.raw_io.output_text(), stderr=api.raw_io.output_text())
     api.file.write_raw('write jspb', infra_config_path, jspb_step.stdout)
 
-  # Roll scheduler.proto
-  scheduler_proto_src = cocoon_path.join('app_dart', 'lib', 'src', 'model', 'proto', 'internal', 'scheduler.proto')
-  scheduler_proto_dst = infra_path.join('config', 'lib', 'ci_yaml')
-  api.step('Roll scheduler.proto', ['cp', scheduler_proto_src, scheduler_proto_dst])
-  api.step('Compile scheduler.proto', ['bash', scheduler_proto_dst.join('compile_proto.sh')])
+# Roll scheduler.proto
+  with api.context(env_prefixes={'PATH': [protoc_path.join('bin')]}):
+    scheduler_proto_src = cocoon_path.join('app_dart', 'lib', 'src', 'model', 'proto', 'internal', 'scheduler.proto')
+    scheduler_proto_dst = infra_path.join('config', 'lib', 'ci_yaml')
+    api.step('Roll scheduler.proto', ['cp', scheduler_proto_src, scheduler_proto_dst])
+    api.step('Compile scheduler.proto', ['bash', scheduler_proto_dst.join('compile_proto.sh')])
 
   with api.context(cwd=infra_path):
     # Generate luci configs

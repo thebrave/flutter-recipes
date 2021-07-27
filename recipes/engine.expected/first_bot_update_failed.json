@@ -9374,7 +9374,7 @@
       "@@@STEP_LOG_LINE@json.output@        }, @@@",
       "@@@STEP_LOG_LINE@json.output@        \"output\": {@@@",
       "@@@STEP_LOG_LINE@json.output@          \"properties\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@            \"isolated_output_hash\": \"deadbeef\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"cas_output_hash\": \"deadbeef\"@@@",
       "@@@STEP_LOG_LINE@json.output@          }@@@",
       "@@@STEP_LOG_LINE@json.output@        }, @@@",
       "@@@STEP_LOG_LINE@json.output@        \"tags\": [@@@",
@@ -9444,7 +9444,7 @@
   },
   {
     "cmd": [],
-    "name": "install infra/tools/luci/isolated"
+    "name": "install infra/tools/luci/cas"
   },
   {
     "cmd": [
@@ -9456,7 +9456,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CACHE]/cipd/infra/tools/luci/isolated/latest"
+      "[CACHE]/cipd/infra/tools/luci/cas/latest"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -9478,7 +9478,7 @@
       ]
     },
     "infra_step": true,
-    "name": "install infra/tools/luci/isolated.ensure package directory",
+    "name": "install infra/tools/luci/cas.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -9488,9 +9488,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/cipd/infra/tools/luci/isolated/latest",
+      "[CACHE]/cipd/infra/tools/luci/cas/latest",
       "-ensure-file",
-      "infra/tools/luci/isolated/${platform} latest",
+      "infra/tools/luci/cas/${platform} latest",
       "-max-threads",
       "0",
       "-json-output",
@@ -9516,7 +9516,7 @@
       ]
     },
     "infra_step": true,
-    "name": "install infra/tools/luci/isolated.ensure_installed",
+    "name": "install infra/tools/luci/cas.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -9524,7 +9524,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/isolated/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cas/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -9534,14 +9534,13 @@
   },
   {
     "cmd": [
-      "[CACHE]/cipd/infra/tools/luci/isolated/latest/isolated",
+      "[CACHE]/cipd/infra/tools/luci/cas/latest/cas",
       "download",
-      "-verbose",
-      "-isolate-server",
-      "https://example.isolateserver.appspot.com",
-      "-isolated",
+      "-cas-instance",
+      "projects/example-cas-server/instances/default_instance",
+      "-digest",
       "deadbeef",
-      "-output-dir",
+      "-dir",
       "[CACHE]/builder/src"
     ],
     "cwd": "[CACHE]/builder",

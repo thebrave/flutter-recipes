@@ -11,8 +11,6 @@ from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from google.protobuf import struct_pb2
 
 DEPS = [
-    'fuchsia/gcloud',
-    'fuchsia/goma',
     'depot_tools/bot_update',
     'depot_tools/depot_tools',
     'depot_tools/gclient',
@@ -26,12 +24,14 @@ DEPS = [
     'flutter/retry',
     'flutter/zip',
     'fuchsia/display_util',
+    'fuchsia/gcloud',
+    'fuchsia/goma',
     'recipe_engine/buildbucket',
+    'recipe_engine/cas',
     'recipe_engine/cipd',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/futures',
-    'recipe_engine/isolated',
     'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/platform',
@@ -588,10 +588,10 @@ def BuildLinuxAndroidAOT(api, swarming_task_id):
   )
   for build_id in builds:
     build_props = builds[build_id].output.properties
-    if 'isolated_output_hash' in build_props:
-      api.isolated.download(
+    if 'cas_output_hash' in build_props:
+      api.cas.download(
           'Download for build %s' % build_id,
-          build_props['isolated_output_hash'], GetCheckoutPath(api)
+          build_props['cas_output_hash'], GetCheckoutPath(api)
       )
 
   embedding_artifacts_uploaded = 0
@@ -966,10 +966,10 @@ def BuildFuchsia(api):
   )
   for build_id in builds:
     build_props = builds[build_id].output.properties
-    if 'isolated_output_hash' in build_props:
-      api.isolated.download(
+    if 'cas_output_hash' in build_props:
+      api.cas.download(
           'Download for build %s' % build_id,
-          build_props['isolated_output_hash'], GetCheckoutPath(api)
+          build_props['cas_output_hash'], GetCheckoutPath(api)
       )
 
   fuchsia_package_cmd = [
@@ -1622,7 +1622,7 @@ def RunSteps(api, properties, env_properties):
 def GenTests(api):
   git_revision = 'abcd1234'
   output_props = struct_pb2.Struct()
-  output_props['isolated_output_hash'] = 'deadbeef'
+  output_props['cas_output_hash'] = 'deadbeef'
   build = api.buildbucket.try_build_message(
       builder='Linux Drone', project='flutter'
   )

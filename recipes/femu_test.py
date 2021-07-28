@@ -13,18 +13,18 @@ from google.protobuf import struct_pb2
 import re
 
 DEPS = [
-    'fuchsia/goma',
     'depot_tools/depot_tools',
     'flutter/repo_util',
     'flutter/yaml',
     'fuchsia/display_util',
+    'fuchsia/goma',
     'fuchsia/sdk',
     'fuchsia/ssh',
     'fuchsia/vdl',
     'recipe_engine/buildbucket',
+    'recipe_engine/cas',
     'recipe_engine/context',
     'recipe_engine/file',
-    'recipe_engine/isolated',
     'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/platform',
@@ -88,19 +88,20 @@ def GetFuchsiaBuildId(api):
 
 
 # TODO(yuanzhi) Move this logic to vdl recipe_module
-def IsolateSymlink(api):
-  """Create an isolate containing flutter test components and fuchsia runfiles for FEMU."""
+def CasRoot(api):
+  """Create a CAS containing flutter test components and fuchsia runfiles for FEMU."""
   sdk_version = GetFuchsiaBuildId(api)
   checkout = GetCheckoutPath(api)
   root_dir = api.path.mkdtemp('vdl_runfiles_')
-  isolate_tree = api.file.symlink_tree(root=root_dir)
   test_suites = []
 
   def add(src, name_rel_to_root):
-    isolate_tree.register_link(
-        target=src,
-        linkname=isolate_tree.root.join(name_rel_to_root),
-    )
+    # CAS requires the files to be located directly inside the root folder.
+    target = root_dir.join(name_rel_to_root)
+    if api.path.isfile(src):
+      api.file.copy('Copy %s' % name_rel_to_root, src, target)
+    else:
+      api.file.copytree('Copy %s' % name_rel_to_root, src, target)
 
   def addVDLFiles():
     vdl_version = api.properties.get('vdl_version', 'g3-revision:vdl_fuchsia_20210722_RC00')
@@ -172,16 +173,13 @@ def IsolateSymlink(api):
   addTestScript()
   addFlutterTests()
 
-  isolate_tree.create_links("create tree of vdl runfiles")
-  isolated = api.isolated.isolated(isolate_tree.root)
-  isolated.add_dir(isolate_tree.root)
-  hash = isolated.archive('Archive FEMU Run Files')
-  return test_suites, root_dir, hash
+  cas_hash = api.cas.archive('Archive FEMU Run Files', root_dir, root_dir)
+  return test_suites, root_dir, cas_hash
 
 
 def TestFuchsiaFEMU(api):
   """Run flutter tests on FEMU."""
-  test_suites, root_dir, isolated_hash = IsolateSymlink(api)
+  test_suites, root_dir, cas_hash = CasRoot(api)
   cmd = ['./run_vdl_test.sh']
   # These flags will be passed through to VDL
   cmd.append('--emulator_binary_path=aemu/emulator')
@@ -277,7 +275,7 @@ def RunSteps(api, properties, env_properties):
 
 def GenTests(api):
   output_props = struct_pb2.Struct()
-  output_props['isolated_output_hash'] = 'deadbeef'
+  output_props['cas_output_hash'] = 'deadbeef'
   build = api.buildbucket.try_build_message(
       builder='FEMU Test', project='flutter')
   build.output.CopyFrom(build_pb2.Build.Output(properties=output_props))

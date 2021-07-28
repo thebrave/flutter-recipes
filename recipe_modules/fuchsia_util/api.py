@@ -120,19 +120,17 @@ class FuchsiaUtilsApi(recipe_api.RecipeApi):
         metadata=fuchsia_swarming_metadata,
         raise_on_failure=True)
 
-  def isolate_deps(self, checkout_path):
-    with self.m.step.nest('Create Isolate Archive'):
-      with self.make_temp_dir('isolate_dir') as isolate_dir:
-        self.copy_tool_deps(checkout_path, isolate_dir)
-        isolated_flutter = isolate_dir.join('flutter')
+  def upload_deps(self, checkout_path):
+    with self.m.step.nest('Create CAS Archive'):
+      with self.make_temp_dir('cas_dir') as cas_dir:
+        self.copy_tool_deps(checkout_path, cas_dir)
+        cas_flutter = cas_dir.join('flutter')
         self.m.file.copytree('Copy flutter framework', checkout_path,
-                             isolated_flutter)
-        isolated = self.m.isolated.isolated(isolate_dir)
-        isolated.add_dir(isolate_dir)
-        return isolated.archive('Archive Fuchsia Test Isolate')
+                             cas_flutter)
+        return self.m.archive.upload(cas_dir, step_name='Archive Fuchsia Test CAS')
 
   def trigger_swarming_task(self, checkout_path):
-    isolated_hash = self.isolate_deps(checkout_path)
+    cas_hash = self.upload_deps(checkout_path)
     fuchsia_ctl_package = self.m.cipd.EnsureFile()
     fuchsia_ctl_package.add_package(
         'flutter/fuchsia_ctl/${platform}',
@@ -145,8 +143,8 @@ class FuchsiaUtilsApi(recipe_api.RecipeApi):
             0,
             request[0].with_cipd_ensure_file(fuchsia_ctl_package).with_command([
                 './%s' % FUCHSIA_TEST_SCRIPT_NAME, FUCHSIA_IMAGE_NAME
-            ]).with_dimensions(pool='luci.flutter.tests').with_isolated(
-                isolated_hash).with_expiration_secs(3600).with_io_timeout_secs(
+            ]).with_dimensions(pool='luci.flutter.tests').with_cas_input_root(
+                cas_hash).with_expiration_secs(3600).with_io_timeout_secs(
                     3600).with_execution_timeout_secs(3600).with_idempotent(
                         True).with_containment_type('AUTO')))
 
@@ -154,7 +152,7 @@ class FuchsiaUtilsApi(recipe_api.RecipeApi):
         'Trigger Fuchsia Driver Tests', requests=[request])
 
   def run_test(self, checkout_path):
-    """Create isolate to run tests against Fuchsia device.
+    """Create a swarming task to run tests against Fuchsia device.
 
     Args:
       checkout_path: Location of Flutter SDK

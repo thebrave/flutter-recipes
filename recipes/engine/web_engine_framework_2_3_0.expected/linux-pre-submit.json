@@ -591,7 +591,7 @@
       "/path/to/tmp/json",
       "copytree",
       "[CACHE]/builder/src/out/host_debug_unopt",
-      "[CLEANUP]/isolate-directory_tmp_1/host_debug_unopt"
+      "[CLEANUP]/cas-directory_tmp_1/host_debug_unopt"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -623,7 +623,7 @@
       "/path/to/tmp/json",
       "copytree",
       "[CACHE]/builder/src/out/host_debug_unopt",
-      "[CLEANUP]/isolate-directory_tmp_1/flutter"
+      "[CLEANUP]/cas-directory_tmp_1/flutter"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -648,7 +648,7 @@
   },
   {
     "cmd": [],
-    "name": "install infra/tools/luci/isolated"
+    "name": "install infra/tools/luci/cas"
   },
   {
     "cmd": [
@@ -660,7 +660,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CACHE]/cipd/infra/tools/luci/isolated/isolated_module_pin"
+      "[CACHE]/cipd/infra/tools/luci/cas/cas_module_pin"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -681,7 +681,7 @@
       ]
     },
     "infra_step": true,
-    "name": "install infra/tools/luci/isolated.ensure package directory",
+    "name": "install infra/tools/luci/cas.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -691,9 +691,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/cipd/infra/tools/luci/isolated/isolated_module_pin",
+      "[CACHE]/cipd/infra/tools/luci/cas/cas_module_pin",
       "-ensure-file",
-      "infra/tools/luci/isolated/${platform} isolated_module_pin",
+      "infra/tools/luci/cas/${platform} cas_module_pin",
       "-max-threads",
       "0",
       "-json-output",
@@ -718,15 +718,15 @@
       ]
     },
     "infra_step": true,
-    "name": "install infra/tools/luci/isolated.ensure_installed",
+    "name": "install infra/tools/luci/cas.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-isolated_module_\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/isolated/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-cas_module_pin--\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cas/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -736,17 +736,14 @@
   },
   {
     "cmd": [
-      "[CACHE]/cipd/infra/tools/luci/isolated/isolated_module_pin/isolated",
+      "[CACHE]/cipd/infra/tools/luci/cas/cas_module_pin/cas",
       "archive",
-      "-verbose",
-      "-isolate-server",
-      "https://example.isolateserver.appspot.com",
-      "-namespace",
-      "default-gzip",
-      "-dump-hash",
+      "-cas-instance",
+      "projects/example-cas-server/instances/default_instance",
+      "-dump-digest",
       "/path/to/tmp/",
-      "-dirs",
-      "[CLEANUP]/isolate-directory_tmp_1:."
+      "-paths",
+      "[CLEANUP]/cas-directory_tmp_1:."
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -767,9 +764,9 @@
       ]
     },
     "infra_step": true,
-    "name": "Archive Flutter Engine Test Isolate",
+    "name": "Archive Flutter Engine Test CAS",
     "~followup_annotations": [
-      "@@@STEP_LINK@isolated UI@https://example.isolateserver.appspot.com/browse?namespace=default-gzip&hash=%5Bdummy+hash%5D@@@"
+      "@@@STEP_LINK@CAS UI@https://cas-viewer.appspot.com/projects/example-cas-server/instances/default_instance/blobs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0/tree@@@"
     ]
   },
   {
@@ -1093,7 +1090,7 @@
     },
     "infra_step": true,
     "name": "buildbucket.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"builder\": \"Linux SDK Drone\"}, \"experimental\": \"NO\", \"fields\": \"builder,createTime,createdBy,critical,endTime,id,input,number,output,startTime,status,updateTime\", \"priority\": 25, \"properties\": {\"dependencies\": [{\"dependency\": \"chrome_and_driver\"}], \"git_ref\": \"b6efc758213fdfffee1234465\", \"git_url\": \"https://github.com/flutter/flutter\", \"isolated_hash\": \"[dummy hash]\", \"shard\": \"web_tests\", \"subshard\": \"0\", \"task_name\": \"web_tests-0\"}, \"requestId\": \"0-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"user_agent\", \"value\": \"recipe\"}]}}, {\"scheduleBuild\": {\"builder\": {\"builder\": \"Linux SDK Drone\"}, \"experimental\": \"NO\", \"fields\": \"builder,createTime,createdBy,critical,endTime,id,input,number,output,startTime,status,updateTime\", \"priority\": 25, \"properties\": {\"dependencies\": [{\"dependency\": \"chrome_and_driver\"}], \"git_ref\": \"b6efc758213fdfffee1234465\", \"git_url\": \"https://github.com/flutter/flutter\", \"isolated_hash\": \"[dummy hash]\", \"shard\": \"web_tests\", \"subshard\": \"1_last\", \"task_name\": \"web_tests-1_last\"}, \"requestId\": \"0-00000000-0000-0000-0000-00000000133a\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"builder\": \"Linux SDK Drone\"}, \"experimental\": \"NO\", \"fields\": \"builder,createTime,createdBy,critical,endTime,id,input,number,output,startTime,status,updateTime\", \"priority\": 25, \"properties\": {\"dependencies\": [{\"dependency\": \"chrome_and_driver\"}], \"git_ref\": \"b6efc758213fdfffee1234465\", \"git_url\": \"https://github.com/flutter/flutter\", \"local_engine_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", \"shard\": \"web_tests\", \"subshard\": \"0\", \"task_name\": \"web_tests-0\"}, \"requestId\": \"0-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"user_agent\", \"value\": \"recipe\"}]}}, {\"scheduleBuild\": {\"builder\": {\"builder\": \"Linux SDK Drone\"}, \"experimental\": \"NO\", \"fields\": \"builder,createTime,createdBy,critical,endTime,id,input,number,output,startTime,status,updateTime\", \"priority\": 25, \"properties\": {\"dependencies\": [{\"dependency\": \"chrome_and_driver\"}], \"git_ref\": \"b6efc758213fdfffee1234465\", \"git_url\": \"https://github.com/flutter/flutter\", \"local_engine_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", \"shard\": \"web_tests\", \"subshard\": \"1_last\", \"task_name\": \"web_tests-1_last\"}, \"requestId\": \"0-00000000-0000-0000-0000-00000000133a\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
@@ -1134,7 +1131,7 @@
       "@@@STEP_LOG_LINE@request@          ], @@@",
       "@@@STEP_LOG_LINE@request@          \"git_ref\": \"b6efc758213fdfffee1234465\", @@@",
       "@@@STEP_LOG_LINE@request@          \"git_url\": \"https://github.com/flutter/flutter\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"isolated_hash\": \"[dummy hash]\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"local_engine_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", @@@",
       "@@@STEP_LOG_LINE@request@          \"shard\": \"web_tests\", @@@",
       "@@@STEP_LOG_LINE@request@          \"subshard\": \"0\", @@@",
       "@@@STEP_LOG_LINE@request@          \"task_name\": \"web_tests-0\"@@@",
@@ -1167,7 +1164,7 @@
       "@@@STEP_LOG_LINE@request@          ], @@@",
       "@@@STEP_LOG_LINE@request@          \"git_ref\": \"b6efc758213fdfffee1234465\", @@@",
       "@@@STEP_LOG_LINE@request@          \"git_url\": \"https://github.com/flutter/flutter\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"isolated_hash\": \"[dummy hash]\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"local_engine_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", @@@",
       "@@@STEP_LOG_LINE@request@          \"shard\": \"web_tests\", @@@",
       "@@@STEP_LOG_LINE@request@          \"subshard\": \"1_last\", @@@",
       "@@@STEP_LOG_LINE@request@          \"task_name\": \"web_tests-1_last\"@@@",

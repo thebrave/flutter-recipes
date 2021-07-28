@@ -202,14 +202,14 @@
   },
   {
     "cmd": [],
-    "name": "Fuchsia Tests.Create Isolate Archive",
+    "name": "Fuchsia Tests.Create CAS Archive",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Fuchsia Tests.Create Isolate Archive.Download Fuchsia Dependencies",
+    "name": "Fuchsia Tests.Create CAS Archive.Download Fuchsia Dependencies",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -242,7 +242,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Fuchsia Tests.Create Isolate Archive.Download Fuchsia Dependencies.Read fuchsia cipd version",
+    "name": "Fuchsia Tests.Create CAS Archive.Download Fuchsia Dependencies.Read fuchsia cipd version",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@fuchsia-linux.version@FuchsiaSdkCipdVersion@@@",
@@ -275,7 +275,7 @@
         "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
       ]
     },
-    "name": "Fuchsia Tests.Create Isolate Archive.Download Fuchsia Dependencies.cipd describe fuchsia/sdk/core/linux-amd64",
+    "name": "Fuchsia Tests.Create CAS Archive.Download Fuchsia Dependencies.cipd describe fuchsia/sdk/core/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -345,7 +345,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Fuchsia Tests.Create Isolate Archive.Download Fuchsia Dependencies.gsutil download fuchsia system image",
+    "name": "Fuchsia Tests.Create CAS Archive.Download Fuchsia Dependencies.gsutil download fuchsia system image",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -379,14 +379,14 @@
       ]
     },
     "infra_step": true,
-    "name": "Fuchsia Tests.Create Isolate Archive.Download Fuchsia Dependencies.gsutil download fuchsia companion packages",
+    "name": "Fuchsia Tests.Create CAS Archive.Download Fuchsia Dependencies.gsutil download fuchsia companion packages",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Fuchsia Tests.Create Isolate Archive.Collect tool deps",
+    "name": "Fuchsia Tests.Create CAS Archive.Collect tool deps",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -419,7 +419,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Fuchsia Tests.Create Isolate Archive.Collect tool deps.Copy test script",
+    "name": "Fuchsia Tests.Create CAS Archive.Collect tool deps.Copy test script",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -452,7 +452,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Fuchsia Tests.Create Isolate Archive.Collect tool deps.Copy device-finder",
+    "name": "Fuchsia Tests.Create CAS Archive.Collect tool deps.Copy device-finder",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -485,7 +485,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Fuchsia Tests.Create Isolate Archive.Collect tool deps.Copy pm",
+    "name": "Fuchsia Tests.Create CAS Archive.Collect tool deps.Copy pm",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -518,14 +518,14 @@
       ]
     },
     "infra_step": true,
-    "name": "Fuchsia Tests.Create Isolate Archive.Copy flutter framework",
+    "name": "Fuchsia Tests.Create CAS Archive.Copy flutter framework",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Fuchsia Tests.Create Isolate Archive.install infra/tools/luci/isolated",
+    "name": "Fuchsia Tests.Create CAS Archive.install infra/tools/luci/cas",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -540,7 +540,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CACHE]/cipd/infra/tools/luci/isolated/isolated_module_pin"
+      "[CACHE]/cipd/infra/tools/luci/cas/cas_module_pin"
     ],
     "cwd": "[START_DIR]/flutter",
     "env": {
@@ -559,7 +559,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Fuchsia Tests.Create Isolate Archive.install infra/tools/luci/isolated.ensure package directory",
+    "name": "Fuchsia Tests.Create CAS Archive.install infra/tools/luci/cas.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -569,9 +569,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/cipd/infra/tools/luci/isolated/isolated_module_pin",
+      "[CACHE]/cipd/infra/tools/luci/cas/cas_module_pin",
       "-ensure-file",
-      "infra/tools/luci/isolated/${platform} isolated_module_pin",
+      "infra/tools/luci/cas/${platform} cas_module_pin",
       "-max-threads",
       "0",
       "-json-output",
@@ -594,15 +594,15 @@
       ]
     },
     "infra_step": true,
-    "name": "Fuchsia Tests.Create Isolate Archive.install infra/tools/luci/isolated.ensure_installed",
+    "name": "Fuchsia Tests.Create CAS Archive.install infra/tools/luci/cas.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-isolated_module_\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/isolated/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-cas_module_pin--\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cas/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -612,16 +612,13 @@
   },
   {
     "cmd": [
-      "[CACHE]/cipd/infra/tools/luci/isolated/isolated_module_pin/isolated",
+      "[CACHE]/cipd/infra/tools/luci/cas/cas_module_pin/cas",
       "archive",
-      "-verbose",
-      "-isolate-server",
-      "https://example.isolateserver.appspot.com",
-      "-namespace",
-      "default-gzip",
-      "-dump-hash",
+      "-cas-instance",
+      "projects/example-cas-server/instances/default_instance",
+      "-dump-digest",
       "/path/to/tmp/",
-      "-dirs",
+      "-paths",
       "[CLEANUP]/tmp_tmp_1:."
     ],
     "cwd": "[START_DIR]/flutter",
@@ -641,10 +638,10 @@
       ]
     },
     "infra_step": true,
-    "name": "Fuchsia Tests.Create Isolate Archive.Archive Fuchsia Test Isolate",
+    "name": "Fuchsia Tests.Create CAS Archive.Archive Fuchsia Test CAS",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LINK@isolated UI@https://example.isolateserver.appspot.com/browse?namespace=default-gzip&hash=%5Bdummy+hash%5D@@@"
+      "@@@STEP_LINK@CAS UI@https://cas-viewer.appspot.com/projects/example-cas-server/instances/default_instance/blobs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0/tree@@@"
     ]
   },
   {
@@ -674,7 +671,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Fuchsia Tests.Create Isolate Archive.temp dir for isolate_dir",
+    "name": "Fuchsia Tests.Create CAS Archive.temp dir for cas_dir",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -773,7 +770,7 @@
       "-server",
       "https://example.swarmingserver.appspot.com",
       "-json-input",
-      "{\"requests\": [{\"name\": \"flutter_fuchsia_driver_tests\", \"priority\": \"100\", \"service_account\": \"\", \"task_slices\": [{\"expiration_secs\": \"3600\", \"properties\": {\"cipd_input\": {\"packages\": [{\"package_name\": \"flutter/fuchsia_ctl/${platform}\", \"path\": \".\", \"version\": \"version:0.0.2\"}]}, \"command\": [\"./run_fuchsia_tests.sh\", \"generic-x64.tgz\"], \"containment\": {\"containment_type\": \"AUTO\", \"limit_processes\": \"0\", \"limit_total_committed_memory\": \"0\", \"lower_priority\": false}, \"dimensions\": [{\"key\": \"pool\", \"value\": \"luci.flutter.tests\"}], \"env\": [], \"env_prefixes\": [], \"execution_timeout_secs\": \"3600\", \"grace_period_secs\": \"30\", \"idempotent\": true, \"inputs_ref\": {\"isolated\": \"[dummy hash]\", \"isolatedserver\": \"https://example.isolateserver.appspot.com\", \"namespace\": \"default-gzip\"}, \"io_timeout_secs\": \"3600\", \"outputs\": [], \"relative_cwd\": \"\"}, \"wait_for_capacity\": false}]}]}",
+      "{\"requests\": [{\"name\": \"flutter_fuchsia_driver_tests\", \"priority\": \"100\", \"service_account\": \"\", \"task_slices\": [{\"expiration_secs\": \"3600\", \"properties\": {\"cas_input_root\": {\"cas_instance\": \"projects/example-cas-server/instances/default_instance\", \"digest\": {\"hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\", \"size_bytes\": \"0\"}}, \"cipd_input\": {\"packages\": [{\"package_name\": \"flutter/fuchsia_ctl/${platform}\", \"path\": \".\", \"version\": \"version:0.0.2\"}]}, \"command\": [\"./run_fuchsia_tests.sh\", \"generic-x64.tgz\"], \"containment\": {\"containment_type\": \"AUTO\", \"limit_processes\": \"0\", \"limit_total_committed_memory\": \"0\", \"lower_priority\": false}, \"dimensions\": [{\"key\": \"pool\", \"value\": \"luci.flutter.tests\"}], \"env\": [], \"env_prefixes\": [], \"execution_timeout_secs\": \"3600\", \"grace_period_secs\": \"30\", \"idempotent\": true, \"io_timeout_secs\": \"3600\", \"outputs\": [], \"relative_cwd\": \"\"}, \"wait_for_capacity\": false}]}]}",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -834,6 +831,13 @@
       "@@@STEP_LOG_LINE@json.input@        {@@@",
       "@@@STEP_LOG_LINE@json.input@          \"expiration_secs\": \"3600\", @@@",
       "@@@STEP_LOG_LINE@json.input@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@json.input@            \"cas_input_root\": {@@@",
+      "@@@STEP_LOG_LINE@json.input@              \"cas_instance\": \"projects/example-cas-server/instances/default_instance\", @@@",
+      "@@@STEP_LOG_LINE@json.input@              \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@json.input@                \"hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\", @@@",
+      "@@@STEP_LOG_LINE@json.input@                \"size_bytes\": \"0\"@@@",
+      "@@@STEP_LOG_LINE@json.input@              }@@@",
+      "@@@STEP_LOG_LINE@json.input@            }, @@@",
       "@@@STEP_LOG_LINE@json.input@            \"cipd_input\": {@@@",
       "@@@STEP_LOG_LINE@json.input@              \"packages\": [@@@",
       "@@@STEP_LOG_LINE@json.input@                {@@@",
@@ -864,11 +868,6 @@
       "@@@STEP_LOG_LINE@json.input@            \"execution_timeout_secs\": \"3600\", @@@",
       "@@@STEP_LOG_LINE@json.input@            \"grace_period_secs\": \"30\", @@@",
       "@@@STEP_LOG_LINE@json.input@            \"idempotent\": true, @@@",
-      "@@@STEP_LOG_LINE@json.input@            \"inputs_ref\": {@@@",
-      "@@@STEP_LOG_LINE@json.input@              \"isolated\": \"[dummy hash]\", @@@",
-      "@@@STEP_LOG_LINE@json.input@              \"isolatedserver\": \"https://example.isolateserver.appspot.com\", @@@",
-      "@@@STEP_LOG_LINE@json.input@              \"namespace\": \"default-gzip\"@@@",
-      "@@@STEP_LOG_LINE@json.input@            }, @@@",
       "@@@STEP_LOG_LINE@json.input@            \"io_timeout_secs\": \"3600\", @@@",
       "@@@STEP_LOG_LINE@json.input@            \"outputs\": [], @@@",
       "@@@STEP_LOG_LINE@json.input@            \"relative_cwd\": \"\"@@@",

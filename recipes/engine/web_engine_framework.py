@@ -22,11 +22,11 @@ DEPS = [
     'flutter/repo_util',
     'flutter/flutter_deps',
     'flutter/shard_util',
+    'fuchsia/archive',
     'fuchsia/goma',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
-    'recipe_engine/isolated',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
@@ -58,15 +58,13 @@ def Build(api, config, *targets):
 def Archive(api, target):
   checkout = GetCheckoutPath(api)
   build_dir = checkout.join('out', target)
-  isolate_dir = api.path.mkdtemp('isolate-directory')
-  isolate_engine = isolate_dir.join(target)
-  api.file.copytree('Copy host_debug_unopt', build_dir, isolate_engine)
+  cas_dir = api.path.mkdtemp('cas-directory')
+  cas_engine = cas_dir.join(target)
+  api.file.copytree('Copy host_debug_unopt', build_dir, cas_engine)
   source_dir = checkout.join('flutter')
-  isolate_source = isolate_dir.join('flutter')
-  api.file.copytree('Copy source', build_dir, isolate_source)
-  isolated = api.isolated.isolated(isolate_dir)
-  isolated.add_dir(isolate_dir)
-  return isolated.archive('Archive Flutter Engine Test Isolate')
+  cas_source = cas_dir.join('flutter')
+  api.file.copytree('Copy source', build_dir, cas_source)
+  return api.archive.upload(cas_dir, step_name='Archive Flutter Engine Test CAS')
 
 
 def RunGN(api, *args):
@@ -117,8 +115,8 @@ def RunSteps(api, properties, env_properties):
     RunGN(api, *gn_flags)
     Build(api, target_name)
 
-    # Archive build directory into isolate.
-    isolated_hash = Archive(api, target_name)
+    # Archive build directory into CAS.
+    cas_hash = Archive(api, target_name)
     ref = 'refs/heads/master'
     url = 'https://github.com/flutter/flutter'
 
@@ -147,7 +145,7 @@ def RunSteps(api, properties, env_properties):
       assert (len(ref) > 0)
     # The SHA of the youngest commit older than the engine in the framework
     # side is kept in `ref`.
-    builds = schedule_builds(api, isolated_hash, ref.strip(), url)
+    builds = schedule_builds(api, cas_hash, ref.strip(), url)
 
   # Create new enviromenent variables for Framework.
   # Note that the `dart binary` location is not the same for Framework and the
@@ -199,7 +197,7 @@ def RunSteps(api, properties, env_properties):
     )
 
 
-def schedule_builds(api, isolated_hash, ref, url):
+def schedule_builds(api, cas_hash, ref, url):
   """Schedules one subbuild per subshard."""
   reqs = []
 
@@ -212,7 +210,7 @@ def schedule_builds(api, isolated_hash, ref, url):
         'shard': shard,
         'dependencies': dependencies,
         'task_name': task_name,
-        'isolated_hash': isolated_hash,
+        'local_engine_cas_hash': cas_hash,
     }
     drone_props['git_url'] = url
     drone_props['git_ref'] = ref

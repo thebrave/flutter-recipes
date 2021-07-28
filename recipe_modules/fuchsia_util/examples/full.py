@@ -33,11 +33,11 @@ def GenTests(api):
   # End of calls for test functions coverage.
   yield (api.test('basic') + api.fuchsia_util.device_name_data() +
          api.repo_util.flutter_environment_data() + api.step_data(
-             'Fuchsia Tests.Create Isolate Archive.'
+             'Fuchsia Tests.Create CAS Archive.'
              'Download Fuchsia Dependencies.'
              'Read fuchsia cipd version',
              api.file.read_text('FuchsiaSdkCipdVersion')) + api.step_data(
-                 'Fuchsia Tests.Create Isolate Archive.'
+                 'Fuchsia Tests.Create CAS Archive.'
                  'Download Fuchsia Dependencies.'
                  'cipd describe fuchsia/sdk/core/linux-amd64',
                  api.cipd.example_describe(
@@ -48,11 +48,11 @@ def GenTests(api):
                          "version:FUCHSIA_VERSION"
                      ])))
   yield api.test('fuchsia_sdk_version_error') + api.step_data(
-      'Fuchsia Tests.Create Isolate Archive.'
+      'Fuchsia Tests.Create CAS Archive.'
       'Download Fuchsia Dependencies.'
       'Read fuchsia cipd version',
       api.file.read_text('FuchsiaSdkCipdVersion')) + api.step_data(
-          'Fuchsia Tests.Create Isolate Archive.'
+          'Fuchsia Tests.Create CAS Archive.'
           'Download Fuchsia Dependencies.'
           'cipd describe fuchsia/sdk/core/linux-amd64',
           api.cipd.example_describe(

@@ -5,10 +5,10 @@
 """Recipe for engine shards.
 
    web_engine.py will call these shards. It will build the Flutter Web Engine,
-   and will archive it to the isolate server.
+   and will archive it to the CAS server.
 
    These shards will be called with required dependencies, felt commands, and
-   with an isolate hash of the Flutter Web Engine.
+   with a CAS digest of the Flutter Web Engine.
 """
 
 import contextlib
@@ -162,7 +162,7 @@ def GenTests(api):
           dependencies=['chrome_driver', 'chrome', 'goldens_repo'],
           command_args=['test', '--browser=chrome'],
           command_name='chrome-tests',
-          isolated_hash='abceqwe'
+          local_engine_cas_hash='abceqwe'
       ), api.platform('linux', 64)
   ) + api.runtime(is_experimental=False) + api.platform.name('linux')
   yield api.test(
@@ -174,11 +174,11 @@ def GenTests(api):
           dependencies=['firefox_driver', 'goldens_repo'],
           command_args=['test', '--browser=firefox'],
           command_name='firefox-tests',
-          isolated_hash='abceqwe'
+          local_engine_cas_hash='abceqwe'
       ), api.platform.name('linux'), api.platform('linux', 64)
   ) + api.runtime(is_experimental=False)
   yield api.test('windows-post-submit') + api.properties(
-      goma_jobs='200', isolated_hash='abceqwe'
+      goma_jobs='200', local_engine_cas_hash='abceqwe'
   ) + api.platform('win', 32) + api.runtime(is_experimental=False)
   yield api.test(
       'mac-post-submit',
@@ -189,7 +189,7 @@ def GenTests(api):
           dependencies=['goldens_repo'],
           command_args=['test', '--browser=ios-safari'],
           command_name='ios-safari-unit-tests',
-          isolated_hash='abceqwe'
+          local_engine_cas_hash='abceqwe'
       ), api.platform('mac', 64)
   ) + api.runtime(is_experimental=False)
   yield api.test(
@@ -202,7 +202,7 @@ def GenTests(api):
           git_ref='refs/pull/1/head',
           dependencies=['goldens_repo'],
           clobber=True,
-          isolated_hash='abceqwe'
+          local_engine_cas_hash='abceqwe'
       ), api.platform('linux', 64)
   ) + api.runtime(is_experimental=True)
   yield api.test(
@@ -213,6 +213,6 @@ def GenTests(api):
           git_ref='refs/pull/1/head',
           dependencies=['invalid_dependency'],
           clobber=True,
-          isolated_hash='abceqwe'
+          local_engine_cas_hash='abceqwe'
       ), api.platform('linux', 64), api.expect_exception('ValueError')
   ) + api.runtime(is_experimental=True)

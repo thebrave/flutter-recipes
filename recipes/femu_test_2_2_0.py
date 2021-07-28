@@ -16,6 +16,7 @@ DEPS = [
     'depot_tools/depot_tools',
     'flutter/repo_util',
     'flutter/yaml',
+    'fuchsia/archive',
     'fuchsia/display_util',
     'fuchsia/goma',
     'fuchsia/sdk',
@@ -93,16 +94,15 @@ def CasRoot(api):
   sdk_version = GetFuchsiaBuildId(api)
   checkout = GetCheckoutPath(api)
   root_dir = api.path.mkdtemp('vdl_runfiles_')
-  isolate_tree = api.file.symlink_tree(root=root_dir)
+  cas_tree = api.archive.tree(root=root_dir)
   flutter_tests = []
 
   def add(src, name_rel_to_root):
     # CAS requires the files to be located directly inside the root folder.
-    target = root_dir.join(name_rel_to_root)
-    if api.path.isfile(src):
-      api.file.copy('Copy %s' % name_rel_to_root, src, target)
-    else:
-      api.file.copytree('Copy %s' % name_rel_to_root, src, target)
+    cas_tree.register_link(
+        target=src,
+        linkname=cas_tree.root.join(name_rel_to_root),
+    )
 
   def addVDLFiles():
     vdl_version = api.properties.get('vdl_version', 'g3-revision:vdl_fuchsia_20210316_RC00')
@@ -169,7 +169,8 @@ def CasRoot(api):
   addTestScript()
   addFlutterTests()
 
-  cas_hash = api.cas.archive('Archive FEMU Run Files', root_dir, root_dir)
+  cas_tree.create_links("create tree of vdl runfiles")
+  cas_hash = api.archive.upload(cas_tree.root, step_name='Archive FEMU Run Files')
   return flutter_tests, root_dir, cas_hash
 
 

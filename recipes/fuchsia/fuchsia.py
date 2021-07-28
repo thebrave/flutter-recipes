@@ -40,11 +40,11 @@ def GenTests(api):
       should_upload=False) + api.fuchsia_util.run_test_data(
           'Fuchsia Tests.Trigger Fuchsia Driver Tests') +
          api.repo_util.flutter_environment_data() + api.step_data(
-             'Fuchsia Tests.Create Isolate Archive.'
+             'Fuchsia Tests.Create CAS Archive.'
              'Download Fuchsia Dependencies.'
              'Read fuchsia cipd version',
              api.file.read_text('FuchsiaSdkCipdVersion')) + api.step_data(
-                 'Fuchsia Tests.Create Isolate Archive.'
+                 'Fuchsia Tests.Create CAS Archive.'
                  'Download Fuchsia Dependencies.'
                  'cipd describe fuchsia/sdk/core/linux-amd64',
                  api.cipd.example_describe(

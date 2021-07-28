@@ -119,7 +119,7 @@ def GenTests(api):
   )
   yield api.test(
       'web_engine', api.repo_util.flutter_environment_data(),
-      api.properties(isolated_hash='abceqwe',)
+      api.properties(local_engine_cas_hash='abceqwe',)
   )
   yield api.test(
       'xcode', api.repo_util.flutter_environment_data(),

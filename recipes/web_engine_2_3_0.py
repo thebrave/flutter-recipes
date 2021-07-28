@@ -26,12 +26,12 @@ DEPS = [
     'flutter/shard_util',
     'flutter/web_util',
     'flutter/yaml',
+    'fuchsia/archive',
     'fuchsia/goma',
     'recipe_engine/buildbucket',
     'recipe_engine/cipd',
     'recipe_engine/context',
     'recipe_engine/file',
-    'recipe_engine/isolated',
     'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/platform',
@@ -85,12 +85,10 @@ def Lint(api):
 def Archive(api, target):
   checkout = GetCheckoutPath(api)
   build_dir = checkout.join('out', target)
-  isolate_dir = api.path.mkdtemp('isolate-directory')
-  isolate_engine = isolate_dir.join(target)
-  api.file.copytree('Copy host_debug_unopt', build_dir, isolate_engine)
-  isolated = api.isolated.isolated(isolate_dir)
-  isolated.add_dir(isolate_dir)
-  return isolated.archive('Archive Flutter Engine Test Isolate')
+  cas_dir = api.path.mkdtemp('cas-directory')
+  cas_engine = cas_dir.join(target)
+  api.file.copytree('Copy host_debug_unopt', build_dir, cas_engine)
+  return api.archive.upload(cas_dir, step_name='Archive Flutter Engine Test CAS')
 
 
 def RunGN(api, *args):
@@ -166,22 +164,22 @@ def RunSteps(api, properties, env_properties):
         'dev/felt.dart'
     ]
 
-    isolated_hash = ''
+    cas_hash = ''
     builds = []
     if api.platform.is_linux:
       RunGN(api, *gn_flags)
       Build(api, target_name)
       # Archieve the engine. Start the drones. Due to capacity limits we are
       # Only using the drones on the Linux for now.
-      # Archive build directory into isolate.
-      isolated_hash = Archive(api, target_name)
+      # Archive build directory into CAS.
+      cas_hash = Archive(api, target_name)
       # Schedule builds.
       # TODO(nurhan): Currently this recipe only shards Linux. The web drones
       # recipe is written in a way that it can also support sharding for
       # macOS and Windows OSes. When more resources are available or when
       # MWE or WWE builders start running more than 1 hour, also shard those
       # builders.
-      builds = schedule_builds_on_linux(api, isolated_hash)
+      builds = schedule_builds_on_linux(api, cas_hash)
     elif api.platform.is_mac:
       with SetupXcode(api):
         RunGN(api, *gn_flags)
@@ -250,7 +248,7 @@ def RunSteps(api, properties, env_properties):
         CleanUpProcesses(api)
 
 
-def schedule_builds_on_linux(api, isolated_hash):
+def schedule_builds_on_linux(api, cas_hash):
   """Schedules one subbuild per subshard."""
   reqs = []
 
@@ -261,7 +259,7 @@ def schedule_builds_on_linux(api, isolated_hash):
   # These are the felt commands which will be used.
   command_args = ['test', '--browser=chrome', '--integration-tests-only']
   addShardTask(
-      api, reqs, command_name, dependencies, command_args, isolated_hash
+      api, reqs, command_name, dependencies, command_args, cas_hash
   )
 
   # For running Chrome Unit tests:
@@ -271,7 +269,7 @@ def schedule_builds_on_linux(api, isolated_hash):
   # These are the felt commands which will be used.
   command_args = ['test', '--browser=chrome', '--unit-tests-only']
   addShardTask(
-      api, reqs, command_name, dependencies, command_args, isolated_hash
+      api, reqs, command_name, dependencies, command_args, cas_hash
   )
 
   # For running Firefox Unit tests:
@@ -283,7 +281,7 @@ def schedule_builds_on_linux(api, isolated_hash):
   # These are the felt commands which will be used.
   command_args = ['test', '--browser=firefox', '--unit-tests-only']
   addShardTask(
-      api, reqs, command_name, dependencies, command_args, isolated_hash
+      api, reqs, command_name, dependencies, command_args, cas_hash
   )
 
   # For running Firefox Integration tests:
@@ -293,18 +291,18 @@ def schedule_builds_on_linux(api, isolated_hash):
   # These are the felt commands which will be used.
   command_args = ['test', '--browser=firefox', '--integration-tests-only']
   addShardTask(
-      api, reqs, command_name, dependencies, command_args, isolated_hash
+      api, reqs, command_name, dependencies, command_args, cas_hash
   )
 
   return api.buildbucket.schedule(reqs)
 
 
 def addShardTask(
-    api, reqs, command_name, dependencies, command_args, isolated_hash
+    api, reqs, command_name, dependencies, command_args, cas_hash
 ):
   drone_props = {
       'command_name': command_name, 'dependencies': dependencies,
-      'command_args': command_args, 'isolated_hash': isolated_hash
+      'command_args': command_args, 'local_engine_cas_hash': cas_hash
   }
 
   git_url = GIT_REPO

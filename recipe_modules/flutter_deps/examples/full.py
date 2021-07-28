@@ -88,7 +88,7 @@ def GenTests(api):
       ),
   )
   yield api.test(
-      'flutter_engine', api.properties(isolated_hash='abceqwe',),
+      'flutter_engine', api.properties(local_engine_cas_hash='abceqwe/7',),
       api.repo_util.flutter_environment_data(checkout_path)
   )
   yield api.test(

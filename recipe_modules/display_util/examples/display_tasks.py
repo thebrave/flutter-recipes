@@ -22,7 +22,7 @@ def RunSteps(api):
           ["./run_tests.sh", "image_name", "packages_name"]
       ).with_dimensions(
           pool="luci.flutter.tests"
-      ).with_isolated("isolated_hash").with_expiration_secs(3600)
+      ).with_cas_input_root("cas_hash/0").with_expiration_secs(3600)
       .with_io_timeout_secs(3600).with_execution_timeout_secs(3600)
       .with_idempotent(True).with_containment_type("AUTO"),
   )

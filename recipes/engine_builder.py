@@ -20,7 +20,6 @@ DEPS = [
   'recipe_engine/cas',
   'recipe_engine/context',
   'recipe_engine/file',
-  'recipe_engine/isolated',
   'recipe_engine/path',
   'recipe_engine/platform',
   'recipe_engine/properties',
@@ -58,14 +57,6 @@ def RunGN(api, *args):
   gn_cmd.extend(args)
   api.step('gn %s' % ' '.join(args), gn_cmd)
 
-
-def IsolateOutputs(api, output_files, output_dirs):
-  out_dir = api.path['cache'].join('builder', 'src')
-  isolated = api.isolated.isolated(out_dir)
-  isolated.add_files(output_files)
-  for output_dir in output_dirs:
-    isolated.add_dir(output_dir)
-  return isolated.archive('Isolate build outputs')
 
 def CasOutputs(api, output_files, output_dirs):
   out_dir = api.path['cache'].join('builder', 'src')
@@ -105,11 +96,9 @@ def RunSteps(api, properties):
       # Collect memory/cpu/process after task execution.
       api.os_utils.collect_os_info()
 
-    isolated_hash = IsolateOutputs(api, output_files, output_dirs)
     cas_hash = CasOutputs(api, output_files, output_dirs)
     output_props = api.step('Set output properties', None)
     output_props.presentation.properties['cas_output_hash'] = cas_hash
-    output_props.presentation.properties['isolated_output_hash'] = isolated_hash
 
 
 def GenTests(api):

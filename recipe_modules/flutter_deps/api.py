@@ -13,8 +13,8 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     """ Sets the local engine related information to environment variables.
 
     If the drone is started to run the tests with a local engine, it will
-    contain an `isolated_hash` property where we can download engine files.
-    If the `isolated_build` property is present, it will override the
+    contain a `local_engine_cas_hash` property where we can download engine files.
+    If the `local_engine` property is present, it will override the
     default build configuration name, "host_debug_unopt"
 
     These files will be located in the build folder, whose name comes
@@ -24,26 +24,18 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env(dict): Current environment variables.
       env_prefixes(dict):  Current environment prefixes variables.
     """
-    # No-op if `isolate_hash` and `local_engine_cas_hash` properties are empty
-    # TODO(https://github.com/flutter/flutter/issues/84119): Remove support
-    # for isolated downloads when uses are migrated to cas.
-    isolated_hash = self.m.properties.get('isolated_hash')
-    isolated_build = self.m.properties.get('isolated_build')
+    # No-op if `local_engine_cas_hash` property is empty
     cas_hash = self.m.properties.get('local_engine_cas_hash')
     local_engine = self.m.properties.get('local_engine')
-    if isolated_hash or cas_hash:
+    if cas_hash:
       checkout_engine = self.m.path['cleanup'].join('builder', 'src', 'out')
-      # Download host_debug_unopt from the isolate.
+      # Download host_debug_unopt from CAS.
       if cas_hash:
         self.m.cas.download(
             'Download engine from CAS', cas_hash, checkout_engine
         )
-      if isolated_hash:
-        self.m.isolated.download(
-            'Download for engine', isolated_hash, checkout_engine
-        )
       local_engine = checkout_engine.join(
-          isolated_build or local_engine or 'host_debug_unopt')
+          local_engine or 'host_debug_unopt')
       dart_bin = local_engine.join('dart-sdk', 'bin')
       paths = env_prefixes.get('PATH', [])
       paths.insert(0, dart_bin)

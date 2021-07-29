@@ -76,11 +76,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         continue
       dep_funct = available_deps.get(dep.get('dependency'))
       if not dep_funct:
-        msg = '''Dependency %s not available.
-
-        Ensure ci.yaml contains one of the following supported keys:
-        %s'''.format(dep.get('dependency'), available_deps.keys())
-        raise ValueError(msg)
+        raise ValueError('Dependency %s not available.' % dep)
       dep_funct(env, env_prefixes, dep.get('version'))
 
   def open_jdk(self, env, env_prefixes, version):

@@ -1572,6 +1572,11 @@ def RunSteps(api, properties, env_properties):
   # Delete derived data on mac. This is a noop for other platforms.
   api.os_utils.clean_derived_data()
 
+  # Ensure required deps are installed
+  api.flutter_deps.required_deps(
+      env, env_prefixes, api.properties.get('dependencies', [])
+  )
+
   # Various scripts we run assume access to depot_tools on path for `ninja`.
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():
@@ -1912,6 +1917,12 @@ def GenTests(api):
               'build_android_aot': True,
               'build_android_debug': False,
               'build_android_vulkan': False,
+              'dependencies': [
+                {
+                    'dependency': 'open_jdk',
+                    'version': 'version:1.8.0u202-b08',
+                }
+              ],
               'no_maven': False,
               'upload_packages': True,
               'android_sdk_license': 'android_sdk_hash',

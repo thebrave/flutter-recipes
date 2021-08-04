@@ -196,6 +196,39 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "OpenJDK dependency"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/java",
+      "-ensure-file",
+      "flutter_internal/java/openjdk/${platform} version:1.8.0u202-b08",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "OpenJDK dependency.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:1.8.0u20\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter_internal/java/openjdk/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
     "cmd": [
       "python",
       "-u",
@@ -207,11 +240,13 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Linux Engine/8945511751514863184",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -238,11 +273,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -280,11 +317,13 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -315,11 +354,13 @@
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -360,11 +401,13 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -412,11 +455,13 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -453,11 +498,13 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -490,11 +537,13 @@
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -530,11 +579,13 @@
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -585,11 +636,13 @@
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -625,11 +678,13 @@
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -669,11 +724,13 @@
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -703,11 +760,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -745,11 +804,13 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -781,11 +842,13 @@
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -826,11 +889,13 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -878,11 +943,13 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -919,11 +986,13 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -956,11 +1025,13 @@
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -996,11 +1067,13 @@
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1038,11 +1111,13 @@
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1076,11 +1151,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1103,11 +1180,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1137,11 +1216,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1172,11 +1253,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1205,11 +1288,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1319,11 +1404,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1433,11 +1520,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1547,11 +1636,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1661,11 +1752,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1782,11 +1875,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1814,11 +1909,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1868,11 +1965,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1922,11 +2021,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -1976,11 +2077,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {
@@ -2030,11 +2133,13 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "JAVA_HOME": "[CACHE]/java"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/java/bin"
       ]
     },
     "env_suffixes": {

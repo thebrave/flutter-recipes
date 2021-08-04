@@ -21,9 +21,12 @@ from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from google.protobuf import struct_pb2
 
 DEPS = [
+    'flutter/repo_util',
     'flutter/shard_util_v2',
     'recipe_engine/buildbucket',
+    'recipe_engine/json',
     'recipe_engine/properties',
+    'recipe_engine/path',
     'recipe_engine/step',
 ]
 
@@ -32,7 +35,19 @@ ENV_PROPERTIES = EnvProperties
 
 
 def RunSteps(api, properties, env_properties):
-  builds = api.properties.get('builds')
+  config_name = api.properties.get('config_name')
+  # Checkout engine repository only.
+  checkout_path = api.path['start_dir'].join('engine')
+  api.repo_util.checkout(
+      'engine',
+      checkout_path=checkout_path,
+      url=api.properties.get('git_url'),
+      ref=api.properties.get('git_ref')
+  )
+  # Read builds configuration from repository under test.
+  config_path = checkout_path.join('ci', 'builders', '%s.json' % config_name)
+  builds = api.json.read('Read build config file', config_path,
+                         step_test_data=lambda: api.json.test_api.output([])).json.output
   tasks = api.shard_util_v2.schedule(builds)
   with api.step.nest('collect builds') as presentation:
     api.shard_util_v2.collect([build.build_id for build in tasks.values()],

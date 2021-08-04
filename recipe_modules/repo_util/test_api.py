@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 from recipe_engine import recipe_test_api
-import api
 
 
 class RepoUtilTestApi(recipe_test_api.RecipeTestApi):

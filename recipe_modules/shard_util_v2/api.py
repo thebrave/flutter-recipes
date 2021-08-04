@@ -38,7 +38,6 @@ class ShardUtilApi(recipe_api.RecipeApi):
     for build in builds:
       task_name = build.get('name')
       drone_properties = self.m.properties.thaw()
-      del drone_properties['builds']
       drone_properties['build'] = build
       # Copy parent bot dimensions.
       drone_dimensions = build.get('drone_dimensions', [])

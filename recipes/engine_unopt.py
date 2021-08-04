@@ -12,6 +12,7 @@ DEPS = [
     'depot_tools/gclient',
     'flutter/build_util',
     'flutter/flutter_deps',
+    'flutter/logs_util',
     'flutter/os_utils',
     'flutter/osx_sdk',
     'flutter/repo_util',
@@ -53,7 +54,7 @@ def RunTests(api, out_dir, android_out_dir=None, ios_out_dir=None, types='all'):
   script_path = GetCheckoutPath(api).join('flutter', 'testing', 'run_tests.py')
   # TODO(godofredoc): use .vpython from engine when file are available.
   venv_path = api.depot_tools.root.join('.vpython')
-  args = ['--variant', out_dir, '--type', types]
+  args = ['--variant', out_dir, '--type', types, '--engine-capture-core-dump']
   if android_out_dir:
     args.extend(['--android-variant', android_out_dir])
   if ios_out_dir:
@@ -211,6 +212,8 @@ def RunSteps(api, properties, env_properties):
   }
   env_prefixes = {'PATH': [dart_bin]}
 
+  api.logs_util.initialize_logs_collection(env)
+
   # Add certificates and print the ones required for pub.
   api.flutter_deps.certs(env, env_prefixes)
   api.os_utils.print_pub_certs()
@@ -229,28 +232,31 @@ def RunSteps(api, properties, env_properties):
 
     api.gclient.runhooks()
 
-    # Checks before building the engine. Only run on Linux.
-    if api.platform.is_linux:
-      FormatAndDartTest(api)
-      Lint(api)
-      CheckLicenses(api)
-      BuildLinux(api)
-      AnalyzeDartUI(api)
-      TestObservatory(api)
-      LintAndroidHost(api)
-      BuildLinuxAndroid(api, env_properties.SWARMING_TASK_ID)
+    try:
+      # Checks before building the engine. Only run on Linux.
+      if api.platform.is_linux:
+        FormatAndDartTest(api)
+        Lint(api)
+        CheckLicenses(api)
+        BuildLinux(api)
+        AnalyzeDartUI(api)
+        TestObservatory(api)
+        LintAndroidHost(api)
+        BuildLinuxAndroid(api, env_properties.SWARMING_TASK_ID)
 
-    if api.platform.is_mac:
-      with SetupXcode(api):
-        BuildMac(api)
-        with InstallGems(api):
-          BuildIOS(api)
+      if api.platform.is_mac:
+        with SetupXcode(api):
+          BuildMac(api)
+          with InstallGems(api):
+            BuildIOS(api)
 
-    if api.platform.is_win:
-      BuildWindows(api)
+      if api.platform.is_win:
+        BuildWindows(api)
+    finally:
+      api.logs_util.upload_logs('engine')
+      # This is to clean up leaked processes.
+      api.os_utils.kill_processes()
 
-  # This is to clean up leaked processes.
-  api.os_utils.kill_processes()
   # Collect memory/cpu/process after task execution.
   api.os_utils.collect_os_info()
 

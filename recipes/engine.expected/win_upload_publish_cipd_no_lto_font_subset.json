@@ -63,6 +63,45 @@
   },
   {
     "cmd": [],
+    "name": "Initialize logs"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CLEANUP]\\flutter_logs_dir"
+    ],
+    "infra_step": true,
+    "name": "Initialize logs.Ensure [CLEANUP]\\flutter_logs_dir",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "",
+      "[CLEANUP]\\flutter_logs_dir\\noop.txt"
+    ],
+    "infra_step": true,
+    "name": "Initialize logs.Write noop file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
     "name": "Install certs"
   },
   {
@@ -102,7 +141,9 @@
     "cwd": "[CACHE]\\certs",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -163,7 +204,9 @@
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Win Engine/8945511751514863184",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
       "GIT_HTTP_LOW_SPEED_TIME": "1800",
       "GOMA_DIR": "[CACHE]\\goma\\client"
@@ -236,7 +279,9 @@
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Win Engine/8945511751514863184",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -270,7 +315,9 @@
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Win Engine/8945511751514863184",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -304,7 +351,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -337,7 +386,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -382,7 +433,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -420,7 +473,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -474,7 +529,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -517,7 +574,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -564,7 +623,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -605,7 +666,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -661,7 +724,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -702,7 +767,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -747,7 +814,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -781,12 +850,15 @@
       "--variant",
       "host_debug",
       "--type",
-      "engine"
+      "engine",
+      "--engine-capture-core-dump"
     ],
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -818,7 +890,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -851,7 +925,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -898,7 +974,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -936,7 +1014,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -990,7 +1070,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -1033,7 +1115,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -1080,7 +1164,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -1121,7 +1207,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -1164,7 +1252,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -1201,7 +1291,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -1234,7 +1326,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -1281,7 +1375,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -1319,7 +1415,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -1373,7 +1471,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -1416,7 +1516,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -1463,7 +1565,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -1504,7 +1608,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -1547,7 +1653,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -1585,7 +1693,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -1631,7 +1741,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -1669,7 +1781,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -1723,7 +1837,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -1766,7 +1882,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -1813,7 +1931,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -1854,7 +1974,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -1897,7 +2019,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -1934,7 +2058,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -1966,7 +2092,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2001,7 +2129,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2037,7 +2167,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2066,7 +2198,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2101,7 +2235,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2137,7 +2273,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2166,7 +2304,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2201,7 +2341,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2237,7 +2379,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2266,7 +2410,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2301,7 +2447,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2337,7 +2485,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2366,7 +2516,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2401,7 +2553,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2437,7 +2591,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2466,7 +2622,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2501,7 +2659,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2537,7 +2697,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2566,7 +2728,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2601,7 +2765,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2637,7 +2803,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2672,7 +2840,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2704,7 +2874,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2739,7 +2911,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2775,7 +2949,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2804,7 +2980,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2839,7 +3017,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2875,7 +3055,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2909,7 +3091,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2942,7 +3126,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -2975,7 +3161,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -3008,7 +3196,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -3053,7 +3243,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -3091,7 +3283,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -3145,7 +3339,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -3188,7 +3384,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -3235,7 +3433,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -3276,7 +3476,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -3319,7 +3521,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -3352,7 +3556,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -3387,7 +3593,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -3423,7 +3631,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -3457,7 +3667,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -3502,7 +3714,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -3540,7 +3754,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -3594,7 +3810,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -3637,7 +3855,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -3684,7 +3904,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -3725,7 +3947,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -3768,7 +3992,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -3801,7 +4027,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -3836,7 +4064,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -3872,7 +4102,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -3906,7 +4138,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -3951,7 +4185,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -3989,7 +4225,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -4043,7 +4281,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -4086,7 +4326,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -4133,7 +4375,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -4174,7 +4418,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -4217,7 +4463,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -4250,7 +4498,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -4285,7 +4535,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -4321,7 +4573,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -4354,7 +4608,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -4387,7 +4643,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -4420,7 +4678,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -4452,7 +4712,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -4485,7 +4747,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -4518,7 +4782,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -4551,7 +4817,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -4597,7 +4865,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -4635,7 +4905,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -4689,7 +4961,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -4732,7 +5006,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -4779,7 +5055,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -4820,7 +5098,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -4863,7 +5143,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -4901,7 +5183,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -4947,7 +5231,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -4985,7 +5271,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -5039,7 +5327,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -5082,7 +5372,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -5129,7 +5421,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -5170,7 +5464,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -5213,7 +5509,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -5251,7 +5549,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -5297,7 +5597,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -5335,7 +5637,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -5389,7 +5693,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -5432,7 +5738,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -5479,7 +5787,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -5520,7 +5830,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -5563,7 +5875,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -5601,7 +5915,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -5647,7 +5963,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -5685,7 +6003,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -5739,7 +6059,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -5782,7 +6104,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -5829,7 +6153,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -5870,7 +6196,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -5913,7 +6241,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -5951,7 +6281,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -5997,7 +6329,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -6035,7 +6369,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -6089,7 +6425,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -6132,7 +6470,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -6179,7 +6519,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -6220,7 +6562,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -6263,7 +6607,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -6301,7 +6647,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -6347,7 +6695,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -6385,7 +6735,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -6439,7 +6791,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -6482,7 +6836,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
@@ -6529,7 +6885,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -6570,7 +6928,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -6613,7 +6973,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
@@ -6646,7 +7008,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -6681,7 +7045,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -6717,7 +7083,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -6746,7 +7114,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -6781,7 +7151,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -6817,7 +7189,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -6846,7 +7220,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -6881,7 +7257,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -6917,7 +7295,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -6946,7 +7326,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -6981,7 +7363,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -7017,7 +7401,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -7046,7 +7432,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -7081,7 +7469,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -7117,7 +7507,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -7146,7 +7538,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -7181,7 +7575,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -7217,7 +7613,9 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_prefixes": {
@@ -7236,6 +7634,286 @@
     },
     "infra_step": true,
     "name": "temp dir for android-x64-release UploadArtifacts windows-x64.zip"
+  },
+  {
+    "cmd": [],
+    "name": "process logs"
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]\\gsutil.py",
+      "-m",
+      "----",
+      "cp",
+      "-r",
+      "[CLEANUP]\\flutter_logs_dir",
+      "gs://flutter_logs/flutter/abcd1234/engine/00000000-0000-0000-0000-000000001340"
+    ],
+    "cwd": "[CACHE]\\builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]\\goma\\client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\certs",
+        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "process logs.gsutil upload logs abcd1234",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@archive logs@https://console.cloud.google.com/storage/browser/flutter_logs/flutter/abcd1234/engine/00000000-0000-0000-0000-000000001340@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "glob",
+      "[CLEANUP]\\flutter_logs_dir",
+      "*"
+    ],
+    "cwd": "[CACHE]\\builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]\\goma\\client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\certs",
+        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "process logs.logs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@glob@[CLEANUP]\\flutter_logs_dir\\a.txt@@@",
+      "@@@STEP_LOG_END@glob@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "log links",
+    "~followup_annotations": [
+      "@@@STEP_LINK@[CLEANUP]\\flutter_logs_dir\\myfile.txt@https://storage.googleapis.com/flutter_logs/flutter/abcd1234/engine/00000000-0000-0000-0000-000000001340/[CLEANUP]\\flutter_logs_dir\\myfile.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CLEANUP]\\flutter_logs_dir",
+      "--recursive"
+    ],
+    "cwd": "[CACHE]\\builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]\\goma\\client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\certs",
+        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "log links.List logs path",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@listdir@[CLEANUP]\\flutter_logs_dir\\myfile.txt@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Killing Processes"
+  },
+  {
+    "cmd": [
+      "taskkill",
+      "/f",
+      "/im",
+      "java.exe",
+      "/t"
+    ],
+    "cwd": "[CACHE]\\builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]\\goma\\client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\certs",
+        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Killing Processes.stop gradle daemon",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "taskkill",
+      "/f",
+      "/im",
+      "dart.exe",
+      "/t"
+    ],
+    "cwd": "[CACHE]\\builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]\\goma\\client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\certs",
+        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Killing Processes.stop dart",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "taskkill",
+      "/f",
+      "/im",
+      "adb.exe",
+      "/t"
+    ],
+    "cwd": "[CACHE]\\builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]\\goma\\client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\certs",
+        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Killing Processes.stop adb",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "taskkill",
+      "/f",
+      "/im",
+      "flutter_tester.exe",
+      "/t"
+    ],
+    "cwd": "[CACHE]\\builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]\\goma\\client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\certs",
+        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Killing Processes.stop flutter_tester",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -7312,62 +7990,6 @@
     ],
     "infra_step": true,
     "name": "gcloud pubsub"
-  },
-  {
-    "cmd": [],
-    "name": "Killing Processes"
-  },
-  {
-    "cmd": [
-      "taskkill",
-      "/f",
-      "/im",
-      "java.exe",
-      "/t"
-    ],
-    "name": "Killing Processes.stop gradle daemon",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "taskkill",
-      "/f",
-      "/im",
-      "dart.exe",
-      "/t"
-    ],
-    "name": "Killing Processes.stop dart",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "taskkill",
-      "/f",
-      "/im",
-      "adb.exe",
-      "/t"
-    ],
-    "name": "Killing Processes.stop adb",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "taskkill",
-      "/f",
-      "/im",
-      "flutter_tester.exe",
-      "/t"
-    ],
-    "name": "Killing Processes.stop flutter_tester",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
   },
   {
     "name": "$result"

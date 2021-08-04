@@ -16,12 +16,13 @@ def RunSteps(api):
   """Recipe to run flutter plugin tests."""
   plugins_checkout_path = api.path['start_dir'].join('plugins')
   flutter_checkout_path = api.path['start_dir'].join('flutter')
+  channel = api.properties.get('channel', 'master')
   with api.step.nest('checkout source code'):
     # Check out flutter ToT from master.
     api.repo_util.checkout(
         'flutter',
         checkout_path=flutter_checkout_path,
-        ref='refs/heads/stable',
+        ref='refs/heads/%s' % channel,
     )
     api.repo_util.checkout(
         'plugins',
@@ -29,7 +30,6 @@ def RunSteps(api):
         url=api.properties.get('git_url'),
         ref=api.properties.get('git_ref')
     )
-  channel = api.properties.get('channel', 'master')
   env, env_prefixes = api.repo_util.flutter_environment(flutter_checkout_path)
   # This is required by `flutter upgrade`
   env['FLUTTER_GIT_URL'
@@ -41,8 +41,6 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=flutter_checkout_path):
     with api.step.nest('prepare environment'):
-      api.step('flutter set channel', ['flutter', 'channel', channel])
-      api.step('flutter upgrade', ['flutter', 'upgrade'])
       config_flag = '--enable-windows-uwp-desktop' if api.properties.get(
           'uwp'
       ) else '--enable-windows-desktop'
@@ -51,7 +49,7 @@ def RunSteps(api):
           ['flutter', 'config', config_flag],
           infra_step=True,
       )
-      api.step('flutter doctor', ['flutter', 'doctor'])
+      api.step('flutter doctor', ['flutter', 'doctor', '-v'])
       # Fail fast on dependencies problem.
       timeout_secs = 300
       api.step(

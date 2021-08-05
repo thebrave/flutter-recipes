@@ -43,10 +43,10 @@ class ShardUtilApi(recipe_api.RecipeApi):
       drone_dimensions = build.get('drone_dimensions', [])
       task_dimensions = {}
       task_dimensions = []
+      platform_name = build.get('platform') or PLATFORM_TO_NAME.get(self.m.platform.name)
       for d in drone_dimensions:
         k, v = d.split('=')
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
-      platform_name = PLATFORM_TO_NAME.get(self.m.platform.name)
 
       # Override recipe.
       drone_properties['recipe'] = 'engine_v2/builder'
@@ -69,6 +69,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
         led_data = led_data.then("edit", *edit_args)
         led_data = led_data.then("edit", "-name", task_name)
         led_data = led_data.then("edit", "-r", 'engine_v2/builder')
+        for d in drone_dimensions:
+          led_data = led_data.then("edit", "-d", d)
         led_data = self.m.led.inject_input_recipes(led_data)
         launch_res = led_data.then("launch", "-modernize")
         task_id = launch_res.launch_result.task_id

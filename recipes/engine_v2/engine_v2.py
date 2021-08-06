@@ -48,9 +48,12 @@ def RunSteps(api, properties, env_properties):
   config_path = checkout_path.join('ci', 'builders', '%s.json' % config_name)
   builds = api.properties.get('builds')
   builds = builds or api.json.read(
-      'Read build config file', config_path,
-      step_test_data=lambda: api.json.test_api.output([])).json.output
-  tasks = api.shard_util_v2.schedule(builds)
+      'Read build config file',
+      config_path,
+      step_test_data=lambda: api.json.test_api.output([])
+  ).json.output
+  with api.step.nest('launch builds') as presentation:
+    tasks = api.shard_util_v2.schedule(builds, presentation)
   with api.step.nest('collect builds') as presentation:
     api.shard_util_v2.collect([build.build_id for build in tasks.values()],
                               presentation)
@@ -83,8 +86,9 @@ def GenTests(api):
           revision='a' * 40,
           build_number=123
       ),
-      api.shard_util_v2.child_led_steps(
+      api.shard_util_v2.child_build_steps(
           builds=[try_subbuild1, try_subbuild2],
+          launch_step="launch builds",
           collect_step="collect builds",
       )
   )

@@ -13,7 +13,8 @@ from PB.go.chromium.org.luci.led.job import job as job_pb2
 class ShardUtilTestApi(recipe_test_api.RecipeTestApi):
 
   def try_build_message(
-      self, builder, input_props=None, output_props=None, **kwargs):
+      self, builder, input_props=None, output_props=None, **kwargs
+  ):
     """Generates a try Buildbucket Build message.
 
     Args:
@@ -28,9 +29,34 @@ class ShardUtilTestApi(recipe_test_api.RecipeTestApi):
     msg = self.m.buildbucket.try_build_message(
         builder=builder, project=project, **kwargs
     )
+    msg.infra.swarming.task_id = "abc123"
     msg.input.properties.update(input_props if input_props else {})
     msg.output.properties.update(output_props if output_props else {})
     return msg
+
+  def child_build_steps(
+      self, builds, launch_step="build", collect_step="build"
+  ):
+    """Generates step data to schedule and collect from child builds.
+
+    Args:
+      builds (list(build_pb2.Build)): The builds to schedule and collect from.
+    """
+    responses = []
+    for build in builds:
+      responses.append(
+          dict(schedule_build=dict(id=build.id, builder=build.builder))
+      )
+    mock_schedule_data = self.m.buildbucket.simulated_schedule_output(
+        step_name="%s.schedule" % launch_step,
+        batch_response=builds_service_pb2.BatchResponse(responses=responses),
+    )
+
+    mock_collect_data = self.m.buildbucket.simulated_collect_output(
+        step_name="%s.collect" % collect_step,
+        builds=builds,
+    )
+    return mock_schedule_data + mock_collect_data
 
   def child_led_steps(self, builds, collect_step="build"):
     """Generates step data to schedule and collect from child builds.

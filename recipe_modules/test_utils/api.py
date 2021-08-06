@@ -78,9 +78,9 @@ class TestUtilsApi(recipe_api.RecipeApi):
       raise self.m.step.StepFailure('\n\n```%s```\n' % (stdout or stderr))
     finally:
       self.m.step.active_result.presentation.logs[
-          'stdout'] = self.m.step.active_result.stdout
+          'test_stdout'] = self.m.step.active_result.stdout
       self.m.step.active_result.presentation.logs[
-          'stderr'] = self.m.step.active_result.stderr
+          'test_stderr'] = self.m.step.active_result.stderr
     if self._is_flaky(step.stdout):
       test_run_status = 'flaky'
     else:

@@ -24,14 +24,17 @@ from recipe_engine import recipe_api
 class RepoUtilApi(recipe_api.RecipeApi):
   """Provides utilities to work with flutter repos."""
 
-  def engine_checkout(self, checkout_path, env, env_prefixes, clobber=True):
+  def engine_checkout(
+      self, checkout_path, env, env_prefixes, clobber=True, custom_vars={}
+  ):
     """Checkout code using gclient.
 
     Args:
       checkout_path(Path): The path to checkout source code and dependencies.
       env(dict): A dictionary with the environment variables to set.
-      env(dict): A dictionary with the paths to be added to environment variables.
+      env_prefixes(dict): A dictionary with the paths to be added to environment variables.
       clobber(bool): A boolean indicating whether the checkout folder should be cleaned.
+      custom_vars(dict): A dictionary with custom variable definitions for gclient solution.
     """
     git_url = REPOS['engine']
     git_id = self.m.buildbucket.gitiles_commit.id
@@ -50,6 +53,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         soln.name = 'src/flutter'
         soln.url = git_url
         soln.revision = git_id
+        soln.custom_vars = custom_vars
         src_cfg.parent_got_revision_mapping['parent_got_revision'
                                            ] = 'got_revision'
         src_cfg.repo_path_map[git_url] = ('src/flutter', git_ref)

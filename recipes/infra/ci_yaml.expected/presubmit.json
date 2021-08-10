@@ -411,7 +411,7 @@
       "dart",
       "[START_DIR]/cocoon/app_dart/bin/generate_jspb.dart",
       "engine",
-      "abc123"
+      "def123"
     ],
     "cwd": "[START_DIR]/cocoon/app_dart",
     "env": {
@@ -439,7 +439,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "{\"hello\": \"world\"}",
+      "",
       "[START_DIR]/infra/config/generated/ci_yaml/engine_config.json"
     ],
     "cwd": "[START_DIR]/cocoon/app_dart",
@@ -461,7 +461,6 @@
     "infra_step": true,
     "name": "write jspb",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@engine_config.json@{\"hello\": \"world\"}@@@",
       "@@@STEP_LOG_END@engine_config.json@@@"
     ]
   },
@@ -498,246 +497,6 @@
     ],
     "cwd": "[START_DIR]/infra",
     "name": "luci generate"
-  },
-  {
-    "cmd": [
-      "git",
-      "ls-files",
-      "--modified",
-      "--deleted",
-      "--exclude-standard"
-    ],
-    "cwd": "[START_DIR]/infra",
-    "name": "check for no-op commit",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@stdout@hello@@@",
-      "@@@STEP_LOG_END@stdout@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "add",
-      "--update"
-    ],
-    "cwd": "[START_DIR]/infra",
-    "infra_step": true,
-    "name": "git add"
-  },
-  {
-    "cmd": [
-      "git",
-      "rev-parse",
-      "HEAD"
-    ],
-    "cwd": "[START_DIR]/infra",
-    "infra_step": true,
-    "name": "git rev-parse"
-  },
-  {
-    "cmd": [],
-    "name": "calculate Change-Id",
-    "~followup_annotations": [
-      "@@@STEP_TEXT@I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "diff",
-      "--unified=0",
-      "--cached"
-    ],
-    "cwd": "[START_DIR]/infra",
-    "infra_step": true,
-    "name": "calculate Change-Id.git diff",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@diff --git a/foo.txt b/foo.txt@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@--- a/foo.txt@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@+++ b/foo.txt@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@@@ -16 +16 @@@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@-        foo = 5@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@+        foo = 6@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@diff --git a/bar.txt b/bar.txt@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@--- a/bar.txt@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@+++ b/bar.txt@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@@@ -5 +5 @@@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@-        bar = 0@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@+        bar = 1@@@",
-      "@@@STEP_LOG_LINE@diff (without hashes)@@@@",
-      "@@@STEP_LOG_END@diff (without hashes)@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "hash-object",
-      "diff --git a/foo.txt b/foo.txt\n--- a/foo.txt\n+++ b/foo.txt\n@@ -16 +16 @@\n-        foo = 5\n+        foo = 6\ndiff --git a/bar.txt b/bar.txt\n--- a/bar.txt\n+++ b/bar.txt\n@@ -5 +5 @@\n-        bar = 0\n+        bar = 1\n####builder########"
-    ],
-    "cwd": "[START_DIR]/infra",
-    "infra_step": true,
-    "name": "calculate Change-Id.git hash-object",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "install infra/tools/luci/gerrit"
-  },
-  {
-    "cmd": [
-      "vpython",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CACHE]/cipd/infra/tools/luci/gerrit/pinned-gerrit-version"
-    ],
-    "cwd": "[START_DIR]/infra",
-    "infra_step": true,
-    "name": "install infra/tools/luci/gerrit.ensure package directory",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CACHE]/cipd/infra/tools/luci/gerrit/pinned-gerrit-version",
-      "-ensure-file",
-      "infra/tools/luci/gerrit/${platform} pinned-gerrit-version",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[START_DIR]/infra",
-    "infra_step": true,
-    "name": "install infra/tools/luci/gerrit.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-pinned-gerrit-ve\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/gerrit/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/cipd/infra/tools/luci/gerrit/pinned-gerrit-version/gerrit",
-      "change-query",
-      "-host",
-      "https://flutter-review.googlesource.com",
-      "-input",
-      "{\"params\": {\"o\": [\"CURRENT_COMMIT\", \"CURRENT_REVISION\", \"MESSAGES\"], \"q\": \"change:infra~main~I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c\"}}",
-      "-output",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[START_DIR]/infra",
-    "infra_step": true,
-    "name": "check for identical roll",
-    "timeout": 600,
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@null@@@",
-      "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LOG_LINE@json.input@{@@@",
-      "@@@STEP_LOG_LINE@json.input@  \"params\": {@@@",
-      "@@@STEP_LOG_LINE@json.input@    \"o\": [@@@",
-      "@@@STEP_LOG_LINE@json.input@      \"CURRENT_COMMIT\", @@@",
-      "@@@STEP_LOG_LINE@json.input@      \"CURRENT_REVISION\", @@@",
-      "@@@STEP_LOG_LINE@json.input@      \"MESSAGES\"@@@",
-      "@@@STEP_LOG_LINE@json.input@    ], @@@",
-      "@@@STEP_LOG_LINE@json.input@    \"q\": \"change:infra~main~I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c\"@@@",
-      "@@@STEP_LOG_LINE@json.input@  }@@@",
-      "@@@STEP_LOG_LINE@json.input@}@@@",
-      "@@@STEP_LOG_END@json.input@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "commit",
-      "-m",
-      "Roll engine to abc123\n\nRoller-URL: https://ci.chromium.org/b/8945511751514863184\nCq-Cl-Tag: roller-builder:builder\nCq-Cl-Tag: roller-bid:8945511751514863184\nCQ-Do-Not-Cancel-Tryjobs: true\nChange-Id: I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c",
-      "-a"
-    ],
-    "cwd": "[START_DIR]/infra",
-    "infra_step": true,
-    "name": "git commit"
-  },
-  {
-    "cmd": [
-      "git",
-      "push",
-      "--push-option",
-      "nokeycheck",
-      "origin",
-      "HEAD:refs/for/main%l=Commit-Queue+2,l=Code-Review+2"
-    ],
-    "cwd": "[START_DIR]/infra",
-    "infra_step": true,
-    "name": "git push",
-    "timeout": 180,
-    "~followup_annotations": [
-      "@@@STEP_LINK@gerrit link@https://flutter-review.googlesource.com/q/infra~main~I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "check for completion"
-  },
-  {
-    "cmd": [
-      "[CACHE]/cipd/infra/tools/luci/gerrit/pinned-gerrit-version/gerrit",
-      "change-detail",
-      "-host",
-      "https://flutter-review.googlesource.com",
-      "-input",
-      "{\"change_id\": \"infra~main~I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c\", \"params\": {\"o\": [\"CURRENT_REVISION\"]}}",
-      "-output",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[START_DIR]/infra",
-    "infra_step": true,
-    "name": "check for completion.check if done (0)",
-    "timeout": 30,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"current_revision\": \"abc123\", @@@",
-      "@@@STEP_LOG_LINE@json.output@  \"labels\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"Commit-Queue\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"approved\": {}@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  }, @@@",
-      "@@@STEP_LOG_LINE@json.output@  \"status\": \"MERGED\"@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LOG_LINE@json.input@{@@@",
-      "@@@STEP_LOG_LINE@json.input@  \"change_id\": \"infra~main~I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c\", @@@",
-      "@@@STEP_LOG_LINE@json.input@  \"params\": {@@@",
-      "@@@STEP_LOG_LINE@json.input@    \"o\": [@@@",
-      "@@@STEP_LOG_LINE@json.input@      \"CURRENT_REVISION\"@@@",
-      "@@@STEP_LOG_LINE@json.input@    ]@@@",
-      "@@@STEP_LOG_LINE@json.input@  }@@@",
-      "@@@STEP_LOG_LINE@json.input@}@@@",
-      "@@@STEP_LOG_END@json.input@@@",
-      "@@@STEP_LINK@gerrit link@https://flutter-review.googlesource.com/q/infra~main~I28135185e8ac8c69d0b894c4be54ddbb0ea69d5c@@@"
-    ]
   },
   {
     "name": "$result"

@@ -68,7 +68,7 @@ def RunSteps(api):
     api.step('flutter doctor', cmd=['flutter', 'doctor'])
     api.step('pub get', cmd=['pub', 'get'])
     generate_jspb_path = cocoon_path.join('app_dart', 'bin', 'generate_jspb.dart')
-    infra_config_path = infra_path.join('config', '%s_config.json' % repo)
+    infra_config_path = infra_path.join('config', 'generated', 'ci_yaml' '%s_config.json' % repo)
     # Generate_jspb
     jspb_step = api.step('generate jspb', cmd=['dart', generate_jspb_path, repo, commit_sha], stdout=api.raw_io.output_text(), stderr=api.raw_io.output_text())
     api.file.write_raw('write jspb', infra_config_path, jspb_step.stdout)

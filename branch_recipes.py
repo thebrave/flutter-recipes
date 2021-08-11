@@ -43,6 +43,8 @@ RECIPES_TO_SKIP = (
         'plugins/plugins_publish',
         'recipes',
         'tricium/tricium',
+        'infra/ci_yaml',
+        'infra/test_ownership',
         )
 
 repo_root = os.path.dirname(os.path.realpath(__file__))

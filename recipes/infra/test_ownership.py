@@ -31,7 +31,11 @@ def RunSteps(api):
   cocoon_path = start_path.join('cocoon')
   flutter_path = start_path.join('flutter')
 
-  repo = api.properties.get("git_repo")
+  gitiles_repo = api.properties.get(
+      'git_url'
+  ) or api.buildbucket.gitiles_commit.project
+  repo = gitiles_repo.split("/")[-1]
+
   with api.step.nest('checkout source code'):
     # Checkout flutter/flutter at head.
     commit_sha = api.repo_util.checkout(
@@ -71,8 +75,6 @@ def GenTests(api):
           api.path['start_dir'].join('flutter')
       ),
       api.properties(
-          git_ref='refs/pull/123/head',
-          git_url='https://abc.com/flutter',
-          git_repo='flutter',
+          git_ref='refs/pull/123/head', git_url='https://abc.com/flutter'
       )
   )

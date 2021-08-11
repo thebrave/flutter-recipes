@@ -71,7 +71,6 @@ def Build(api, checkout, env, env_prefixes):
   tests = [t for t in build.get('tests', []) if t.get('type') == 'local']
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=checkout.join('flutter')):
-    api.file.listdir('checkout files', checkout.join('out', 'host_debug_unopt', 'dart-sdk', 'bin'))
     # Run pub on all of the pub_dirs.
     for pub in pub_dirs:
       pub_dir = api.path.abs_to_path(

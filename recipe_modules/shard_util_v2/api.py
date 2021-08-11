@@ -162,7 +162,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
     results = {}
     for build in scheduled_builds:
       build_url = "https://ci.chromium.org/b/%s" % build.id
-      results[build.builder.builder] = SubbuildResult(
+      results[build.id] = SubbuildResult(
           builder=build.builder.builder, build_id=build.id, url=build_url
       )
     return results

@@ -18,9 +18,12 @@ from PB.recipes.flutter.engine import InputProperties
 from PB.recipes.flutter.engine import EnvProperties
 
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
+from PB.go.chromium.org.luci.buildbucket.proto \
+  import builds_service as builds_service_pb2
 from google.protobuf import struct_pb2
 
 DEPS = [
+    'flutter/display_util',
     'flutter/repo_util',
     'flutter/shard_util_v2',
     'recipe_engine/buildbucket',
@@ -55,8 +58,14 @@ def RunSteps(api, properties, env_properties):
   with api.step.nest('launch builds') as presentation:
     tasks = api.shard_util_v2.schedule(builds, presentation)
   with api.step.nest('collect builds') as presentation:
-    api.shard_util_v2.collect([build.build_id for build in tasks.values()],
-                              presentation)
+    results = api.shard_util_v2.collect(
+        [build.build_id for build in tasks.values()],
+        presentation)
+  api.display_util.display_builds(
+      step_name='display builds',
+      builds=[b.build_proto for b in results.values()],
+        raise_on_failure=True,
+    )
 
 
 def GenTests(api):
@@ -77,6 +86,7 @@ def GenTests(api):
       "ninja": {"config": "ios_debug", "targets": []},
       "generators": [{"name": "generator1", "script": "script1.sh"}]
   }]
+
   yield api.test(
       'basic', api.properties(builds=builds),
       api.buildbucket.try_build(
@@ -84,11 +94,11 @@ def GenTests(api):
           builder='try-builder',
           git_repo='https://github.com/repo/a',
           revision='a' * 40,
-          build_number=123
+          build_number=123,
       ),
       api.shard_util_v2.child_build_steps(
           builds=[try_subbuild1, try_subbuild2],
           launch_step="launch builds",
           collect_step="collect builds",
-      )
+      ),
   )

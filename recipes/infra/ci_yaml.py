@@ -22,6 +22,10 @@ DEPS = [
     'repo_util',
 ]
 
+def _is_postsubmit(api):
+  """Returns True if the current build is in prod, otherwise False."""
+  return api.buildbucket.build.builder.bucket == 'prod'
+
 
 def RunSteps(api):
   """Steps to checkout infra, dependencies, and generate new config."""
@@ -57,10 +61,17 @@ def RunSteps(api):
       )
   )
 
-  # gitiles commit info
-  commit_sha = api.buildbucket.gitiles_commit.id
-  gitiles_repo = api.buildbucket.gitiles_commit.project
-  repo = gitiles_repo.split("/")[-1]
+  git_branch = api.properties.get('git_branch')
+  repo = api.properties.get('git_repo')
+  if _is_postsubmit(api):
+    # gitiles commit info
+    commit_sha = api.buildbucket.gitiles_commit.id
+  else:
+    # github pull request info
+    commit_sha = None
+    for tag in api.buildbucket.build.tags:
+      if 'sha/git/' in tag.value:
+          commit_sha = tag.value.replace('sha/git/', '')
 
   # The context adds dart-sdk tools to PATH and sets PUB_CACHE.
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
@@ -68,14 +79,20 @@ def RunSteps(api):
     api.step('flutter doctor', cmd=['flutter', 'doctor'])
     api.step('pub get', cmd=['pub', 'get'])
     generate_jspb_path = cocoon_path.join('app_dart', 'bin', 'generate_jspb.dart')
-    infra_config_path = infra_path.join('config', 'generated', 'ci_yaml' '%s_config.json' % repo)
+    config_name = '%s_config.json' % repo
+    if git_branch and git_branch != 'master':
+      config_name = '%s_%s_config.json' % (repo, git_branch)
+    infra_config_path = infra_path.join('config', 'generated', 'ci_yaml', config_name)
     # Generate_jspb
-    jspb_step = api.step('generate jspb', cmd=['dart', generate_jspb_path, repo, commit_sha], stdout=api.raw_io.output_text(), stderr=api.raw_io.output_text())
+    jspb_step = api.step('generate jspb',
+        cmd=['dart', generate_jspb_path, repo, commit_sha],
+        stdout=api.raw_io.output_text(), stderr=api.raw_io.output_text())
     api.file.write_raw('write jspb', infra_config_path, jspb_step.stdout)
 
-# Roll scheduler.proto
+  # Roll scheduler.proto
   with api.context(env_prefixes={'PATH': [protoc_path.join('bin')]}):
-    scheduler_proto_src = cocoon_path.join('app_dart', 'lib', 'src', 'model', 'proto', 'internal', 'scheduler.proto')
+    scheduler_proto_src = cocoon_path.join('app_dart', 'lib', 'src', 'model',
+        'proto', 'internal', 'scheduler.proto')
     scheduler_proto_dst = infra_path.join('config', 'lib', 'ci_yaml')
     api.step('Roll scheduler.proto', ['cp', scheduler_proto_src, scheduler_proto_dst])
     api.step('Compile scheduler.proto', ['bash', scheduler_proto_dst.join('compile_proto.sh')])
@@ -83,27 +100,65 @@ def RunSteps(api):
   with api.context(cwd=infra_path):
     # Generate luci configs
     api.step('luci generate', cmd=['lucicfg', 'generate', 'config/main.star'])
-    change = api.auto_roller.attempt_roll(
-        gerrit_host = 'flutter-review.googlesource.com',
-        gerrit_project = 'infra',
-        repo_dir = infra_path,
-        commit_message = 'Roll %s to %s' % (repo, commit_sha),
-        # TODO(chillers): Change to oncall group. https://github.com/flutter/flutter/issues/86945
-        cc_on_failure = 'chillers@google.com',
-    )
-    return api.auto_roller.raw_result(change)
+    # Only send rolls on postsubmit
+    if _is_postsubmit(api):
+        api.auto_roller.attempt_roll(
+            gerrit_host = 'flutter-review.googlesource.com',
+            gerrit_project = 'infra',
+            repo_dir = infra_path,
+            commit_message = 'Roll %s to %s' % (repo, commit_sha),
+            # TODO(chillers): Change to oncall group. https://github.com/flutter/flutter/issues/86945
+            cc_on_failure = 'chillers@google.com',
+        )
 
 
 def GenTests(api):
   yield api.test(
       'basic',
       api.buildbucket.ci_build(
+          bucket='prod',
           git_repo='https://chromium.googlesource.com/external/github.com/flutter/engine',
           revision = 'abc123'
+      ),
+      api.properties(
+          git_branch='master',
+          git_repo='engine'
       ),
       api.repo_util.flutter_environment_data(
           api.path['start_dir'].join('flutter')
       ),
       api.step_data('generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}')),
       api.auto_roller.success()
+  )
+  yield api.test(
+      'release',
+      api.buildbucket.ci_build(
+          bucket='prod',
+          git_repo='https://chromium.googlesource.com/external/github.com/flutter/engine',
+          revision = 'abc123'
+      ),
+      api.properties(
+          git_branch='dev',
+          git_repo='engine'
+      ),
+      api.repo_util.flutter_environment_data(
+          api.path['start_dir'].join('flutter')
+      ),
+      api.step_data('generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}')),
+      api.auto_roller.success()
+  )
+  yield api.test(
+      'presubmit',
+      api.buildbucket.try_build(
+          bucket='try',
+          tags=api.buildbucket.tags(
+              buildset=['sha/git/def123', 'sha/pr/1']
+          )
+      ),
+      api.properties(
+          git_repo='engine'
+      ),
+      api.repo_util.flutter_environment_data(
+          api.path['start_dir'].join('flutter')
+      ),
   )

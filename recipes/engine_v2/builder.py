@@ -39,6 +39,7 @@ DEPS = [
     'flutter/os_utils',
     'flutter/osx_sdk',
     'flutter/repo_util',
+    'fuchsia/archive',
     'fuchsia/goma',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -52,7 +53,7 @@ PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
 
-def Build(api, checkout, env, env_prefixes):
+def Build(api, checkout, env, env_prefixes, outputs):
   """Builds a flavor identified as a set of gn and ninja configs."""
   ninja_tool = {
       "ninja": api.build_util.build,
@@ -67,6 +68,7 @@ def Build(api, checkout, env, env_prefixes):
             ](ninja.get('config'), checkout, ninja.get('targets'))
   generator_tasks = build.get('generators', {}).get('tasks', [])
   pub_dirs = build.get('generators', {}).get('pub_dirs', [])
+  archives = build.get('archives', [])
   # Get only local tests.
   tests = [t for t in build.get('tests', []) if t.get('type') == 'local']
   with api.context(env=env, env_prefixes=env_prefixes,
@@ -99,6 +101,22 @@ def Build(api, checkout, env, env_prefixes):
       command.append(checkout.join(test.get('script')))
       command.extend(test.get('parameters', []))
       api.step(test.get('name'), command)
+    for archive_config in archives:
+      outputs[archive_config['name']] = Archive(api, checkout, archive_config)
+
+
+def Archive(api, checkout, archive_config):
+  archive_dir = api.path.mkdtemp(archive_config['name'])
+  # First remove paths from excluding list.
+  for exclude_path in archive_config['exclude_paths']:
+    full_exclude_path = api.path.abspath(checkout.join(exclude_path))
+    api.file.rmtree('Remove %s' % exclude_path, full_exclude_path)
+  for include_path in archive_config['include_paths']:
+    #raise Exception(type(checkout.join(include_path)))
+    full_include_path = api.path.abspath(checkout.join(include_path))
+    dirname = api.path.basename(full_include_path)
+    api.file.copytree('Copy %s' % include_path, full_include_path, archive_dir.join(dirname))
+  return api.archive.upload(archive_dir, step_name='Archive %s' % archive_config['name'])
 
 
 def RunSteps(api, properties, env_properties):
@@ -119,15 +137,25 @@ def RunSteps(api, properties, env_properties):
   api.repo_util.engine_checkout(
       cache_root, env, env_prefixes, custom_vars=custom_vars
   )
+  outputs = {}
   if api.platform.is_mac:
     with api.osx_sdk('ios'):
-      Build(api, checkout, env, env_prefixes)
+      Build(api, checkout, env, env_prefixes, outputs)
   else:
-    Build(api, checkout, env, env_prefixes)
+    Build(api, checkout, env, env_prefixes, outputs)
+  output_props = api.step('Set output properties', None)
+  output_props.presentation.properties['cas_output_hash'] = outputs
 
 
 def GenTests(api):
   build = {
+      "archives": [
+          {
+              "name": "host_debug_unopt",
+              "include_paths": ['out/host_debug_unopt/'],
+              "exclude_paths": ['out/host_debug_unopt/obj', 'out/host_debug_unopt/stripped.exe']
+          }
+      ],
       "gn": ["--ios"], "ninja": {"config": "ios_debug", "targets": []},
       "generators": {
           "pub_dirs": ["dev"],

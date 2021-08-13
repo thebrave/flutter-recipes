@@ -87,7 +87,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
   def checkout(self, name, checkout_path, url=None, ref=None):
     """Checks out a repo and returns sha1 of checked out revision.
 
-    The supproted repository names and their urls are defined in the global
+    The supported repository names and their urls are defined in the global
     REPOS variable.
 
     Args:

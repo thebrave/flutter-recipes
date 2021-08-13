@@ -33,7 +33,12 @@ def RunSteps(api):
 
   # Checkout flutter/flutter at head.
   flutter_git_ref = 'refs/heads/stable'
-  api.repo_util.checkout('flutter', flutter_path, ref=flutter_git_ref)
+  api.repo_util.checkout(
+      'flutter',
+      flutter_path,
+      ref=flutter_git_ref,
+      url='https://github.com/flutter/flutter',
+  )
 
   # Read yaml file
   tests_yaml_path = start_path.join('cocoon', 'tests.yaml')

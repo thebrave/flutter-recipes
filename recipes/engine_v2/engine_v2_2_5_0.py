@@ -78,7 +78,7 @@ def GenTests(api):
       "generators": [{"name": "generator1", "script": "script1.sh"}]
   }]
   yield api.test(
-      'basic', api.properties(builds=builds),
+      'basic', api.properties(builds=builds, environment='Staging'),
       api.buildbucket.try_build(
           project='proj',
           builder='try-builder',

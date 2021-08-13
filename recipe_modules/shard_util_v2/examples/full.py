@@ -58,6 +58,7 @@ def GenTests(api):
           "name": "ios_debug", "gn": [], "ninja": ["ios_debug"],
           'drone_dimensions': ['dimension1=abc']
       }],
+      'environment': 'Staging',
       'dependencies': [{"dependency": "android_sdk"},
                        {"dependency": "chrome_and_driver"}],
       '$recipe_engine/led': {
@@ -82,7 +83,8 @@ def GenTests(api):
                     "targets": []}, 'drone_dimensions': ['dimension1=abc'],
           "generators": [{"name": "generator1", "script": "script1.sh"}]
       }], 'dependencies': [{"dependency": "android_sdk"},
-                           {"dependency": "chrome_and_driver"}]
+                           {"dependency": "chrome_and_driver"}],
+      'environment': 'Staging'
   }
 
   presubmit_props = copy.deepcopy(props)

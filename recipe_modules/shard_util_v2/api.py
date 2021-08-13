@@ -87,7 +87,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
 
       if self.m.led.launched_by_led:
         # If coming from led Launch sub-build using led.
-        builder_name = '%s Engine Drone' % platform_name
+        environment = drone_properties['environment']
+        builder_name = '%s %s Engine Drone' % (platform_name, environment)
         parent = self.m.buildbucket.build.builder
         led_data = self.m.led(
             "get-builder",
@@ -131,7 +132,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
       platform_name = build.get('platform') or PLATFORM_TO_NAME.get(
           self.m.platform.name
       )
-      builder_name = '%s Engine Drone' % platform_name
+      environment = drone_properties['environment']
+      builder_name = '%s %s Engine Drone' % (platform_name, environment)
       for d in drone_dimensions:
         k, v = d.split('=')
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))

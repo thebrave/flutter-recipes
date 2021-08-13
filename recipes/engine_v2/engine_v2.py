@@ -88,7 +88,7 @@ def GenTests(api):
   }]
 
   yield api.test(
-      'basic', api.properties(builds=builds),
+      'basic', api.properties(builds=builds, environment='Staging'),
       api.buildbucket.try_build(
           project='proj',
           builder='try-builder',

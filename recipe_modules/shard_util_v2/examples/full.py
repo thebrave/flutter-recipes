@@ -25,9 +25,7 @@ def RunSteps(api):
   with api.step.nest("launch builds") as presentation:
     reqs = api.shard_util_v2.schedule(build_configs, presentation)
   with api.step.nest("collect builds") as presentation:
-    builds = api.shard_util_v2.collect([
-        build.build_id for build in reqs.values()
-    ], presentation)
+    builds = api.shard_util_v2.collect(reqs, presentation)
     for build in builds.itervalues():
       if build.build_proto.status != common_pb2.SUCCESS:
         raise api.step.StepFailure("build %s failed" % build.build_id)
@@ -37,6 +35,7 @@ def GenTests(api):
   try_subbuild1 = api.shard_util_v2.try_build_message(
       build_id=8945511751514863186,
       builder="builder-subbuild1",
+      input_props={'task_name': 'mytask'},
       output_props={"test_orchestration_inputs_hash": "abc"},
       status="SUCCESS",
   )
@@ -77,6 +76,7 @@ def GenTests(api):
       },
   }
   props_bb = {
+      'task_name': 'mytask',
       'builds': [{
           "name": "ios_debug", "gn": ["--ios"],
           "ninja": {"config": "ios_debug",

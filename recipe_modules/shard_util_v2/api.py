@@ -27,9 +27,11 @@ PROPERTIES_TO_REMOVE = [
 @attr.s
 class SubbuildResult(object):
   """Subbuild result metadata."""
-
+  # Task name for led and "<Platform> <Environment> Drone" for buildbucket.
   builder = attr.ib(type=str)
   build_id = attr.ib(type=str)
+  # Task name for both led and buildbucket.
+  build_name = attr.ib(type=str)
   url = attr.ib(type=str, default=None)
   build_proto = attr.ib(type=build_pb2.Build, default=None)
 
@@ -52,6 +54,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
         result[k] = v
     return result
 
+
   def schedule(self, builds, presentation):
     """Schedules one subbuild per build."""
     build_list = [self.unfreeze_dict(b) for b in builds]
@@ -70,6 +73,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       task_name = build.get('name')
       drone_properties = self.m.properties.thaw()
       drone_properties['build'] = build
+      drone_properties['task_name'] = task_name
       # Delete builds property if it exists.
       drone_properties.pop('builds', None)
       # Copy parent bot dimensions.
@@ -88,7 +92,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
       if self.m.led.launched_by_led:
         # If coming from led Launch sub-build using led.
         environment = drone_properties['environment']
-        builder_name = '%s %s Engine Drone' % (platform_name, environment)
+        environment = '%s ' % environment if environment else ''
+        builder_name = '%s %sEngine Drone' % (platform_name, environment)
         parent = self.m.buildbucket.build.builder
         led_data = self.m.led(
             "get-builder",
@@ -114,7 +119,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
             launch_res.launch_result.swarming_hostname,
         )
         results[task_name] = SubbuildResult(
-            builder=task_name, build_id=task_id, url=build_url
+            builder=task_name, build_id=task_id, url=build_url, build_name=task_name
         )
     return results
 
@@ -122,6 +127,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
     """Schedules builds using builbbucket."""
     swarming_parent_run_id = self.m.swarming.task_id
     reqs = []
+    task_names = []
     for build in builds:
       task_name = build.get('name')
       drone_properties = self.m.properties.thaw()
@@ -144,6 +150,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
           for key, val in drone_properties.items()
           if key not in PROPERTIES_TO_REMOVE
       }
+      task_names.append(task_name)
       req = self.m.buildbucket.schedule_request(
           swarming_parent_run_id=self.m.swarming.task_id,
           builder=builder_name,
@@ -162,39 +169,43 @@ class ShardUtilApi(recipe_api.RecipeApi):
       reqs.append(req)
     scheduled_builds = self.m.buildbucket.schedule(reqs, step_name="schedule")
     results = {}
-    for build in scheduled_builds:
+    for build, task_name in zip(scheduled_builds, task_names):
       build_url = "https://ci.chromium.org/b/%s" % build.id
       results[build.id] = SubbuildResult(
-          builder=build.builder.builder, build_id=build.id, url=build_url
+          builder=build.builder.builder, build_id=build.id,
+          url=build_url, build_name=task_name
       )
     return results
 
-  def collect(self, build_ids, presentation):
-    """Collects builds with the provided build_ids.
+  def collect(self, tasks, presentation):
+    """Collects builds for the provided tasks.
 
     Args:
-      build_ids (list(str)): The list of build ids to collect results for.
+      tasks (dict(int, SubbuildResult)): A dictionary with the subbuild
+        results and the build id as key.
       presentation (StepPresentation): The presentation to add logs to.
 
     Returns:
       A map from build IDs to the corresponding SubbuildResult.
     """
     if self.m.led.launched_by_led:
-      builds = self._collect_from_led(build_ids, presentation)
+      builds = self._collect_from_led(tasks, presentation)
     else:
-      builds = self._collect_from_bb(build_ids)
+      builds = self._collect_from_bb(tasks)
     return builds
 
-  def _collect_from_led(self, task_ids, presentation):
+  def _collect_from_led(self, tasks, presentation):
     """Waits for a list of builds to complete.
 
     Args:
-      task_ids((list(str|TaskRequestMetadata)): The tasks metadata used to
-        wait for completion.
+      tasks (dict(int, SubbuildResult)): A dictionary with the subbuild
+        results and the build id as key.
       presentation(StepPresentation): Used to add logs and logs to UI.
 
-    Returns: A list of SubBuildResult, one per task.
+    Returns:
+      A map from build IDs to the corresponding SubbuildResult.
     """
+    task_ids = [build.build_id for build in tasks.values()]
     swarming_results = self.m.swarming.collect(
         "collect", task_ids, output_dir=self.m.path["cleanup"]
     )
@@ -214,12 +225,26 @@ class ShardUtilApi(recipe_api.RecipeApi):
           builder=build_proto.builder.builder,
           build_id=task_id,
           build_proto=build_proto,
+          build_name=result.name
       )
     return builds
 
-  def _collect_from_bb(self, build_ids):
+  def _collect_from_bb(self, tasks):
+    """Collects builds from build bucket services using the provided tasks.
+
+    Args:
+      tasks (dict(int, SubbuildResult)): A dictionary with the subbuild
+        results and the build id as key.
+
+    Returns: A list of SubBuildResult, one per task.
+    """
+    build_ids = [build.build_id for build in tasks.values()]
+    build_id_to_name = {
+        int(build.build_id): build.build_name
+        for build in tasks.values()
+    }
     bb_fields = self.m.buildbucket.DEFAULT_FIELDS.union({
-        "infra.swarming.task_id", "summary_markdown"
+        "infra.swarming.task_id", "summary_markdown", "input",
     })
     # As of 2019-11-18, timeout defaults to something too short.
     # We never want this step to time out. We'd rather the whole build time out.
@@ -267,6 +292,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       )
     for build_id, build in builds.iteritems():
       builds[build_id] = SubbuildResult(
-          builder=build.builder.builder, build_id=build_id, build_proto=build
+          builder=build.builder.builder, build_id=build_id,
+          build_proto=build, build_name=build_id_to_name[int(build_id)]
       )
     return builds

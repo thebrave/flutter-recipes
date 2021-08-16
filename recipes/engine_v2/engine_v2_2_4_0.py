@@ -36,20 +36,13 @@ def RunSteps(api, properties, env_properties):
   with api.step.nest('launch builds') as presentation:
     tasks = api.shard_util_v2.schedule(builds, presentation)
   with api.step.nest('collect builds') as presentation:
-    api.shard_util_v2.collect([build.build_id for build in tasks.values()],
-                              presentation)
+    api.shard_util_v2.collect(tasks, presentation)
 
 
 def GenTests(api):
   try_subbuild1 = api.shard_util_v2.try_build_message(
       build_id=8945511751514863186,
       builder="builder-subbuild1",
-      output_props={"test_orchestration_inputs_hash": "abc"},
-      status="SUCCESS",
-  )
-  try_subbuild2 = api.shard_util_v2.try_build_message(
-      build_id=8945511751514863187,
-      builder="builder-subbuild2",
       output_props={"test_orchestration_inputs_hash": "abc"},
       status="SUCCESS",
   )
@@ -68,7 +61,7 @@ def GenTests(api):
           build_number=123
       ),
       api.shard_util_v2.child_build_steps(
-          builds=[try_subbuild1, try_subbuild2],
+          builds=[try_subbuild1],
           launch_step="launch builds",
           collect_step="collect builds",
       )

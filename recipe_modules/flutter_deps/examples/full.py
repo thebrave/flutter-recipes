@@ -42,6 +42,10 @@ def RunSteps(api):
     api.flutter_deps.required_deps(
         env, env_prefixes, [{'dependency': 'does_not_exist'}]
     )
+  with api.assertions.assertRaises(ValueError):
+    api.flutter_deps.required_deps(
+        env, env_prefixes, [{'dependency': 'xcode'}, {'dependency': 'xcode'}]
+    )
   api.flutter_deps.android_sdk(env, env_prefixes, '')
   api.flutter_deps.flutter_engine(env, env_prefixes)
   api.flutter_deps.firebase(env, env_prefixes)

@@ -71,16 +71,26 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'vpython': self.vpython,
         'vs_build': self.vs_build,
     }
+    parsed_deps = []
     for dep in deps:
-      if dep.get('dependency') in ['xcode', 'gems', 'swift']:
+      dependency = dep.get('dependency')
+      version = dep.get('version')
+      # Ensure there are no duplicate entries
+      if dependency in parsed_deps:
+        msg = '''Dependency %s is duplicated
+            Ensure ci.yaml contains only one entry for this target
+            '''.format(dependency)
+        raise ValueError(msg)
+      parsed_deps.append(dependency)
+      if dependency in ['xcode', 'gems', 'swift']:
         continue
-      dep_funct = available_deps.get(dep.get('dependency'))
+      dep_funct = available_deps.get(dependency)
       if not dep_funct:
         msg = '''Dependency %s not available.
             Ensure ci.yaml contains one of the following supported keys:
-            %s'''.format(dep.get('dependency'), available_deps.keys())
+            %s'''.format(dependency, available_deps.keys())
         raise ValueError(msg)
-      dep_funct(env, env_prefixes, dep.get('version'))
+      dep_funct(env, env_prefixes, version)
 
   def open_jdk(self, env, env_prefixes, version):
     """Downloads OpenJdk CIPD package and updates environment variables.

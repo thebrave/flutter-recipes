@@ -50,7 +50,7 @@ def Build(api, config, *targets):
   api.build_util.build(config, checkout, targets)
 
 
-def RunTests(api, out_dir, android_out_dir=None, ios_out_dir=None, types='all'):
+def RunTests(api, out_dir, android_out_dir=None, ios_out_dir=None, types='all', suppress_sanitizers=False):
   script_path = GetCheckoutPath(api).join('flutter', 'testing', 'run_tests.py')
   # TODO(godofredoc): use .vpython from engine when file are available.
   venv_path = api.depot_tools.root.join('.vpython')
@@ -59,6 +59,8 @@ def RunTests(api, out_dir, android_out_dir=None, ios_out_dir=None, types='all'):
     args.extend(['--android-variant', android_out_dir])
   if ios_out_dir:
     args.extend(['--ios-variant', ios_out_dir])
+  if suppress_sanitizers:
+    args.extend(['--use-sanitizer-suppressions'])
   api.python('Host Tests for %s' % out_dir, script_path, args, venv=venv_path)
 
 
@@ -113,9 +115,16 @@ def BuildLinuxAndroid(api, swarming_task_id):
 
 
 def BuildLinux(api):
-  RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk')
+  RunGN(
+      api,
+      '--runtime-mode',
+      'debug',
+      '--unoptimized',
+      '--prebuilt-dart-sdk',
+      '--asan'
+  )
   Build(api, 'host_debug_unopt')
-  RunTests(api, 'host_debug_unopt', types='dart,engine')
+  RunTests(api, 'host_debug_unopt', types='dart,engine', suppress_sanitizers=True)
 
 
 def TestObservatory(api):

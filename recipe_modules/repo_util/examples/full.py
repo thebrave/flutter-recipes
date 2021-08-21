@@ -16,10 +16,10 @@ DEPS = [
 
 def RunSteps(api):
   flutter_checkout_path = api.path['start_dir'].join('flutter')
-  api.repo_util.checkout('flutter', flutter_checkout_path)
-  api.repo_util.checkout('engine', api.path['start_dir'].join('engine'))
-  api.repo_util.checkout('cocoon', api.path['start_dir'].join('cocoon'))
-  api.repo_util.checkout('packages', api.path['start_dir'].join('packages'))
+  api.repo_util.checkout('flutter', flutter_checkout_path, ref='refs/heads/master')
+  api.repo_util.checkout('engine', api.path['start_dir'].join('engine'), ref='refs/heads/master')
+  api.repo_util.checkout('cocoon', api.path['start_dir'].join('cocoon'), ref='refs/heads/master')
+  api.repo_util.checkout('packages', api.path['start_dir'].join('packages'), ref='refs/heads/master')
   env, env_paths = api.repo_util.engine_environment(flutter_checkout_path)
   env, env_paths = api.repo_util.flutter_environment(flutter_checkout_path)
   api.repo_util.engine_checkout(api.path['start_dir'].join('engine'), {}, {})

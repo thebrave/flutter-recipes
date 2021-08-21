@@ -56,7 +56,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         soln.custom_vars = custom_vars
         src_cfg.parent_got_revision_mapping['parent_got_revision'
                                            ] = 'got_revision'
-        src_cfg.repo_path_map[git_url] = ('src/flutter', git_ref)
+        src_cfg.repo_path_map[git_url] = ('src/flutter', git_ref or 'refs/heads/master')
         self.m.gclient.c = src_cfg
         self.m.gclient.c.got_revision_mapping['src/flutter'
                                              ] = 'got_engine_revision'
@@ -102,7 +102,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
       git_url = url or REPOS[name]
       # gitiles_commit.id is more specific than gitiles_commit.ref, which is
       # branch
-      git_ref = ref or self.m.buildbucket.gitiles_commit.id
+      git_ref = ref or self.m.buildbucket.gitiles_commit.id or \
+          self.m.buildbucket.gitiles_commit.ref or 'refs/heads/master'
 
       def do_checkout():
         return self.m.git.checkout(

@@ -277,7 +277,6 @@ def GenTests(api):
                   build_fuchsia=True,
                   build_android_aot=True,
                   build_android_debug=True,
-                  build_android_vulkan=True,
                   upload_packages=should_upload,
                   force_upload=True,
               ),),
@@ -322,7 +321,6 @@ def GenTests(api):
               build_fuchsia=True,
               build_android_aot=True,
               build_android_debug=True,
-              build_android_vulkan=True,
               android_sdk_license='android_sdk_hash',
               android_sdk_preview_license='android_sdk_preview_hash')),
   )
@@ -344,7 +342,6 @@ def GenTests(api):
               build_fuchsia=True,
               build_android_aot=True,
               build_android_debug=True,
-              build_android_vulkan=True,
               android_sdk_license='android_sdk_hash',
               android_sdk_preview_license='android_sdk_preview_hash')),
   )
@@ -370,6 +367,5 @@ def GenTests(api):
               build_fuchsia=True,
               build_android_aot=True,
               build_android_debug=True,
-              build_android_vulkan=True,
               android_sdk_license='android_sdk_hash',
               android_sdk_preview_license='android_sdk_preview_hash')))

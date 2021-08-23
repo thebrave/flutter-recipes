@@ -723,10 +723,6 @@ def BuildLinuxAndroid(api, swarming_task_id):
     UploadSkyEngineDartPackage(api)
     UploadJavadoc(api, 'android_debug')
 
-  if api.properties.get('build_android_vulkan', True):
-    RunGN(api, '--runtime-mode', 'release', '--android', '--enable-vulkan')
-    Build(api, 'android_release_vulkan')
-
   if api.properties.get('build_android_aot', True):
     BuildLinuxAndroidAOT(api, swarming_task_id)
 
@@ -1107,10 +1103,6 @@ def BuildMac(api):
 
     UploadDartSdk(api, archive_name='dart-sdk-darwin-x64.zip')
     UploadWebSdk(api, archive_name='flutter-web-sdk-darwin-x64.zip')
-
-  if api.properties.get('build_android_vulkan', True):
-    RunGN(api, '--runtime-mode', 'release', '--android', '--enable-vulkan')
-    Build(api, 'android_release_vulkan')
 
   if api.properties.get('build_android_aot', True):
     RunGN(api, '--runtime-mode', 'profile', '--android')
@@ -1668,7 +1660,6 @@ def GenTests(api):
                           'build_fuchsia': True,
                           'build_android_aot': True,
                           'build_android_debug': True,
-                          'build_android_vulkan': True,
                           'build_windows_uwp': True,
                           'no_maven': maven,
                           'upload_packages': should_upload,
@@ -1748,7 +1739,6 @@ def GenTests(api):
               'build_fuchsia': True,
               'build_android_aot': True,
               'build_android_debug': True,
-              'build_android_vulkan': True,
               'android_sdk_license': 'android_sdk_hash',
               'android_sdk_preview_license': 'android_sdk_preview_hash'
           }
@@ -1774,7 +1764,6 @@ def GenTests(api):
               'build_fuchsia': True,
               'build_android_aot': True,
               'build_android_debug': True,
-              'build_android_vulkan': True,
               'android_sdk_license': 'android_sdk_hash',
               'android_sdk_preview_license': 'android_sdk_preview_hash'
           }
@@ -1804,7 +1793,6 @@ def GenTests(api):
               'build_android_aot': False,
               'build_android_jit_release': False,
               'build_android_debug': False,
-              'build_android_vulkan': False,
               'no_maven': True,
               'upload_packages': True,
               'android_sdk_license': 'android_sdk_hash',
@@ -1834,7 +1822,6 @@ def GenTests(api):
               'build_fuchsia': True,
               'build_android_aot': False,
               'build_android_debug': False,
-              'build_android_vulkan': False,
               'no_maven': False,
               'upload_packages': True,
               'android_sdk_license': 'android_sdk_hash',
@@ -1867,7 +1854,6 @@ def GenTests(api):
               'build_fuchsia': True,
               'build_android_aot': True,
               'build_android_debug': True,
-              'build_android_vulkan': True,
               'android_sdk_license': 'android_sdk_hash',
               'android_sdk_preview_license': 'android_sdk_preview_hash'
           }
@@ -1896,7 +1882,6 @@ def GenTests(api):
               'build_fuchsia': True,
               'build_android_aot': True,
               'build_android_debug': True,
-              'build_android_vulkan': True,
               'android_sdk_license': 'android_sdk_hash',
               'android_sdk_preview_license': 'android_sdk_preview_hash'
           }
@@ -1922,7 +1907,6 @@ def GenTests(api):
               'build_fuchsia': False,
               'build_android_aot': True,
               'build_android_debug': False,
-              'build_android_vulkan': False,
               'dependencies': [
                 {
                     'dependency': 'open_jdk',

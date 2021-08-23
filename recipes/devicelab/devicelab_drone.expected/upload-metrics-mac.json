@@ -110,6 +110,17 @@
     ]
   },
   {
+    "cmd": [
+      "git",
+      "log",
+      "--pretty=format:%ct",
+      "-n",
+      "1"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+    "name": "git commit time"
+  },
+  {
     "cmd": [],
     "name": "Initialize logs"
   },
@@ -649,6 +660,8 @@
     "cmd": [
       "luci-auth",
       "token",
+      "-scopes",
+      "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/datastore",
       "-lifetime",
       "3m"
     ],
@@ -722,6 +735,8 @@
       "False",
       "--results-file",
       "[CLEANUP]/results_tmp_1/results",
+      "--commit-time",
+      "",
       "--service-account-token-file",
       "[CLEANUP]/tmp_tmp_3"
     ],
@@ -730,15 +745,20 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GCP_PROJECT": "flutter-infra",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_3"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_2/vpython"

@@ -5,6 +5,7 @@
 from recipe_engine.recipe_api import Property
 
 DEPS = [
+    'fuchsia/git',
     'flutter/bucket_util',
     'flutter/devicelab_osx_sdk',
     'flutter/flutter_deps',
@@ -46,6 +47,15 @@ def RunSteps(api):
       api.properties.get('git_url'),
       api.properties.get('git_ref'),
   )
+  with api.context(cwd=flutter_path):
+    commit_time = api.git(
+        'git commit time',
+        'log',
+        '--pretty=format:%ct',
+        '-n',
+        '1',
+        stdout=api.raw_io.output()
+    ).stdout.rstrip()
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
   api.logs_util.initialize_logs_collection(env)
   with api.step.nest('Dependencies'):
@@ -117,8 +127,8 @@ def RunSteps(api):
           check_flaky(api)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadResults(
-        api, results_path, test_status == 'flaky', git_branch,
-        api.properties.get('buildername')
+        api, env, env_prefixes, results_path, test_status == 'flaky',
+        git_branch, api.properties.get('buildername'), commit_time
     )
     uploadMetricsToCas(api, results_path)
 
@@ -178,7 +188,8 @@ def shouldNotUpdate(api, builder_name, git_branch):
   """
   supported_branches = ['master']
   if api.runtime.is_experimental or api.properties.get(
-      'git_url') or 'staging' in builder_name or git_branch not in supported_branches:
+      'git_url'
+  ) or 'staging' in builder_name or git_branch not in supported_branches:
     return True
   else:
     return False
@@ -186,11 +197,14 @@ def shouldNotUpdate(api, builder_name, git_branch):
 
 def uploadResults(
     api,
+    env,
+    env_prefixes,
     results_path,
     is_test_flaky,
     git_branch,
     builder_name,
-    test_status='Succeeded'
+    commit_time,
+    test_status='Succeeded',
 ):
   """Upload DeviceLab test results to Cocoon.
 
@@ -210,18 +224,29 @@ def uploadResults(
         '--test-status', test_status
     ])
   else:
-    runner_params.extend(['--results-file', results_path])
+    runner_params.extend([
+        '--results-file', results_path, '--commit-time', commit_time
+    ])
+
   with api.step.nest('Upload metrics'):
     service_account = api.service_account.default()
-    access_token = service_account.get_access_token()
+    access_token = service_account.get_access_token(
+        scopes=[
+            'https://www.googleapis.com/auth/cloud-platform',
+            'https://www.googleapis.com/auth/datastore'
+        ]
+    )
     access_token_path = api.path.mkstemp()
     api.file.write_text(
         "write token", access_token_path, access_token, include_log=False
     )
+    env['TOKEN_PATH'] = access_token_path
+    env['GCP_PROJECT'] = 'flutter-infra'
     runner_params.extend(['--service-account-token-file', access_token_path])
     upload_command = ['dart', 'bin/test_runner.dart', 'upload-metrics']
     upload_command.extend(runner_params)
-    api.step('upload results', upload_command, infra_step=True)
+    with api.context(env=env, env_prefixes=env_prefixes):
+      api.step('upload results', upload_command, infra_step=True)
 
 
 def uploadMetricsToCas(api, results_path):
@@ -267,9 +292,7 @@ def GenTests(api):
           task_name='abc',
           dependencies=[{'dependency': 'xcode'}]
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-      api.buildbucket.ci_build(
-          git_ref='refs/heads/master',
-      ),
+      api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.step_data(
           'run abc',
           stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
@@ -283,9 +306,7 @@ def GenTests(api):
           task_name='abc',
           dependencies=[{'dependency': 'xcode'}]
       ),
-      api.buildbucket.ci_build(
-          git_ref='refs/heads/master',
-      ),
+      api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
   )
   yield api.test(
@@ -299,9 +320,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
           retcode=0
       ),
-      api.buildbucket.ci_build(
-          git_ref='refs/heads/master',
-      ),
+      api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.platform.name('win'),
   )
   yield api.test(
@@ -313,9 +332,7 @@ def GenTests(api):
           upload_metrics=True,
           upload_metrics_to_cas=True,
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-      api.buildbucket.ci_build(
-          git_ref='refs/heads/master',
-      )
+      api.buildbucket.ci_build(git_ref='refs/heads/master',)
   )
   yield api.test(
       "local-engine",

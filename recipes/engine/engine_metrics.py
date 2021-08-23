@@ -73,7 +73,7 @@ def RunSteps(api, properties, env_properties):
       'write token', access_token_path, access_token, include_log=False
   )
   env['TOKEN_PATH'] = access_token_path
-  env['GCP_PROJECT'] = 'flutter-infra'
+  env['GCP_PROJECT'] = 'flutter-cirrus'
   with api.context(env=env, env_prefixes=env_prefixes, cwd=benchmark_path):
     api.step('Upload metrics', ['bash', script_path])
 

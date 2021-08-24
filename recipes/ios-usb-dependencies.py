@@ -16,14 +16,12 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/runtime',
     'recipe_engine/step',
     'recipe_engine/url',
 ]
 
-# TODO(godofredoc): Remove when flutter tool branches to stable.
-# https://github.com/flutter/flutter/issues/75363.
-OLD_BUCKET_NAME = 'flutter_infra'
-NEW_BUCKET_NAME = 'flutter_infra_release'
+BUCKET_NAME = 'flutter_infra_release'
 
 HOMEBREW_FLUTTER_PREFIX = ['flutter', 'homebrew-flutter']
 MIRROR_URL_PREFIX = 'https://flutter-mirrors.googlesource.com'
@@ -64,30 +62,18 @@ INSTALL_PKGS = {
             'lib/libimobiledevice-1.0.6.dylib',
         ],
     },
-    'ios-deploy-flutter': {
-        'install_flags': ['--HEAD'],
-        'deliverables': [
-            'bin/ios-deploy',
-            'LICENSE',
-            'LICENSE2',
-        ],
-    },
 }
 
 
 def InstallHomebrew(api, homebrew_dir):
   homebrew_tar = api.path['start_dir'].join('homebrew.tar.gz')
   api.file.ensure_directory('mkdir homebrew', homebrew_dir)
-  api.step(
-      'get homebrew', [
-          'curl', '-L', 'https://github.com/Homebrew/brew/tarball/master', '-o',
-          homebrew_tar
-      ]
-  )
-  api.step(
-      'open tarball',
-      ['tar', 'zxf', homebrew_tar, '--strip', '1', '-C', homebrew_dir]
-  )
+  api.step('get homebrew', [
+      'curl', '-L', 'https://github.com/Homebrew/brew/tarball/master', '-o',
+      homebrew_tar
+  ])
+  api.step('open tarball',
+           ['tar', 'zxf', homebrew_tar, '--strip', '1', '-C', homebrew_dir])
 
 
 def GetBrewBin(api):
@@ -95,12 +81,10 @@ def GetBrewBin(api):
 
 
 def TapCustomBrews(api):
-  api.step(
-      'tap custom formulae', [
-          str(GetBrewBin(api)), 'tap', '/'.join(HOMEBREW_FLUTTER_PREFIX),
-          '%s/homebrew-flutter' % MIRROR_URL_PREFIX
-      ]
-  )
+  api.step('tap custom formulae', [
+      str(GetBrewBin(api)), 'tap', '/'.join(HOMEBREW_FLUTTER_PREFIX),
+      '%s/homebrew-flutter' % MIRROR_URL_PREFIX
+  ])
 
 
 def GetLocalPath(api, package_name):
@@ -112,24 +96,24 @@ def GetCloudPath(api, package_name):
   commit_hash = GetCommitHash(api)
   short_name = package_name.replace('-flutter', '')
   return 'ios-usb-dependencies/unsigned/%s/%s/%s.zip' % (
-      short_name, commit_hash, short_name
-  )
+      short_name, commit_hash, short_name)
 
 
 def GetCommitHash(api):
-  return api.buildbucket.gitiles_commit.id
+  gitiles_commit = api.buildbucket.gitiles_commit.id
+  if gitiles_commit:
+    return gitiles_commit
+  return api.properties['git_ref']
 
 
 def InstallPackage(api, package, name):
   install_flags = package.get('install_flags', [])
   prefix = '/'.join(HOMEBREW_FLUTTER_PREFIX)
-  api.step(
-      'installing %s' % name, [
-          str(GetBrewBin(api)),
-          'install',
-          '/'.join([prefix, name]),
-      ] + install_flags
-  )
+  api.step('installing %s' % name, [
+      str(GetBrewBin(api)),
+      'install',
+      '/'.join([prefix, name]),
+  ] + install_flags)
 
 
 def CopyDeliverable(api, deliverable, name, output_path):
@@ -149,58 +133,88 @@ def ZipAndUploadDeliverables(api, package_name, input_path, zip_out_dir):
   api.step('cloud path', ['echo', cloud_path])
   api.gsutil.upload(
       output_path,
-      OLD_BUCKET_NAME,
+      BUCKET_NAME,
       cloud_path,
       link_name=file_name,
       name='upload of %s' % file_name,
   )
+
+
+def BuildIosDeploy(api):
+  build_script = api.resource('ios-deploy.sh')
+  api.step('make %s executable' % build_script, ['chmod', '777', build_script])
+
+  work_dir = api.path['start_dir']
+  src_dir = work_dir.join('src')
+  out_dir = work_dir.join('output')
+  api.file.ensure_directory('mkdir %s' % out_dir, out_dir)
+  zip_file = work_dir.join('ios-deploy.zip')
+  commit_hash = GetCommitHash(api)
+  api.step('build ios-deploy', [build_script, src_dir, commit_hash, out_dir])
+  api.zip.directory('zipping ios-deploy dir', out_dir, zip_file)
+  version_namespace = 'led' if api.runtime.is_experimental else commit_hash
+  remote_path = 'ios-usb-dependencies/unsigned/ios-deploy/%s/ios-deploy.zip' % version_namespace
   api.gsutil.upload(
-      output_path,
-      NEW_BUCKET_NAME,
-      cloud_path,
-      link_name=file_name,
-      name='upload of %s' % file_name,
+      zip_file,
+      BUCKET_NAME,
+      remote_path,
+      link_name='ios-deploy.zip',
+      name='upload of ios-deploy.zip',
   )
 
 
 def RunSteps(api):
-  work_dir = api.path['start_dir']
-  homebrew_dir = work_dir.join('homebrew')
-  InstallHomebrew(api, homebrew_dir)
+  with api.osx_sdk('ios'):
+    package_name = api.properties['package_name']
+    if package_name == 'ios-deploy-flutter':
+      BuildIosDeploy(api)
+    else:
+      work_dir = api.path['start_dir']
+      package = INSTALL_PKGS[package_name]
 
-  output_dir = work_dir.join('output')
-  api.file.ensure_directory('mkdir output', output_dir)
+      homebrew_dir = work_dir.join('homebrew')
+      InstallHomebrew(api, homebrew_dir)
 
-  zip_out_dir = work_dir.join('zips')
-  api.file.ensure_directory('mkdir zips', zip_out_dir)
+      output_dir = work_dir.join('output')
+      api.file.ensure_directory('mkdir output', output_dir)
 
-  TapCustomBrews(api)
+      zip_out_dir = work_dir.join('zips')
+      api.file.ensure_directory('mkdir zips', zip_out_dir)
 
-  package_name = api.properties['package_name']
-  package = INSTALL_PKGS[package_name]
+      TapCustomBrews(api)
 
-  with api.osx_sdk('mac'):
-    InstallPackage(api, package, package_name)
+      InstallPackage(api, package, package_name)
 
-  package_out_dir = output_dir.join(package_name)
-  api.file.ensure_directory(
-      'mkdir package %s' % package_out_dir, package_out_dir
-  )
+      package_out_dir = output_dir.join(package_name)
+      api.file.ensure_directory('mkdir package %s' % package_out_dir,
+                                package_out_dir)
 
-  if len(package['deliverables']) > 0:
-    for deliverable in package['deliverables']:
-      CopyDeliverable(api, deliverable, package_name, package_out_dir)
+      if len(package['deliverables']) > 0:
+        for deliverable in package['deliverables']:
+          CopyDeliverable(api, deliverable, package_name, package_out_dir)
 
-    ZipAndUploadDeliverables(api, package_name, package_out_dir, zip_out_dir)
+        ZipAndUploadDeliverables(api, package_name, package_out_dir,
+                                 zip_out_dir)
 
 
 def GenTests(api):
+  yield api.test(
+      'ios-deploy with git_ref',
+      api.properties(
+          package_name='ios-deploy-flutter',
+          git_ref='deadbeef',
+      ),
+  )
+  yield api.test(
+      'ios-deploy with gitiles',
+      api.properties(
+          package_name='ios-deploy-flutter',
+      ),
+      api.buildbucket.ci_build(revision='deadbeef'),
+  )
   for package_name in INSTALL_PKGS:
     yield api.test(
         package_name,
         api.properties(package_name=package_name),
         api.buildbucket.ci_build(git_ref='refs/heads/master'),
     )
-
-
-# vim: ts=2 sw=2

@@ -11,7 +11,6 @@ DEPS = [
     'flutter/build_util',
     'flutter/os_utils',
     'flutter/repo_util',
-    'flutter/token_util',
     'fuchsia/goma',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -35,15 +34,14 @@ def RunSteps(api, properties, env_properties):
   )
   android_home = checkout_path.join('third_party', 'android_tools', 'sdk')
   env = {
-      'ANDROID_HOME': str(android_home),
-      'FLUTTER_PREBUILT_DART_SDK': 'True',
+    'ANDROID_HOME': str(android_home),
+    'FLUTTER_PREBUILT_DART_SDK': 'True',
   }
   env_prefixes = {'PATH': [dart_bin]}
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
   with api.depot_tools.on_path(), api.context(env=env,
                                               env_prefixes=env_prefixes):
-    api.build_util.run_gn(['--runtime-mode', 'release', '--prebuilt-dart-sdk'],
-                          checkout_path)
+    api.build_util.run_gn(['--runtime-mode', 'release', '--prebuilt-dart-sdk'], checkout_path)
     api.build_util.build('host_release', checkout_path, [])
 
   host_release_path = checkout_path.join('out', 'host_release')
@@ -63,7 +61,18 @@ def RunSteps(api, properties, env_properties):
       'flutter', 'testing', 'benchmark', 'upload_metrics.sh'
   )
 
-  env['TOKEN_PATH'] = api.token_util.metric_center_token()
+  service_account = api.service_account.default()
+  access_token = service_account.get_access_token(
+      scopes=[
+          'https://www.googleapis.com/auth/cloud-platform',
+          'https://www.googleapis.com/auth/datastore'
+      ]
+  )
+  access_token_path = api.path.mkstemp()
+  api.file.write_text(
+      'write token', access_token_path, access_token, include_log=False
+  )
+  env['TOKEN_PATH'] = access_token_path
   env['GCP_PROJECT'] = 'flutter-cirrus'
   with api.context(env=env, env_prefixes=env_prefixes, cwd=benchmark_path):
     api.step('Upload metrics', ['bash', script_path])

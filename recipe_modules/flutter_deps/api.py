@@ -431,7 +431,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       )
 
   def ios_signing(self, env, env_prefixes, version=None):
-    """Installs ninja.
+    """Sets up mac for code signing.
 
     Args:
       env(dict): Current environment variables.

@@ -71,6 +71,7 @@ def RunSteps(api):
           ['flutter', 'update-packages'],
           infra_step=True,
       )
+    with api.step.defer_results():
       api.adhoc_validation.run(
           api.properties.get('validation_name'),
           api.properties.get('validation'), env, env_prefixes,

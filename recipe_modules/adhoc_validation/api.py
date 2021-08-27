@@ -38,7 +38,6 @@ class AddhocValidationApi(recipe_api.RecipeApi):
     with self.m.step.nest(name):
       resource_name = ''
       deps = self.m.properties.get('dependencies', [])
-      self.m.flutter_deps.required_deps(env, env_prefixes, deps)
       self.m.kms.decrypt_secrets(env, secrets)
       if self.m.platform.is_linux or self.m.platform.is_mac:
         resource_name = self.resource('%s.sh' % validation)

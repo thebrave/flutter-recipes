@@ -11,6 +11,7 @@ DEPS = [
     'flutter/build_util',
     'flutter/os_utils',
     'flutter/repo_util',
+    'flutter/token_util',
     'fuchsia/goma',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -61,18 +62,7 @@ def RunSteps(api, properties, env_properties):
       'flutter', 'testing', 'benchmark', 'upload_metrics.sh'
   )
 
-  service_account = api.service_account.default()
-  access_token = service_account.get_access_token(
-      scopes=[
-          'https://www.googleapis.com/auth/cloud-platform',
-          'https://www.googleapis.com/auth/datastore'
-      ]
-  )
-  access_token_path = api.path.mkstemp()
-  api.file.write_text(
-      'write token', access_token_path, access_token, include_log=False
-  )
-  env['TOKEN_PATH'] = access_token_path
+  env['TOKEN_PATH'] = api.token_util.metric_center_token()
   env['GCP_PROJECT'] = 'flutter-cirrus'
   with api.context(env=env, env_prefixes=env_prefixes, cwd=benchmark_path):
     api.step('Upload metrics', ['bash', script_path])

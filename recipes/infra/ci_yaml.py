@@ -65,13 +65,13 @@ def RunSteps(api):
   repo = api.properties.get('git_repo')
   if _is_postsubmit(api):
     # gitiles commit info
-    commit_sha = api.buildbucket.gitiles_commit.id
+    git_ref = api.buildbucket.gitiles_commit.id
   else:
     # github pull request info
-    commit_sha = 'master' # Default to master for LED runs
+    git_ref = 'master' # Default to master for LED runs
     for tag in api.buildbucket.build.tags:
       if 'sha/git/' in tag.value:
-          commit_sha = tag.value.replace('sha/git/', '')
+          git_ref = tag.value.replace('sha/git/', '')
 
   # The context adds dart-sdk tools to PATH and sets PUB_CACHE.
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
@@ -85,7 +85,7 @@ def RunSteps(api):
     infra_config_path = infra_path.join('config', 'generated', 'ci_yaml', config_name)
     # Generate_jspb
     jspb_step = api.step('generate jspb',
-        cmd=['dart', generate_jspb_path, repo, commit_sha],
+        cmd=['dart', generate_jspb_path, repo, git_ref],
         stdout=api.raw_io.output_text(), stderr=api.raw_io.output_text())
     api.file.write_raw('write jspb', infra_config_path, jspb_step.stdout)
 
@@ -106,7 +106,7 @@ def RunSteps(api):
             gerrit_host = 'flutter-review.googlesource.com',
             gerrit_project = 'infra',
             repo_dir = infra_path,
-            commit_message = 'Roll %s to %s' % (repo, commit_sha),
+            commit_message = 'Roll %s to %s' % (repo, git_ref),
             # TODO(chillers): Change to oncall group. https://github.com/flutter/flutter/issues/86945
             cc_on_failure = 'chillers@google.com',
         )

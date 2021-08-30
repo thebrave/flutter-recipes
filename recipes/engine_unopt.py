@@ -16,6 +16,7 @@ DEPS = [
     'flutter/os_utils',
     'flutter/osx_sdk',
     'flutter/repo_util',
+    'flutter/retry',
     'fuchsia/goma',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
@@ -61,7 +62,11 @@ def RunTests(api, out_dir, android_out_dir=None, ios_out_dir=None, types='all', 
     args.extend(['--ios-variant', ios_out_dir])
   if suppress_sanitizers:
     args.extend(['--use-sanitizer-suppressions'])
-  api.python('Host Tests for %s' % out_dir, script_path, args, venv=venv_path)
+
+  def run_test():
+    return api.python('Host Tests for %s' % out_dir, script_path, args, venv=venv_path)
+  # Rerun test step 3 times by default if failing.
+  api.retry.wrap(run_test)
 
 
 def AnalyzeDartUI(api):

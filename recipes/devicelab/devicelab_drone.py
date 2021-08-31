@@ -181,16 +181,15 @@ def check_flaky(api):
     )
 
 
-def shouldNotUpdate(api, builder_name, git_branch):
-  """Check if a post submit builder should update results to cocoon.
+def shouldNotUpdate(api, git_branch):
+  """Check if a post submit builder should update results to cocoon/skia perf.
 
-  Test results will be sent to cocoon only when test is post-submit, when test
-  runs in prod pool, and when test is from master branch.
+  Test results will be sent to cocoon/skia perf only when test is post-submit and test is from
+  supported branches.
   """
   supported_branches = ['master']
   if api.runtime.is_experimental or api.properties.get(
-      'git_url'
-  ) or 'staging' in builder_name or git_branch not in supported_branches:
+      'git_url') or git_branch not in supported_branches:
     return True
   else:
     return False
@@ -208,28 +207,39 @@ def uploadResults(
     task_name,
     test_status='Succeeded',
 ):
-  """Upload DeviceLab test results to Cocoon.
+  """Upload DeviceLab test results to Cocoon/skia perf.
 
   luci-auth only gurantees a service account token life of 3 minutes. To work
   around this limitation, results uploading is separate from the the test run.
 
-  Only post-submit tests upload results to Cocoon. If `upload_metrics: true`, generated
-  test metrics will be uploaded to Cocoon. Otherwise, only test flaky status will be
-  updated to Cocoon.
+  Only post-submit tests upload results to Cocoon/skia perf.
+
+  If `upload_metrics: true`, generated test metrics will be uploaded to skia perf
+  for both prod ans staging tests.
+
+  Otherwise, test status will be updated in Cocoon for tests running in prod pool,
+  and staging tests without `upload_metrics: true` will not be updated.
   """
-  if shouldNotUpdate(api, builder_name, git_branch):
+  if shouldNotUpdate(api, git_branch):
     return
-  runner_params = ['--test-flaky', is_test_flaky]
-  if not api.properties.get('upload_metrics'):
-    runner_params.extend([
-        '--git-branch', git_branch, '--luci-builder', builder_name,
-        '--test-status', test_status
-    ])
-  else:
+  bucket = api.buildbucket.build.builder.bucket
+  runner_params = ['--test-flaky', is_test_flaky, '--builder-bucket', bucket]
+  if api.properties.get('upload_metrics'):
     runner_params.extend([
         '--results-file', results_path, '--commit-time', commit_time,
         '--task-name', task_name
     ])
+  else:
+    # For builders without `upload_metrics: true`
+    #  - prod ones need to update test status, to be reflected on go/flutter-build
+    #  - staging ones do not need to as we are not tracking staging tests in cocoon datastore.
+    if bucket == 'staging':
+      return
+    else:
+      runner_params.extend([
+          '--git-branch', git_branch, '--luci-builder', builder_name,
+          '--test-status', test_status
+      ])
 
   with api.step.nest('Upload metrics'):
     env['TOKEN_PATH'] = api.token_util.metric_center_token()
@@ -328,6 +338,18 @@ def GenTests(api):
           upload_metrics_to_cas=True,
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(git_ref='refs/heads/master',)
+  )
+  yield api.test(
+      "no-upload-metrics-linux-staging",
+      api.properties(
+          buildername='Linux abc',
+          task_name='abc',
+          upload_metrics_to_cas=True,
+      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.buildbucket.ci_build(
+          git_ref='refs/heads/master',
+          bucket='staging',
+      )
   )
   yield api.test(
       "local-engine",

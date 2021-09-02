@@ -22,33 +22,42 @@ DEPS = [
 
 def RunSteps(api):
   build_configs = api.properties.get('builds', [])
+  test_configs = api.properties.get('tests', [])
   with api.step.nest("launch builds") as presentation:
-    reqs = api.shard_util_v2.schedule(build_configs, presentation)
+    reqs = api.shard_util_v2.schedule_builds(build_configs, presentation)
   with api.step.nest("collect builds") as presentation:
     builds = api.shard_util_v2.collect(reqs, presentation)
     for build in builds.itervalues():
       if build.build_proto.status != common_pb2.SUCCESS:
         raise api.step.StepFailure("build %s failed" % build.build_id)
+  with api.step.nest("launch builds") as presentation:
+    reqs = api.shard_util_v2.schedule_tests(test_configs, builds, presentation)
 
 
 def GenTests(api):
   try_subbuild1 = api.shard_util_v2.try_build_message(
       build_id=8945511751514863186,
-      builder="builder-subbuild1",
+      builder="ios_debug",
       input_props={'task_name': 'mytask'},
-      output_props={"test_orchestration_inputs_hash": "abc"},
+      output_props={
+          "cas_output_hash": {"web_tests": "abc", "ios_debug": "bcd"}
+      },
       status="SUCCESS",
   )
   try_subbuild2 = api.shard_util_v2.try_build_message(
       build_id=8945511751514863187,
       builder="builder-subbuild2",
-      output_props={"test_orchestration_inputs_hash": "abc"},
+      output_props={
+          "cas_output_hash": {"web_tests": "abc", "ios_debug": "bcd"}
+      },
       status="SUCCESS",
   )
   try_failure = api.shard_util_v2.try_build_message(
       build_id=8945511751514863187,
       builder="builder-subbuild2",
-      output_props={"test_orchestration_inputs_hash": "abc"},
+      output_props={
+          "cas_output_hash": {"web_tests": "abc", "ios_debug": "bcd"}
+      },
       status="FAILURE",
   )
 
@@ -56,6 +65,10 @@ def GenTests(api):
       'builds': [{
           "name": "ios_debug", "gn": [], "ninja": ["ios_debug"],
           'drone_dimensions': ['dimension1=abc']
+      }],
+      'tests': [{
+          "name": "felt_test", "dependencies": ["ios_debug"],
+          "scripts": ["out/script.sh"], "parameters": ["test"]
       }],
       'environment': 'Staging',
       'dependencies': [{"dependency": "android_sdk"},
@@ -76,12 +89,14 @@ def GenTests(api):
       },
   }
   props_bb = {
-      'task_name': 'mytask',
-      'builds': [{
+      'task_name': 'mytask', 'builds': [{
           "name": "ios_debug", "gn": ["--ios"],
           "ninja": {"config": "ios_debug",
                     "targets": []}, 'drone_dimensions': ['dimension1=abc'],
           "generators": [{"name": "generator1", "script": "script1.sh"}]
+      }], 'tests': [{
+          "name": "felt_test", "dependencies": ["ios_debug"],
+          "scripts": ["out/script.sh"], "parameters": ["test"]
       }], 'dependencies': [{"dependency": "android_sdk"},
                            {"dependency": "chrome_and_driver"}],
       'environment': 'Staging'

@@ -53,7 +53,7 @@ def RunSteps(api, properties, env_properties):
       step_test_data=lambda: api.json.test_api.output([])
   ).json.output
   with api.step.nest('launch builds') as presentation:
-    tasks = api.shard_util_v2.schedule(builds, presentation)
+    tasks = api.shard_util_v2.schedule_builds(builds, presentation)
   with api.step.nest('collect builds') as presentation:
     api.shard_util_v2.collect(tasks, presentation)
 

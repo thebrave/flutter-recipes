@@ -53,17 +53,36 @@ def RunSteps(api, properties, env_properties):
   builds = builds or api.json.read(
       'Read build config file',
       config_path,
-      step_test_data=lambda: api.json.test_api.output([])
-  ).json.output
+      step_test_data=lambda: api.json.test_api.output({})
+  ).json.output.get('builds', [])
   with api.step.nest('launch builds') as presentation:
-    tasks = api.shard_util_v2.schedule(builds, presentation)
+    tasks = api.shard_util_v2.schedule_builds(builds, presentation)
   with api.step.nest('collect builds') as presentation:
     results = api.shard_util_v2.collect(tasks, presentation)
+
   api.display_util.display_builds(
       step_name='display builds',
       builds=[b.build_proto for b in results.values()],
-        raise_on_failure=True,
-    )
+      raise_on_failure=True,
+  )
+
+  # Run tests
+  tests = api.properties.get('tests')
+  tests = tests or api.json.read(
+      'Read build config file',
+      config_path,
+      step_test_data=lambda: api.json.test_api.output({})
+  ).json.output.get('tests', [])
+  with api.step.nest('launch tests') as presentation:
+    tasks = api.shard_util_v2.schedule_tests(tests, results, presentation)
+  with api.step.nest('collect tests') as presentation:
+    results = api.shard_util_v2.collect(tasks, presentation)
+
+  api.display_util.display_builds(
+      step_name='display tests',
+      builds=[b.build_proto for b in results.values()],
+      raise_on_failure=True,
+  )
 
 
 def GenTests(api):
@@ -80,7 +99,8 @@ def GenTests(api):
   }]
 
   yield api.test(
-      'basic', api.properties(builds=builds, environment='Staging'),
+      'basic',
+      api.properties(builds=builds, environment='Staging'),
       api.buildbucket.try_build(
           project='proj',
           builder='try-builder',

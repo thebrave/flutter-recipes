@@ -54,18 +54,81 @@ class ShardUtilApi(recipe_api.RecipeApi):
         result[k] = v
     return result
 
+  def struct_to_dict(self, struct):
+    """Transforms a proto structure to a dictionary.
 
-  def schedule(self, builds, presentation):
-    """Schedules one subbuild per build."""
+    Args:
+      struct: A proto structure.
+    Returns:
+      A dictionary representation of the proto structure.
+
+    This is because the proto structures can not be passed to the BuildBucket or led
+    requests.
+    """
+    return {k: v for k, v in struct.items()}
+
+  def schedule_builds(self, builds, presentation):
+    """Schedule builds using the builds configurations.
+
+    Args:
+      builds(dict): The build configurations to be passed to BuildBucket or led.
+      presentation(StepPresentation): The step object used to add links and/or logs.
+    Returns:
+      A dictionary with a long build_id as key and SubbuildResult as value.
+    """
+    return self.schedule(builds, 'engine_v2/builder', presentation)
+
+  def schedule_tests(self, tests, build_results, presentation):
+    """Schedule tests using build_results for dependencies.
+
+    Args:
+      tests(dict): The test configurations to be passed to BuildBucket or led.
+      build_results: A dictionary with a long build_id as key and SubbuildResult as value.
+      presentation(StepPresentation): The step object used to add links and/or logs.
+    Returns:
+      A dictionary with a long build_id as key and SubbuildResult as value.
+    """
+    # Expand tests with result archives for dependencies.
+    results_map = {b.build_name: b for k, b in build_results.items()}
+    # build_results to map of builder name
+    updated_tests = []
+    for t in tests:
+      test = self.unfreeze_dict(t)
+      test['resolved_deps'] = []
+      for dep in test.get('dependencies', []):
+        dep_dict = self.struct_to_dict(
+            results_map[dep].build_proto.output.properties['cas_output_hash']
+        )
+        test['resolved_deps'].append(dep_dict)
+      updated_tests.append(test)
+    return self.schedule(updated_tests, 'engine_v2/tester', presentation)
+
+  def schedule(self, builds, recipe_name, presentation):
+    """Schedules one subbuild per build configuration.
+
+    Args:
+      builds(dict): The build/test configurations to be passed to BuildBucket or led.
+      recipe_name(str): A string with the recipe name to use.
+      presentation(StepPresentation): The step object used to add links and/or logs.
+    Returns:
+      A dictionary with a long build_id as key and SubbuildResult as value.
+    """
     build_list = [self.unfreeze_dict(b) for b in builds]
     if self.m.led.launched_by_led:
-      builds = self._schedule_with_led(build_list)
+      builds = self._schedule_with_led(build_list, recipe_name)
     else:
-      builds = self._schedule_with_bb(build_list)
+      builds = self._schedule_with_bb(build_list, recipe_name)
     return builds
 
-  def _schedule_with_led(self, builds):
-    """Schedules one subbuild per build."""
+  def _schedule_with_led(self, builds, recipe_name):
+    """Schedules one subbuild per build using led.
+
+    Args:
+      builds(dict): The build/test configurations to be passed to BuildBucket or led.
+      recipe_name(str): A string with the recipe name to use.
+    Returns:
+      A dictionary with a long build_id as key and SubbuildResult as value.
+    """
     # Dependencies get here as a frozen dict we need to force them back
     # to list of dicts.
     results = {}
@@ -87,7 +150,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
 
       # Override recipe.
-      drone_properties['recipe'] = 'engine_v2/builder'
+      drone_properties['recipe'] = recipe_name
 
       if self.m.led.launched_by_led:
         # If coming from led Launch sub-build using led.
@@ -108,7 +171,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
         led_data.result.buildbucket.bbagent_args.build.infra.swarming.priority -= 20
         led_data = led_data.then("edit", *edit_args)
         led_data = led_data.then("edit", "-name", task_name)
-        led_data = led_data.then("edit", "-r", 'engine_v2/builder')
+        led_data = led_data.then("edit", "-r", recipe_name)
         for d in drone_dimensions:
           led_data = led_data.then("edit", "-d", d)
         led_data = self.m.led.inject_input_recipes(led_data)
@@ -119,12 +182,22 @@ class ShardUtilApi(recipe_api.RecipeApi):
             launch_res.launch_result.swarming_hostname,
         )
         results[task_name] = SubbuildResult(
-            builder=task_name, build_id=task_id, url=build_url, build_name=task_name
+            builder=task_name,
+            build_id=task_id,
+            url=build_url,
+            build_name=task_name
         )
     return results
 
-  def _schedule_with_bb(self, builds):
-    """Schedules builds using builbbucket."""
+  def _schedule_with_bb(self, builds, recipe_name):
+    """Schedules builds using builbbucket.
+
+    Args:
+      builds(dict): The build/test configurations to be passed to BuildBucket or led.
+      recipe_name(str): A string with the recipe name to use.
+    Returns:
+      A dictionary with a long build_id as key and SubbuildResult as value.
+    """
     swarming_parent_run_id = self.m.swarming.task_id
     reqs = []
     task_names = []
@@ -144,7 +217,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
         k, v = d.split('=')
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
       # Override recipe.
-      drone_properties['recipe'] = 'engine_v2/builder'
+      drone_properties['recipe'] = recipe_name
       properties = {
           key: val
           for key, val in drone_properties.items()
@@ -172,8 +245,10 @@ class ShardUtilApi(recipe_api.RecipeApi):
     for build, task_name in zip(scheduled_builds, task_names):
       build_url = "https://ci.chromium.org/b/%s" % build.id
       results[build.id] = SubbuildResult(
-          builder=build.builder.builder, build_id=build.id,
-          url=build_url, build_name=task_name
+          builder=build.builder.builder,
+          build_id=build.id,
+          url=build_url,
+          build_name=task_name
       )
     return results
 
@@ -240,11 +315,12 @@ class ShardUtilApi(recipe_api.RecipeApi):
     """
     build_ids = [build.build_id for build in tasks.values()]
     build_id_to_name = {
-        int(build.build_id): build.build_name
-        for build in tasks.values()
+        int(build.build_id): build.build_name for build in tasks.values()
     }
     bb_fields = self.m.buildbucket.DEFAULT_FIELDS.union({
-        "infra.swarming.task_id", "summary_markdown", "input",
+        "infra.swarming.task_id",
+        "summary_markdown",
+        "input",
     })
     # As of 2019-11-18, timeout defaults to something too short.
     # We never want this step to time out. We'd rather the whole build time out.
@@ -292,7 +368,9 @@ class ShardUtilApi(recipe_api.RecipeApi):
       )
     for build_id, build in builds.iteritems():
       builds[build_id] = SubbuildResult(
-          builder=build.builder.builder, build_id=build_id,
-          build_proto=build, build_name=build_id_to_name[int(build_id)]
+          builder=build.builder.builder,
+          build_id=build_id,
+          build_proto=build,
+          build_name=build_id_to_name[int(build_id)]
       )
     return builds

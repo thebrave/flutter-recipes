@@ -54,6 +54,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     """
     available_deps = {
         'android_sdk': self.android_sdk,
+        'android_virtual_device': self.android_virtual_device,
         'certs': self.certs,
         'chrome_and_driver': self.chrome_and_driver,
         'clang': self.clang,
@@ -474,3 +475,14 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       temp_paths = copy.deepcopy(paths)
       temp_paths.append(gem_dir.join('bin'))
       env_prefixes['PATH'] = temp_paths
+
+  def android_virtual_device(self, env, env_prefixes, version=None):
+    """Installs and starts an android avd emulator.
+
+    Args:
+      env(dict): Current environment variables.
+      env_prefixes(dict):  Current environment prefixes variables.
+      version: Android API version of the avd.
+    """
+    avd_root = self.m.path['cache'].join('builder', 'avd')
+    self.m.android_virtual_device.download(avd_root, env, env_prefixes, version)

@@ -10,7 +10,9 @@ from PB.recipes.flutter.engine import EnvProperties
 DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/gclient',
+    'flutter/android_virtual_device',
     'flutter/bucket_util',
+    'flutter/flutter_deps',
     'flutter/os_utils',
     'flutter/repo_util',
     'fuchsia/goma',
@@ -52,46 +54,14 @@ def RunGN(api, *args):
   api.step('gn %s' % ' '.join(args), gn_cmd)
 
 
-def RunAndroidScenarioTests(api):
+def RunAndroidScenarioTests(api, env, env_prefixes):
   """Runs the scenario test app on a x86 Android emulator.
 
   See details at
   https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_emulator.md#using-your-own-emulator-image
   """
   engine_checkout = GetCheckoutPath(api)
-  android_tool_dir = engine_checkout.join('tools', 'android')
 
-  api.cipd.ensure(
-      android_tool_dir,
-      api.cipd.EnsureFile().add_package(
-          'chromium/tools/android/avd/linux-amd64',
-          'e5JfdaCjazDFh5uqhkPgVeZa9oCLVimm5_8TWAENz1gC'
-      )
-  )
-
-  avd_script_path = android_tool_dir.join(
-      'src', 'tools', 'android', 'avd', 'avd.py'
-  )
-
-  avd_config = android_tool_dir.join(
-      'src', 'tools', 'android', 'avd', 'proto', 'generic_android30.textpb'
-  )
-
-  emulator_pid = ''
-  with api.context(cwd=android_tool_dir):
-    api.python(
-        'Install Android emulator (API level 30)', avd_script_path,
-        ['install', '--avd-config', avd_config]
-    )
-
-    output = api.python(
-        'Start Android emulator (API level 30)',
-        avd_script_path,
-        ['start', '--no-read-only', '--avd-config', avd_config],
-        stdout=api.raw_io.output()
-    ).stdout
-    m = re.match('.*pid: (\d+)\)', output)
-    emulator_pid = m.group(1)
   test_dir = engine_checkout.join('flutter', 'testing')
   scenario_app_tests = test_dir.join('scenario_app')
 
@@ -99,14 +69,14 @@ def RunAndroidScenarioTests(api):
   # file containing the python scripts.
   gradle_home_bin_dir = scenario_app_tests.join('android', 'gradle-home', 'bin')
   with api.context(cwd=scenario_app_tests,
-                   env_prefixes={'PATH': [gradle_home_bin_dir]}):
+                   env_prefixes={'PATH': [gradle_home_bin_dir]}), api.step.defer_results():
 
     result = api.step(
         'Scenario App Integration Tests',
         ['./run_android_tests.sh', 'android_debug_x86'],
         ok_ret='all'
     )
-    api.step('Kill emulator', ['kill', '-9', emulator_pid])
+    api.step('Kill emulator', ['kill', '-9', env['EMULATOR_PID']])
     build_failures_dir = scenario_app_tests.join('build', 'reports', 'diff_failures')
     if api.path.exists(build_failures_dir):
       # Upload any diff failures.
@@ -142,6 +112,12 @@ def RunSteps(api, properties, env_properties):
   }
   env_prefixes = {'PATH': [dart_bin]}
 
+  api.flutter_deps.required_deps(
+      env, env_prefixes, api.properties.get('dependencies', [])
+  )
+  api.android_virtual_device.start(env, env_prefixes)
+  api.android_virtual_device.setup(env, env_prefixes)
+
   api.repo_util.engine_checkout(
       cache_root, env, env_prefixes, clobber=properties.clobber
   )
@@ -151,7 +127,7 @@ def RunSteps(api, properties, env_properties):
     RunGN(api, '--android', '--android-cpu=x86', '--no-lto')
     Build(api, 'android_debug_x86')
 
-    RunAndroidScenarioTests(api)
+    RunAndroidScenarioTests(api, env, env_prefixes)
 
   with api.step.defer_results():
     # This is to clean up leaked processes.
@@ -164,9 +140,15 @@ def GenTests(api):
   scenario_failures = GetCheckoutPath(api).join(
       'flutter', 'testing', 'scenario_app', 'build', 'reports', 'diff_failures'
   )
+  avd_api_version = '31'
   for upload_packages in (True, False):
     yield api.test(
         'without_failure_upload_%d' % upload_packages,
+        api.properties(
+            dependencies=[
+              {'dependency':'android_virtual_device', 'version':'31'},
+            ]
+        ),
         api.buildbucket.ci_build(
             builder='Linux Engine',
             git_repo='https://chromium.googlesource.com/external/github.com/flutter/engine',
@@ -180,14 +162,19 @@ def GenTests(api):
             ),
         ),
         api.step_data(
-            'Start Android emulator (API level 30)',
+            'start avd.Start Android emulator (API level %s)' % avd_api_version,
             stdout=api.raw_io.output_text(
-                'android_30_google_apis_x86|emulator-5554 started (pid: 17687)'
+                'android_' + avd_api_version + '_google_apis_x86|emulator-5554 started (pid: 17687)'
             )
-        )
+        ),
     )
     test = api.test(
         'with_failure_upload_%d' % upload_packages,
+        api.properties(
+            dependencies=[
+              {'dependency':'android_virtual_device', 'version':'31'},
+            ]
+        ),
         api.buildbucket.ci_build(
             builder='Linux Engine',
             git_repo='https://chromium.googlesource.com/external/github.com/flutter/engine',
@@ -205,11 +192,11 @@ def GenTests(api):
         api.step_data('Scenario App Integration Tests', retcode=1),
         api.path.exists(scenario_failures),
         api.step_data(
-            'Start Android emulator (API level 30)',
+            'start avd.Start Android emulator (API level %s)' % avd_api_version,
             stdout=api.raw_io.output_text(
-                'android_30_google_apis_x86|emulator-5554 started (pid: 17687)'
+                'android_' + avd_api_version + '_google_apis_x86|emulator-5554 started (pid: 17687)'
             )
-        )
+        ),
     )
     if upload_packages:
       test += api.step_data(

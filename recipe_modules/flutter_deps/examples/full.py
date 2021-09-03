@@ -12,6 +12,7 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/raw_io',
 ]
 
 
@@ -58,6 +59,8 @@ def RunSteps(api):
   api.flutter_deps.certs(env, env_prefixes, '')
   api.flutter_deps.vs_build(env, env_prefixes, '')
   api.flutter_deps.jazzy(env, env_prefixes, '')
+  if api.platform.is_linux:
+    api.flutter_deps.android_virtual_device(env, env_prefixes, '31')
 
   # Gems dependency requires to run from a flutter_environment.
   checkout_path = api.path['start_dir'].join('flutter\ sdk')
@@ -69,10 +72,19 @@ def RunSteps(api):
 
 def GenTests(api):
   checkout_path = api.path['start_dir'].join('flutter\ sdk')
-  yield api.test('basic', api.repo_util.flutter_environment_data(checkout_path))
+  avd_api_version = '31'
+  yield api.test(
+      'basic',
+      api.repo_util.flutter_environment_data(checkout_path),
+  )
+  yield api.test(
+      'linux',
+      api.platform('linux', 64),
+      api.repo_util.flutter_environment_data(checkout_path),
+  )
   yield api.test(
       'with-gems', api.properties(dependencies=[{"dependency": "gems"}]),
-      api.repo_util.flutter_environment_data(checkout_path)
+      api.repo_util.flutter_environment_data(checkout_path),
   )
 
   yield api.test(
@@ -93,20 +105,20 @@ def GenTests(api):
   )
   yield api.test(
       'flutter_engine', api.properties(local_engine_cas_hash='abceqwe/7',),
-      api.repo_util.flutter_environment_data(checkout_path)
+      api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
       'local_engine_cas', api.properties(local_engine_cas_hash='abceqwe/7',
                                          local_engine='host-release'),
-      api.repo_util.flutter_environment_data(checkout_path)
+      api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
       'goldTryjob',
       api.properties(gold_tryjob=True, git_ref='refs/pull/1/head'),
-      api.repo_util.flutter_environment_data(checkout_path)
+      api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
       'windows', api.properties(gold_tryjob=True, git_ref='refs/pull/1/head'),
       api.repo_util.flutter_environment_data(checkout_path),
-      api.platform.name('win')
+      api.platform.name('win'),
   )

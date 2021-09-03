@@ -549,6 +549,97 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "download avd package"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder/avd"
+    ],
+    "infra_step": true,
+    "name": "download avd package.Ensure avd cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/builder/avd",
+      "-ensure-file",
+      "chromium/tools/android/avd/linux-amd64 p-1EgH-og45NbJT5ld4bBmvhayUxyb5Wm0oedSBwXOsC",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]/builder/avd",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/android",
+      "ANDROID_SDK_ROOT": "[CACHE]/android",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
+      "FLUTTER_XCODE_CODE_SIGN_STYLE": "Manual",
+      "FLUTTER_XCODE_DEVELOPMENT_TEAM": "S8QB4VV633",
+      "FLUTTER_XCODE_PROVISIONING_PROFILE_SPECIFIER": "match Development *",
+      "GEM_HOME": "[START_DIR]/gems",
+      "GOPATH": "[CLEANUP]/go_path",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]/gradle"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/dart_sdk",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/go/bin",
+        "[CLEANUP]/go_path/bin",
+        "[CACHE]/go/bin",
+        "[CLEANUP]/go_path/bin",
+        "[CLEANUP]/tmp_tmp_1/vpython",
+        "[START_DIR]/firebase",
+        "[CACHE]/cmake/bin",
+        "[CACHE]/ninja",
+        "[CACHE]/clang/bin",
+        "[CLEANUP]/tmp_tmp_2/curl",
+        "[START_DIR]/gems/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "download avd package.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-p-1EgH-og45NbJT5\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"chromium/tools/android/avd/linux-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
     "name": "$result"
   }
 ]

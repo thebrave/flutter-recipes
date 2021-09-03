@@ -608,15 +608,18 @@
   },
   {
     "cmd": [
-      "flutter",
-      "drive",
-      "--browser-name=android-chrome",
-      "--android-emulator",
-      "--no-start-paused",
-      "--purge-persistent-cache",
-      "--device-timeout=30"
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/builder/bundletool",
+      "-ensure-file",
+      "flutter/android/bundletool vFt1jA0cUeZLmUCVR5NG2JVB-SgJ18GH_pVYKMOlfUIC",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
     ],
-    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/android_views",
+    "cwd": "[START_DIR]/flutter sdk",
     "env": {
       "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/android",
@@ -641,7 +644,85 @@
         "[CLEANUP]/tmp_tmp_1/curl"
       ]
     },
-    "name": "Android Views Integration Tests",
+    "name": "prepare environment.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-vFt1jA0cUeZLmUCV\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/android/bundletool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "./download_assets.sh"
+    ],
+    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/deferred_components_test",
+    "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ANDROID_HOME": "[CACHE]/android",
+      "ANDROID_SDK_ROOT": "[CACHE]/android",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "EMULATOR_PID": "17687",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]/gradle",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CLEANUP]/tmp_tmp_1/curl"
+      ]
+    },
+    "name": "download assets script"
+  },
+  {
+    "cmd": [
+      "./run_release_test.sh",
+      "[CACHE]/builder/bundletool/bundletool.jar",
+      "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb"
+    ],
+    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/deferred_components_test",
+    "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ANDROID_HOME": "[CACHE]/android",
+      "ANDROID_SDK_ROOT": "[CACHE]/android",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "EMULATOR_PID": "17687",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]/gradle",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CLEANUP]/tmp_tmp_1/curl"
+      ]
+    },
+    "name": "Deferred components release tests",
     "timeout": 700
   },
   {
@@ -654,7 +735,7 @@
       "-9",
       "17687"
     ],
-    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/android_views",
+    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/deferred_components_test",
     "env": {
       "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/android",
@@ -689,7 +770,7 @@
       "ps",
       "-axww"
     ],
-    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/android_views",
+    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/deferred_components_test",
     "env": {
       "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/android",
@@ -720,6 +801,42 @@
     ]
   },
   {
+    "cmd": [
+      "kill",
+      "-9",
+      "12345"
+    ],
+    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/deferred_components_test",
+    "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ANDROID_HOME": "[CACHE]/android",
+      "ANDROID_SDK_ROOT": "[CACHE]/android",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "EMULATOR_PID": "17687",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]/gradle",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CLEANUP]/tmp_tmp_1/curl"
+      ]
+    },
+    "name": "kill and cleanup avd.Kill zombie processes",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
     "cmd": [],
     "name": "Killing Processes"
   },
@@ -728,7 +845,7 @@
       "pkill",
       "chrome"
     ],
-    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/android_views",
+    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/deferred_components_test",
     "env": {
       "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/android",
@@ -764,7 +881,7 @@
       "pkill",
       "dart"
     ],
-    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/android_views",
+    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/deferred_components_test",
     "env": {
       "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/android",
@@ -800,7 +917,7 @@
       "pkill",
       "flutter"
     ],
-    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/android_views",
+    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/deferred_components_test",
     "env": {
       "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/android",
@@ -836,7 +953,7 @@
       "pkill",
       "java"
     ],
-    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/android_views",
+    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/deferred_components_test",
     "env": {
       "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/android",
@@ -872,7 +989,7 @@
       "pkill",
       "adb"
     ],
-    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/android_views",
+    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/deferred_components_test",
     "env": {
       "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/android",
@@ -912,7 +1029,7 @@
       "-o",
       "%MEM"
     ],
-    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/android_views",
+    "cwd": "[START_DIR]/flutter sdk/dev/integration_tests/deferred_components_test",
     "env": {
       "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/android",

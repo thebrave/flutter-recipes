@@ -29,6 +29,11 @@ DEPS = [
     'recipe_engine/step',
 ]
 
+# Builder dependencies requried:
+#  - android_sdk
+#  - android_avd
+#  - curl
+
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
@@ -50,6 +55,12 @@ def RunSteps(api, properties, env_properties):
         ref=api.properties.get('git_ref'),
     )
 
+  avd_api_version = '31' # 31 is the first version that supports x86_64
+  for dep in api.properties.get('dependencies', []):
+    if dep['dependency'] == 'android_virtual_device':
+      avd_api_version = dep['version']
+      break
+
   env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
   api.flutter_deps.required_deps(
       env, env_prefixes, api.properties.get('dependencies', [])
@@ -58,6 +69,8 @@ def RunSteps(api, properties, env_properties):
   api.android_virtual_device.start(env, env_prefixes)
   api.android_virtual_device.setup(env, env_prefixes)
 
+  bundletool_dir = cache_root.join('bundletool')
+  bundletool_jar = bundletool_dir.join('bundletool.jar')
   with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
     with api.step.nest('prepare environment'), api.step.defer_results():
       # This prevents junk analytics from being sent due to testing
@@ -78,32 +91,41 @@ def RunSteps(api, properties, env_properties):
           ['flutter', 'update-packages'],
           infra_step=True,
       )
-  views_test_dir = checkout_path.join('dev', 'integration_tests', 'android_views')
-  with api.context(env=env, env_prefixes=env_prefixes, cwd=views_test_dir), api.step.defer_results():
+      api.cipd.ensure(
+          bundletool_dir,
+          api.cipd.EnsureFile().add_package(
+              'flutter/android/bundletool',
+              'vFt1jA0cUeZLmUCVR5NG2JVB-SgJ18GH_pVYKMOlfUIC'
+          )
+      )
+  test_dir = checkout_path.join('dev', 'integration_tests', 'deferred_components_test')
+  with api.context(env=env, env_prefixes=env_prefixes, cwd=test_dir), api.step.defer_results():
+    # These assets are not allowed to be checked into the repo,
+    # so they are downloaded separately here.
+    api.step('download assets script', ['./download_assets.sh'])
     api.step(
-        'Android Views Integration Tests',
+        'Deferred components release tests',
         [
-          'flutter',
-          'drive',
-          '--browser-name=android-chrome',
-          '--android-emulator',
-          '--no-start-paused',
-          '--purge-persistent-cache',
-          '--device-timeout=30'
+          './run_release_test.sh',
+          str(bundletool_jar),
+          env['ADB_PATH']
         ],
         timeout=700,
     )
+    # TODO(garyq): add flutter drive tests after https://github.com/flutter/flutter/issues/88906 is resolved
+
     api.android_virtual_device.kill(env['EMULATOR_PID'])
     # This is to clean up leaked processes.
     api.os_utils.kill_processes()
     # Collect memory/cpu/process after task execution.
     api.os_utils.collect_os_info()
 
+
 def GenTests(api):
   checkout_path = api.path['start_dir'].join('flutter sdk')
   avd_api_version = '31'
   yield api.test(
-      'flutter_drive_clean_exit',
+      'flutter_release_clean_exit',
       api.properties(
           dependencies=[
             {'dependency':'android_sdk'},
@@ -120,7 +142,7 @@ def GenTests(api):
       ),
   )
   yield api.test(
-      'flutter_drive_zombie_process',
+      'flutter_release_zombie_process',
       api.properties(
           dependencies=[
             {'dependency':'android_sdk'},

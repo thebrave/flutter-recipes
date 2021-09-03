@@ -75,6 +75,215 @@
   },
   {
     "cmd": [],
+    "name": "download avd package"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder/avd"
+    ],
+    "infra_step": true,
+    "name": "download avd package.Ensure avd cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/builder/avd",
+      "-ensure-file",
+      "chromium/tools/android/avd/linux-amd64 p-1EgH-og45NbJT5ld4bBmvhayUxyb5Wm0oedSBwXOsC",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]/builder/avd",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "download avd package.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-p-1EgH-og45NbJT5\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"chromium/tools/android/avd/linux-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "start avd"
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "[CACHE]/builder/avd/src/tools/android/avd/avd.py",
+      "install",
+      "--avd-config",
+      "[CACHE]/builder/avd/src/tools/android/avd/proto/generic_android31.textpb"
+    ],
+    "cwd": "[CACHE]/builder/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd.Install Android emulator (API level 31)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "[CACHE]/builder/avd/src/tools/android/avd/avd.py",
+      "start",
+      "--no-read-only",
+      "--writable-system",
+      "--avd-config",
+      "[CACHE]/builder/avd/src/tools/android/avd/proto/generic_android31.textpb"
+    ],
+    "cwd": "[CACHE]/builder/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd.Start Android emulator (API level 31)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "avd setup"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/avd_setup.sh"
+    ],
+    "cwd": "[CACHE]/builder/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "infra_step": true,
+    "name": "avd setup.Set execute permission",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/avd_setup.sh",
+      "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb"
+    ],
+    "cwd": "[CACHE]/builder/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "name": "avd setup.avd_setup.sh",
+    "timeout": 3600,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@test_stdout@@@@",
+      "@@@STEP_LOG_END@test_stdout@@@",
+      "@@@STEP_LOG_LINE@test_stderr@@@@",
+      "@@@STEP_LOG_END@test_stderr@@@"
+    ]
+  },
+  {
+    "cmd": [],
     "name": "Checkout source code"
   },
   {
@@ -99,8 +308,11 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
       "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Linux Engine/8945511751514863184",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
       "GIT_HTTP_LOW_SPEED_TIME": "1800",
@@ -108,7 +320,8 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -171,14 +384,18 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
       "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Linux Engine/8945511751514863184",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -206,13 +423,17 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -238,7 +459,10 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
@@ -254,7 +478,8 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -281,7 +506,10 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
@@ -289,7 +517,8 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -316,7 +545,10 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
@@ -332,7 +564,8 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -368,7 +601,10 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
@@ -384,7 +620,8 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -409,7 +646,10 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
@@ -425,7 +665,8 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -454,7 +695,10 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
@@ -462,7 +706,8 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -494,7 +739,10 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
@@ -502,7 +750,8 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -549,7 +798,10 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
@@ -557,7 +809,8 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -589,7 +842,10 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
@@ -597,7 +853,8 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -633,7 +890,10 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
@@ -641,7 +901,8 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -659,127 +920,23 @@
   },
   {
     "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CACHE]/builder/src/tools/android",
-      "-ensure-file",
-      "chromium/tools/android/avd/linux-amd64 e5JfdaCjazDFh5uqhkPgVeZa9oCLVimm5_8TWAENz1gC",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "name": "ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-e5JfdaCjazDFh5uq\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"chromium/tools/android/avd/linux-amd64\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python",
-      "-u",
-      "[CACHE]/builder/src/tools/android/src/tools/android/avd/avd.py",
-      "install",
-      "--avd-config",
-      "[CACHE]/builder/src/tools/android/src/tools/android/avd/proto/generic_android30.textpb"
-    ],
-    "cwd": "[CACHE]/builder/src/tools/android",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "name": "Install Android emulator (API level 30)"
-  },
-  {
-    "cmd": [
-      "python",
-      "-u",
-      "[CACHE]/builder/src/tools/android/src/tools/android/avd/avd.py",
-      "start",
-      "--no-read-only",
-      "--avd-config",
-      "[CACHE]/builder/src/tools/android/src/tools/android/avd/proto/generic_android30.textpb"
-    ],
-    "cwd": "[CACHE]/builder/src/tools/android",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "name": "Start Android emulator (API level 30)"
-  },
-  {
-    "cmd": [
       "./run_android_tests.sh",
       "android_debug_x86"
     ],
     "cwd": "[CACHE]/builder/src/flutter/testing/scenario_app",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/flutter/testing/scenario_app/android/gradle-home/bin",
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -800,14 +957,18 @@
     ],
     "cwd": "[CACHE]/builder/src/flutter/testing/scenario_app",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/flutter/testing/scenario_app/android/gradle-home/bin",
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -828,14 +989,18 @@
     ],
     "cwd": "[CACHE]/builder/src/flutter/testing/scenario_app",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/flutter/testing/scenario_app/android/gradle-home/bin",
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {
@@ -861,14 +1026,18 @@
     ],
     "cwd": "[CACHE]/builder/src/flutter/testing/scenario_app",
     "env": {
+      "ADB_PATH": "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "AVD_ROOT": "[CACHE]/builder/avd",
+      "EMULATOR_PID": "17687",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/flutter/testing/scenario_app/android/gradle-home/bin",
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "env_suffixes": {

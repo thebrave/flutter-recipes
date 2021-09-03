@@ -248,7 +248,6 @@
     "cwd": "[START_DIR]/flutter",
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_GIT_URL": "https://chromium.googlesource.com/external/github.com/flutter/flutter",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -271,13 +270,40 @@
   {
     "cmd": [
       "flutter",
+      "config",
+      "--enable-windows-uwp-desktop"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "prepare environment.flutter config --enable-windows-uwp-desktop",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "flutter",
       "doctor",
       "-v"
     ],
     "cwd": "[START_DIR]/flutter",
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_GIT_URL": "https://chromium.googlesource.com/external/github.com/flutter/flutter",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -304,7 +330,6 @@
     "cwd": "[START_DIR]/flutter",
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_GIT_URL": "https://chromium.googlesource.com/external/github.com/flutter/flutter",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -326,33 +351,54 @@
     ]
   },
   {
-    "cmd": [
-      "pub",
-      "global",
-      "activate",
-      "flutter_plugin_tools"
-    ],
-    "cwd": "[START_DIR]/flutter",
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_GIT_URL": "https://chromium.googlesource.com/external/github.com/flutter/flutter",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "name": "prepare environment.pub global activate flutter_plugin_tools",
+    "cmd": [],
+    "name": "read yaml",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_LOG_LINE@yaml@@@@",
+      "@@@STEP_LOG_END@yaml@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[START_DIR]/plugins/.ci/targets/tests.yaml",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "read yaml.read",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@tests.yaml@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[flutter::yaml]/resources/parse_yaml.py",
+      "--yaml_file",
+      "[START_DIR]/plugins/.ci/targets/tests.yaml",
+      "--json_file",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "read yaml.parse",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"tasks\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"one\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"script\": \"myscript\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
     ]
   },
   {
@@ -362,14 +408,11 @@
   {
     "cmd": [
       "bash",
-      "script/tool_runner.sh",
-      "build-examples",
-      "--windows"
+      "[START_DIR]/plugins/myscript"
     ],
     "cwd": "[START_DIR]/plugins",
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_GIT_URL": "https://chromium.googlesource.com/external/github.com/flutter/flutter",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -383,36 +426,7 @@
         "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
       ]
     },
-    "name": "Run plugin tests.build examples",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "bash",
-      "script/tool_runner.sh",
-      "drive-examples",
-      "--windows"
-    ],
-    "cwd": "[START_DIR]/plugins",
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_GIT_URL": "https://chromium.googlesource.com/external/github.com/flutter/flutter",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "name": "Run plugin tests.drive examples",
+    "name": "Run plugin tests.one",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

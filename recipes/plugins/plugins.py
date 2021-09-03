@@ -5,7 +5,9 @@
 DEPS = [
     'flutter/repo_util',
     'flutter/flutter_deps',
+    'flutter/yaml',
     'recipe_engine/context',
+    'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/properties',
     'recipe_engine/step',
@@ -31,9 +33,6 @@ def RunSteps(api):
         ref=api.properties.get('git_ref')
     )
   env, env_prefixes = api.repo_util.flutter_environment(flutter_checkout_path)
-  # This is required by `flutter upgrade`
-  env['FLUTTER_GIT_URL'
-     ] = 'https://chromium.googlesource.com/external/github.com/flutter/flutter'
   with api.step.nest('Dependencies'):
     deps = api.properties.get('dependencies', [])
     api.flutter_deps.required_deps(env, env_prefixes, deps)
@@ -43,10 +42,15 @@ def RunSteps(api):
     with api.step.nest('prepare environment'):
       config_flag = '--enable-windows-uwp-desktop' if api.properties.get(
           'uwp'
-      ) else '--enable-windows-desktop'
+      ) else ''
       api.step(
-          'flutter config %s' % config_flag,
-          ['flutter', 'config', config_flag],
+          'flutter config --enable-windows-desktop',
+          ['flutter', 'config', '--enable-windows-desktop'],
+          infra_step=True,
+      )
+      api.step(
+          'flutter config --enable-windows-uwp-desktop',
+          ['flutter', 'config', '--enable-windows-uwp-desktop'],
           infra_step=True,
       )
       api.step('flutter doctor', ['flutter', 'doctor', '-v'])
@@ -57,26 +61,21 @@ def RunSteps(api):
           infra_step=True,
           timeout=timeout_secs
       )
-      api.step(
-          'pub global activate flutter_plugin_tools',
-          ['pub', 'global', 'activate', 'flutter_plugin_tools'],
-          infra_step=True,
-      )
+  tests_yaml_path = plugins_checkout_path.join(
+      '.ci', 'targets', api.properties.get('target_file', 'tests.yaml')
+  )
+  result = api.yaml.read('read yaml', tests_yaml_path, api.json.output())
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=plugins_checkout_path):
     with api.step.nest('Run plugin tests'):
-      build_drive_flag = '--winuwp' if api.properties.get(
-          'uwp'
-      ) else '--windows'
-      api.step(
-          'build examples',
-          ['bash', 'script/tool_runner.sh', 'build-examples', build_drive_flag]
-      )
-      api.step(
-          'drive examples',
-          ['bash', 'script/tool_runner.sh', 'drive-examples', build_drive_flag]
-      )
+      for task in result.json.output['tasks']:
+        script_path = plugins_checkout_path.join(task['script'])
+        api.step(task['name'], cmd=['bash', script_path])
 
 
 def GenTests(api):
-  yield api.test('basic', api.repo_util.flutter_environment_data())
+  tasks_dict = {'tasks': [{'name': 'one', 'script': 'myscript'}]}
+  yield api.test(
+      'basic', api.repo_util.flutter_environment_data(),
+      api.step_data('read yaml.parse', api.json.output(tasks_dict))
+  )

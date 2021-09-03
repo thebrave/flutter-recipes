@@ -2184,10 +2184,7 @@
   },
   {
     "cmd": [],
-    "name": "FEMU Test",
-    "~followup_annotations": [
-      "@@@STEP_EXCEPTION@@@"
-    ]
+    "name": "FEMU Test"
   },
   {
     "cmd": [
@@ -2232,8 +2229,53 @@
       "@@@STEP_LOG_LINE@syslog@failure@@@",
       "@@@STEP_LOG_END@syslog@@@",
       "@@@STEP_LOG_LINE@emulator_log@@@@",
-      "@@@STEP_LOG_END@emulator_log@@@",
-      "@@@STEP_FAILURE@@@"
+      "@@@STEP_LOG_END@emulator_log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "./run_vdl_test.sh",
+      "--emulator_binary_path=aemu/emulator",
+      "--proto_file_path=virtual_device.textproto",
+      "--pm_tool=pm",
+      "--far_tool=far",
+      "--fvm_tool=fvm",
+      "--resize_fvm=2G",
+      "--gpu=swiftshader_indirect",
+      "--headless_mode=true",
+      "--system_images=qemu_buildargs,qemu_kernel,qemu_fvm,qemu_zircona-ed25519,ssh_config,id_ed25519.pub,id_ed25519,amber-files",
+      "--serve_packages=flutter_aot_runner-0.far,v2_test-123.far",
+      "--test_suite=v2_test",
+      "--test_command=run-test-suite fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b",
+      "--emulator_log",
+      "/path/to/tmp/",
+      "--syslog",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CLEANUP]/vdl_runfiles__tmp_1",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "FEMU Test.Run FEMU Test Suite v2_test (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@syslog@failure@@@",
+      "@@@STEP_LOG_END@syslog@@@",
+      "@@@STEP_LOG_LINE@emulator_log@@@@",
+      "@@@STEP_LOG_END@emulator_log@@@"
     ]
   },
   {
@@ -2279,15 +2321,56 @@
       "@@@STEP_LOG_LINE@syslog@failure@@@",
       "@@@STEP_LOG_END@syslog@@@",
       "@@@STEP_LOG_LINE@emulator_log@@@@",
-      "@@@STEP_LOG_END@emulator_log@@@",
-      "@@@STEP_FAILURE@@@"
+      "@@@STEP_LOG_END@emulator_log@@@"
     ]
   },
   {
-    "failure": {
-      "failure": {},
-      "humanReason": "2 out of 2 aggregated steps failed: Step('FEMU Test.Run FEMU Test Suite v2_test') (retcode: 1), Step('FEMU Test.Run FEMU Test Suite v1_test_component') (retcode: 1)"
+    "cmd": [
+      "./run_vdl_test.sh",
+      "--emulator_binary_path=aemu/emulator",
+      "--proto_file_path=virtual_device.textproto",
+      "--pm_tool=pm",
+      "--far_tool=far",
+      "--fvm_tool=fvm",
+      "--resize_fvm=2G",
+      "--gpu=swiftshader_indirect",
+      "--headless_mode=true",
+      "--system_images=qemu_buildargs,qemu_kernel,qemu_fvm,qemu_zircona-ed25519,ssh_config,id_ed25519.pub,id_ed25519,amber-files",
+      "--serve_packages=flutter_aot_runner-0.far,v1_test_component-321.far",
+      "--test_suite=v1_test_component",
+      "--test_command=run-test-component fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b",
+      "--emulator_log",
+      "/path/to/tmp/",
+      "--syslog",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CLEANUP]/vdl_runfiles__tmp_1",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "FEMU Test.Run FEMU Test Suite v1_test_component (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@syslog@failure@@@",
+      "@@@STEP_LOG_END@syslog@@@",
+      "@@@STEP_LOG_LINE@emulator_log@@@@",
+      "@@@STEP_LOG_END@emulator_log@@@"
+    ]
+  },
+  {
     "name": "$result"
   }
 ]

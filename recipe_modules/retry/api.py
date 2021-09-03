@@ -31,6 +31,12 @@ class RetryApi(recipe_api.RecipeApi):
     """
     for attempt in range(max_attempts):
       step = self.m.step(step_name, cmd, ok_ret='any', **kwargs)
+      # Show syslog and emulator_log for FEMU test suite.
+      if 'Run FEMU Test Suite' in step_name:
+        step.presentation.logs[
+            'syslog'] = step.raw_io.output_texts['syslog']
+        step.presentation.logs[
+            'emulator_log'] = step.raw_io.output_texts['emulator_log']
       if step.retcode != 0:
         if attempt == max_attempts - 1:
           step.presentation.status = self.m.step.FAILURE

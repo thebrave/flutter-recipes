@@ -15,6 +15,7 @@ import re
 DEPS = [
     'depot_tools/depot_tools',
     'flutter/repo_util',
+    'flutter/retry',
     'flutter/yaml',
     'fuchsia/archive',
     'fuchsia/display_util',
@@ -219,7 +220,7 @@ def TestFuchsiaFEMU(api):
           '--syslog',
           api.raw_io.output_text(name='syslog')
         ]
-        api.step(
+        api.retry.step(
             'Run FEMU Test Suite %s' % suite['name'],
             test_cmd,
             step_test_data=(
@@ -227,11 +228,6 @@ def TestFuchsiaFEMU(api):
                 output_text('failure', name='syslog')
             )
         )
-        step_result = api.step.active_result
-        step_result.presentation.logs[
-            'syslog'] = step_result.raw_io.output_texts['syslog']
-        step_result.presentation.logs[
-            'emulator_log'] = step_result.raw_io.output_texts['emulator_log']
 
 def BuildFuchsia(api):
   """

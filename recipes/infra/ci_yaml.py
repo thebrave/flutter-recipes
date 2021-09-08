@@ -100,6 +100,8 @@ def RunSteps(api):
   with api.context(cwd=infra_path):
     # Generate luci configs
     api.step('luci generate', cmd=['lucicfg', 'generate', 'config/main.star'])
+    # Validate luci configs
+    api.step('luci validate', cmd=['lucicfg', 'validate', 'config/main.star'])
     # Only send rolls on postsubmit
     if _is_postsubmit(api):
         api.auto_roller.attempt_roll(

@@ -26,6 +26,7 @@ DEPS = [
     'flutter/flutter_deps',
     'flutter/os_utils',
     'flutter/repo_util',
+    'flutter/retry',
     'flutter/web_util',
     'fuchsia/goma',
     'recipe_engine/context',
@@ -113,9 +114,11 @@ def RunSteps(api, properties, env_properties):
       local_pub = local_engine_path.join('dart-sdk', 'bin', 'pub')
       with api.context(
           cwd=checkout.join('flutter', 'web_sdk', 'web_engine_tester')):
-        api.step('pub get in web_engine_tester', [local_pub, 'get'])
+        api.retry.step(
+            'pub get in web_engine_tester', [local_pub, 'get'], infra_step=True
+        )
       with api.context(cwd=checkout.join('flutter', 'lib', 'web_ui')):
-        api.step('pub get in web_ui', [local_pub, 'get'])
+        api.retry.step('pub get in web_ui', [local_pub, 'get'], infra_step=True)
         if api.platform.is_mac:
           with api.osx_sdk('ios'):
             with recipe_api.defer_results():

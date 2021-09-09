@@ -23,6 +23,7 @@ DEPS = [
     'flutter/os_utils',
     'flutter/osx_sdk',
     'flutter/repo_util',
+    'flutter/retry',
     'flutter/shard_util',
     'flutter/web_util',
     'flutter/yaml',
@@ -197,7 +198,7 @@ def RunSteps(api, properties, env_properties):
         felt_test_safari_desktop = copy.deepcopy(felt_cmd)
         felt_test_safari_desktop.append('test')
         felt_test_safari_desktop.extend(additional_args_safari_desktop)
-        api.step('felt test safari desktop', felt_test_safari_desktop)
+        api.retry.step('felt test safari desktop', felt_test_safari_desktop)
       if api.platform.is_linux:
         # TODO(nurhan): Web engine analysis can also be part of felt and used
         # in a shard.

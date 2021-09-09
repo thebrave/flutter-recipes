@@ -109,8 +109,7 @@ def RunSteps(api):
             gerrit_project = 'infra',
             repo_dir = infra_path,
             commit_message = 'Roll %s to %s' % (repo, git_ref),
-            # TODO(chillers): Change to oncall group. https://github.com/flutter/flutter/issues/86945
-            cc_on_failure = 'chillers@google.com',
+            cc_on_failure = 'flutter-infra@grotations.appspotmail.com',
         )
 
 

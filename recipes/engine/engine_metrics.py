@@ -35,14 +35,15 @@ def RunSteps(api, properties, env_properties):
   )
   android_home = checkout_path.join('third_party', 'android_tools', 'sdk')
   env = {
-    'ANDROID_HOME': str(android_home),
-    'FLUTTER_PREBUILT_DART_SDK': 'True',
+      'ANDROID_HOME': str(android_home),
+      'FLUTTER_PREBUILT_DART_SDK': 'True',
   }
   env_prefixes = {'PATH': [dart_bin]}
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
   with api.depot_tools.on_path(), api.context(env=env,
                                               env_prefixes=env_prefixes):
-    api.build_util.run_gn(['--runtime-mode', 'release', '--prebuilt-dart-sdk'], checkout_path)
+    api.build_util.run_gn(['--runtime-mode', 'release', '--prebuilt-dart-sdk'],
+                          checkout_path)
     api.build_util.build('host_release', checkout_path, [])
 
   host_release_path = checkout_path.join('out', 'host_release')
@@ -65,10 +66,22 @@ def RunSteps(api, properties, env_properties):
   env['TOKEN_PATH'] = api.token_util.metric_center_token()
   env['GCP_PROJECT'] = 'flutter-cirrus'
   with api.context(env=env, env_prefixes=env_prefixes, cwd=benchmark_path):
-    api.step('Upload metrics', ['bash', script_path])
+    if properties.upload_metrics:
+      api.step('Upload metrics', ['bash', script_path])
+    else:
+      api.step('Upload metrics', ['bash', script_path, '--no-upload'])
 
 
 def GenTests(api):
-  yield api.test(
-      'basic', api.properties(InputProperties(goma_jobs='200', no_lto=True))
-  )
+  for upload_metrics in [True, False]:
+    test_name = 'basic_upload_metrics_%s' % upload_metrics
+    yield api.test(
+        test_name,
+        api.properties(
+            InputProperties(
+                goma_jobs='200',
+                no_lto=True,
+                upload_metrics=upload_metrics,
+            )
+        )
+    )

@@ -7,7 +7,6 @@ from recipe_engine.recipe_api import Property
 DEPS = [
     'depot_tools/git',
     'fuchsia/display_util',
-    'fuchsia/upload',
     'recipe_engine/buildbucket',
     'recipe_engine/cipd',
     'recipe_engine/context',

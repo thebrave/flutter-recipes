@@ -106,7 +106,10 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       self.m.step('Kill emulator cleanup', ['kill', '-9', pid_to_kill])
 
       # Kill zombie processes left over by QEMU on the host.
-      step_result = self.m.step('list processes', ['ps', '-axww'], stdout=self.m.raw_io.output())
+      step_result = self.m.step('list processes',
+          ['ps', '-axww'],
+          stdout=self.m.raw_io.output_text(add_output_log=True),
+          stderr=self.m.raw_io.output_text(add_output_log=True))
       zombieList = ['qemu-system']
       killCommand = ['kill', '-9']
       for line in step_result.stdout.splitlines():
@@ -114,4 +117,4 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
         if any(zombie in line for zombie in zombieList):
           killCommand.append(line.split(None, 1)[0])
       if len(killCommand) > 2:
-        self.m.step('Kill zombie processes', killCommand)
+        self.m.step('Kill zombie processes', killCommand, ok_ret='any')

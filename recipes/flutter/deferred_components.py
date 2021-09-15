@@ -95,7 +95,7 @@ def RunSteps(api, properties, env_properties):
           bundletool_dir,
           api.cipd.EnsureFile().add_package(
               'flutter/android/bundletool',
-              'vFt1jA0cUeZLmUCVR5NG2JVB-SgJ18GH_pVYKMOlfUIC'
+              '0xeDa85nRhdQfi3iN2dK8PPluwI73z9San_Afuj3CfgC'
           )
       )
   test_dir = checkout_path.join('dev', 'integration_tests', 'deferred_components_test')

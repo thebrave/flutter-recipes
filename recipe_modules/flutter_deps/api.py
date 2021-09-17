@@ -65,6 +65,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'firebase': self.firebase,
         'go_sdk': self.go_sdk,
         'goldctl': self.goldctl,
+        'gradle_cache': self.gradle_cache,
         'ios_signing': self.ios_signing,
         'jazzy': self.jazzy,
         'ninja': self.ninja,
@@ -235,6 +236,9 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     # Setup environment variables
     env['ANDROID_SDK_ROOT'] = android_sdk_path
     env['ANDROID_HOME'] = android_sdk_path
+    self.gradle_cache(env, env_prefixes, version)
+
+  def gradle_cache(self, env, env_prefixes, version):
     env['GRADLE_USER_HOME'] = self.m.path['cache'].join('gradle')
     env['GRADLE_OPTS'] = '-Dorg.gradle.daemon=false'
 

@@ -25,6 +25,7 @@ DEPS = [
     'flutter/repo_util',
     'flutter/retry',
     'flutter/shard_util',
+    'flutter/test_utils',
     'flutter/web_util',
     'flutter/yaml',
     'fuchsia/archive',
@@ -198,7 +199,10 @@ def RunSteps(api, properties, env_properties):
         felt_test_safari_desktop = copy.deepcopy(felt_cmd)
         felt_test_safari_desktop.append('test')
         felt_test_safari_desktop.extend(additional_args_safari_desktop)
-        api.retry.step('felt test safari desktop', felt_test_safari_desktop)
+        api.retry.step(
+            api.test_utils.test_step_name('felt test safari desktop'),
+            felt_test_safari_desktop
+        )
       if api.platform.is_linux:
         # TODO(nurhan): Web engine analysis can also be part of felt and used
         # in a shard.
@@ -221,7 +225,9 @@ def RunSteps(api, properties, env_properties):
             felt_test = copy.deepcopy(felt_cmd)
             felt_test.append('test')
             felt_test.extend(additional_args)
-            api.step('felt ios-safari test', felt_test)
+            api.step(
+                api.test_utils.test_step_name('felt ios-safari test'), felt_test
+            )
             api.web_util.upload_failing_goldens(checkout, 'ios-safari')
             CleanUpProcesses(api)
       else:
@@ -229,7 +235,7 @@ def RunSteps(api, properties, env_properties):
         felt_test = copy.deepcopy(felt_cmd)
         felt_test.append('test')
         felt_test.extend(additional_args)
-        api.step('felt test chrome', felt_test)
+        api.step(api.test_utils.test_step_name('felt test chrome'), felt_test)
         CleanUpProcesses(api)
 
 

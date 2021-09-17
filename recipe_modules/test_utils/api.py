@@ -86,3 +86,12 @@ class TestUtilsApi(recipe_api.RecipeApi):
     else:
       test_run_status = 'success'
     return test_run_status
+
+  def test_step_name(self, step_name):
+    """Append keyword test to test step name to be consistent.
+    Args:
+      step_name(str): The name of the step.
+
+    Returns(str): The test step name prefixed with "test".
+    """
+    return 'test: %s' % step_name

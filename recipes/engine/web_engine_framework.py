@@ -22,6 +22,7 @@ DEPS = [
     'flutter/repo_util',
     'flutter/flutter_deps',
     'flutter/shard_util',
+    'flutter/test_utils',
     'fuchsia/archive',
     'fuchsia/goma',
     'recipe_engine/buildbucket',
@@ -174,7 +175,7 @@ def RunSteps(api, properties, env_properties):
         infra_step=True,
     )
     api.step(
-        'run web integration tests', [
+        api.test_utils.test_step_name('run web integration tests'), [
             'flutter',
             '--local-engine=%s' % build_dir,
             'build',

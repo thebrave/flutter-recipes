@@ -17,6 +17,7 @@ DEPS = [
     'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/retry',
+    'flutter/test_utils',
     'fuchsia/goma',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
@@ -64,7 +65,13 @@ def RunTests(api, out_dir, android_out_dir=None, ios_out_dir=None, types='all', 
     args.extend(['--use-sanitizer-suppressions'])
 
   def run_test():
-    return api.python('Host Tests for %s' % out_dir, script_path, args, venv=venv_path)
+    return api.python(
+        api.test_utils.test_step_name('Host Tests for %s' % out_dir),
+        script_path,
+        args,
+        venv=venv_path
+    )
+
   # Rerun test step 3 times by default if failing.
   api.retry.wrap(run_test)
 
@@ -82,14 +89,16 @@ def FormatAndDartTest(api):
   checkout = GetCheckoutPath(api)
   with api.context(cwd=checkout.join('flutter')):
     format_cmd = checkout.join('flutter', 'ci', 'format.sh')
-    api.step('format and dart test', [format_cmd])
+    api.step(
+        api.test_utils.test_step_name('format and dart test'), [format_cmd]
+    )
 
 
 def Lint(api):
   checkout = GetCheckoutPath(api)
   with api.context(cwd=checkout):
     lint_cmd = checkout.join('flutter', 'ci', 'lint.sh')
-    api.step('lint test', [lint_cmd])
+    api.step(api.test_utils.test_step_name('lint test'), [lint_cmd])
 
 
 def LintAndroidHost(api):
@@ -140,7 +149,10 @@ def TestObservatory(api):
   test_path = checkout.join('flutter/shell/testing/observatory/test.dart')
   test_cmd = ['dart', test_path, flutter_tester_path, empty_main_path]
   with api.context(cwd=checkout):
-    api.step('test observatory and service protocol', test_cmd)
+    api.step(
+        api.test_utils.test_step_name('observatory and service protocol'),
+        test_cmd
+    )
 
 
 @contextmanager
@@ -163,7 +175,7 @@ def RunIosIntegrationTests(api):
 
   with api.context(cwd=scenario_app_tests):
     api.step(
-        'Scenario App Integration Tests',
+        api.test_utils.test_step_name('Scenario App Integration Tests'),
         ['./run_ios_tests.sh', 'ios_debug_sim']
     )
 

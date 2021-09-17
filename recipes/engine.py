@@ -23,6 +23,7 @@ DEPS = [
     'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/retry',
+    'flutter/test_utils',
     'flutter/zip',
     'fuchsia/display_util',
     'fuchsia/gcloud',
@@ -125,8 +126,15 @@ def RunTests(api, out_dir, android_out_dir=None, types='all'):
   args = ['--variant', out_dir, '--type', types, '--engine-capture-core-dump']
   if android_out_dir:
     args.extend(['--android-variant', android_out_dir])
+
   def run_test():
-    return api.python('Host Tests for %s' % out_dir, script_path, args, venv=venv_path)
+    return api.python(
+        api.test_utils.test_step_name('Host Tests for %s' % out_dir),
+        script_path,
+        args,
+        venv=venv_path
+    )
+
   # Rerun test step 3 times by default if failing.
   # TODO(keyonghan): notify tree gardener for test failures/flakes:
   # https://github.com/flutter/flutter/issues/89308
@@ -526,8 +534,10 @@ def BuildLinuxAndroidAOTArm64Profile(api, swarming_task_id, aot_variant):
     ]
 
     def firebase_func():
-      api.python('Android Firebase Test',
-          './flutter/ci/firebase_testlab.py', args)
+      api.python(
+          api.test_utils.test_step_name('Android Firebase Test'),
+          './flutter/ci/firebase_testlab.py', args
+      )
 
     api.retry.wrap(firebase_func, retriable_codes=(1, 15, 20))
 

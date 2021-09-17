@@ -16,6 +16,7 @@ DEPS = [
     'depot_tools/depot_tools',
     'flutter/repo_util',
     'flutter/retry',
+    'flutter/test_utils',
     'flutter/yaml',
     'fuchsia/archive',
     'fuchsia/display_util',
@@ -221,7 +222,9 @@ def TestFuchsiaFEMU(api):
           api.raw_io.output_text(name='syslog')
         ]
         api.retry.step(
-            'Run FEMU Test Suite %s' % suite['name'],
+            api.test_utils.test_step_name(
+                'Run FEMU Test Suite %s' % suite['name']
+            ),
             test_cmd,
             step_test_data=(
                 lambda: api.raw_io.test_api.
@@ -313,8 +316,8 @@ def GenTests(api):
           'Read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
-      api.step_data('FEMU Test.Run FEMU Test Suite v2_test', retcode=1),
-      api.step_data('FEMU Test.Run FEMU Test Suite v1_test_component', retcode=1),
+      api.step_data('FEMU Test.test: Run FEMU Test Suite v2_test', retcode=1),
+      api.step_data('FEMU Test.test: Run FEMU Test Suite v1_test_component', retcode=1),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
       api.platform('linux', 64),
       api.path.exists(

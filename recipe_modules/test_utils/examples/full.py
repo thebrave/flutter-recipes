@@ -14,10 +14,12 @@ DEPS = [
 def RunSteps(api):
   api.test_utils.run_test('mytest', ['ls', '-la'])
   api.test_utils.is_devicelab_bot()
+  api.test_utils.test_step_name('test')
 
 
 def GenTests(api):
-  yield api.test('passing',
+  yield api.test(
+      'passing',
       api.step_data(
           'mytest',
           stdout=api.raw_io.output_text('#success\nthis is a success'),
@@ -42,8 +44,6 @@ def GenTests(api):
   yield api.test(
       'long_stdout',
       api.step_data(
-          'mytest',
-          stdout=api.raw_io.output_text(very_long_string),
-          retcode=1
+          'mytest', stdout=api.raw_io.output_text(very_long_string), retcode=1
       )
   )

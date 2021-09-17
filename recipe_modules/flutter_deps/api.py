@@ -239,7 +239,13 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     self.gradle_cache(env, env_prefixes, version)
 
   def gradle_cache(self, env, env_prefixes, version):
+    # Specify the location of the shared cache used by Gradle builds.
+    # This cache contains dependencies downloaded from network when a Gradle task is run.
+    # When a cache hit occurs, the dependency is immediately provided to the Gradle build.
     env['GRADLE_USER_HOME'] = self.m.path['cache'].join('gradle')
+    # Disable the Gradle daemon. Some builders aren't ephemeral, which means that state leaks out potentially
+    # leaving the bot in a bad state.
+    # For more, see CI section on https://docs.gradle.org/current/userguide/gradle_daemon.html#sec:disabling_the_daemon
     env['GRADLE_OPTS'] = '-Dorg.gradle.daemon=false'
 
   def gems(self, env, env_prefixes, gemfile_dir):

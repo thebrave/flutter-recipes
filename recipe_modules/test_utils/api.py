@@ -95,3 +95,21 @@ class TestUtilsApi(recipe_api.RecipeApi):
     Returns(str): The test step name prefixed with "test".
     """
     return 'test: %s' % step_name
+
+  def flaky_step(self, step_name):
+    """Add a flaky step when test is flaky.
+    Args:
+      step_name(str): The name of the step.
+    """
+    if self.m.platform.is_win:
+      self.m.step(
+          'step is flaky: %s' % step_name,
+          ['powershell.exe', 'echo "test run is flaky"'],
+          infra_step=True,
+      )
+    else:
+      self.m.step(
+          'check flaky',
+          ['echo', 'test run is flaky'],
+          infra_step=True,
+      )

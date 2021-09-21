@@ -125,7 +125,7 @@ def RunSteps(api):
           # This is to clean up leaked processes.
           api.os_utils.kill_processes()
         if test_status == 'flaky':
-          check_flaky(api)
+          api.test_utils.flaky_step('run %s' % task_name)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadResults(
         api, env, env_prefixes, results_path, test_status == 'flaky',
@@ -162,23 +162,8 @@ def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params):
       # This is to clean up leaked processes.
       api.os_utils.kill_processes()
     if test_status == 'flaky':
-      check_flaky(api)
+      api.test_utils.flaky_step('run %s' % task_name)
   return test_status
-
-
-def check_flaky(api):
-  if api.platform.is_win:
-    api.step(
-        'check flaky',
-        ['powershell.exe', 'echo "test run is flaky"'],
-        infra_step=True,
-    )
-  else:
-    api.step(
-        'check flaky',
-        ['echo', 'test run is flaky'],
-        infra_step=True,
-    )
 
 
 def shouldNotUpdate(api, git_branch):
@@ -287,7 +272,6 @@ def GenTests(api):
           project='test',
           git_repo='git.example.com/test/repo',
       ),
-      api.platform.name('linux'),
       api.runtime(is_experimental=True),
   )
   yield api.test(
@@ -326,7 +310,6 @@ def GenTests(api):
           retcode=0
       ),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
-      api.platform.name('win'),
   )
   yield api.test(
       "upload-metrics-mac",

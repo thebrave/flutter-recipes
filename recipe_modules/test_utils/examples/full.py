@@ -7,6 +7,7 @@ from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 
 DEPS = [
     'flutter/test_utils',
+    'recipe_engine/platform',
     'recipe_engine/raw_io',
 ]
 
@@ -15,6 +16,7 @@ def RunSteps(api):
   api.test_utils.run_test('mytest', ['ls', '-la'])
   api.test_utils.is_devicelab_bot()
   api.test_utils.test_step_name('test')
+  api.test_utils.flaky_step('test step')
 
 
 def GenTests(api):
@@ -23,14 +25,15 @@ def GenTests(api):
       api.step_data(
           'mytest',
           stdout=api.raw_io.output_text('#success\nthis is a success'),
-      )
+      ), api.platform.name('win')
   )
   yield api.test(
       'flaky',
       api.step_data(
           'mytest',
           stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
-      )
+      ),
+      api.platform.name('linux'),
   )
   yield api.test(
       'failing',

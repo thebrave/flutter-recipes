@@ -33,10 +33,9 @@ class RetryApi(recipe_api.RecipeApi):
       step = self.m.step(step_name, cmd, ok_ret='any', **kwargs)
       # Show syslog and emulator_log for FEMU test suite.
       if 'Run FEMU Test Suite' in step_name:
-        step.presentation.logs[
-            'syslog'] = step.raw_io.output_texts['syslog']
-        step.presentation.logs[
-            'emulator_log'] = step.raw_io.output_texts['emulator_log']
+        step.presentation.logs['syslog'] = step.raw_io.output_texts['syslog']
+        step.presentation.logs['emulator_log'] = step.raw_io.output_texts[
+            'emulator_log']
       if step.retcode != 0:
         if attempt == max_attempts - 1:
           step.presentation.status = self.m.step.FAILURE
@@ -44,8 +43,12 @@ class RetryApi(recipe_api.RecipeApi):
         self.m.time.sleep(sleep)
         sleep *= backoff_factor
       else:
+        # Append an extra step to reflect test flakiness, so that we can easily
+        # collect flaky test statistics. This can also be used to trigger
+        # notification when a flake happens.
+        if attempt > 0 and 'test:' in step_name:
+          self.m.test_utils.flaky_step(step_name)
         return step
-
 
   def wrap(
       self,
@@ -77,6 +80,6 @@ class RetryApi(recipe_api.RecipeApi):
         retriable_failure = retriable_codes == 'any' or \
             step.retcode in retriable_codes
         if not retriable_failure or attempt == max_attempts - 1:
-            raise
+          raise
         self.m.time.sleep(sleep)
         sleep *= backoff_factor

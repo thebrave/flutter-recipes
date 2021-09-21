@@ -23,7 +23,7 @@ PROPERTIES = {
 
 def RunSteps(api, max_attempts):
   api.retry.step(
-      'Run FEMU Test Suite', [
+      'test: Run FEMU Test Suite', [
           'echo', 'hello', '>',
           api.raw_io.output_text(name='syslog'), ';', 'echo', 'hello', '>',
           api.raw_io.output_text(name='emulator_log')
@@ -33,7 +33,7 @@ def RunSteps(api, max_attempts):
           lambda: api.raw_io.test_api.output_text('failure', name='syslog')
       )
   )
-  api.retry.step('mytest', ['ls', '-la'], max_attempts=max_attempts)
+  api.retry.step('test: mytest', ['ls', '-la'], max_attempts=max_attempts)
 
   def func():
     api.step('mytest_func', ['ls', '-a'])
@@ -43,18 +43,18 @@ def RunSteps(api, max_attempts):
 
 def GenTests(api):
   yield api.test('failing') + api.properties(max_attempts=1) + api.step_data(
-      'mytest', retcode=1
+      'test: mytest', retcode=1
   ) + api.step_data(
-      'Run FEMU Test Suite', retcode=0
+      'test: Run FEMU Test Suite', retcode=0
   )
   yield api.test('failing_wrap') + api.properties(max_attempts=1
                                                  ) + api.step_data(
                                                      'mytest_func', retcode=1
                                                  )
-  yield api.test('pass_with_retries') + api.properties(max_attempts=2
-                                                      ) + api.step_data(
-                                                          'mytest', retcode=1
-                                                      ) + api.step_data(
-                                                          'mytest_func',
-                                                          retcode=1
-                                                      )
+  yield api.test('pass_with_retries') + api.properties(
+      max_attempts=2
+  ) + api.step_data(
+      'test: mytest', retcode=1
+  ) + api.step_data(
+      'mytest_func', retcode=1
+  )

@@ -41,7 +41,7 @@ def RunSteps(api):
         ref=api.properties.get('git_ref')
     )
     # Checkout latest version of flutter/cocoon.
-    api.repo_util.checkout('cocoon', cocoon_path, ref='refs/heads/master')
+    api.repo_util.checkout('cocoon', cocoon_path, ref='refs/heads/main')
 
   # The context adds dart-sdk tools to PATH and sets PUB_CACHE.
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)

@@ -42,7 +42,7 @@ def RunSteps(api):
   api.repo_util.checkout(
       'cocoon',
       cocoon_path,
-      ref='refs/heads/master'
+      ref='refs/heads/main'
   )
 
   # Checkout latest version of flutter/infra

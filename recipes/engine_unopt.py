@@ -64,16 +64,13 @@ def RunTests(api, out_dir, android_out_dir=None, ios_out_dir=None, types='all', 
   if suppress_sanitizers:
     args.extend(['--use-sanitizer-suppressions'])
 
+  step_name = api.test_utils.test_step_name('Host Tests for %s' % out_dir)
+
   def run_test():
-    return api.python(
-        api.test_utils.test_step_name('Host Tests for %s' % out_dir),
-        script_path,
-        args,
-        venv=venv_path
-    )
+    return api.python(step_name, script_path, args, venv=venv_path)
 
   # Rerun test step 3 times by default if failing.
-  api.retry.wrap(run_test)
+  api.retry.wrap(run_test, step_name=step_name)
 
 
 def AnalyzeDartUI(api):

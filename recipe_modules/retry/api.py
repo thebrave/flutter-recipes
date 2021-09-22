@@ -46,6 +46,7 @@ class RetryApi(recipe_api.RecipeApi):
         # Append an extra step to reflect test flakiness, so that we can easily
         # collect flaky test statistics. This can also be used to trigger
         # notification when a flake happens.
+        # This is mainly used for Engine builders for now.
         if attempt > 0 and 'test:' in step_name:
           self.m.test_utils.flaky_step(step_name)
         return step
@@ -53,6 +54,7 @@ class RetryApi(recipe_api.RecipeApi):
   def wrap(
       self,
       func,
+      step_name=None,
       max_attempts=3,
       sleep=5.0,
       backoff_factor=1.5,
@@ -74,7 +76,14 @@ class RetryApi(recipe_api.RecipeApi):
     """
     for attempt in range(max_attempts):
       try:
-        return func()
+        func()
+        # Append an extra step to reflect test flakiness, so that we can easily
+        # collect flaky test statistics. This can also be used to trigger
+        # notification when a flake happens.
+        # This is mainly used for Engine builders for now.
+        if attempt > 0 and step_name is not None and 'test:' in step_name:
+          self.m.test_utils.flaky_step(step_name)
+        return
       except self.m.step.StepFailure:
         step = self.m.step.active_result
         retriable_failure = retriable_codes == 'any' or \

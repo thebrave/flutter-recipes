@@ -533,13 +533,14 @@ def BuildLinuxAndroidAOTArm64Profile(api, swarming_task_id, aot_variant):
         '--build-id', swarming_task_id,
     ]
 
-    def firebase_func():
-      api.python(
-          api.test_utils.test_step_name('Android Firebase Test'),
-          './flutter/ci/firebase_testlab.py', args
-      )
+    step_name = api.test_utils.test_step_name('Android Firebase Test')
 
-    api.retry.wrap(firebase_func, retriable_codes=(1, 15, 20))
+    def firebase_func():
+      api.python(step_name, './flutter/ci/firebase_testlab.py', args)
+
+    api.retry.wrap(
+        firebase_func, step_name=step_name, retriable_codes=(1, 15, 20)
+    )
 
 
 def BuildLinuxAndroidAOT(api, swarming_task_id):

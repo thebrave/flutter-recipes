@@ -109,7 +109,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
       )
     else:
       self.m.step(
-          'check flaky',
+          'step is flaky: %s' % step_name,
           ['echo', 'test run is flaky'],
           infra_step=True,
       )

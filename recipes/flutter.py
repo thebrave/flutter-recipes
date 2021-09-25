@@ -5,6 +5,8 @@
 from contextlib import contextmanager
 import re
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/git',

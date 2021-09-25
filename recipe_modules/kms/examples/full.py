@@ -4,6 +4,8 @@
 
 from recipe_engine.post_process import (Filter)
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     'kms',
     'recipe_engine/path',

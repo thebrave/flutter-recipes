@@ -1,3 +1,5 @@
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     'depot_tools/osx_sdk',
     'flutter/firebase',

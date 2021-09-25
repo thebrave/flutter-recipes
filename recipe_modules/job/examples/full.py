@@ -4,6 +4,8 @@
 
 from recipe_engine.recipe_api import Property
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     "flutter/job",
     "recipe_engine/properties",

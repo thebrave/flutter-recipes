@@ -4,6 +4,8 @@
 
 from recipe_engine.recipe_api import Property
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     'flutter/token_util',
 ]
@@ -16,4 +18,3 @@ def RunSteps(api):
 
 def GenTests(api):
   yield api.test('basic')
-

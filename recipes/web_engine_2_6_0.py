@@ -12,6 +12,8 @@ from recipe_engine import recipe_api
 from PB.recipes.flutter.engine import InputProperties
 from PB.recipes.flutter.engine import EnvProperties
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     'depot_tools/bot_update',
     'depot_tools/depot_tools',

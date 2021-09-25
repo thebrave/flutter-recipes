@@ -5,6 +5,7 @@
 DRONE_TIMEOUT_SECS = 3600 * 3  # 3 hours.
 
 import attr
+import collections
 
 from google.protobuf import json_format
 from recipe_engine import recipe_api
@@ -41,8 +42,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
 
   def unfreeze_dict(self, dictionary):
     """Creates a mutable dictionary out of a FrozenDict."""
-    result = {}
-    for k, v in dictionary.items():
+    result = collections.OrderedDict()
+    for k, v in sorted(dictionary.items()):
       if isinstance(v, engine_types.FrozenDict):
         result[k] = self.unfreeze_dict(v)
       elif isinstance(v, (list, tuple)):
@@ -65,7 +66,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
     This is because the proto structures can not be passed to the BuildBucket or led
     requests.
     """
-    return {k: v for k, v in struct.items()}
+    return collections.OrderedDict((k, v) for k, v in struct.items())
 
   def schedule_builds(self, builds, presentation):
     """Schedule builds using the builds configurations.
@@ -163,7 +164,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
             "luci.%s.%s:%s" % (parent.project, parent.bucket, builder_name),
         )
         edit_args = []
-        for k, v in drone_properties.items():
+        for k, v in sorted(drone_properties.items()):
           edit_args.extend(["-p", "%s=%s" % (k, self.m.json.dumps(v))])
         # led reduces the priority of tasks by 10 from their values in
         # buildbucket which we do not want.
@@ -218,11 +219,11 @@ class ShardUtilApi(recipe_api.RecipeApi):
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
       # Override recipe.
       drone_properties['recipe'] = recipe_name
-      properties = {
-          key: val
-          for key, val in drone_properties.items()
+      properties = collections.OrderedDict(
+          (key, val)
+          for key, val in sorted(drone_properties.items())
           if key not in PROPERTIES_TO_REMOVE
-      }
+      )
       task_names.append(task_name)
       req = self.m.buildbucket.schedule_request(
           swarming_parent_run_id=self.m.swarming.task_id,
@@ -315,7 +316,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
     """
     build_ids = [build.build_id for build in tasks.values()]
     build_id_to_name = {
-        int(build.build_id): build.build_name for build in tasks.values()
+        int(build.build_id): build.build_name for build in sorted(tasks.values())
     }
     bb_fields = self.m.buildbucket.DEFAULT_FIELDS.union({
         "infra.swarming.task_id",
@@ -332,7 +333,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
         fields=bb_fields,
     )
     failed_builds = [
-        b for b in builds.values() if b.status != common_pb2.SUCCESS
+        b for b in sorted(builds.values()) if b.status != common_pb2.SUCCESS
     ]
     if failed_builds:
       task_ids = [b.infra.swarming.task_id for b in failed_builds]
@@ -366,7 +367,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       self.m.swarming.collect(
           "wait for %s to complete" % pluralize("task", task_ids), task_ids
       )
-    for build_id, build in builds.iteritems():
+    for build_id, build in sorted(builds.items()):
       builds[build_id] = SubbuildResult(
           builder=build.builder.builder,
           build_id=build_id,

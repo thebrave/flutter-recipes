@@ -79,9 +79,9 @@ class JobApi(recipe_api.RecipeApi):
         "luci.%s.%s:%s" % (current.project, current.bucket, current.builder),
     )
     edit_args = []
-    for k, v in job.properties.iteritems():
+    for k, v in sorted(job.properties.items()):
       edit_args.extend(["-p", "%s=%s" % (k, self.m.json.dumps(v))])
-    for k, v in job.dimensions.iteritems():
+    for k, v in sorted(job.dimensions.items()):
       edit_args.extend(["-d", "%s=%s" % (k, v)])
     led_data = led_data.then("edit", *edit_args)
     led_data = self.m.led.inject_input_recipes(led_data)

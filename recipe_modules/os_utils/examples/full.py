@@ -5,6 +5,8 @@
 from PB.recipe_modules.recipe_engine.swarming import properties
 from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     'flutter/os_utils',
     'recipe_engine/platform',

@@ -7,6 +7,8 @@ import contextlib
 
 from PB.recipes.flutter.engine_builder import InputProperties, EngineBuild
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
   'depot_tools/bot_update',
   'depot_tools/depot_tools',

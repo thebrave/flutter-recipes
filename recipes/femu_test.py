@@ -12,6 +12,8 @@ from google.protobuf import struct_pb2
 
 import re
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     'depot_tools/depot_tools',
     'flutter/repo_util',

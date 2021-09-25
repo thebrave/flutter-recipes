@@ -10,6 +10,8 @@ from PB.recipe_modules.recipe_engine.led.properties import (
 from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     'flutter/shard_util_v2',
     'fuchsia/buildbucket_util',
@@ -27,7 +29,7 @@ def RunSteps(api):
     reqs = api.shard_util_v2.schedule_builds(build_configs, presentation)
   with api.step.nest("collect builds") as presentation:
     builds = api.shard_util_v2.collect(reqs, presentation)
-    for build in builds.itervalues():
+    for build in builds.values():
       if build.build_proto.status != common_pb2.SUCCESS:
         raise api.step.StepFailure("build %s failed" % build.build_id)
   with api.step.nest("launch builds") as presentation:

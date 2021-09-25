@@ -4,6 +4,8 @@
 
 from recipe_engine.recipe_api import Property
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     'depot_tools/git',
     'fuchsia/display_util',

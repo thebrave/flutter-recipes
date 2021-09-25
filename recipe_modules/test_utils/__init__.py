@@ -1,3 +1,5 @@
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     'recipe_engine/platform',
     'recipe_engine/raw_io',

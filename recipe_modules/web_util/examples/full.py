@@ -4,6 +4,8 @@
 
 from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     'depot_tools/gsutil',
     'flutter/web_util',

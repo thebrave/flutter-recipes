@@ -5,6 +5,9 @@
 """Recipe for testing recipes."""
 
 from recipe_engine.recipe_api import Property
+
+PYTHON_VERSION_COMPATIBILITY = 'PY2'
+
 DEPS = [
     'fuchsia/git',
     'fuchsia/commit_queue',

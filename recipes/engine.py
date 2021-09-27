@@ -129,9 +129,11 @@ def RunTests(api, out_dir, android_out_dir=None, types='all'):
   if android_out_dir:
     args.extend(['--android-variant', android_out_dir])
 
+  step_name = api.test_utils.test_step_name('Host Tests for %s' % out_dir)
+
   def run_test():
     return api.python(
-        api.test_utils.test_step_name('Host Tests for %s' % out_dir),
+        step_name,
         script_path,
         args,
         venv=venv_path
@@ -140,7 +142,7 @@ def RunTests(api, out_dir, android_out_dir=None, types='all'):
   # Rerun test step 3 times by default if failing.
   # TODO(keyonghan): notify tree gardener for test failures/flakes:
   # https://github.com/flutter/flutter/issues/89308
-  api.retry.wrap(run_test)
+  api.retry.wrap(run_test, step_name=step_name)
 
 
 def ScheduleBuilds(api, builder_name, drone_props):

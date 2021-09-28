@@ -166,8 +166,10 @@ def CasRoot(api):
       suite['name'] = match.group('name')
       if 'packages' not in suite:
         suite['packages'] = [ suite['package'] ]
+      suite['package_basenames'] = []
       for path in suite['packages']:
-        basename = re.match(r'[^/]*$', path).group(0)
+        basename = re.match(r'(:?.*/)*([^/]*$)', path).group(2)
+        suite['package_basenames'].append(basename)
         add(checkout.join('out', 'fuchsia_debug_x64', path), basename)
       test_suites.append(suite)
 
@@ -219,7 +221,7 @@ def TestFuchsiaFEMU(api):
     with api.step.nest('FEMU Test'), api.step.defer_results():
       for suite in test_suites:
         test_cmd = cmd + [
-          '--serve_packages=flutter_aot_runner-0.far,%s' % ','.join(suite['packages']),
+          '--serve_packages=flutter_aot_runner-0.far,%s' % ','.join(suite['package_basenames']),
           '--test_suite=%s' % suite['name'],
           '--test_command=%s' % suite['test_command'],
           '--emulator_log',
@@ -397,6 +399,72 @@ def GenTests(api):
       ),
       api.step_data('FEMU Test.test: Run FEMU Test Suite v2_test', retcode=1),
       api.step_data('FEMU Test.test: Run FEMU Test Suite v1_test_component', retcode=1),
+      api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      api.platform('linux', 64),
+      api.path.exists(
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
+          ),
+          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
+          api.path['cache'].join('builder/ssh/id_ed25519'),
+          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
+          api.path['cache'].join('builder/ssh/ssh_host_key'),
+      ),
+  )
+
+  yield api.test(
+      'multiple_non_root_fars',
+      api.properties(
+          InputProperties(
+              goma_jobs='1024',
+              build_fuchsia=True,
+              test_fuchsia=True,
+              git_url='https://github.com/flutter/engine',
+              git_ref='refs/pull/1/head',
+              clobber=False,
+          ),),
+      api.step_data(
+          'Retrieve list of test suites.parse',
+          api.json.output([{
+            'test_command': 'run-test-component fuchsia-pkg://fuchsia.com/flutter-embedder-test#meta/flutter-embedder-test.cmx',
+            'packages': [
+              'flutter-embedder-test-0.far',
+              'gen/flutter/shell/platform/fuchsia/flutter/integration_flutter_tests/embedder/child-view/child-view/child-view.far',
+              'gen/flutter/shell/platform/fuchsia/flutter/integration_flutter_tests/embedder/parent-view/parent-view/parent-view.far'
+            ]
+          }])
+      ),
+      api.step_data(
+          'Retrieve list of test suites.read',
+          api.file.read_text('''# This is a comment.
+- test_command: run-test-component fuchsia-pkg://fuchsia.com/flutter-embedder-test#meta/flutter-embedder-test.cmx
+  packages:
+    - flutter-embedder-test-0.far
+    - gen/flutter/shell/platform/fuchsia/flutter/integration_flutter_tests/embedder/child-view/child-view/child-view.far
+    - gen/flutter/shell/platform/fuchsia/flutter/integration_flutter_tests/embedder/parent-view/parent-view/parent-view.far''')
+      ),
+      api.step_data(
+          'Read manifest',
+          api.file.read_json({'id': '0.20200101.0.1'}),
+      ),
+      api.step_data('FEMU Test.test: Run FEMU Test Suite flutter-embedder-test', retcode=1),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
       api.platform('linux', 64),
       api.path.exists(

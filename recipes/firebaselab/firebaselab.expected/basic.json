@@ -169,7 +169,7 @@
   },
   {
     "cmd": [],
-    "name": "test_execution.install infra/gcloud",
+    "name": "test_execution.ensure gcloud",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -181,10 +181,9 @@
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CACHE]/cipd/infra/gcloud/version%3A266.0.0.chromium0"
+      "copy",
+      "RECIPE_MODULE[fuchsia::gcloud]/resources/tool_manifest.json",
+      "/path/to/tmp/json"
     ],
     "cwd": "[START_DIR]/flutter/dev/integration_tests/the_task",
     "env": {
@@ -203,9 +202,55 @@
       ]
     },
     "infra_step": true,
-    "name": "test_execution.install infra/gcloud.ensure package directory",
+    "name": "test_execution.ensure gcloud.read manifest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gcloud\",@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
+      "@@@STEP_LOG_END@tool_manifest.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "test_execution.ensure gcloud.install path/to/gcloud",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/cipd/path/to/gcloud/version%3Apinned-version"
+    ],
+    "cwd": "[START_DIR]/flutter/dev/integration_tests/the_task",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "test_execution.ensure gcloud.install path/to/gcloud.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
@@ -213,9 +258,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/cipd/infra/gcloud/version%3A266.0.0.chromium0",
+      "[CACHE]/cipd/path/to/gcloud/version%3Apinned-version",
       "-ensure-file",
-      "infra/gcloud/${platform} version:266.0.0.chromium0",
+      "path/to/gcloud version:pinned-version",
       "-max-threads",
       "0",
       "-json-output",
@@ -238,15 +283,15 @@
       ]
     },
     "infra_step": true,
-    "name": "test_execution.install infra/gcloud.ensure_installed",
+    "name": "test_execution.ensure gcloud.install path/to/gcloud.ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:266.0.0.\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/gcloud/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gcloud\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -258,7 +303,7 @@
     "cmd": [
       "python",
       "-u",
-      "[CACHE]/cipd/infra/gcloud/version%3A266.0.0.chromium0/lib/gcloud.py",
+      "[CACHE]/cipd/path/to/gcloud/version%3Apinned-version/lib/gcloud.py",
       "--quiet",
       "config",
       "set",
@@ -320,7 +365,7 @@
     "cmd": [
       "python",
       "-u",
-      "[CACHE]/cipd/infra/gcloud/version%3A266.0.0.chromium0/lib/gcloud.py",
+      "[CACHE]/cipd/path/to/gcloud/version%3Apinned-version/lib/gcloud.py",
       "firebase",
       "test",
       "android",
@@ -395,7 +440,7 @@
     "cmd": [
       "python",
       "-u",
-      "[CACHE]/cipd/infra/gcloud/version%3A266.0.0.chromium0/lib/gcloud.py",
+      "[CACHE]/cipd/path/to/gcloud/version%3Apinned-version/lib/gcloud.py",
       "firebase",
       "test",
       "android",
@@ -448,7 +493,7 @@
   },
   {
     "cmd": [],
-    "name": "test_execution.install infra/3pp/tools/gsutil",
+    "name": "test_execution.ensure gsutil",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -460,10 +505,9 @@
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CACHE]/cipd/infra/3pp/tools/gsutil/version%3A4.60"
+      "copy",
+      "RECIPE_MODULE[fuchsia::gsutil]/resources/tool_manifest.json",
+      "/path/to/tmp/json"
     ],
     "cwd": "[START_DIR]/flutter/dev/integration_tests/the_task",
     "env": {
@@ -482,9 +526,55 @@
       ]
     },
     "infra_step": true,
-    "name": "test_execution.install infra/3pp/tools/gsutil.ensure package directory",
+    "name": "test_execution.ensure gsutil.read manifest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gsutil\",@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
+      "@@@STEP_LOG_END@tool_manifest.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "test_execution.ensure gsutil.install path/to/gsutil",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/cipd/path/to/gsutil/version%3Apinned-version"
+    ],
+    "cwd": "[START_DIR]/flutter/dev/integration_tests/the_task",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "test_execution.ensure gsutil.install path/to/gsutil.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
@@ -492,9 +582,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/cipd/infra/3pp/tools/gsutil/version%3A4.60",
+      "[CACHE]/cipd/path/to/gsutil/version%3Apinned-version",
       "-ensure-file",
-      "infra/3pp/tools/gsutil version:4.60",
+      "path/to/gsutil version:pinned-version",
       "-max-threads",
       "0",
       "-json-output",
@@ -517,15 +607,15 @@
       ]
     },
     "infra_step": true,
-    "name": "test_execution.install infra/3pp/tools/gsutil.ensure_installed",
+    "name": "test_execution.ensure gsutil.install path/to/gsutil.ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:4.60----\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/gsutil\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gsutil\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -539,7 +629,7 @@
       "-vpython-spec",
       "RECIPE_MODULE[fuchsia::gsutil]/resources/gsutil.vpython",
       "-u",
-      "[CACHE]/cipd/infra/3pp/tools/gsutil/version%3A4.60/gsutil",
+      "[CACHE]/cipd/path/to/gsutil/version%3Apinned-version/gsutil",
       "-o",
       "GSUtil:software_update_check_period=0",
       "cp",

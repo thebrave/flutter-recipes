@@ -11,6 +11,18 @@
       "cr-buildbucket.appspot.com"
     ],
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "launch builds.schedule",
     "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Staging Engine Drone\", \"project\": \"fuchsia\"}, \"dimensions\": [{\"key\": \"dimension1\", \"value\": \"abc\"}], \"experimental\": \"NO\", \"fields\": \"builder,createTime,createdBy,critical,endTime,id,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"fuchsia-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"fuchsia\"}], \"priority\": 25, \"properties\": {\"build\": {\"drone_dimensions\": [\"dimension1=abc\"], \"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}}, \"builds\": [{\"drone_dimensions\": [\"dimension1=abc\"], \"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}}], \"dependencies\": [{\"dependency\": \"android_sdk\"}, {\"dependency\": \"chrome_and_driver\"}], \"environment\": \"Staging\", \"git_ref\": \"refs/123/master\", \"git_url\": \"http://abc\", \"recipe\": \"engine_v2/builder\", \"task_name\": \"mytask\", \"tests\": [{\"dependencies\": [\"ios_debug\"], \"name\": \"felt_test\", \"parameters\": [\"test\"], \"scripts\": [\"out/script.sh\"]}]}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
@@ -172,6 +184,18 @@
       "8945511751514863187"
     ],
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "collect builds.collect.wait",
     "timeout": 86400,
     "~followup_annotations": [
@@ -186,6 +210,18 @@
       "cr-buildbucket.appspot.com"
     ],
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "collect builds.collect.get",
     "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra.swarming.taskId,input,number,output,startTime,status,summaryMarkdown,updateTime\", \"id\": \"8945511751514863187\"}}]}",
     "~followup_annotations": [
@@ -275,6 +311,18 @@
       "[CACHE]/cipd/infra/tools/luci/swarming/swarming_module_pin"
     ],
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "collect builds.install infra/tools/luci/swarming.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -294,6 +342,18 @@
       "/path/to/tmp/json"
     ],
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "collect builds.install infra/tools/luci/swarming.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -323,6 +383,18 @@
       "abc123"
     ],
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "collect builds.wait for 1 task to complete",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -332,14 +404,16 @@
       "@@@STEP_LOG_LINE@json.output@    \"outputs\": [], @@@",
       "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
       "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35, @@@",
       "@@@STEP_LOG_LINE@json.output@      \"exit_code\": 0, @@@",
       "@@@STEP_LOG_LINE@json.output@      \"name\": \"my_task_0\", @@@",
-      "@@@STEP_LOG_LINE@json.output@      \"outputs_ref\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"isolated\": \"abc123\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"isolatedserver\": \"https://isolateserver.appspot.com\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"namespace\": \"default-gzip\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }, @@@",
       "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\", @@@",
       "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"abc123\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
@@ -348,7 +422,7 @@
       "@@@STEP_LOG_END@json.output@@@",
       "@@@STEP_LOG_LINE@task stdout+stderr: my_task_0@hello world!@@@",
       "@@@STEP_LOG_END@task stdout+stderr: my_task_0@@@",
-      "@@@STEP_LINK@task isolated outputs: my_task_0@https://isolateserver.appspot.com/browse?namespace=default-gzip&hash=abc123@@@"
+      "@@@STEP_LINK@task cas outputs: my_task_0@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
     ]
   },
   {

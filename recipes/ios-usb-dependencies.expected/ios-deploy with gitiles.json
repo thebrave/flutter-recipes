@@ -5,6 +5,18 @@
       "777",
       "RECIPE[flutter::ios-usb-dependencies].resources/ios-deploy.sh"
     ],
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "make RECIPE[flutter::ios-usb-dependencies].resources/ios-deploy.sh executable"
   },
   {
@@ -20,6 +32,18 @@
       "[START_DIR]/output"
     ],
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "mkdir [START_DIR]/output"
   },
   {
@@ -29,6 +53,18 @@
       "deadbeef",
       "[START_DIR]/output"
     ],
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "build ios-deploy"
   },
   {
@@ -37,6 +73,18 @@
       "-u",
       "RECIPE_MODULE[flutter::zip]/resources/zip.py"
     ],
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "zipping ios-deploy dir",
     "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/ios-deploy.zip\", \"root\": \"[START_DIR]/output\"}"
   },
@@ -53,6 +101,18 @@
       "gs://flutter_infra_release/ios-usb-dependencies/unsigned/ios-deploy/deadbeef/ios-deploy.zip"
     ],
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "gsutil upload of ios-deploy.zip",
     "~followup_annotations": [
       "@@@STEP_LINK@ios-deploy.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/unsigned/ios-deploy/deadbeef/ios-deploy.zip@@@"

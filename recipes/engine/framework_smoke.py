@@ -13,17 +13,12 @@ from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from google.protobuf import struct_pb2
 
 DEPS = [
-    'depot_tools/depot_tools',
     'flutter/build_util',
-    'flutter/os_utils',
-    'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/test_utils',
-    'fuchsia/goma',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
-    'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/step',
 ]

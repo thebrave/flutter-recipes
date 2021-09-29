@@ -12,15 +12,10 @@
 # be returned in stdout when ownership is missing.
 
 DEPS = [
-    'depot_tools/git',
     'flutter/repo_util',
-    'recipe_engine/buildbucket',
     'recipe_engine/context',
-    'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/properties',
-    'recipe_engine/raw_io',
-    'recipe_engine/runtime',
     'recipe_engine/step',
 ]
 

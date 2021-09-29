@@ -8,8 +8,8 @@ PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
     'flutter/shard_util',
-    'recipe_engine/properties',
     'recipe_engine/platform',
+    'recipe_engine/properties',
 ]
 
 

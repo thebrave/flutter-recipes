@@ -5,12 +5,12 @@
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
+  'flutter/zip',
   'recipe_engine/context',
   'recipe_engine/file',
   'recipe_engine/path',
   'recipe_engine/platform',
   'recipe_engine/step',
-  'zip',
 ]
 
 def RunSteps(api):

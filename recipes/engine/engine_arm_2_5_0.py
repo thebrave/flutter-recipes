@@ -13,8 +13,6 @@ from google.protobuf import struct_pb2
 DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/gclient',
-    'depot_tools/git',
-    'depot_tools/gsutil',
     'flutter/bucket_util',
     'flutter/os_utils',
     'flutter/repo_util',

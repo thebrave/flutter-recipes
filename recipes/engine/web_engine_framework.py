@@ -13,14 +13,12 @@ from PB.recipes.flutter.engine import InputProperties
 from PB.recipes.flutter.engine import EnvProperties
 
 DEPS = [
-    'depot_tools/bot_update',
     'depot_tools/depot_tools',
     'depot_tools/gclient',
-    'depot_tools/gsutil',
     'flutter/display_util',
+    'flutter/flutter_deps',
     'flutter/os_utils',
     'flutter/repo_util',
-    'flutter/flutter_deps',
     'flutter/shard_util',
     'flutter/test_utils',
     'fuchsia/archive',

@@ -5,7 +5,7 @@
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
-  'osx_sdk',
+  'flutter/osx_sdk',
   'recipe_engine/platform',
   'recipe_engine/properties',
   'recipe_engine/step',

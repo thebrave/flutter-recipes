@@ -5,12 +5,9 @@
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
-    'android_virtual_device',
-    'recipe_engine/context',
+    'flutter/android_virtual_device',
     'recipe_engine/path',
-    'recipe_engine/properties',
     'recipe_engine/raw_io',
-    'recipe_engine/step',
 ]
 
 def RunSteps(api):

@@ -5,10 +5,10 @@
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
-    'yaml',
-    'recipe_engine/json',
+    'flutter/yaml',
     'recipe_engine/assertions',
     'recipe_engine/file',
+    'recipe_engine/json',
     'recipe_engine/raw_io',
 ]
 

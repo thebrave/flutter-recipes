@@ -9,15 +9,14 @@ from recipe_engine.recipe_api import Property
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
-    'fuchsia/git',
     'fuchsia/commit_queue',
+    'fuchsia/git',
     'fuchsia/recipe_testing',
     'fuchsia/status_check',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/path',
     'recipe_engine/properties',
-    'recipe_engine/python',
     'recipe_engine/step',
 ]
 PROPERTIES = {

@@ -15,11 +15,8 @@ from PB.recipes.flutter.engine import EnvProperties
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
-    'depot_tools/bot_update',
     'depot_tools/depot_tools',
     'depot_tools/gclient',
-    'depot_tools/git',
-    'depot_tools/gsutil',
     'flutter/display_util',
     'flutter/flutter_deps',
     'flutter/os_utils',
@@ -29,11 +26,9 @@ DEPS = [
     'flutter/shard_util',
     'flutter/test_utils',
     'flutter/web_util',
-    'flutter/yaml',
     'fuchsia/archive',
     'fuchsia/goma',
     'recipe_engine/buildbucket',
-    'recipe_engine/cipd',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/json',

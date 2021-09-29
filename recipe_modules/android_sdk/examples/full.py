@@ -5,10 +5,9 @@
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
-    'android_sdk',
+    'flutter/android_sdk',
     'recipe_engine/context',
     'recipe_engine/path',
-    'recipe_engine/properties',
     'recipe_engine/step',
 ]
 

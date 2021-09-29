@@ -28,8 +28,8 @@ DEPS = [
     'flutter/shard_util_v2',
     'recipe_engine/buildbucket',
     'recipe_engine/json',
-    'recipe_engine/properties',
     'recipe_engine/path',
+    'recipe_engine/properties',
     'recipe_engine/step',
 ]
 

@@ -13,10 +13,8 @@ from google.protobuf import struct_pb2
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
-    'depot_tools/bot_update',
     'depot_tools/depot_tools',
     'depot_tools/gclient',
-    'depot_tools/git',
     'depot_tools/gsutil',
     'flutter/bucket_util',
     'flutter/flutter_deps',
@@ -35,7 +33,6 @@ DEPS = [
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/futures',
-    'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',

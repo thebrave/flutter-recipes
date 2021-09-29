@@ -10,10 +10,7 @@ from PB.recipes.flutter.engine_builder import InputProperties, EngineBuild
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
-  'depot_tools/bot_update',
   'depot_tools/depot_tools',
-  'depot_tools/gclient',
-  'depot_tools/git',
   'depot_tools/osx_sdk',
   'flutter/os_utils',
   'flutter/repo_util',
@@ -21,14 +18,10 @@ DEPS = [
   'recipe_engine/buildbucket',
   'recipe_engine/cas',
   'recipe_engine/context',
-  'recipe_engine/file',
   'recipe_engine/path',
   'recipe_engine/platform',
   'recipe_engine/properties',
-  'recipe_engine/python',
-  'recipe_engine/runtime',
   'recipe_engine/step',
-  'recipe_engine/swarming',
 ]
 
 GIT_REPO = \

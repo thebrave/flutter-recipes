@@ -9,7 +9,6 @@ from contextlib import contextmanager
 import re
 
 DEPS = [
-    'flutter/android_sdk',
     'flutter/flutter_deps',
     'flutter/os_utils',
     'flutter/osx_sdk',

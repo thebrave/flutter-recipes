@@ -16,8 +16,8 @@ DEPS = [
     'flutter/shard_util_v2',
     'fuchsia/buildbucket_util',
     'recipe_engine/buildbucket',
-    'recipe_engine/properties',
     'recipe_engine/platform',
+    'recipe_engine/properties',
     'recipe_engine/step',
 ]
 

@@ -10,7 +10,6 @@ PYTHON_VERSION_COMPATIBILITY = 'PY2'
 DEPS = [
     'flutter/os_utils',
     'recipe_engine/platform',
-    'recipe_engine/python',
     'recipe_engine/properties',
 ]
 

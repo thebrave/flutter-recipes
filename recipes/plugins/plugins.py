@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 DEPS = [
-    'flutter/repo_util',
     'flutter/flutter_deps',
+    'flutter/repo_util',
     'flutter/yaml',
     'recipe_engine/context',
     'recipe_engine/json',

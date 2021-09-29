@@ -12,10 +12,7 @@ DEPS = [
     'recipe_engine/assertions',
     'recipe_engine/cipd',
     'recipe_engine/file',
-    'recipe_engine/json',
     'recipe_engine/path',
-    'recipe_engine/properties',
-    'recipe_engine/swarming',
 ]
 
 

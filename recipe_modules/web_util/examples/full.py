@@ -7,16 +7,12 @@ from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
-    'depot_tools/gsutil',
     'flutter/web_util',
-    'recipe_engine/context',
-    'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/runtime',
-    'recipe_engine/step',
 ]
 
 

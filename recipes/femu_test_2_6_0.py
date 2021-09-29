@@ -20,13 +20,11 @@ DEPS = [
     'flutter/retry',
     'flutter/yaml',
     'fuchsia/archive',
-    'fuchsia/display_util',
     'fuchsia/goma',
     'fuchsia/sdk',
     'fuchsia/ssh',
     'fuchsia/vdl',
     'recipe_engine/buildbucket',
-    'recipe_engine/cas',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/json',
@@ -35,7 +33,6 @@ DEPS = [
     'recipe_engine/properties',
     'recipe_engine/raw_io',
     'recipe_engine/step',
-    'recipe_engine/swarming',
 ]
 
 PROPERTIES = InputProperties

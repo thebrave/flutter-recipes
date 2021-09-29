@@ -5,10 +5,8 @@
 """Recipe for cocoon repository tests."""
 
 DEPS = [
-    'depot_tools/git',
     'flutter/repo_util',
     'flutter/yaml',
-    'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/json',
     'recipe_engine/path',

@@ -9,7 +9,6 @@ from PB.recipes.flutter.engine import EnvProperties
 
 DEPS = [
     'depot_tools/depot_tools',
-    'depot_tools/gclient',
     'flutter/android_virtual_device',
     'flutter/bucket_util',
     'flutter/flutter_deps',
@@ -17,13 +16,10 @@ DEPS = [
     'flutter/repo_util',
     'fuchsia/goma',
     'recipe_engine/buildbucket',
-    'recipe_engine/cipd',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
-    'recipe_engine/platform',
     'recipe_engine/properties',
-    'recipe_engine/python',
     'recipe_engine/raw_io',
     'recipe_engine/step',
 ]

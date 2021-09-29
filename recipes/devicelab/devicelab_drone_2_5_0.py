@@ -5,13 +5,12 @@
 from recipe_engine.recipe_api import Property
 
 DEPS = [
-    'flutter/bucket_util',
     'flutter/devicelab_osx_sdk',
     'flutter/flutter_deps',
     'flutter/logs_util',
-    'flutter/repo_util',
     'flutter/os_utils',
     'flutter/osx_sdk',
+    'flutter/repo_util',
     'flutter/retry',
     'flutter/test_utils',
     'recipe_engine/buildbucket',

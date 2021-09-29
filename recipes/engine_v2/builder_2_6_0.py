@@ -40,7 +40,6 @@ DEPS = [
     'flutter/osx_sdk',
     'flutter/repo_util',
     'fuchsia/archive',
-    'fuchsia/goma',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',

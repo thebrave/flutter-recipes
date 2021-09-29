@@ -6,12 +6,10 @@ from PB.recipes.flutter.engine import InputProperties
 from PB.recipes.flutter.engine import EnvProperties
 
 DEPS = [
-    'depot_tools/bot_update',
     'depot_tools/depot_tools',
     'flutter/build_util',
     'flutter/os_utils',
     'flutter/repo_util',
-    'fuchsia/goma',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',

@@ -13,18 +13,15 @@ from PB.recipes.flutter.engine import InputProperties
 from PB.recipes.flutter.engine import EnvProperties
 
 DEPS = [
-    'depot_tools/depot_tools',
     'flutter/android_virtual_device',
+    'flutter/flutter_deps',
     'flutter/os_utils',
     'flutter/repo_util',
-    'flutter/flutter_deps',
-    'recipe_engine/context',
-    'recipe_engine/path',
-    'recipe_engine/platform',
-    'recipe_engine/properties',
     'recipe_engine/cipd',
+    'recipe_engine/context',
     'recipe_engine/file',
-    'recipe_engine/python',
+    'recipe_engine/path',
+    'recipe_engine/properties',
     'recipe_engine/raw_io',
     'recipe_engine/step',
 ]

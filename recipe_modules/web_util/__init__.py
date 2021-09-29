@@ -1,9 +1,8 @@
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
-    'depot_tools/gsutil',
     'depot_tools/git',
-    'flutter/repo_util',
+    'depot_tools/gsutil',
     'flutter/yaml',
     'recipe_engine/buildbucket',
     'recipe_engine/cipd',

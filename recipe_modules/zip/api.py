@@ -25,7 +25,7 @@ class ZipApi(recipe_api.RecipeApi):
     Returns:
       ZipPackage object.
     """
-    return ZipPackage(self, root, output)
+    return ZipPackage(self.m, root, output)
 
   def directory(self, step_name, directory, output):
     """Step to compress a single directory.
@@ -71,8 +71,8 @@ class ZipApi(recipe_api.RecipeApi):
 class ZipPackage(object):
   """Used to gather a list of files to zip."""
 
-  def __init__(self, module, root, output):
-    self._module = module
+  def __init__(self, api, root, output):
+    self._api = api
     self._root = root
     self._output = output
     self._entries = []
@@ -119,9 +119,9 @@ class ZipPackage(object):
       'output': str(self._output),
       'root': str(self._root),
     }
-    step_result = self._module.m.python(
+    step_result = self._api.python(
         name=step_name,
-        script=self._module.resource('zip.py'),
-        stdin=self._module.m.json.input(script_input))
-    self._module.m.path.mock_add_paths(self._output)
+        script=self._api.zip.resource('zip.py'),
+        stdin=self._api.json.input(script_input))
+    self._api.path.mock_add_paths(self._output)
     return step_result

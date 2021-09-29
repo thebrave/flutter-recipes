@@ -5,14 +5,12 @@
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
-    'bucket_util',
+    'flutter/bucket_util',
+    'flutter/zip',
     'recipe_engine/buildbucket',
-    'recipe_engine/file',
     'recipe_engine/path',
     'recipe_engine/properties',
     'recipe_engine/runtime',
-    'recipe_engine/step',
-    'zip',
 ]
 
 

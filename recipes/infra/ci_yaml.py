@@ -7,19 +7,16 @@
 from PB.go.chromium.org.luci.common.proto.gerrit import gerrit as gerrit_pb2
 
 DEPS = [
+    'flutter/repo_util',
     'fuchsia/auto_roller',
-    'fuchsia/cl_util',
     'recipe_engine/buildbucket',
     'recipe_engine/cipd',
     'recipe_engine/context',
     'recipe_engine/file',
-    'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
-    'recipe_engine/runtime',
     'recipe_engine/step',
-    'repo_util',
 ]
 
 def _is_postsubmit(api):

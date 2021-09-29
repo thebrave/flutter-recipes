@@ -9,7 +9,6 @@ from PB.recipes.flutter.engine import EnvProperties
 
 DEPS = [
     'depot_tools/depot_tools',
-    'depot_tools/gclient',
     'flutter/bucket_util',
     'flutter/os_utils',
     'flutter/repo_util',
@@ -19,7 +18,6 @@ DEPS = [
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
-    'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/python',
     'recipe_engine/raw_io',

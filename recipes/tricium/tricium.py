@@ -10,9 +10,7 @@ from recipe_engine.config import ConfigList, ConfigGroup, Single
 from recipe_engine.recipe_api import Property
 
 DEPS = [
-    "fuchsia/checkout",
     "fuchsia/git",
-    "fuchsia/jiri",
     "fuchsia/tricium_analyze",
     "recipe_engine/buildbucket",
     "recipe_engine/cipd",

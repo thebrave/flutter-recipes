@@ -7,20 +7,15 @@ from contextlib import contextmanager
 PYTHON_VERSION_COMPATIBILITY = 'PY2'
 
 DEPS = [
-    'depot_tools/depot_tools',
-    'depot_tools/git',
     'depot_tools/gsutil',
     'depot_tools/osx_sdk',
     'flutter/zip',
     'recipe_engine/buildbucket',
-    'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
-    'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/runtime',
     'recipe_engine/step',
-    'recipe_engine/url',
 ]
 
 BUCKET_NAME = 'flutter_infra_release'

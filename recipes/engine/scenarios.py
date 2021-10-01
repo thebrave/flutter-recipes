@@ -49,9 +49,19 @@ def RunGN(api, *args):
   gn_cmd.extend(args)
   api.step('gn %s' % ' '.join(args), gn_cmd)
 
+def RunAndroidUnitTests(api, env, env_prefixes):
+  """Runs the unit tests for the Android embedder on a x64 Android Emulator."""
+  engine_checkout = GetCheckoutPath(api)
+  test_dir = engine_checkout.join('flutter', 'testing')
+  exe_path = engine_checkout.join('out', 'android_debug_x64', 'flutter_shell_native_unittests')
+  with api.context(cwd=test_dir, env=env, env_prefixes=env_prefixes):
+    result = api.step(
+        'Android Unit Tests',
+        ['./run_tests.py', '--android-variant', 'android_debug_x64', '--type', 'android', '--adb-path', env['ADB_PATH']]
+    )
 
 def RunAndroidScenarioTests(api, env, env_prefixes):
-  """Runs the scenario test app on a x86 Android emulator.
+  """Runs the scenario test app on a x64 Android emulator.
 
   See details at
   https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_emulator.md#using-your-own-emulator-image
@@ -69,10 +79,9 @@ def RunAndroidScenarioTests(api, env, env_prefixes):
 
     result = api.step(
         'Scenario App Integration Tests',
-        ['./run_android_tests.sh', 'android_debug_x86'],
+        ['./run_android_tests.sh', 'android_debug_x64'],
         ok_ret='all'
     )
-    api.step('Kill emulator', ['kill', '-9', env['EMULATOR_PID']])
     build_failures_dir = scenario_app_tests.join('build', 'reports', 'diff_failures')
     if api.path.exists(build_failures_dir):
       # Upload any diff failures.
@@ -120,10 +129,12 @@ def RunSteps(api, properties, env_properties):
 
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():
-    RunGN(api, '--android', '--android-cpu=x86', '--no-lto')
-    Build(api, 'android_debug_x86')
+    RunGN(api, '--android', '--android-cpu=x64', '--no-lto')
+    Build(api, 'android_debug_x64', 'scenario_app', 'flutter_shell_native_unittests')
 
+    RunAndroidUnitTests(api, env, env_prefixes)
     RunAndroidScenarioTests(api, env, env_prefixes)
+    api.step('Kill emulator', ['kill', '-9', env['EMULATOR_PID']])
 
   with api.step.defer_results():
     # This is to clean up leaked processes.

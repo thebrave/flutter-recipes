@@ -494,5 +494,5 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       version: Android API version of the avd.
     """
-    avd_root = self.m.path['cache'].join('builder', 'avd')
+    avd_root = self.m.path['cache'].join('avd')
     self.m.android_virtual_device.download(avd_root, env, env_prefixes, version)

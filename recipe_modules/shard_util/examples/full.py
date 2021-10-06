@@ -4,7 +4,7 @@
 
 from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2'
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
     'flutter/shard_util',

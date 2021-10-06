@@ -24,6 +24,10 @@ def _is_postsubmit(api):
   return api.buildbucket.build.builder.bucket == 'prod'
 
 
+def _is_default_branch(branch):
+  """Returns True if branch is master or main."""
+  return branch in ("main", "master")
+
 def RunSteps(api):
   """Steps to checkout infra, dependencies, and generate new config."""
   start_path = api.path['start_dir']
@@ -77,7 +81,7 @@ def RunSteps(api):
     api.step('pub get', cmd=['pub', 'get'])
     generate_jspb_path = cocoon_path.join('app_dart', 'bin', 'generate_jspb.dart')
     config_name = '%s_config.json' % repo
-    if git_branch and git_branch != 'master':
+    if git_branch and not _is_default_branch(git_branch):
       config_name = '%s_%s_config.json' % (repo, git_branch)
     infra_config_path = infra_path.join('config', 'generated', 'ci_yaml', config_name)
     # Generate_jspb
@@ -119,7 +123,7 @@ def GenTests(api):
           revision = 'abc123'
       ),
       api.properties(
-          git_branch='master',
+          git_branch='main',
           git_repo='engine'
       ),
       api.repo_util.flutter_environment_data(

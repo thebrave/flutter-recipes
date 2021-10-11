@@ -130,6 +130,11 @@ def RunSteps(api, properties, env_properties):
   # Checkout source code and build
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
 
+  # Ensure required deps are installed
+  api.flutter_deps.required_deps(
+      env, env_prefixes, api.properties.get('dependencies', [])
+  )
+
   if api.platform.is_mac:
     api.web_util.clone_goldens_repo(checkout)
 

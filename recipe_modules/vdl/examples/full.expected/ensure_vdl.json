@@ -1,0 +1,794 @@
+[
+  {
+    "cmd": [],
+    "name": "ensure vdl"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/builder/vdl",
+      "-ensure-file",
+      "fuchsia/vdl/${platform} g3-revision:vdl_fuchsia_20200729_RC00",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "ensure vdl.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-g3-revision:vdl_\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"fuchsia/vdl/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure aemu"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/builder/aemu",
+      "-ensure-file",
+      "fuchsia/third_party/aemu/${platform} git_revision:825431f5e4eb46770606ad91697974348d3706da",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "ensure aemu.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:825\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"fuchsia/third_party/aemu/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder/device_spec"
+    ],
+    "infra_step": true,
+    "name": "init device spec cache at "
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "\ndevice_spec {\n  horizontal_resolution: 480\n  vertical_resolution: 800\n  vm_heap: 192\n  ram: 4096\n  cache: 32\n  screen_density: 240\n}\n",
+      "[CACHE]/builder/device_spec/virtual_device.textproto"
+    ],
+    "infra_step": true,
+    "name": "generate [CACHE]/builder/device_spec/virtual_device.textproto",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@virtual_device.textproto@@@@",
+      "@@@STEP_LOG_LINE@virtual_device.textproto@device_spec {@@@",
+      "@@@STEP_LOG_LINE@virtual_device.textproto@  horizontal_resolution: 480@@@",
+      "@@@STEP_LOG_LINE@virtual_device.textproto@  vertical_resolution: 800@@@",
+      "@@@STEP_LOG_LINE@virtual_device.textproto@  vm_heap: 192@@@",
+      "@@@STEP_LOG_LINE@virtual_device.textproto@  ram: 4096@@@",
+      "@@@STEP_LOG_LINE@virtual_device.textproto@  cache: 32@@@",
+      "@@@STEP_LOG_LINE@virtual_device.textproto@  screen_density: 240@@@",
+      "@@@STEP_LOG_LINE@virtual_device.textproto@}@@@",
+      "@@@STEP_LOG_END@virtual_device.textproto@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder/ssh"
+    ],
+    "infra_step": true,
+    "name": "init ssh cache"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder/ssh"
+    ],
+    "infra_step": true,
+    "name": "check ssh cache content",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ssh-keygen",
+      "-t",
+      "ed25519",
+      "-h",
+      "-f",
+      "[CACHE]/builder/ssh/ssh_host_key",
+      "-P",
+      "",
+      "-N",
+      ""
+    ],
+    "infra_step": true,
+    "name": "ssh-keygen host",
+    "timeout": 600
+  },
+  {
+    "cmd": [
+      "ssh-keygen",
+      "-t",
+      "ed25519",
+      "-f",
+      "[CACHE]/builder/ssh/id_ed25519",
+      "-P",
+      "",
+      "-N",
+      ""
+    ],
+    "infra_step": true,
+    "name": "ssh-keygen device",
+    "timeout": 600
+  },
+  {
+    "cmd": [],
+    "name": "ensure image"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure image.init fuchsia_image cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure image.check image cache content",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure image.ensure gsutil",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[fuchsia::gsutil]/resources/tool_manifest.json",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "ensure image.ensure gsutil.read manifest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gsutil\",@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
+      "@@@STEP_LOG_END@tool_manifest.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure image.ensure gsutil.install path/to/gsutil",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/cipd/path/to/gsutil/version%3Apinned-version"
+    ],
+    "infra_step": true,
+    "name": "ensure image.ensure gsutil.install path/to/gsutil.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/cipd/path/to/gsutil/version%3Apinned-version",
+      "-ensure-file",
+      "path/to/gsutil version:pinned-version",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "ensure image.ensure gsutil.install path/to/gsutil.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gsutil\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-vpython-spec",
+      "RECIPE_MODULE[fuchsia::gsutil]/resources/gsutil.vpython",
+      "-u",
+      "[CACHE]/cipd/path/to/gsutil/version%3Apinned-version/gsutil",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "cp",
+      "gs://fuchsia/development/0.20200101.0.1/images/qemu-x64.tgz",
+      "[CLEANUP]/fuchsia_image_tmp_tmp_1"
+    ],
+    "infra_step": true,
+    "name": "ensure image.gsutil cp",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure image.ensure bsdtar",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[fuchsia::tar]/resources/tool_manifest.json",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "ensure image.ensure bsdtar.read manifest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/bsdtar\",@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
+      "@@@STEP_LOG_END@tool_manifest.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure image.ensure bsdtar.install path/to/bsdtar",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/cipd/path/to/bsdtar/version%3Apinned-version"
+    ],
+    "infra_step": true,
+    "name": "ensure image.ensure bsdtar.install path/to/bsdtar.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/cipd/path/to/bsdtar/version%3Apinned-version",
+      "-ensure-file",
+      "path/to/bsdtar version:pinned-version",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "ensure image.ensure bsdtar.install path/to/bsdtar.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/bsdtar\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/cipd/path/to/bsdtar/version%3Apinned-version/bsdtar",
+      "--extract",
+      "--verbose",
+      "-f",
+      "[CLEANUP]/fuchsia_image_tmp_tmp_1/qemu-x64.tgz",
+      "-C",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure image.extract image tgz",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure image.set image files",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@listdir@[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn@@@",
+      "@@@STEP_LOG_LINE@listdir@[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel@@@",
+      "@@@STEP_LOG_LINE@listdir@[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk@@@",
+      "@@@STEP_LOG_LINE@listdir@[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-sparse.blk@@@",
+      "@@@STEP_LOG_LINE@listdir@[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi@@@",
+      "@@@STEP_LOG_LINE@listdir@[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-r.zbi@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure sdk"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure sdk.init fuchsia_sdk cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure sdk.check sdk cache content",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-vpython-spec",
+      "RECIPE_MODULE[fuchsia::gsutil]/resources/gsutil.vpython",
+      "-u",
+      "[CACHE]/cipd/path/to/gsutil/version%3Apinned-version/gsutil",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "cp",
+      "gs://fuchsia/development/0.20200101.0.1/sdk/linux-amd64/gn.tar.gz",
+      "[CLEANUP]/fuchsia_sdk_tmp_tmp_1"
+    ],
+    "infra_step": true,
+    "name": "ensure sdk.gsutil cp",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/cipd/path/to/bsdtar/version%3Apinned-version/bsdtar",
+      "--extract",
+      "--verbose",
+      "-f",
+      "[CLEANUP]/fuchsia_sdk_tmp_tmp_1/gn.tar.gz",
+      "-C",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure sdk.extract sdk gz",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure sdk (2)"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure sdk (2).init fuchsia_sdk cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure sdk (2).check sdk cache content",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-vpython-spec",
+      "RECIPE_MODULE[fuchsia::gsutil]/resources/gsutil.vpython",
+      "-u",
+      "[CACHE]/cipd/path/to/gsutil/version%3Apinned-version/gsutil",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "cp",
+      "gs://fuchsia/development/0.20200101.0.1/sdk/linux-amd64/gn.tar.gz",
+      "[CLEANUP]/fuchsia_sdk_tmp_tmp_2"
+    ],
+    "infra_step": true,
+    "name": "ensure sdk (2).gsutil cp",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/cipd/path/to/bsdtar/version%3Apinned-version/bsdtar",
+      "--extract",
+      "--verbose",
+      "-f",
+      "[CLEANUP]/fuchsia_sdk_tmp_tmp_2/gn.tar.gz",
+      "-C",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure sdk (2).extract sdk gz",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure sdk (3)"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure sdk (3).init fuchsia_sdk cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure sdk (3).check sdk cache content",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-vpython-spec",
+      "RECIPE_MODULE[fuchsia::gsutil]/resources/gsutil.vpython",
+      "-u",
+      "[CACHE]/cipd/path/to/gsutil/version%3Apinned-version/gsutil",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "cp",
+      "gs://fuchsia/development/0.20200101.0.1/sdk/linux-amd64/gn.tar.gz",
+      "[CLEANUP]/fuchsia_sdk_tmp_tmp_3"
+    ],
+    "infra_step": true,
+    "name": "ensure sdk (3).gsutil cp",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/cipd/path/to/bsdtar/version%3Apinned-version/bsdtar",
+      "--extract",
+      "--verbose",
+      "-f",
+      "[CLEANUP]/fuchsia_sdk_tmp_tmp_3/gn.tar.gz",
+      "-C",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure sdk (3).extract sdk gz",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/zbi",
+      "--output",
+      "[CACHE]/builder/zircon-authorized.zbi",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi",
+      "--entry",
+      "data/ssh/authorized_keys=[CACHE]/builder/ssh/id_ed25519.pub"
+    ],
+    "name": "authorize zbi"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "\nHost *\n  CheckHostIP no\n  StrictHostKeyChecking no\n  ForwardAgent no\n  ForwardX11 no\n  UserKnownHostsFile /dev/null\n  User fuchsia\n  IdentitiesOnly yes\n  IdentityFile id_ed25519\n  ServerAliveInterval 2\n  ServerAliveCountMax 5\n  ControlMaster auto\n  ControlPersist 1m\n  ControlPath /tmp/ssh-%r@%h:%p\n  ConnectTimeout 5\n",
+      "[CACHE]/builder/ssh_config"
+    ],
+    "infra_step": true,
+    "name": "generate ssh_config at [CACHE]/builder/ssh_config",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@ssh_config@@@@",
+      "@@@STEP_LOG_LINE@ssh_config@Host *@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  CheckHostIP no@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  StrictHostKeyChecking no@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  ForwardAgent no@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  ForwardX11 no@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  UserKnownHostsFile /dev/null@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  User fuchsia@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  IdentitiesOnly yes@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  IdentityFile id_ed25519@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  ServerAliveInterval 2@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  ServerAliveCountMax 5@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  ControlMaster auto@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  ControlPersist 1m@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  ControlPath /tmp/ssh-%r@%h:%p@@@",
+      "@@@STEP_LOG_LINE@ssh_config@  ConnectTimeout 5@@@",
+      "@@@STEP_LOG_END@ssh_config@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure packages"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure packages.init fuchsia_packages cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure packages.check packages cache content",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-vpython-spec",
+      "RECIPE_MODULE[fuchsia::gsutil]/resources/gsutil.vpython",
+      "-u",
+      "[CACHE]/cipd/path/to/gsutil/version%3Apinned-version/gsutil",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "cp",
+      "gs://fuchsia/development/0.20200101.0.1/packages/qemu-x64.tar.gz",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure packages.gsutil cp",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/cipd/path/to/bsdtar/version%3Apinned-version/bsdtar",
+      "--extract",
+      "--verbose",
+      "-f",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz",
+      "-C",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64"
+    ],
+    "infra_step": true,
+    "name": "ensure packages.extract package tar.gz",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/symlink.py",
+      "--link-json",
+      "{\"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_buildargs\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_kernel\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_fvm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files\": [\"[CLEANUP]/vdl_runfiles__tmp_1/amber-files\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/pm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz\": [\"[CLEANUP]/vdl_runfiles__tmp_1/package_archive\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/far\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/fvm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/fvm\"], \"[CACHE]/builder/aemu\": [\"[CLEANUP]/vdl_runfiles__tmp_1/aemu\"], \"[CACHE]/builder/device_spec/virtual_device.textproto\": [\"[CLEANUP]/vdl_runfiles__tmp_1/virtual_device.textproto\"], \"[CACHE]/builder/ssh/id_ed25519\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519\"], \"[CACHE]/builder/ssh/id_ed25519.pub\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519.pub\"], \"[CACHE]/builder/ssh_config\": [\"[CLEANUP]/vdl_runfiles__tmp_1/ssh_config\"], \"[CACHE]/builder/vdl/device_launcher\": [\"[CLEANUP]/vdl_runfiles__tmp_1/device_launcher\"], \"[CACHE]/builder/zircon-authorized.zbi\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_zircona-ed25519\"], \"[CACHE]/file1\": [\"[CLEANUP]/vdl_runfiles__tmp_1/foo\"], \"[CACHE]/file2\": [\"[CLEANUP]/vdl_runfiles__tmp_1/bar\"]}"
+    ],
+    "infra_step": true,
+    "name": "create tree of vdl runfiles"
+  },
+  {
+    "name": "$result"
+  }
+]

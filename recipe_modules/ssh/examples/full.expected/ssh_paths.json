@@ -1,0 +1,102 @@
+[
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder/ssh"
+    ],
+    "infra_step": true,
+    "name": "init ssh cache"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder/ssh"
+    ],
+    "infra_step": true,
+    "name": "check ssh cache content",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ssh-keygen",
+      "-t",
+      "ed25519",
+      "-h",
+      "-f",
+      "[CACHE]/builder/ssh/ssh_host_key",
+      "-P",
+      "",
+      "-N",
+      ""
+    ],
+    "infra_step": true,
+    "name": "ssh-keygen host",
+    "timeout": 600
+  },
+  {
+    "cmd": [
+      "ssh-keygen",
+      "-t",
+      "ed25519",
+      "-f",
+      "[CACHE]/builder/ssh/id_ed25519",
+      "-P",
+      "",
+      "-N",
+      ""
+    ],
+    "infra_step": true,
+    "name": "ssh-keygen device",
+    "timeout": 600
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "\nHost *\n  CheckHostIP no\n  StrictHostKeyChecking no\n  ForwardAgent no\n  ForwardX11 no\n  UserKnownHostsFile /dev/null\n  User fuchsia\n  IdentitiesOnly yes\n  IdentityFile [CACHE]/builder/ssh/id_ed25519\n  ServerAliveInterval 2\n  ServerAliveCountMax 5\n  ControlMaster auto\n  ControlPersist 1m\n  ControlPath /tmp/ssh-%r@%h:%p\n  ConnectTimeout 5\n",
+      "[CACHE]"
+    ],
+    "infra_step": true,
+    "name": "generate ssh_config at [CACHE]",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@[CACHE]@@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@Host *@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  CheckHostIP no@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  StrictHostKeyChecking no@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  ForwardAgent no@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  ForwardX11 no@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  UserKnownHostsFile /dev/null@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  User fuchsia@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  IdentitiesOnly yes@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  IdentityFile [CACHE]/builder/ssh/id_ed25519@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  ServerAliveInterval 2@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  ServerAliveCountMax 5@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  ControlMaster auto@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  ControlPersist 1m@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  ControlPath /tmp/ssh-%r@%h:%p@@@",
+      "@@@STEP_LOG_LINE@[CACHE]@  ConnectTimeout 5@@@",
+      "@@@STEP_LOG_END@[CACHE]@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]

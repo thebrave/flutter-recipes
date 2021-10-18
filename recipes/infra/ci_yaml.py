@@ -20,8 +20,8 @@ DEPS = [
 ]
 
 def _is_postsubmit(api):
-  """Returns True if the current build is in prod, otherwise False."""
-  return api.buildbucket.build.builder.bucket == 'prod'
+  """Returns True if the current build is not in try, otherwise False."""
+  return api.buildbucket.build.builder.bucket != 'try'
 
 
 def _is_default_branch(branch):
@@ -141,6 +141,23 @@ def GenTests(api):
       ),
       api.properties(
           git_branch='dev',
+          git_repo='engine'
+      ),
+      api.repo_util.flutter_environment_data(
+          api.path['start_dir'].join('flutter')
+      ),
+      api.step_data('generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}')),
+      api.auto_roller.success()
+  )
+  yield api.test(
+      'staging',
+      api.buildbucket.ci_build(
+          bucket='staging',
+          git_repo='https://chromium.googlesource.com/external/github.com/flutter/engine',
+          revision = 'abc123'
+      ),
+      api.properties(
+          git_branch='main',
           git_repo='engine'
       ),
       api.repo_util.flutter_environment_data(

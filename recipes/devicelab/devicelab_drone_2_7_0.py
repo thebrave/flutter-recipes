@@ -170,7 +170,7 @@ def shouldNotUpdate(api, git_branch):
   """
   supported_branches = ['master']
   if api.runtime.is_experimental or api.properties.get(
-      'git_url') or git_branch not in supported_branches:
+      'git_url') or api.properties.get('git_branch') not in supported_branches:
     return True
   else:
     return False
@@ -275,7 +275,8 @@ def GenTests(api):
       api.properties(
           buildername='Mac abc',
           task_name='abc',
-          dependencies=[{'dependency': 'xcode'}]
+          dependencies=[{'dependency': 'xcode'}],
+          git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.step_data(
@@ -289,7 +290,8 @@ def GenTests(api):
       api.properties(
           buildername='Mac abc',
           task_name='abc',
-          dependencies=[{'dependency': 'xcode'}]
+          dependencies=[{'dependency': 'xcode'}],
+          git_branch='master',
       ),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
@@ -297,7 +299,8 @@ def GenTests(api):
   yield api.test(
       "post-submit",
       api.properties(
-          buildername='Windows abc', task_name='abc', upload_metrics=True
+          buildername='Windows abc', task_name='abc', upload_metrics=True,
+          git_branch='master',
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -315,6 +318,7 @@ def GenTests(api):
           task_name='abc',
           upload_metrics=True,
           upload_metrics_to_cas=True,
+          git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(git_ref='refs/heads/master',)
   )
@@ -324,6 +328,7 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           upload_metrics_to_cas=True,
+          git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           git_ref='refs/heads/master',
@@ -336,7 +341,8 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           local_engine_cas_hash='isolatehashlocalengine/22',
-          local_engine='host-release'
+          local_engine='host-release',
+          git_branch='master'
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',

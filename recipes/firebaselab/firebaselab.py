@@ -43,9 +43,9 @@ def RunSteps(api):
       # Pixel 3
       '--device',
       'model=blueline,version=28',
-      # Pixel 4
+      # Pixel 5
       '--device',
-      'model=flame,version=29',
+      'model=redfin,version=30',
       # Moto Z XT1650
       '--device',
       'model=griffin,version=24',
@@ -70,9 +70,9 @@ def RunSteps(api):
       '--device',
       'model=Nexus6P,version=27',
       # SDK 28 is run on a physical blueline/Pixel 3 above.
-      # SDK 29 is run on a physical flame/Pixel 4 above.
       '--device',
-      'model=NexusLowRes,version=30',
+      'model=NexusLowRes,version=29',
+      # SDK 30 is run on a physical redfin/Pixel 5 above.
   ]
 
   test_configurations = (

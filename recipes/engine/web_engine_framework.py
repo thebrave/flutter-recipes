@@ -154,39 +154,6 @@ def RunSteps(api, properties, env_properties):
   deps = [{'dependency': 'chrome_and_driver'}, {"dependency": "curl"}]
   api.flutter_deps.required_deps(f_env, f_env_prefix, deps)
 
-  integration_test = flutter_checkout_path.join(
-      'dev', 'integration_tests', 'web'
-  )
-
-  with api.context(cwd=integration_test, env=f_env,
-                   env_prefixes=f_env_prefix), api.step.defer_results():
-    build_dir = checkout.join('out', target_name)
-    api.step(
-        'web integration tests config',
-        [
-            'flutter',
-            'config',
-            '--local-engine=%s' % build_dir,
-            '--no-analytics',
-            '--enable-web',
-        ],
-        infra_step=True,
-    )
-    api.step(
-        api.test_utils.test_step_name('run web integration tests'), [
-            'flutter',
-            '--local-engine=%s' % build_dir,
-            'build',
-            'web',
-            '-v',
-        ]
-    )
-
-    # This is to clean up leaked processes.
-    api.os_utils.kill_processes()
-    # Collect memory/cpu/process after task execution.
-    api.os_utils.collect_os_info()
-
   with api.context(cwd=cache_root, env=env, env_prefixes=env_prefixes):
     builds = api.shard_util.collect_builds(builds)
     api.display_util.display_builds(

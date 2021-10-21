@@ -205,7 +205,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       with self.m.step.nest('Dismiss dialogs'):
         cocoon_path = self.m.path['cache'].join('cocoon')
         self.m.repo_util.checkout(
-            'cocoon', cocoon_path, ref='refs/heads/master'
+            'cocoon', cocoon_path, ref='refs/heads/main'
         )
         resource_name = self.resource('dismiss_dialogs.sh')
         self.m.step(

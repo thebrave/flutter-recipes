@@ -326,6 +326,84 @@
   },
   {
     "cmd": [
+      "ideviceinfo",
+      "--key",
+      "ProductType"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Find device type"
+  },
+  {
+    "cmd": [
+      "ideviceinfo",
+      "--key",
+      "ProductVersion"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Find device version"
+  },
+  {
+    "cmd": [
       "flutter",
       "doctor"
     ],
@@ -337,7 +415,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -376,7 +454,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -404,6 +482,194 @@
   },
   {
     "cmd": [
+      "rm",
+      "-rf",
+      "[HOME]/Library/Developer/Xcode/DerivedData"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Delete mac deriveddata"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/osx_sdk",
+      "-ensure-file",
+      "infra/tools/mac_toolchain/${platform} git_revision:9a1adc55bf4a1173784da3ba2f8cb06421606748",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:9a1\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/osx_sdk/mac_toolchain",
+      "install",
+      "-kind",
+      "ios",
+      "-xcode-version",
+      "9f2000",
+      "-output-dir",
+      "[CACHE]/osx_sdk/XCode.app",
+      "-cipd-package-prefix",
+      "flutter_internal/ios/xcode"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "install xcode"
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--switch",
+      "[CACHE]/osx_sdk/XCode.app"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "select XCode"
+  },
+  {
+    "cmd": [
       "flutter",
       "doctor",
       "--verbose"
@@ -416,7 +682,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -456,7 +722,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -492,7 +758,7 @@
       "--results-file",
       "[CLEANUP]/results_tmp_1/results",
       "--luci-builder",
-      "Mac abc",
+      "Mac_ios abc",
       "--git-branch",
       "master"
     ],
@@ -504,7 +770,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -565,7 +831,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -617,7 +883,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -677,7 +943,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -717,52 +983,8 @@
   },
   {
     "cmd": [
-      "pkill",
-      "chrome"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Killing Processes.kill chrome",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "pkill",
+      "killall",
+      "-9",
       "dart"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
@@ -773,7 +995,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -807,7 +1029,8 @@
   },
   {
     "cmd": [
-      "pkill",
+      "killall",
+      "-9",
       "flutter"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
@@ -818,7 +1041,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -852,7 +1075,100 @@
   },
   {
     "cmd": [
-      "pkill",
+      "killall",
+      "-9",
+      "Chrome"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Killing Processes.kill Chrome",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "Safari"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Killing Processes.kill Safari",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
       "java"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
@@ -863,7 +1179,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -890,14 +1206,15 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Killing Processes.kill java",
+    "name": "Killing Processes.kill Safari (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "pkill",
+      "killall",
+      "-9",
       "adb"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
@@ -908,7 +1225,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -935,10 +1252,50 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Killing Processes.kill adb",
+    "name": "Killing Processes.kill Safari (3)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--reset"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "reset XCode"
   },
   {
     "cmd": [],
@@ -961,7 +1318,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -1009,7 +1366,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -1053,7 +1410,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -1101,7 +1458,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
@@ -1142,7 +1499,7 @@
       "--git-branch",
       "master",
       "--luci-builder",
-      "Mac abc",
+      "Mac_ios abc",
       "--test-status",
       "Succeeded",
       "--service-account-token-file",
@@ -1157,7 +1514,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "linux",
+      "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
       "TOKEN_PATH": "[CLEANUP]/tmp_tmp_3"

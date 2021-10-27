@@ -194,6 +194,29 @@
     ]
   },
   {
+    "cmd": [
+      "git",
+      "log",
+      "--pretty=format:%ct",
+      "-n",
+      "1"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+    "luci_context": {
+      "realm": {
+        "name": "test:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git commit time"
+  },
+  {
     "cmd": [],
     "name": "Initialize logs"
   },
@@ -439,6 +462,26 @@
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
     ]
+  },
+  {
+    "cmd": [
+      "cat",
+      "/etc/debian_version"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "test:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Find debian version"
   },
   {
     "cmd": [
@@ -1063,6 +1106,8 @@
     "cmd": [
       "luci-auth",
       "token",
+      "-scopes",
+      "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/datastore",
       "-lifetime",
       "3m"
     ],
@@ -1150,26 +1195,17 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Upload metrics.write token",
+    "name": "Upload metrics.write metric center token",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "dart",
-      "bin/test_runner.dart",
-      "upload-metrics",
-      "--test-flaky",
-      "False",
-      "--git-branch",
-      "master",
-      "--luci-builder",
-      "Linux abc",
-      "--test-status",
-      "Succeeded",
-      "--service-account-token-file",
-      "[CLEANUP]/tmp_tmp_3"
+      "luci-auth",
+      "token",
+      "-lifetime",
+      "3m"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -1186,6 +1222,119 @@
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "test:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Upload metrics.get access token for default account (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "extra.secret.token.should.not.be.logged",
+      "[CLEANUP]/tmp_tmp_4"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "test:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Upload metrics.write cocoon token",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "dart",
+      "bin/test_runner.dart",
+      "upload-metrics",
+      "--test-flaky",
+      "False",
+      "--builder-bucket",
+      "ci",
+      "--git-branch",
+      "master",
+      "--luci-builder",
+      "Linux abc",
+      "--test-status",
+      "Succeeded",
+      "--service-account-token-file",
+      "[CLEANUP]/tmp_tmp_4"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GCP_PROJECT": "flutter-infra",
+      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_3"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython",
         "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",

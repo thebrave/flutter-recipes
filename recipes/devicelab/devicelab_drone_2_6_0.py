@@ -18,6 +18,7 @@ DEPS = [
     'recipe_engine/buildbucket',
     'recipe_engine/cas',
     'recipe_engine/context',
+    'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
@@ -63,8 +64,12 @@ def RunSteps(api):
     # we don't want to fetch it with cipd, so don't fetch it with required_deps
     api.flutter_deps.required_deps(env, env_prefixes, deps)
     api.flutter_deps.vpython(env, env_prefixes, 'latest')
+
+  tags = api.test_utils.collect_benchmark_tags(env, env_prefixes, api.properties.get('buildername'))
+  benchmark_tags = api.json.dumps(tags)
+
   devicelab_path = flutter_path.join('dev', 'devicelab')
-  git_branch = api.buildbucket.gitiles_commit.ref.replace('refs/heads/', '')
+  git_branch = api.properties.get('git_branch')
   # Create tmp file to store results in
   results_path = api.path.mkdtemp(prefix='results').join('results')
   # Run test
@@ -76,8 +81,8 @@ def RunSteps(api):
     runner_params.extend(['--local-engine', env['LOCAL_ENGINE']])
   # LUCI git checkouts end up in a detached HEAD state, so branch must
   # be passed from gitiles -> test runner -> Cocoon.
-  if git_branch:
-    # git_branch is set only when the build was triggered by buildbucket.
+  if git_branch and api.properties.get('git_url') is None:
+    # git_branch is set only when the build was triggered on post-submit.
     runner_params.extend(['--git-branch', git_branch])
   test_status = ''
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
@@ -122,11 +127,12 @@ def RunSteps(api):
           # This is to clean up leaked processes.
           api.os_utils.kill_processes()
         if test_status == 'flaky':
-          check_flaky(api)
+          api.test_utils.flaky_step('run %s' % task_name)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadResults(
         api, env, env_prefixes, results_path, test_status == 'flaky',
-        git_branch, api.properties.get('buildername'), commit_time, task_name
+        git_branch, api.properties.get('buildername'), commit_time, task_name,
+        benchmark_tags
     )
     uploadMetricsToCas(api, results_path)
 
@@ -159,23 +165,8 @@ def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params):
       # This is to clean up leaked processes.
       api.os_utils.kill_processes()
     if test_status == 'flaky':
-      check_flaky(api)
+      api.test_utils.flaky_step('run %s' % task_name)
   return test_status
-
-
-def check_flaky(api):
-  if api.platform.is_win:
-    api.step(
-        'check flaky',
-        ['powershell.exe', 'echo "test run is flaky"'],
-        infra_step=True,
-    )
-  else:
-    api.step(
-        'check flaky',
-        ['echo', 'test run is flaky'],
-        infra_step=True,
-    )
 
 
 def shouldNotUpdate(api, git_branch):
@@ -191,7 +182,6 @@ def shouldNotUpdate(api, git_branch):
   else:
     return False
 
-
 def uploadResults(
     api,
     env,
@@ -202,6 +192,7 @@ def uploadResults(
     builder_name,
     commit_time,
     task_name,
+    benchmark_tags,
     test_status='Succeeded',
 ):
   """Upload DeviceLab test results to Cocoon/skia perf.
@@ -212,10 +203,22 @@ def uploadResults(
   Only post-submit tests upload results to Cocoon/skia perf.
 
   If `upload_metrics: true`, generated test metrics will be uploaded to skia perf
-  for both prod ans staging tests.
+  for both prod and staging tests.
 
   Otherwise, test status will be updated in Cocoon for tests running in prod pool,
   and staging tests without `upload_metrics: true` will not be updated.
+
+  Args:
+    env(dict): Current environment variables.
+    env_prefixes(dict):  Current environment prefixes variables.
+    results_path(str): Path to test results.
+    is_test_flaky(bool): Flaky flag for the test running step.
+    git_branch(str): Branch the test runs against.
+    builder_name(str): The builder name that is being run on.
+    commit_time(str): The commit time in UNIX timestamp.
+    task_name(str): The task name of the current test.
+    benchmark_tags(str): Json dumped str of benchmark tags, which includes host and device info.
+    test_status(str): The status of the test running step.
   """
   if shouldNotUpdate(api, git_branch):
     return
@@ -224,7 +227,7 @@ def uploadResults(
   if api.properties.get('upload_metrics'):
     runner_params.extend([
         '--results-file', results_path, '--commit-time', commit_time,
-        '--task-name', task_name
+        '--task-name', task_name, '--benchmark-tags', benchmark_tags
     ])
   else:
     # For builders without `upload_metrics: true`
@@ -273,7 +276,7 @@ def GenTests(api):
   )
   yield api.test(
       "basic",
-      api.properties(buildername='Linux abc', task_name='abc'),
+      api.properties(buildername='Linux abc', task_name='abc', git_branch='master'),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
           'run abc',
@@ -284,37 +287,48 @@ def GenTests(api):
           project='test',
           git_repo='git.example.com/test/repo',
       ),
-      api.platform.name('linux'),
       api.runtime(is_experimental=True),
   )
   yield api.test(
       "xcode-devicelab",
       api.properties(
-          buildername='Mac abc',
+          buildername='Mac_ios abc',
           task_name='abc',
-          dependencies=[{'dependency': 'xcode'}]
+          dependencies=[{'dependency': 'xcode'}],
+          git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.step_data(
           'run abc',
           stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
           retcode=0
-      ), api.swarming.properties(bot_id='flutter-devicelab-mac-1')
+      ), api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
+      api.step_data(
+          'Find device type',
+          stdout=api.raw_io.output_text('iPhone8,1'),
+      )
   )
   yield api.test(
       "xcode-chromium-mac",
       api.properties(
-          buildername='Mac abc',
+          buildername='Mac_ios abc',
           task_name='abc',
-          dependencies=[{'dependency': 'xcode'}]
+          dependencies=[{'dependency': 'xcode'}],
+          git_branch='master',
       ),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.platform.name('mac'),
+      api.step_data(
+          'Find device type',
+          stdout=api.raw_io.output_text('iPhone8,1'),
+      ),
   )
   yield api.test(
       "post-submit",
       api.properties(
-          buildername='Windows abc', task_name='abc', upload_metrics=True
+          buildername='Windows abc', task_name='abc', upload_metrics=True,
+          git_branch='master',
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -323,18 +337,22 @@ def GenTests(api):
           retcode=0
       ),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
-      api.platform.name('win'),
   )
   yield api.test(
       "upload-metrics-mac",
       api.properties(
-          buildername='Mac abc',
+          buildername='Mac_ios abc',
           dependencies=[{'dependency': 'xcode'}],
           task_name='abc',
           upload_metrics=True,
           upload_metrics_to_cas=True,
+          git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-      api.buildbucket.ci_build(git_ref='refs/heads/master',)
+      api.platform.name('mac'),
+      api.step_data(
+          'Find device type',
+          stdout=api.raw_io.output_text('iPhone8,1'),
+      ), api.buildbucket.ci_build(git_ref='refs/heads/master',)
   )
   yield api.test(
       "no-upload-metrics-linux-staging",
@@ -342,6 +360,7 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           upload_metrics_to_cas=True,
+          git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           git_ref='refs/heads/master',
@@ -354,7 +373,8 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           local_engine_cas_hash='isolatehashlocalengine/22',
-          local_engine='host-release'
+          local_engine='host-release',
+          git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',

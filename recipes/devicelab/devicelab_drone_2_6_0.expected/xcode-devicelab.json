@@ -326,6 +326,104 @@
   },
   {
     "cmd": [
+      "ideviceinfo",
+      "--key",
+      "ProductType"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Find device type"
+  },
+  {
+    "cmd": [
+      "ideviceinfo",
+      "--key",
+      "ProductVersion"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_2/vpython"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Find device version"
+  },
+  {
+    "cmd": [
+      "cat",
+      "/etc/debian_version"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Find debian version"
+  },
+  {
+    "cmd": [
       "flutter",
       "doctor"
     ],
@@ -492,7 +590,7 @@
       "--results-file",
       "[CLEANUP]/results_tmp_1/results",
       "--luci-builder",
-      "Mac abc",
+      "Mac_ios abc",
       "--git-branch",
       "master"
     ],
@@ -982,7 +1080,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "check flaky"
+    "name": "step is flaky: run abc"
   },
   {
     "cmd": [],
@@ -1186,7 +1284,7 @@
       "--git-branch",
       "master",
       "--luci-builder",
-      "Mac abc",
+      "Mac_ios abc",
       "--test-status",
       "Succeeded",
       "--service-account-token-file",

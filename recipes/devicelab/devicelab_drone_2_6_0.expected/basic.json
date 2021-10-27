@@ -326,6 +326,26 @@
   },
   {
     "cmd": [
+      "cat",
+      "/etc/debian_version"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "test:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Find debian version"
+  },
+  {
+    "cmd": [
       "flutter",
       "doctor"
     ],
@@ -457,7 +477,7 @@
       "--luci-builder",
       "Linux abc",
       "--git-branch",
-      "main"
+      "master"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -945,7 +965,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "check flaky"
+    "name": "step is flaky: run abc"
   },
   {
     "name": "$result"

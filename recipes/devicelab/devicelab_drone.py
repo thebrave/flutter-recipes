@@ -69,7 +69,7 @@ def RunSteps(api):
   benchmark_tags = api.json.dumps(tags)
 
   devicelab_path = flutter_path.join('dev', 'devicelab')
-  git_branch = api.buildbucket.gitiles_commit.ref.replace('refs/heads/', '')
+  git_branch = api.properties.get('git_branch')
   # Create tmp file to store results in
   results_path = api.path.mkdtemp(prefix='results').join('results')
   # Run test
@@ -81,8 +81,8 @@ def RunSteps(api):
     runner_params.extend(['--local-engine', env['LOCAL_ENGINE']])
   # LUCI git checkouts end up in a detached HEAD state, so branch must
   # be passed from gitiles -> test runner -> Cocoon.
-  if git_branch:
-    # git_branch is set only when the build was triggered by buildbucket.
+  if git_branch and api.properties.get('git_url') is None:
+    # git_branch is set only when the build was triggered on post-submit.
     runner_params.extend(['--git-branch', git_branch])
   test_status = ''
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
@@ -276,7 +276,7 @@ def GenTests(api):
   )
   yield api.test(
       "basic",
-      api.properties(buildername='Linux abc', task_name='abc'),
+      api.properties(buildername='Linux abc', task_name='abc', git_branch='master'),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
           'run abc',
@@ -294,7 +294,8 @@ def GenTests(api):
       api.properties(
           buildername='Mac_ios abc',
           task_name='abc',
-          dependencies=[{'dependency': 'xcode'}]
+          dependencies=[{'dependency': 'xcode'}],
+          git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.step_data(
@@ -312,7 +313,8 @@ def GenTests(api):
       api.properties(
           buildername='Mac_ios abc',
           task_name='abc',
-          dependencies=[{'dependency': 'xcode'}]
+          dependencies=[{'dependency': 'xcode'}],
+          git_branch='master',
       ),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
@@ -325,7 +327,8 @@ def GenTests(api):
   yield api.test(
       "post-submit",
       api.properties(
-          buildername='Windows abc', task_name='abc', upload_metrics=True
+          buildername='Windows abc', task_name='abc', upload_metrics=True,
+          git_branch='master',
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -343,6 +346,7 @@ def GenTests(api):
           task_name='abc',
           upload_metrics=True,
           upload_metrics_to_cas=True,
+          git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.platform.name('mac'),
       api.step_data(
@@ -356,6 +360,7 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           upload_metrics_to_cas=True,
+          git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           git_ref='refs/heads/master',
@@ -368,7 +373,8 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           local_engine_cas_hash='isolatehashlocalengine/22',
-          local_engine='host-release'
+          local_engine='host-release',
+          git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',

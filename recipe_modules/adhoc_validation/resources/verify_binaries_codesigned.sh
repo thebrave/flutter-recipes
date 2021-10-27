@@ -4,4 +4,4 @@
 
 set -e
 
-./dev/tools/bin/conductor codesign --verify
+./dev/conductor/bin/conductor codesign --verify

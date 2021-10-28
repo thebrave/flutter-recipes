@@ -26,7 +26,7 @@ def RunSteps(api):
       'cocoon',
       cocoon_path,
       url=api.properties.get('git_url'),
-      ref=api.properties.get('git_ref')
+      ref=api.properties.get('git_ref') or 'refs/heads/main'
   )
 
   # Checkout flutter/flutter at head.

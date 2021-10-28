@@ -157,17 +157,23 @@ class WebUtilsApi(recipe_api.RecipeApi):
             base_name)
         presentation.links[base_name] = url
 
-  def prepare_dependencies(self, checkout):
-    """Install all the required dependencies for a given felt test."""
-    deps = self.m.properties.get('dependencies', [])
+  def get_web_dependencies(self):
+    if 'web_dependencies' in self.m.properties:
+      return self.m.properties.get('web_dependencies')
+
+    # TODO(mdebbar): This is temporary. Please remove!
+    return self.m.properties.get('dependencies', [])
+
+  def prepare_web_dependencies(self, checkout):
+    """Install all the required web_dependencies for a given felt test."""
     available_deps = {
         'chrome': self.chrome,
         'chrome_driver': self.chrome_driver,
         'firefox_driver': self.firefox_driver,
         'goldens_repo': self.clone_goldens_repo,
     }
-    for dep in deps:
+    for dep in self.get_web_dependencies():
       dep_funct = available_deps.get(dep)
       if not dep_funct:
-        raise ValueError('Dependency %s not available.' % dep)
+        raise ValueError('Web Dependency %s not available.' % dep)
       dep_funct(checkout)

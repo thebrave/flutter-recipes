@@ -18,7 +18,7 @@ DEPS = [
 
 def RunSteps(api):
   engine_checkout_path = api.path['cache'].join('builder', 'src')
-  api.web_util.prepare_dependencies(engine_checkout_path)
+  api.web_util.prepare_web_dependencies(engine_checkout_path)
   api.web_util.upload_failing_goldens(engine_checkout_path, 'chrome')
 
 def GenTests(api):
@@ -37,13 +37,14 @@ def GenTests(api):
       'fail case',
       api.expect_exception('ValueError'),
       api.properties(
-          dependencies=['invalid_dependency'],), api.platform(
+          web_dependencies=['invalid_dependency'],), api.platform(
               'linux', 64)) + api.platform.name('linux')
   yield api.test(
       'clone repo',
       api.step_data('read yaml.parse', api.json.output(golden_yaml_file)),
       api.properties(
           gcs_goldens_bucket='mybucket',
+          # TODO(mdebbar): Change this to web_dependencies.
           dependencies=['goldens_repo'],), api.platform(
               'linux', 64)) + api.platform.name('linux') + api.runtime(is_experimental=False)
   yield api.test(
@@ -51,18 +52,19 @@ def GenTests(api):
       api.step_data('read browser lock yaml.parse',
                     api.json.output(browser_yaml_file)),
       api.properties(
-          dependencies=['chrome_driver'],), api.platform(
+          web_dependencies=['chrome_driver'],), api.platform(
               'linux', 64)) + api.platform.name('linux')
   yield api.test(
       'firefox driver',
       api.properties(
-          dependencies=['firefox_driver'],), api.platform(
+          web_dependencies=['firefox_driver'],), api.platform(
               'linux', 64)) + api.platform.name('linux')
   yield api.test(
       'chrome',
       api.step_data('read browser lock yaml.parse',
                     api.json.output(browser_yaml_file)),
       api.properties(
+          # TODO(mdebbar): Change this to web_dependencies.
           dependencies=['chrome'],), api.platform(
               'linux', 64)) + api.platform.name('linux')
   yield api.test(
@@ -71,7 +73,7 @@ def GenTests(api):
       api.properties(
           goma_jobs='200',
           gcs_goldens_bucket='mybucket',
-          dependencies=['goldens_repo'],
+          web_dependencies=['goldens_repo'],
           command_args=['test', '--browser=ios-safari'],
           command_name='ios-safari-unit-tests'), api.platform(
               'mac', 64)) + api.runtime(is_experimental=False)

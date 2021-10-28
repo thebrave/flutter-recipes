@@ -72,9 +72,14 @@ def RunSteps(api, properties, env_properties):
   # Checkout source code and build
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
 
-  # Prepare the dependencies that web tests need.
+  # Ensure required deps are installed
+  api.flutter_deps.required_deps(
+      env, env_prefixes, api.properties.get('inherited_dependencies', [])
+  )
+
+  # Prepare the web dependencies that web tests need.
   # These can be browsers, web drivers or other repositories.
-  api.web_util.prepare_dependencies(checkout)
+  api.web_util.prepare_web_dependencies(checkout)
 
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():
@@ -118,13 +123,12 @@ def RunSteps(api, properties, env_properties):
         )
       with api.context(cwd=checkout.join('flutter', 'lib', 'web_ui')):
         api.retry.step('pub get in web_ui', [local_pub, 'get'], infra_step=True)
+        web_dependencies = api.web_util.get_web_dependencies()
         if api.platform.is_mac:
           with api.osx_sdk('ios'):
             with recipe_api.defer_results():
               api.step('felt test: %s' % command_name, felt_cmd)
-              if api.properties.get('dependencies'
-                                   ) and 'goldens_repo' in api.properties.get(
-                                       'dependencies'):
+              if web_dependencies and 'goldens_repo' in web_dependencies:
                 api.web_util.upload_failing_goldens(checkout, 'ios-safari')
               # This is to clean up leaked processes.
               api.os_utils.kill_processes()
@@ -133,9 +137,7 @@ def RunSteps(api, properties, env_properties):
         else:
           with recipe_api.defer_results():
             api.step('felt test: %s' % command_name, felt_cmd)
-            if api.properties.get('dependencies'
-                                 ) and 'goldens_repo' in api.properties.get(
-                                     'dependencies'):
+            if web_dependencies and 'goldens_repo' in web_dependencies:
               api.web_util.upload_failing_goldens(checkout, 'chrome')
             # This is to clean up leaked processes.
             api.os_utils.kill_processes()
@@ -161,7 +163,7 @@ def GenTests(api):
       api.properties(
           goma_jobs='200',
           gcs_goldens_bucket='mybucket',
-          dependencies=['chrome_driver', 'chrome', 'goldens_repo'],
+          web_dependencies=['chrome_driver', 'chrome', 'goldens_repo'],
           command_args=['test', '--browser=chrome'],
           command_name='chrome-tests',
           local_engine_cas_hash='abceqwe'
@@ -173,7 +175,7 @@ def GenTests(api):
       api.properties(
           goma_jobs='200',
           gcs_goldens_bucket='mybucket',
-          dependencies=['firefox_driver', 'goldens_repo'],
+          web_dependencies=['firefox_driver', 'goldens_repo'],
           command_args=['test', '--browser=firefox'],
           command_name='firefox-tests',
           local_engine_cas_hash='abceqwe'
@@ -188,7 +190,7 @@ def GenTests(api):
       api.properties(
           goma_jobs='200',
           gcs_goldens_bucket='mybucket',
-          dependencies=['goldens_repo'],
+          web_dependencies=['goldens_repo'],
           command_args=['test', '--browser=ios-safari'],
           command_name='ios-safari-unit-tests',
           local_engine_cas_hash='abceqwe'
@@ -202,7 +204,7 @@ def GenTests(api):
           goma_jobs='200',
           git_url='https://mygitrepo',
           git_ref='refs/pull/1/head',
-          dependencies=['goldens_repo'],
+          web_dependencies=['goldens_repo'],
           clobber=True,
           local_engine_cas_hash='abceqwe'
       ), api.platform('linux', 64)
@@ -213,7 +215,7 @@ def GenTests(api):
           goma_jobs='200',
           git_url='https://mygitrepo',
           git_ref='refs/pull/1/head',
-          dependencies=['invalid_dependency'],
+          web_dependencies=['invalid_dependency'],
           clobber=True,
           local_engine_cas_hash='abceqwe'
       ), api.platform('linux', 64), api.expect_exception('ValueError')

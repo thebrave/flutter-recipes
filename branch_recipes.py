@@ -28,6 +28,7 @@ RECIPES_TO_BRANCH = (
         'flutter/flutter',
         'flutter/flutter_drone',
         'flutter',
+        'infra/ci_yaml',
         'web_engine',
         )
 
@@ -46,7 +47,6 @@ RECIPES_TO_SKIP = (
         'plugins/plugins_publish',
         'recipes',
         'tricium/tricium',
-        'infra/ci_yaml',
         'infra/test_ownership',
         )
 

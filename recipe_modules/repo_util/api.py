@@ -8,7 +8,7 @@ REPOS = {
     'engine':
         'https://chromium.googlesource.com/external/github.com/flutter/engine',
     'cocoon':
-        'https://chromium.googlesource.com/external/github.com/flutter/cocoon',
+        'https://flutter.googlesource.com/mirrors/cocoon',
     'infra':
       'https://flutter.googlesource.com/infra',
     'packages':

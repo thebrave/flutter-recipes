@@ -21,7 +21,7 @@ def RunSteps(api):
       'cocoon',
       cocoon_dir,
       api.properties.get('git_url'),
-      api.properties.get('git_ref'),
+      api.properties.get('git_ref') or 'refs/heads/main',
   )
 
   # Builds and uploads a new version of the device_doctor CIPD package.

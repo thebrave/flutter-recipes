@@ -44,8 +44,7 @@ def GenTests(api):
       api.step_data('read yaml.parse', api.json.output(golden_yaml_file)),
       api.properties(
           gcs_goldens_bucket='mybucket',
-          # TODO(mdebbar): Change this to web_dependencies.
-          dependencies=['goldens_repo'],), api.platform(
+          web_dependencies=['goldens_repo'],), api.platform(
               'linux', 64)) + api.platform.name('linux') + api.runtime(is_experimental=False)
   yield api.test(
       'chrome driver',
@@ -64,8 +63,7 @@ def GenTests(api):
       api.step_data('read browser lock yaml.parse',
                     api.json.output(browser_yaml_file)),
       api.properties(
-          # TODO(mdebbar): Change this to web_dependencies.
-          dependencies=['chrome'],), api.platform(
+          web_dependencies=['chrome'],), api.platform(
               'linux', 64)) + api.platform.name('linux')
   yield api.test(
       'mac-post-submit',

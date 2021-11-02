@@ -158,11 +158,7 @@ class WebUtilsApi(recipe_api.RecipeApi):
         presentation.links[base_name] = url
 
   def get_web_dependencies(self):
-    if 'web_dependencies' in self.m.properties:
-      return self.m.properties.get('web_dependencies')
-
-    # TODO(mdebbar): This is temporary. Please remove!
-    return self.m.properties.get('dependencies', [])
+    return self.m.properties.get('web_dependencies', [])
 
   def prepare_web_dependencies(self, checkout):
     """Install all the required web_dependencies for a given felt test."""

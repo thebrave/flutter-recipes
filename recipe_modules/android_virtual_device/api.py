@@ -6,6 +6,9 @@ from contextlib import contextmanager
 from recipe_engine import recipe_api
 
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
+
+
 class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
   """Installs and manages an Android AVD.
   """

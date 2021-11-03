@@ -11,6 +11,8 @@ from contextlib import contextmanager
 
 from recipe_engine import recipe_api
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
+
 # TODO(iannucci): replace this with something sane when PROPERTIES is
 # implemented with a proto message.
 _PROPERTY_DEFAULTS = {

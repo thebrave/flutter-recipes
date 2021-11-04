@@ -170,14 +170,6 @@ def CollectBuilds(api, builds):
                                         timeout=DRONE_TIMEOUT_SECS,
                                         mirror_status=True)
 
-
-def GetFlutterFuchsiaBuildTargets(product, include_test_targets=False):
-  targets = ['flutter/shell/platform/fuchsia:fuchsia']
-  if include_test_targets:
-    targets += ['fuchsia_tests']
-  return targets
-
-
 def GetFuchsiaOutputFiles(product):
   return [
       'dart_jit_%srunner' % ('product_' if product else ''),
@@ -203,9 +195,9 @@ def GetFuchsiaOutputDirs(product):
 def BuildAndPackageFuchsia(api, build_script, git_rev):
   RunGN(
       api, '--fuchsia', '--fuchsia-cpu', 'x64', '--runtime-mode', 'debug',
-      '--no-lto'
+      '--no-lto', '--enable-unittests'
   )
-  Build(api, 'fuchsia_debug_x64', *GetFlutterFuchsiaBuildTargets(False, True))
+  Build(api, 'fuchsia_debug_x64', *[])
 
   fuchsia_package_cmd = [
       'python', build_script, '--engine-version', git_rev, '--skip-build',
@@ -217,9 +209,9 @@ def BuildAndPackageFuchsia(api, build_script, git_rev):
 
   RunGN(
       api, '--fuchsia', '--fuchsia-cpu', 'arm64', '--runtime-mode', 'debug',
-      '--no-lto'
+      '--no-lto', '--enable-unittests'
   )
-  Build(api, 'fuchsia_debug_arm64', *GetFlutterFuchsiaBuildTargets(False, True))
+  Build(api, 'fuchsia_debug_arm64', *[])
 
 
 def RunGN(api, *args):
@@ -949,7 +941,7 @@ def BuildFuchsia(api):
         'builds': [{
             'gn_args': gn_args,
             'dir': 'fuchsia_%s_%s' % (build_mode, arch),
-            'targets': GetFlutterFuchsiaBuildTargets(product),
+            'targets': [],
             'output_files': GetFuchsiaOutputFiles(product),
             'output_dirs': fuchsia_output_dirs,
         }],
@@ -1827,7 +1819,7 @@ def GenTests(api):
           builder='Linux Engine', git_repo=GIT_REPO, project='flutter'
       ),
       api.step_data(
-          'gn --fuchsia --fuchsia-cpu x64 --runtime-mode debug --no-lto',
+          'gn --fuchsia --fuchsia-cpu x64 --runtime-mode debug --no-lto --enable-unittests',
           retcode=1
       ),
       api.properties(

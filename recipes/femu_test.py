@@ -54,10 +54,18 @@ def Build(api, config, *targets):
     name = 'build %s' % ' '.join([config] + list(targets))
     api.step(name, ninja_args)
 
+
+def GetFlutterFuchsiaBuildTargets(product, include_test_targets=False):
+  targets = ['flutter/shell/platform/fuchsia:fuchsia']
+  if include_test_targets:
+    targets += ['fuchsia_tests']
+  return targets
+
+
 def BuildAndTestFuchsia(api, build_script, git_rev):
   RunGN(api, '--fuchsia', '--fuchsia-cpu', 'x64', '--runtime-mode', 'debug',
-        '--no-lto', '--enable-unittests')
-  Build(api, 'fuchsia_debug_x64', *[])
+        '--no-lto')
+  Build(api, 'fuchsia_debug_x64', *GetFlutterFuchsiaBuildTargets(False, True))
   fuchsia_package_cmd = [
       'python', build_script, '--engine-version', git_rev, '--skip-build',
       '--archs', 'x64', '--runtime-mode', 'debug'

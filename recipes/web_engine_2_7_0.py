@@ -248,11 +248,11 @@ def schedule_builds_on_linux(api, cas_hash):
   # For running Chrome Unit tests:
   command_name = 'chrome-unit-linux'
   # These are the required dependencies.
-  dependencies = ['chrome', 'goldens_repo']
+  web_dependencies = ['chrome', 'goldens_repo']
   # These are the felt commands which will be used.
   command_args = ['test', '--browser=chrome']
   addShardTask(
-      api, reqs, command_name, dependencies, command_args, cas_hash
+      api, reqs, command_name, web_dependencies, command_args, cas_hash
   )
 
   # For running Firefox Unit tests:
@@ -260,22 +260,26 @@ def schedule_builds_on_linux(api, cas_hash):
   # We don't need extra dependencies since felt tools handles firefox itself.
   # TODO(nurhan): Use cipd packages for Firefox. As we are doing for chrome
   # still respect to the version from browser_lock.yaml.
-  dependencies = []
+  web_dependencies = []
   # These are the felt commands which will be used.
   command_args = ['test', '--browser=firefox']
   addShardTask(
-      api, reqs, command_name, dependencies, command_args, cas_hash
+      api, reqs, command_name, web_dependencies, command_args, cas_hash
   )
 
   return api.buildbucket.schedule(reqs)
 
 
 def addShardTask(
-    api, reqs, command_name, dependencies, command_args, cas_hash
+    api, reqs, command_name, web_dependencies, command_args, cas_hash
 ):
+  # These are dependencies specified in the yaml file. We want to pass them down
+  # to drones so they also install these dependencies.
+  inherited_dependencies = [{'dependency': d['dependency']} for d in api.properties.get('dependencies', [])]
   drone_props = {
-      'command_name': command_name, 'dependencies': dependencies,
-      'command_args': command_args, 'local_engine_cas_hash': cas_hash
+      'command_name': command_name, 'web_dependencies': web_dependencies,
+      'command_args': command_args, 'local_engine_cas_hash': cas_hash,
+      'inherited_dependencies': inherited_dependencies,
   }
 
   git_url = GIT_REPO

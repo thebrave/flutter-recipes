@@ -41,7 +41,7 @@ PROPERTIES = {
 # led recipes will call itself reaching the max recursion limit. In the
 # flutter recipes the fuchsia_ctl recipe is the only one without too many
 # dependencies.
-SELFTEST_CL = ('https://flutter-review.googlesource.com/c/recipes/+/9802')
+SELFTEST_CL = ('https://flutter-review.googlesource.com/c/recipes/+/19645')
 COMMIT_QUEUE_CFG = """
     submit_options: <
       max_burst: 4

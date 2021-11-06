@@ -108,12 +108,12 @@ def RunSteps(api, remote, unittest_only):
   bb_input = api.buildbucket.build.input
   if bb_input.gerrit_changes:
     api.git.checkout_cl(
-        bb_input.gerrit_changes[0], checkout_path, onto='refs/heads/master'
+        bb_input.gerrit_changes[0], checkout_path, onto='refs/heads/main'
     )
     with api.context(cwd=checkout_path):
       api.git('log', 'log', '--oneline', '-n', '10')
   else:
-    api.git.checkout(remote, ref='refs/heads/master')
+    api.git.checkout(remote, ref='refs/heads/main')
     with api.context(cwd=checkout_path):
       api.git('log', 'log', '--oneline', '-n', '10')
   api.recipe_testing.projects = ('flutter',)

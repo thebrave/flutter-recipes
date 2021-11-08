@@ -110,7 +110,7 @@ def RunSteps(api):
             gerrit_project = 'infra',
             repo_dir = infra_path,
             commit_message = 'Roll %s to %s' % (repo, git_ref),
-            cc_on_failure = 'flutter-infra@grotations.appspotmail.com',
+            cc_on_failure = ['flutter-infra@grotations.appspotmail.com'],
             labels_to_set = {'Code-Review': 2},
         )
 

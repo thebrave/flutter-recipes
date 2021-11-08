@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from google.protobuf import json_format
+from past.builtins import basestring
 from recipe_engine import recipe_api
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 
@@ -106,10 +107,10 @@ class JobApi(recipe_api.RecipeApi):
     by_task_id = {job.task_id: job for job in jobs}
     swarming_results = self.m.swarming.collect(
         "collect",
-        by_task_id.keys(),
+        sorted(by_task_id.keys()),
         output_dir=self.m.path["cleanup"],
     )
-    for result in swarming_results:
+    for result in sorted(swarming_results, key=lambda x: x.id):
       job = by_task_id[result.id]
       job.task_result = result
 

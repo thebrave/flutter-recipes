@@ -219,7 +219,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         ):
           device_id = self.m.step(
               'Find device id', ['idevice_id', '-l'],
-              stdout=self.m.raw_io.output()
+              stdout=self.m.raw_io.output_text()
           ).stdout.rstrip()
           cmd = [resource_name, device_id]
           self.m.step('Run app to dismiss dialogs', cmd)

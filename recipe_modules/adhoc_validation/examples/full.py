@@ -7,8 +7,12 @@ from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
-    'flutter/adhoc_validation', 'flutter/repo_util', 'recipe_engine/context',
-    'recipe_engine/path', 'recipe_engine/platform', 'recipe_engine/properties'
+    'flutter/adhoc_validation',
+    'flutter/repo_util',
+    'recipe_engine/context',
+    'recipe_engine/path',
+    'recipe_engine/platform',
+    'recipe_engine/properties',
 ]
 
 

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from recipe_engine import recipe_api
+from past.builtins import long
 
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
@@ -167,7 +168,7 @@ class DisplayUtilApi(recipe_api.RecipeApi):
     # Create per-build display steps.
     with self.m.step.nest(step_name):
       for k in builds:
-        build = builds[k] if isinstance(k, long) or isinstance(k, int) else k
+        build = builds[k] if isinstance(k, (long, int)) else k
         args = {
             "result": build,
             "infra_failed_builders": infra_failed_builders,

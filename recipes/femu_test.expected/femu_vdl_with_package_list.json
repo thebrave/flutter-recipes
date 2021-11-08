@@ -1889,6 +1889,148 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "ensure sdk (4)"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "ensure sdk (4).init fuchsia_sdk cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "ensure sdk (4).check sdk cache content",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-vpython-spec",
+      "RECIPE_MODULE[fuchsia::gsutil]/resources/gsutil.vpython",
+      "-u",
+      "[CACHE]/cipd/path/to/gsutil/version%3Apinned-version/gsutil",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "cp",
+      "gs://fuchsia/development/0.20200101.0.1/sdk/linux-amd64/gn.tar.gz",
+      "[CLEANUP]/fuchsia_sdk_tmp_tmp_4"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "ensure sdk (4).gsutil cp",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/cipd/path/to/bsdtar/version%3Apinned-version/bsdtar",
+      "--extract",
+      "--verbose",
+      "-f",
+      "[CLEANUP]/fuchsia_sdk_tmp_tmp_4/gn.tar.gz",
+      "-C",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "ensure sdk (4).extract sdk gz",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
     "cmd": [
       "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/zbi",
       "--output",
@@ -2105,7 +2247,7 @@
       "-u",
       "RECIPE_MODULE[fuchsia::archive]/resources/hardlink.py",
       "--link-json",
-      "{\"RECIPE[flutter::femu_test].resources/run_vdl_test.sh\": [\"[CLEANUP]/vdl_runfiles__tmp_1/run_vdl_test.sh\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_buildargs\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_kernel\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_fvm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files\": [\"[CLEANUP]/vdl_runfiles__tmp_1/amber-files\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/pm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/far\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/fvm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/fvm\"], \"[CACHE]/builder/aemu\": [\"[CLEANUP]/vdl_runfiles__tmp_1/aemu\"], \"[CACHE]/builder/device_spec/virtual_device.textproto\": [\"[CLEANUP]/vdl_runfiles__tmp_1/virtual_device.textproto\"], \"[CACHE]/builder/src/out/fuchsia_bucket/flutter/x64/debug/aot/flutter_aot_runner-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/flutter_aot_runner-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/v1_test_component-321.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/v1_test_component-321.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/v2_test-123.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/v2_test-123.far\"], \"[CACHE]/builder/ssh/id_ed25519\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519\"], \"[CACHE]/builder/ssh/id_ed25519.pub\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519.pub\"], \"[CACHE]/builder/ssh_config\": [\"[CLEANUP]/vdl_runfiles__tmp_1/ssh_config\"], \"[CACHE]/builder/vdl/device_launcher\": [\"[CLEANUP]/vdl_runfiles__tmp_1/device_launcher\"], \"[CACHE]/builder/zircon-authorized.zbi\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_zircona-ed25519\"]}"
+      "{\"RECIPE[flutter::femu_test].resources/run_vdl_test.sh\": [\"[CLEANUP]/vdl_runfiles__tmp_1/run_vdl_test.sh\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_buildargs\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_kernel\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_fvm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files\": [\"[CLEANUP]/vdl_runfiles__tmp_1/amber-files\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/pm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/far\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/fvm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/fvm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/x64/symbolizer\": [\"[CLEANUP]/vdl_runfiles__tmp_1/symbolizer\"], \"[CACHE]/builder/aemu\": [\"[CLEANUP]/vdl_runfiles__tmp_1/aemu\"], \"[CACHE]/builder/device_spec/virtual_device.textproto\": [\"[CLEANUP]/vdl_runfiles__tmp_1/virtual_device.textproto\"], \"[CACHE]/builder/src/out/fuchsia_bucket/flutter/x64/debug/aot/flutter_aot_runner-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/flutter_aot_runner-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/v1_test_component-321.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/v1_test_component-321.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/v2_test-123.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/v2_test-123.far\"], \"[CACHE]/builder/ssh/id_ed25519\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519\"], \"[CACHE]/builder/ssh/id_ed25519.pub\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519.pub\"], \"[CACHE]/builder/ssh_config\": [\"[CLEANUP]/vdl_runfiles__tmp_1/ssh_config\"], \"[CACHE]/builder/vdl/device_launcher\": [\"[CLEANUP]/vdl_runfiles__tmp_1/device_launcher\"], \"[CACHE]/builder/zircon-authorized.zbi\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_zircona-ed25519\"]}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -2284,6 +2426,198 @@
   },
   {
     "cmd": [],
+    "name": "ensure sdk (5)"
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "ensure sdk (5).init fuchsia_sdk cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "ensure sdk (5).check sdk cache content",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-vpython-spec",
+      "RECIPE_MODULE[fuchsia::gsutil]/resources/gsutil.vpython",
+      "-u",
+      "[CACHE]/cipd/path/to/gsutil/version%3Apinned-version/gsutil",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "cp",
+      "gs://fuchsia/development/0.20200101.0.1/sdk/linux-amd64/gn.tar.gz",
+      "[CLEANUP]/fuchsia_sdk_tmp_tmp_5"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "ensure sdk (5).gsutil cp",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/cipd/path/to/bsdtar/version%3Apinned-version/bsdtar",
+      "--extract",
+      "--verbose",
+      "-f",
+      "[CLEANUP]/fuchsia_sdk_tmp_tmp_5/gn.tar.gz",
+      "-C",
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "ensure sdk (5).extract sdk gz",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/symbol-index",
+      "purge"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Purge debug symbols"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/symbol-index",
+      "add",
+      "[CACHE]/builder/src/out/fuchsia_debug_x64/.build-id",
+      "[CACHE]/builder/src/out/fuchsia_debug_x64"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Add debug symbols"
+  },
+  {
+    "cmd": [],
     "name": "FEMU Test"
   },
   {
@@ -2294,6 +2628,7 @@
       "--pm_tool=pm",
       "--far_tool=far",
       "--fvm_tool=fvm",
+      "--symbolizer_tool=./symbolizer",
       "--resize_fvm=2G",
       "--gpu=swiftshader_indirect",
       "--headless_mode=true",
@@ -2340,6 +2675,7 @@
       "--pm_tool=pm",
       "--far_tool=far",
       "--fvm_tool=fvm",
+      "--symbolizer_tool=./symbolizer",
       "--resize_fvm=2G",
       "--gpu=swiftshader_indirect",
       "--headless_mode=true",
@@ -2414,6 +2750,7 @@
       "--pm_tool=pm",
       "--far_tool=far",
       "--fvm_tool=fvm",
+      "--symbolizer_tool=./symbolizer",
       "--resize_fvm=2G",
       "--gpu=swiftshader_indirect",
       "--headless_mode=true",
@@ -2460,6 +2797,7 @@
       "--pm_tool=pm",
       "--far_tool=far",
       "--fvm_tool=fvm",
+      "--symbolizer_tool=./symbolizer",
       "--resize_fvm=2G",
       "--gpu=swiftshader_indirect",
       "--headless_mode=true",
@@ -2525,6 +2863,31 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/symbol-index",
+      "remove",
+      "[CACHE]/builder/src/out/fuchsia_debug_x64/.build-id"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Remove debug symbols"
   },
   {
     "name": "$result"

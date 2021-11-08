@@ -51,6 +51,7 @@ function find_unused_tcp_port {
 VDL_LOCATION="device_launcher"
 EMULATOR_LOG="raw_emulator.log"
 SYSLOG="syslog.log"
+SYMBOLIZER_TOOL=""
 SSH_CONFIG="ssh_config"
 SSH_KEY="id_ed25519"
 TEST_SUITE=""
@@ -77,6 +78,9 @@ for arg in "$@"; do
         SYSLOG="${2}"
         shift
         ;;
+        --symbolizer_tool=*)
+        SYMBOLIZER_TOOL="${arg#*=}"
+        ;;
         --test_suite=*)
         TEST_SUITE="${arg#*=}"
         ;;
@@ -92,9 +96,10 @@ for arg in "$@"; do
 done
 
 log "VDL Location: ${VDL_LOCATION}"
-echo "VDL Args: ${VDL_ARGS[@]}"
-echo "TEST_SUITE: ${TEST_SUITE}"
-echo "TEST_COMMAND: ${TEST_COMMAND}"
+log "Symbolizer Location: ${SYMBOLIZER_TOOL}"
+log "VDL Args: ${VDL_ARGS[@]}"
+log "TEST_SUITE: ${TEST_SUITE}"
+log "TEST_COMMAND: ${TEST_COMMAND}"
 
 # Note: This permission is required to SSH
 chmod 600 ${SSH_KEY}
@@ -135,15 +140,15 @@ log "Launching virtual device using VDL."
   --ga=true \
   --event_action="flutter_infra" \
   --host_port_map="${PORT_MAP}" \
-  --output_launched_device_proto="${VDL_PROTO}" > "${EMULATOR_LOG}" \
-  --grpc_port="${GRPC_PORT}"
+  --output_launched_device_proto="${VDL_PROTO}" \
+  --grpc_port="${GRPC_PORT}" > "${EMULATOR_LOG}"
 
 _LAUNCH_EXIT_CODE=$?
 _TEST_EXIT_CODE=0
 
 if [[ ${_LAUNCH_EXIT_CODE} == 0 ]]; then
   log "Successfully launched virtual device proto ${VDL_PROTO}"
-  ssh_to_guest "log_listener" >"${SYSLOG}" 2>&1 &
+  ssh_to_guest "log_listener" | "${SYMBOLIZER_TOOL}" >"${SYSLOG}" 2>&1 &
 
   ssh_to_guest "${TEST_COMMAND}"
   _TEST_EXIT_CODE=$?

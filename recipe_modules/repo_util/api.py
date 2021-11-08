@@ -14,7 +14,7 @@ REPOS = {
     'packages':
         'https://github.com/flutter/packages',
     'plugins':
-        'https://chromium.googlesource.com/external/github.com/flutter/plugins'
+        'https://flutter.googlesource.com/mirrors/plugins'
 }
 
 import re

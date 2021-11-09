@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from PB.recipe_modules.recipe_engine.swarming import properties
 from recipe_engine import recipe_test_api
+
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 
 class FuchsiaUtilTestApi(recipe_test_api.RecipeTestApi):
@@ -12,4 +15,4 @@ class FuchsiaUtilTestApi(recipe_test_api.RecipeTestApi):
                                                               'task2']))
 
   def device_name_data(self):
-    return self.m.swarming.properties(bot_id='abc--fuchsia-node')
+    return self.m.properties.environ(properties.EnvProperties(SWARMING_BOT_ID='abc--fuchsia-node'))

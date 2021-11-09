@@ -5,10 +5,6 @@
 from contextlib import contextmanager
 from recipe_engine import recipe_api
 
-
-PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
-
-
 BUCKET_NAME = 'flutter_infra'
 FUCHSIA_BUCKET_NAME = 'fuchsia'
 FUCHSIA_SDK_CIPD = 'fuchsia/sdk/core/linux-amd64'

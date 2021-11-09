@@ -5,9 +5,6 @@
 from recipe_engine import recipe_api
 
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
-
-
 class FirebaseApi(recipe_api.RecipeApi):
   """Provides utilities to upload docs to Firebase.
 

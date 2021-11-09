@@ -4,8 +4,6 @@
 
 from recipe_engine import recipe_api
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
-
 
 class BuildUtilApi(recipe_api.RecipeApi):
   """Gn and Ninja wrapper functions."""

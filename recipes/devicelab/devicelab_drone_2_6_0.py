@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from PB.recipe_modules.recipe_engine.swarming import properties
+from recipe_engine.recipe_api import Property
 
 PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
@@ -293,7 +293,6 @@ def GenTests(api):
   )
   yield api.test(
       "xcode-devicelab",
-      api.properties.environ(properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')),
       api.properties(
           buildername='Mac_ios abc',
           task_name='abc',
@@ -305,7 +304,7 @@ def GenTests(api):
           'run abc',
           stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
           retcode=0
-      ),
+      ), api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
       api.step_data(
           'Find device type',
           stdout=api.raw_io.output_text('iPhone8,1'),

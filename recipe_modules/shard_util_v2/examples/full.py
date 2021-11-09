@@ -4,13 +4,9 @@
 
 import copy
 
-from PB.recipe_modules.recipe_engine.led.properties import (
-    InputProperties as LedInputProperties,
-)
-from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2'
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
     'flutter/shard_util_v2',

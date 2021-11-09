@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
-
-PYTHON_VERSION_COMPATIBILITY = 'PY2'
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
     'flutter/repo_util',
@@ -13,8 +11,8 @@ DEPS = [
 
 
 def RunSteps(api):
-  api.repo_util.checkout('unsupported_repo',
-                         api.path['start_dir'].join('unsupported_repo'))
+  repo_dir = api.path['start_dir'].join('unsupported_repo')
+  api.repo_util.checkout('unsupported_repo', repo_dir)
 
 
 def GenTests(api):

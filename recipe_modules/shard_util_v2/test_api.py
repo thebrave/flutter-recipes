@@ -94,7 +94,7 @@ class ShardUtilTestApi(recipe_test_api.RecipeTestApi):
       step_data.append(
           self.step_data(
               "%s.read build.proto.json%s" % (collect_step, suffix),
-              self.m.file.read_text(json_format.MessageToJson(build)),
+              self.m.file.read_proto(build),
           )
       )
     ret = self.step_data(

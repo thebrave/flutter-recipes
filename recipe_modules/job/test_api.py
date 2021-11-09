@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from google.protobuf import json_format
 from PB.go.chromium.org.luci.led.job import job as job_pb2
 from recipe_engine import recipe_test_api
 
@@ -76,7 +75,7 @@ class JobTestApi(recipe_test_api.RecipeTestApi):
         step_name += " (%d)" % (i + 1)
       ret += self.step_data(
           step_name,
-          self.m.file.read_text(json_format.MessageToJson(build_protos[i])),
+          self.m.file.read_proto(build_protos[i]),
       )
 
     return ret

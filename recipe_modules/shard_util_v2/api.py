@@ -2,17 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-DRONE_TIMEOUT_SECS = 3600 * 3  # 3 hours.
-
 import attr
 import collections
 
-from google.protobuf import json_format
 from recipe_engine import recipe_api
 from recipe_engine import engine_types
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from RECIPE_MODULES.fuchsia.utils import pluralize
+
+DRONE_TIMEOUT_SECS = 3600 * 3  # 3 hours.
+
 # Builder names use full platform name instead of short names. We need to
 # map short names to full platform names to be able to identify the drone
 # used to run the subshards.
@@ -290,13 +290,9 @@ class ShardUtilApi(recipe_api.RecipeApi):
       task_id = result.id
       # Led launch ensures this file is present in the task root dir.
       build_proto_path = result.output_dir.join("build.proto.json")
-      build_proto_json = self.m.file.read_text(
-          "read build.proto.json", build_proto_path
+      build_proto = self.m.file.read_proto(
+          "read build.proto.json", build_proto_path, build_pb2.Build, "JSONPB"
       )
-      build_proto = build_pb2.Build()
-      log_name = '%s-build.proto.json' % result.id
-      presentation.logs[log_name] = build_proto_json.splitlines()
-      json_format.Parse(build_proto_json, build_proto)
       builds[task_id] = SubbuildResult(
           builder=build_proto.builder.builder,
           build_id=task_id,

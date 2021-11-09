@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 from recipe_engine.recipe_api import Property
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2'
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
     "flutter/display_util",
@@ -26,7 +25,7 @@ def RunSteps(api, raise_on_failure):
   ])
   api.display_util.display_builds(
       step_name="display builds",
-      builds=builds.values(),
+      builds=sorted(builds.values(), key=lambda b: b.id),
       raise_on_failure=raise_on_failure,
   )
 

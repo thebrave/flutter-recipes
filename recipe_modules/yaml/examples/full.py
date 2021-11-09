@@ -32,4 +32,4 @@ def GenTests(api):
                     api.file.read_text(text_content=YAML_CONTENT)))
   yield (
       api.test('fail_to_read') +
-      api.step_data('yaml.read', retcode=1, stderr=api.raw_io.output('fail')))
+      api.step_data('yaml.read', retcode=1, stderr=api.raw_io.output_text('fail')))

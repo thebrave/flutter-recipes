@@ -186,7 +186,7 @@ class FuchsiaUtilsApi(recipe_api.RecipeApi):
     with self.m.step.nest('Prepare Environment'):
       self.m.step(
           'Create public key', ['ssh-keygen', '-y', '-f', private_key_path],
-          stdout=self.m.raw_io.output(leak_to=public_key_path))
+          stdout=self.m.raw_io.output_text(leak_to=public_key_path))
       self.m.file.write_raw('Create ssh_config', config_path, SSH_CONFIG)
     env['FUCHSIA_SSH_CONFIG'] = config_path
     env['FUCHSIA_PRIVATE_KEY'] = private_key_path

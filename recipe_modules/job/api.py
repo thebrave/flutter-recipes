@@ -116,10 +116,8 @@ class JobApi(recipe_api.RecipeApi):
 
       # Led launch ensures this file is present in the task root dir.
       build_proto_path = result.output_dir.join("build.proto.json")
-      build_proto_json = self.m.file.read_text("read build.proto.json",
-                                               build_proto_path)
-      build_proto = build_pb2.Build()
-      json_format.Parse(build_proto_json, build_proto)
+      build_proto = self.m.file.read_proto(
+          "read build.proto.json", build_proto_path, build_pb2.Build, "JSONPB")
       job.build_proto = build_proto
 
       if result.success:

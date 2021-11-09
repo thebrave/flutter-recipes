@@ -7,6 +7,8 @@ import re
 from PB.recipes.flutter.engine import InputProperties
 from PB.recipes.flutter.engine import EnvProperties
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
+
 DEPS = [
     'depot_tools/depot_tools',
     'flutter/bucket_util',
@@ -86,7 +88,7 @@ def RunAndroidScenarioTests(api):
         'Start Android emulator (API level 30)',
         avd_script_path,
         ['start', '--no-read-only', '--avd-config', avd_config],
-        stdout=api.raw_io.output()
+        stdout=api.raw_io.output_text()
     ).stdout
     m = re.match('.*pid: (\d+)\)', output)
     emulator_pid = m.group(1)

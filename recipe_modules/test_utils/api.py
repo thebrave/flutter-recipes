@@ -109,7 +109,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
         parameters to execute.
       timeout_secs(int): The timeout in seconds for this step.
 
-    Returns(str): The status of the test step. A str `flaky` or `success` will 
+    Returns(str): The status of the test step. A str `flaky` or `success` will
       be returned when step succeeds, and an exception will be thrown out when
       step fails.
     """
@@ -178,7 +178,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
       A dictionary representation of the tag names and values.
 
     Examples:
-      Linux/android: 
+      Linux/android:
         {
           'arch': 'intel',
           'host_type': 'linux',
@@ -209,7 +209,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
       return self.m.step(
           step_name,
           commands,
-          stdout=self.m.raw_io.output(),
+          stdout=self.m.raw_io.output_text(),
           infra_step=True,
       ).stdout.rstrip()
 
@@ -218,7 +218,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
     # Mac/iOS testbeds always have builder_name starting with `Mac_ios`.
     # The android tests always have builder_name like `%_android %`.
     #
-    # We may need to support other platforms like desktop, and 
+    # We may need to support other platforms like desktop, and
     # https://github.com/flutter/flutter/issues/92296 to track a more
     # generic way to collect device tags.
     if 'Mac_ios' in builder_name:

@@ -10,7 +10,7 @@ from PB.recipes.flutter.engine import EnvProperties
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from google.protobuf import struct_pb2
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2'
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
     'depot_tools/depot_tools',
@@ -87,7 +87,7 @@ def GetGitHash(api):
     return api.step(
         "Retrieve git hash",
         ["git", "rev-parse", "HEAD"],
-        stdout=api.raw_io.output(),
+        stdout=api.raw_io.output_text(),
         infra_step=True,
     ).stdout.strip()
 

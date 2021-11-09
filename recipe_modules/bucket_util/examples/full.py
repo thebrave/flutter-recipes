@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2'
+from recipe_engine.post_process import DropExpectation
+
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
     'flutter/bucket_util',
@@ -74,6 +76,10 @@ def GenTests(api):
           try_bad_file=True,
       ),
       api.expect_exception('AssertionError'), # the non-existent file
+      # Expectation file would contain a brittle stack trace.
+      # TODO: Re-enable the expectation file after Python 2 support is no longer
+      # required.
+      api.post_process(DropExpectation),
   )
   yield api.test(
       'upload_packages',
@@ -131,6 +137,10 @@ def GenTests(api):
           upload_packages=True,
       ),
       api.expect_exception('AssertionError'),
+      # Expectation file would contain a brittle stack trace.
+      # TODO: Re-enable the expectation file after Python 2 support is no longer
+      # required.
+      api.post_process(DropExpectation),
   )
   yield api.test(
       'upload_packages_experimental_runtime',

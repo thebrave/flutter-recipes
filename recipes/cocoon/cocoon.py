@@ -4,6 +4,8 @@
 
 """Recipe for cocoon repository tests."""
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
+
 DEPS = [
     'flutter/repo_util',
     'flutter/yaml',

@@ -14,6 +14,8 @@ from PB.recipes.flutter.engine import InputProperties
 from PB.recipes.flutter.engine import EnvProperties
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
+
 DEPS = [
     'recipe_engine/properties',
 ]

@@ -9,6 +9,8 @@ import collections
 from recipe_engine.config import ConfigList, ConfigGroup, Single
 from recipe_engine.recipe_api import Property
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
+
 DEPS = [
     "fuchsia/git",
     "fuchsia/tricium_analyze",
@@ -104,7 +106,7 @@ def RunSteps(api, cipd_packages):  # pragma: no cover
         "--diff-filter=d",
         "-r",
         "HEAD",
-        stdout=api.raw_io.output(),
+        stdout=api.raw_io.output_text(),
     ).stdout.splitlines()
 
     api.tricium_analyze.checkout = checkout
@@ -116,7 +118,7 @@ def RunSteps(api, cipd_packages):  # pragma: no cover
           "tricium",
           "--",
           path,
-          stdout=api.raw_io.output(),
+          stdout=api.raw_io.output_text(),
       ).stdout.strip()
       if attr_result.endswith(": unset"):
         continue
@@ -139,16 +141,16 @@ index e684c1e..a76a10e 100644
 
   changed_files_data = lambda files: api.step_data(
       "get changed files",
-      api.raw_io.stream_output("\n".join(files)),
+      api.raw_io.stream_output_text("\n".join(files)),
   )
   get_changed_files_data = lambda files: api.step_data(
       "analyze %s.get changed files" % files[0],
-      api.raw_io.stream_output("\n".join(DIFF.format(f) for f in files)),
+      api.raw_io.stream_output_text("\n".join(DIFF.format(f) for f in files)),
   )
 
   formatted_files_data = lambda files: api.step_data(
       "analyze %s.get formatted files" % files[0],
-      api.raw_io.stream_output("\n".join(DIFF.format(f) for f in files)),
+      api.raw_io.stream_output_text("\n".join(DIFF.format(f) for f in files)),
   )
 
   try_build = api.buildbucket.try_build(
@@ -182,6 +184,6 @@ index e684c1e..a76a10e 100644
       api.properties(analyses=["ClangFormat", "GNFormat"],) +
       changed_files_data(["BUILD.gn", "hello.go"]) + api.step_data(
           "check attr of BUILD.gn",
-          api.raw_io.stream_output("BUILD.gn: tricium: unset\n"),
+          api.raw_io.stream_output_text("BUILD.gn: tricium: unset\n"),
       )
   )

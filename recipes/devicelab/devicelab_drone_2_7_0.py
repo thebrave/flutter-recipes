@@ -5,6 +5,7 @@
 from recipe_engine.recipe_api import Property
 from PB.recipe_modules.recipe_engine.swarming import properties
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
     'flutter/devicelab_osx_sdk',
@@ -55,7 +56,7 @@ def RunSteps(api):
         '--pretty=format:%ct',
         '-n',
         '1',
-        stdout=api.raw_io.output()
+        stdout=api.raw_io.output_text()
     ).stdout.rstrip()
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
   api.logs_util.initialize_logs_collection(env)
@@ -96,7 +97,7 @@ def RunSteps(api):
     )
     api.step('pub get', ['pub', 'get'], infra_step=True)
     dep_list = {d['dependency']: d.get('version') for d in deps}
-    if dep_list.has_key('xcode'):
+    if 'xcode' in dep_list:
       api.os_utils.clean_derived_data()
       if str(api.swarming.bot_id).startswith('flutter-devicelab'):
         with api.devicelab_osx_sdk('ios'):

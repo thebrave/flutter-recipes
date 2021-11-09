@@ -11,6 +11,8 @@ from PB.go.chromium.org.luci.buildbucket.proto \
   import builds_service as builds_service_pb2
 from google.protobuf import struct_pb2
 
+PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
+
 DEPS = [
     'flutter/adhoc_validation',
     'flutter/display_util',

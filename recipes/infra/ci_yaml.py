@@ -113,7 +113,8 @@ def RunSteps(api):
             repo_dir = infra_path,
             commit_message = 'Roll %s to %s' % (repo, git_ref),
             cc_on_failure = ['flutter-infra@grotations.appspotmail.com'],
-            labels_to_set = {'Code-Review': 2},
+            labels_to_set = {'Commit-Queue': 2},
+            bot_commit = True,
         )
 
 

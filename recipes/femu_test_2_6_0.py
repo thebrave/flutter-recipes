@@ -22,7 +22,7 @@ DEPS = [
     'flutter/ssh',
     'flutter/vdl',
     'flutter/yaml',
-    'fuchsia/archive',
+    'fuchsia/cas_util',
     'fuchsia/goma',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
@@ -94,7 +94,7 @@ def CasRoot(api):
   sdk_version = GetFuchsiaBuildId(api)
   checkout = GetCheckoutPath(api)
   root_dir = api.path.mkdtemp('vdl_runfiles_')
-  cas_tree = api.archive.tree(root=root_dir)
+  cas_tree = api.cas_util.tree(root=root_dir)
   test_suites = []
 
   def add(src, name_rel_to_root):
@@ -175,7 +175,7 @@ def CasRoot(api):
   addFlutterTests()
 
   cas_tree.create_links("create tree of vdl runfiles")
-  cas_hash = api.archive.upload(cas_tree.root, step_name='Archive FEMU Run Files')
+  cas_hash = api.cas_util.upload(cas_tree.root, step_name='Archive FEMU Run Files')
   return test_suites, root_dir, cas_hash
 
 

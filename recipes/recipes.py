@@ -4,6 +4,10 @@
 
 """Recipe for testing recipes."""
 
+import collections
+
+import attr
+
 from recipe_engine.recipe_api import Property
 
 PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
@@ -102,6 +106,21 @@ COMMIT_QUEUE_CFG = """
     >
 """
 
+# TODO(fxbug.dev/88439): Convert this to a proto.
+@attr.s
+class Project(object):
+  name = attr.ib(type=str)
+  include_restricted = attr.ib(default=False)
+  include_unrestricted = attr.ib(default=False)
+  cq_config_name = attr.ib(default='')
+
+
+# TODO(fxbug.dev/88439): Convert this to a proto.
+@attr.s
+class RecipeTestingOptions(object):
+    projects = attr.ib()
+    use_buildbucket = attr.ib(default=False)
+
 
 def RunSteps(api, remote, unittest_only):
   checkout_path = api.path['start_dir'].join('recipes')
@@ -121,7 +140,10 @@ def RunSteps(api, remote, unittest_only):
     api.recipe_testing.run_lint(checkout_path)
     api.recipe_testing.run_unit_tests(checkout_path)
   if not unittest_only:
-    api.recipe_testing.run_tests(checkout_path, SELFTEST_CL)
+    opts = RecipeTestingOptions(
+        projects=[Project(name='flutter', include_unrestricted=True)],
+    )
+    api.recipe_testing.run_tests(checkout_path, SELFTEST_CL, opts)
 
 
 def GenTests(api):

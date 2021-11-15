@@ -127,7 +127,7 @@ class FuchsiaUtilsApi(recipe_api.RecipeApi):
         cas_flutter = cas_dir.join('flutter')
         self.m.file.copytree('Copy flutter framework', checkout_path,
                              cas_flutter)
-        return self.m.archive.upload(cas_dir, step_name='Archive Fuchsia Test CAS')
+        return self.m.cas_util.upload(cas_dir, step_name='Archive Fuchsia Test CAS')
 
   def trigger_swarming_task(self, checkout_path):
     cas_hash = self.upload_deps(checkout_path)

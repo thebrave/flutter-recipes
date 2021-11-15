@@ -3,7 +3,7 @@ PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 DEPS = [
     'depot_tools/gsutil',
     'flutter/repo_util',
-    'fuchsia/archive',
+    'fuchsia/cas_util',
     'fuchsia/display_util',
     'recipe_engine/cipd',
     'recipe_engine/file',

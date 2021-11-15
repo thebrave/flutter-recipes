@@ -264,11 +264,6 @@ class SDKApi(recipe_api.RecipeApi):
         (self.m.platform.arch, self.m.platform.bits)
     )
 
-  def get_latest_version(self):
-    return self.m.gsutil(
-        'cat', 'gs://%s/%s/LATEST_LINUX' % (SDK_GCS_BUCKET, 'development')
-    )
-
   @property
   def sdk_platform_name(self):
     """Derives the sdk package platform name, resembles the CIPD platform name."""

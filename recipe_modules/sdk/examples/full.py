@@ -16,7 +16,6 @@ DEPS = [
 def RunSteps(api):
   api.sdk._select_image_to_download()
   api.sdk._select_package_to_download()
-  api.sdk.get_latest_version()
   api.sdk.version = '0.20200101.0.1'
   api.sdk.image_paths
   api.sdk.package_paths

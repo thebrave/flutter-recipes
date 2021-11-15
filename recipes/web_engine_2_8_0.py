@@ -26,7 +26,7 @@ DEPS = [
     'flutter/shard_util',
     'flutter/test_utils',
     'flutter/web_util',
-    'fuchsia/archive',
+    'fuchsia/cas_util',
     'fuchsia/goma',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
@@ -73,7 +73,7 @@ def Archive(api, target):
   cas_dir = api.path.mkdtemp('cas-directory')
   cas_engine = cas_dir.join(target)
   api.file.copytree('Copy host_debug_unopt', build_dir, cas_engine)
-  return api.archive.upload(cas_dir, step_name='Archive Flutter Engine Test CAS')
+  return api.cas_util.upload(cas_dir, step_name='Archive Flutter Engine Test CAS')
 
 
 def RunGN(api, *args):

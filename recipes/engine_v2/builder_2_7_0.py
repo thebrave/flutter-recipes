@@ -41,7 +41,7 @@ DEPS = [
     'flutter/os_utils',
     'flutter/osx_sdk',
     'flutter/repo_util',
-    'fuchsia/archive',
+    'fuchsia/cas_util',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
@@ -117,7 +117,7 @@ def Archive(api, checkout, archive_config):
     full_include_path = api.path.abspath(checkout.join(include_path))
     dirname = api.path.basename(full_include_path)
     api.file.copytree('Copy %s' % include_path, full_include_path, archive_dir.join(dirname))
-  return api.archive.upload(archive_dir, step_name='Archive %s' % archive_config['name'])
+  return api.cas_util.upload(archive_dir, step_name='Archive %s' % archive_config['name'])
 
 
 def RunSteps(api, properties, env_properties):

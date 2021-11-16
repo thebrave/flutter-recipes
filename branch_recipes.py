@@ -29,6 +29,7 @@ RECIPES_TO_BRANCH = (
         'flutter/flutter_drone',
         'flutter',
         'infra/ci_yaml',
+        'packages/packages',
         'web_engine',
         )
 
@@ -172,6 +173,17 @@ def branch_recipes(options):
         if recipe_sub_string is not None:
             print('Reading file %s from revision %s' % (recipe,
                 options['recipe-revision=']))
+            # Hard reset to expected version
+            subprocess.check_output(
+                    [
+                        'git',
+                        'reset',
+                        '--hard',
+                        options['recipe-revision=']
+                        ],
+                    cwd=RECIPES_DIR,
+                    )
+
             # git show <revision>:path/to/recipe
             code = subprocess.check_output(
                     [
@@ -194,6 +206,14 @@ def branch_recipes(options):
             with open(new_file_path, 'w') as new_file:
                 print('Writing %s\n' % new_file_path)
                 new_file.write(code)
+            # Copy resources
+            new_resources_dir = '%s/%s_%s.resources' % (RECIPES_DIR, recipe_sub_string,
+                options['flutter-version='])
+            old_resources_dir = '%s/%s.resources' % (RECIPES_DIR, recipe_sub_string)
+            if os.path.exists(old_resources_dir):
+                if os.path.exists(new_resources_dir):
+                    shutil.rmtree(new_resources_dir)
+                shutil.copytree(old_resources_dir, new_resources_dir)
         else:
             assert contains(recipe, RECIPES_DIR, RECIPES_TO_SKIP), 'Expected %s to be branched or skipped.' % recipe
 

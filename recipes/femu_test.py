@@ -55,13 +55,6 @@ def Build(api, config, *targets):
     api.step(name, ninja_args)
 
 
-def GetFlutterFuchsiaBuildTargets(product, include_test_targets=False):
-  targets = ['flutter/shell/platform/fuchsia:fuchsia']
-  if include_test_targets:
-    targets += ['fuchsia_tests']
-  return targets
-
-
 @contextmanager
 def DebugSymbols(api, out_variant):
   symbol_index = api.sdk.sdk_path.join('tools', 'symbol-index')
@@ -85,8 +78,8 @@ def DebugSymbols(api, out_variant):
 
 def BuildAndTestFuchsia(api, build_script, git_rev):
   RunGN(api, '--fuchsia', '--fuchsia-cpu', 'x64', '--runtime-mode', 'debug',
-        '--no-lto')
-  Build(api, 'fuchsia_debug_x64', *GetFlutterFuchsiaBuildTargets(False, True))
+        '--no-lto', '--enable-unittests')
+  Build(api, 'fuchsia_debug_x64', *[])
   fuchsia_package_cmd = [
       'python', build_script, '--engine-version', git_rev, '--skip-build',
       '--archs', 'x64', '--runtime-mode', 'debug'

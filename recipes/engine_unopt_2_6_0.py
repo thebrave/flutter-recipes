@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from PB.recipes.flutter.engine_unopt import InputProperties
 from PB.recipes.flutter.engine_unopt import EnvProperties
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
+PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
     'depot_tools/depot_tools',

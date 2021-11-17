@@ -7,7 +7,7 @@ import re
 from PB.recipes.flutter.engine import InputProperties
 from PB.recipes.flutter.engine import EnvProperties
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
+PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
     'depot_tools/depot_tools',

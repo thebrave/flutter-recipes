@@ -10,7 +10,7 @@ import attr
 
 from recipe_engine.recipe_api import Property
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
+PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
     'fuchsia/commit_queue',

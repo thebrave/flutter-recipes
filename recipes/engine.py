@@ -705,6 +705,7 @@ def BuildLinuxAndroid(api, swarming_task_id):
       RunGN(api, '--android', '--android-cpu=%s' % android_cpu, '--no-lto')
       Build(api, out_dir)
       if run_tests:
+        Lint(api, out_dir)
         RunGN(api, '--android', '--unoptimized', '--runtime-mode=debug', '--no-lto')
         Build(api, out_dir, 'flutter/shell/platform/android:robolectric_tests')
         RunTests(api, out_dir, android_out_dir=out_dir, types='java')
@@ -742,6 +743,14 @@ def BuildLinuxAndroid(api, swarming_task_id):
 
   if api.properties.get('build_android_aot', True):
     BuildLinuxAndroidAOT(api, swarming_task_id)
+
+
+def Lint(api, config):
+  checkout = GetCheckoutPath(api)
+  with api.context(cwd=checkout):
+    lint_cmd = checkout.join('flutter', 'ci', 'lint.sh')
+    api.step(api.test_utils.test_step_name(
+        'lint %s' % config), [lint_cmd, '--lint-all', '--variant', config])
 
 
 def PackageLinuxDesktopVariant(api, label, bucket_name):

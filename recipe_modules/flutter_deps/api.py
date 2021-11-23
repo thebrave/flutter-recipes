@@ -128,7 +128,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       version(str): The goldctl version to install.
     """
-    version = version or 'git_revision:40f373da81fba80258071635a0f0188427147332'
+    version = version or 'git_revision:2827812d8b496c159df40e90476b4454458c0534'
     with self.m.step.nest('Download goldctl'):
       goldctl_cache_dir = self.m.path['cache'].join('gold')
       self.m.cipd.ensure(

@@ -312,7 +312,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
     """
     build_ids = [build.build_id for build in tasks.values()]
     build_id_to_name = {
-        int(build.build_id): build.build_name for build in sorted(tasks.values())
+        int(build.build_id): build.build_name for build in tasks.values()
     }
     bb_fields = self.m.buildbucket.DEFAULT_FIELDS.union({
         "infra.swarming.task_id",
@@ -329,7 +329,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
         fields=bb_fields,
     )
     failed_builds = [
-        b for b in sorted(builds.values()) if b.status != common_pb2.SUCCESS
+        b for b in builds.values() if b.status != common_pb2.SUCCESS
     ]
     if failed_builds:
       task_ids = [b.infra.swarming.task_id for b in failed_builds]

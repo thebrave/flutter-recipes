@@ -710,8 +710,6 @@ def BuildLinuxAndroid(api, swarming_task_id):
         Build(api, out_dir, 'flutter/shell/platform/android:robolectric_tests')
         RunTests(api, out_dir, android_out_dir=out_dir, types='java')
       artifacts = ['out/%s/flutter.jar' % out_dir]
-      if android_cpu in ['x86', 'x64']:
-        artifacts.append('out/%s/lib.stripped/libflutter.so' % out_dir)
       UploadArtifacts(api, artifact_dir, artifacts)
       UploadArtifacts(
           api,

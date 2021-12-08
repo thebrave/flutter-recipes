@@ -11,12 +11,6 @@ from contextlib import contextmanager
 
 from recipe_engine import recipe_api
 
-# TODO(iannucci): replace this with something sane when PROPERTIES is
-# implemented with a proto message.
-_PROPERTY_DEFAULTS = {
-    'toolchain_pkg': 'infra/tools/mac_toolchain/${platform}',
-    'toolchain_ver': 'git_revision:9a1adc55bf4a1173784da3ba2f8cb06421606748',
-}
 
 # Rationalized from https://en.wikipedia.org/wiki/Xcode.
 #
@@ -33,11 +27,10 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
   def __init__(self, sdk_properties, *args, **kwargs):
     super(OSXSDKApi, self).__init__(*args, **kwargs)
-    self._sdk_properties = _PROPERTY_DEFAULTS.copy()
-    self._sdk_properties.update(sdk_properties)
+    self._sdk_properties = sdk_properties
     self._sdk_version = None
-    self._tool_pkg = self._sdk_properties['toolchain_pkg']
-    self._tool_ver = self._sdk_properties['toolchain_ver']
+    self._tool_pkg = 'infra/tools/mac_toolchain/${platform}'
+    self._tool_ver = 'latest'
 
   def initialize(self):
     """Initializes xcode, and ios versions.
@@ -47,6 +40,9 @@ class OSXSDKApi(recipe_api.RecipeApi):
     """
     if not self.m.platform.is_mac:
       return
+
+    if 'toolchain_ver' in self._sdk_properties:
+      self._tool_ver = self._sdk_properties['toolchain_ver'].lower()
 
     if 'sdk_version' in self._sdk_properties:
       self._sdk_version = self._sdk_properties['sdk_version'].lower()

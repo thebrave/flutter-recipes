@@ -27,7 +27,7 @@ def GenTests(api):
       'explicit_version',
       api.platform.name('mac'),
       api.properties(**{'$flutter/osx_sdk': {
-        'sdk_version': 'deadbeef',
+          'sdk_version': 'deadbeef', 'toolchain_ver': '123abc'
       }})
   )
 

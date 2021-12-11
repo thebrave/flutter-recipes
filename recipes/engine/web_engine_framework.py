@@ -79,9 +79,9 @@ def GetCheckoutPath(api):
 
 
 def RunSteps(api, properties, env_properties):
+  """Steps to checkout flutter engine and execute web tests."""
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
-  """Steps to checkout flutter engine and execute web tests."""
   cache_root = api.path['cache'].join('builder')
   checkout = GetCheckoutPath(api)
 
@@ -117,7 +117,9 @@ def RunSteps(api, properties, env_properties):
 
     # Archive build directory into CAS.
     cas_hash = Archive(api, target_name)
-    ref = 'refs/heads/master'
+    ref = api.properties.get('git_branch', '')
+    ref = ref if ref.startswith('flutter-') else 'master'
+    ref = 'refs/heads/%s' % ref
     url = 'https://github.com/flutter/flutter'
 
     # Checkout flutter to run the web integration tests with the local engine.
@@ -125,9 +127,16 @@ def RunSteps(api, properties, env_properties):
     api.repo_util.checkout(
         'flutter', checkout_path=flutter_checkout_path, url=url, ref=ref
     )
-    env['FLUTTER_CLONE_REPO_PATH'] = flutter_checkout_path
 
-    with api.context(cwd=cache_root, env=env, env_prefixes=env_prefixes):
+    # Create new enviromenent variables for Framework.
+    # Note that the `dart binary` location is not the same for Framework and the
+    # engine.
+    f_env, f_env_prefix = api.repo_util.flutter_environment(flutter_checkout_path)
+    f_env['FLUTTER_CLONE_REPO_PATH'] = flutter_checkout_path
+
+    deps = [{'dependency': 'chrome_and_driver'}, {"dependency": "curl"}]
+    api.flutter_deps.required_deps(f_env, f_env_prefix, deps)
+    with api.context(cwd=cache_root, env=f_env, env_prefixes=f_env_prefix):
       configure_script = checkout.join(
           'flutter',
           'tools',
@@ -147,13 +156,6 @@ def RunSteps(api, properties, env_properties):
     # side is kept in `ref`.
     builds = schedule_builds(api, cas_hash, ref.strip(), url)
 
-  # Create new enviromenent variables for Framework.
-  # Note that the `dart binary` location is not the same for Framework and the
-  # engine.
-  f_env, f_env_prefix = api.repo_util.flutter_environment(flutter_checkout_path)
-
-  deps = [{'dependency': 'chrome_and_driver'}, {"dependency": "curl"}]
-  api.flutter_deps.required_deps(f_env, f_env_prefix, deps)
 
   with api.context(cwd=cache_root, env=env, env_prefixes=env_prefixes):
     builds = api.shard_util.collect_builds(builds)
@@ -203,6 +205,7 @@ def GenTests(api):
           goma_jobs='200',
           git_url='https://mygitrepo',
           git_ref='refs/pull/1/head',
+          git_branch='main',
           clobber=True,
           task_name='abc'
       ),

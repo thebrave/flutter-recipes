@@ -172,7 +172,7 @@ def RunSteps(api, properties, env_properties):
       with SetupXcode(api):
         RunGN(api, *gn_flags)
         Build(api, target_name)
-        additional_args = ['--browser', 'ios-safari']
+        additional_args = ['--browser', 'ios-safari', '--require-skia-gold']
     else:
       # Platform = windows.
       RunGN(api, *gn_flags)
@@ -250,7 +250,7 @@ def schedule_builds_on_linux(api, cas_hash):
   # These are the required dependencies.
   web_dependencies = ['chrome', 'goldens_repo']
   # These are the felt commands which will be used.
-  command_args = ['test', '--browser=chrome']
+  command_args = ['test', '--browser=chrome', '--require-skia-gold']
   addShardTask(
       api, reqs, command_name, web_dependencies, command_args, cas_hash
   )

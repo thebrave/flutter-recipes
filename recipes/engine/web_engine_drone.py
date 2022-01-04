@@ -193,7 +193,7 @@ def GenTests(api):
           goma_jobs='200',
           gcs_goldens_bucket='mybucket',
           web_dependencies=['goldens_repo'],
-          command_args=['test', '--browser=ios-safari'],
+          command_args=['test', '--browser=ios-safari', '--require-skia-gold'],
           command_name='ios-safari-unit-tests',
           local_engine_cas_hash='abceqwe'
       ), api.platform('mac', 64)

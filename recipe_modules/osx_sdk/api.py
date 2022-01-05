@@ -112,6 +112,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
       with self.m.context(infra_steps=True):
         app = self._ensure_sdk(kind)
         self.m.step('select XCode', ['sudo', 'xcode-select', '--switch', app])
+        self.m.step('list simulators', ['xcrun', 'simctl', 'list'])
       yield
     finally:
       with self.m.context(infra_steps=True):

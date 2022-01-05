@@ -74,6 +74,7 @@ class DevicelabOSXSDKApi(recipe_api.RecipeApi):
         app = '/opt/flutter/xcode/%s/XCode.app' % self._sdk_version
         self._ensure_sdk(kind, app)
         self.m.step('select XCode', ['sudo', 'xcode-select', '--switch', app])
+        self.m.step('list simulators', ['xcrun', 'simctl', 'list'])
       yield
     finally:
       with self.m.context(infra_steps=True):

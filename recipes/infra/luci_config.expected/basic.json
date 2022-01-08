@@ -9,7 +9,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/infra"
+      "[START_DIR]/flutter-infra"
     ],
     "infra_step": true,
     "name": "makedirs"
@@ -19,7 +19,7 @@
       "git",
       "init"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "name": "git init"
   },
   {
@@ -30,7 +30,7 @@
       "origin",
       "https://flutter.googlesource.com/infra"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "name": "git remote"
   },
   {
@@ -40,7 +40,7 @@
       "fetch.uriprotocols",
       "https"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "name": "set fetch.uriprotocols"
   },
   {
@@ -58,7 +58,7 @@
       "",
       "[CACHE]/git/.GUARD_FILE"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "infra_step": true,
     "name": "cache.write guard file",
     "~followup_annotations": [
@@ -77,7 +77,7 @@
       "0777",
       "[CACHE]/git/flutter.googlesource.com-infra"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "infra_step": true,
     "name": "cache.makedirs",
     "~followup_annotations": [
@@ -161,9 +161,9 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/infra/.git/objects/info"
+      "[START_DIR]/flutter-infra/.git/objects/info"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "infra_step": true,
     "name": "cache.makedirs object/info",
     "~followup_annotations": [
@@ -179,9 +179,9 @@
       "/path/to/tmp/json",
       "copy",
       "[CACHE]/git/flutter.googlesource.com-infra/objects\n",
-      "[START_DIR]/infra/.git/objects/info/alternates"
+      "[START_DIR]/flutter-infra/.git/objects/info/alternates"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "infra_step": true,
     "name": "cache.alternates",
     "~followup_annotations": [
@@ -200,7 +200,7 @@
       "remove",
       "[CACHE]/git/.GUARD_FILE"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "infra_step": true,
     "name": "cache.remove guard file",
     "~followup_annotations": [
@@ -215,7 +215,7 @@
       "origin",
       "main"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "name": "git fetch"
   },
   {
@@ -225,7 +225,7 @@
       "-f",
       "FETCH_HEAD"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "name": "git checkout"
   },
   {
@@ -234,7 +234,7 @@
       "rev-parse",
       "HEAD"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "name": "git rev-parse"
   },
   {
@@ -245,7 +245,7 @@
       "-d",
       "-x"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "name": "git clean"
   },
   {
@@ -258,7 +258,7 @@
       "submodule",
       "sync"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "name": "submodule.git submodule sync",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -269,9 +269,11 @@
       "git",
       "submodule",
       "update",
-      "--init"
+      "--init",
+      "--jobs",
+      "4"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[START_DIR]/flutter-infra",
     "name": "submodule.git submodule update",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"

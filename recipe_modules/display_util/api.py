@@ -198,13 +198,15 @@ class DisplayUtilApi(recipe_api.RecipeApi):
         failure_message = ", ".join(failure_message)
         # If there were any infra failures, raise purple.
         if infra_failed_builders:
-          self.m.python.infra_failing_step(
+          self.m.step.empty(
               failure_header,
-              failure_message,
+              status=self.m.step.INFRA_FAILURE,
+              step_text=failure_message,
           )
         # Otherwise if there were any step failures, raise red.
         if failed_builders:
-          self.m.python.failing_step(
+          self.m.step.empty(
               failure_header,
-              failure_message,
+              status=self.m.step.FAILURE,
+              step_text=failure_message,
           )

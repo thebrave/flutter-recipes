@@ -129,7 +129,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
           'flutter bin folders do not exist,'
           'did you forget to checkout flutter repo?'
       )
-      self.m.python.failing_step('Flutter Environment', msg)
+      self.m.step.empty('Flutter Environment', status=self.m.step.FAILURE, step_text=msg)
     git_ref = self.m.properties.get('git_ref', '')
     pub_cache_path = self.m.path['start_dir'].join('.pub-cache')
     env = {

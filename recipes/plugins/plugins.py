@@ -9,6 +9,7 @@ DEPS = [
     'flutter/repo_util',
     'flutter/yaml',
     'recipe_engine/context',
+    'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/properties',
@@ -21,18 +22,26 @@ def RunSteps(api):
   plugins_checkout_path = api.path['start_dir'].join('plugins')
   flutter_checkout_path = api.path['start_dir'].join('flutter')
   channel = api.properties.get('channel', 'master')
+  version_file_name = api.properties.get('version_file', '')
   with api.step.nest('checkout source code'):
-    # Check out flutter ToT from master.
-    api.repo_util.checkout(
-        'flutter',
-        checkout_path=flutter_checkout_path,
-        ref='refs/heads/%s' % channel,
-    )
     api.repo_util.checkout(
         'plugins',
         checkout_path=plugins_checkout_path,
         url=api.properties.get('git_url'),
         ref=api.properties.get('git_ref')
+    )
+    # Check out the specified version of Flutter.
+    flutter_ref = 'refs/heads/%s' % channel
+    # When specified, use a pinned version instead of latest.
+    if version_file_name:
+      version_file = plugins_checkout_path.join('.ci', version_file_name)
+      flutter_ref = api.file.read_text(
+          'read pinned version', version_file, flutter_ref
+      ).strip()
+    api.repo_util.checkout(
+        'flutter',
+        checkout_path=flutter_checkout_path,
+        ref=flutter_ref,
     )
   env, env_prefixes = api.repo_util.flutter_environment(flutter_checkout_path)
   with api.step.nest('Dependencies'):
@@ -76,8 +85,20 @@ def RunSteps(api):
 
 
 def GenTests(api):
+  flutter_path = api.path['start_dir'].join('flutter')
   tasks_dict = {'tasks': [{'name': 'one', 'script': 'myscript'}]}
   yield api.test(
-      'basic', api.repo_util.flutter_environment_data(),
+      'master_channel', api.repo_util.flutter_environment_data(flutter_path),
+      api.properties(
+          channel='master',
+          version_file='flutter_master.version',
+      ),
+      api.step_data('read yaml.parse', api.json.output(tasks_dict))
+  )
+  yield api.test(
+      'stable_channel', api.repo_util.flutter_environment_data(flutter_path),
+      api.properties(
+          channel='stable',
+      ),
       api.step_data('read yaml.parse', api.json.output(tasks_dict))
   )

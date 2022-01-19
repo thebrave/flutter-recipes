@@ -128,9 +128,6 @@ def RunSteps(api, properties, env_properties):
   # Checkout source code and build
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
 
-  if api.platform.is_mac:
-    api.web_util.clone_goldens_repo(checkout)
-
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():
 
@@ -218,7 +215,6 @@ def RunSteps(api, properties, env_properties):
             felt_test.append('test')
             felt_test.extend(additional_args)
             api.step('felt ios-safari test', felt_test)
-            api.web_util.upload_failing_goldens(checkout, 'ios-safari')
             CleanUpProcesses(api)
       else:
         api.web_util.chrome(checkout)
@@ -236,7 +232,7 @@ def schedule_builds_on_linux(api, cas_hash):
   # For running Chrome Unit tests:
   command_name = 'chrome-unit-linux'
   # These are the required dependencies.
-  dependencies = ['chrome', 'goldens_repo']
+  dependencies = ['chrome']
   # These are the felt commands which will be used.
   command_args = ['test', '--browser=chrome']
   addShardTask(
@@ -292,7 +288,6 @@ def GenTests(api):
       'required_driver_version': {'chrome': 84},
       'chrome': {'Linux': '768968', 'Mac': '768985', 'Win': '768975'}
   }
-  golden_yaml_file = {'repository': 'repo', 'revision': 'b6efc758'}
   yield api.test('linux-post-submit') + api.properties(
       goma_jobs='200'
   ) + api.platform('linux', 64) + api.runtime(is_experimental=False)
@@ -304,13 +299,11 @@ def GenTests(api):
   ) + api.runtime(is_experimental=False)
   yield api.test(
       'mac-post-submit',
-      api.step_data('read yaml.parse', api.json.output(golden_yaml_file)),
       api.properties(goma_jobs='200'), api.platform('mac', 64)
   ) + api.runtime(is_experimental=False)
   yield api.test('linux-pre-submit') + api.properties(
       goma_jobs='200',
       git_url='https://mygitrepo',
       git_ref='refs/pull/1/head',
-      gcs_goldens_bucket='mybucket',
       clobber=True
   ) + api.platform('linux', 64) + api.runtime(is_experimental=False)

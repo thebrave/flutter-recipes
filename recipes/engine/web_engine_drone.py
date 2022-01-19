@@ -130,8 +130,6 @@ def RunSteps(api, properties, env_properties):
           with api.osx_sdk('ios'):
             with recipe_api.defer_results():
               api.step('felt test: %s' % command_name, felt_cmd)
-              if web_dependencies and 'goldens_repo' in web_dependencies:
-                api.web_util.upload_failing_goldens(checkout, 'ios-safari')
               # This is to clean up leaked processes.
               api.os_utils.kill_processes()
               # Collect memory/cpu/process after task execution.
@@ -139,8 +137,6 @@ def RunSteps(api, properties, env_properties):
         else:
           with recipe_api.defer_results():
             api.step('felt test: %s' % command_name, felt_cmd)
-            if web_dependencies and 'goldens_repo' in web_dependencies:
-              api.web_util.upload_failing_goldens(checkout, 'chrome')
             # This is to clean up leaked processes.
             api.os_utils.kill_processes()
             # Collect memory/cpu/process after task execution.
@@ -148,7 +144,6 @@ def RunSteps(api, properties, env_properties):
 
 
 def GenTests(api):
-  golden_yaml_file = {'repository': 'repo', 'revision': 'b6efc758'}
   browser_yaml_file = {
       'required_driver_version': {'chrome': 84},
       'chrome': {'Linux': '768968', 'Mac': '768985', 'Win': '768975'}
@@ -161,11 +156,10 @@ def GenTests(api):
       api.step_data(
           'read browser lock yaml (2).parse',
           api.json.output(browser_yaml_file)
-      ), api.step_data('read yaml.parse', api.json.output(golden_yaml_file)),
+      ),
       api.properties(
           goma_jobs='200',
-          gcs_goldens_bucket='mybucket',
-          web_dependencies=['chrome_driver', 'chrome', 'goldens_repo'],
+          web_dependencies=['chrome_driver', 'chrome'],
           command_args=['test', '--browser=chrome'],
           command_name='chrome-tests',
           local_engine_cas_hash='abceqwe'
@@ -173,11 +167,9 @@ def GenTests(api):
   ) + api.runtime(is_experimental=False) + api.platform.name('linux')
   yield api.test(
       'linux-firefox-integration',
-      api.step_data('read yaml.parse', api.json.output(golden_yaml_file)),
       api.properties(
           goma_jobs='200',
-          gcs_goldens_bucket='mybucket',
-          web_dependencies=['firefox_driver', 'goldens_repo'],
+          web_dependencies=['firefox_driver'],
           command_args=['test', '--browser=firefox'],
           command_name='firefox-tests',
           local_engine_cas_hash='abceqwe'
@@ -188,11 +180,9 @@ def GenTests(api):
   ) + api.platform('win', 32) + api.runtime(is_experimental=False)
   yield api.test(
       'mac-post-submit',
-      api.step_data('read yaml.parse', api.json.output(golden_yaml_file)),
       api.properties(
           goma_jobs='200',
-          gcs_goldens_bucket='mybucket',
-          web_dependencies=['goldens_repo'],
+          web_dependencies=[],
           command_args=['test', '--browser=ios-safari', '--require-skia-gold'],
           command_name='ios-safari-unit-tests',
           local_engine_cas_hash='abceqwe'
@@ -200,13 +190,12 @@ def GenTests(api):
   ) + api.runtime(is_experimental=False)
   yield api.test(
       'linux-experimental',
-      api.step_data('read yaml.parse', api.json.output(golden_yaml_file)),
       api.repo_util.flutter_environment_data(),
       api.properties(
           goma_jobs='200',
           git_url='https://mygitrepo',
           git_ref='refs/pull/1/head',
-          web_dependencies=['goldens_repo'],
+          web_dependencies=[],
           clobber=True,
           local_engine_cas_hash='abceqwe'
       ), api.platform('linux', 64)

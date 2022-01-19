@@ -19,10 +19,8 @@ DEPS = [
 def RunSteps(api):
   engine_checkout_path = api.path['cache'].join('builder', 'src')
   api.web_util.prepare_web_dependencies(engine_checkout_path)
-  api.web_util.upload_failing_goldens(engine_checkout_path, 'chrome')
 
 def GenTests(api):
-  golden_yaml_file = {'repository': 'repo', 'revision': 'b6efc758'}
   browser_yaml_file = {
       'required_driver_version': {
           'chrome': 84
@@ -39,13 +37,6 @@ def GenTests(api):
       api.properties(
           web_dependencies=['invalid_dependency'],), api.platform(
               'linux', 64)) + api.platform.name('linux')
-  yield api.test(
-      'clone repo',
-      api.step_data('read yaml.parse', api.json.output(golden_yaml_file)),
-      api.properties(
-          gcs_goldens_bucket='mybucket',
-          web_dependencies=['goldens_repo'],), api.platform(
-              'linux', 64)) + api.platform.name('linux') + api.runtime(is_experimental=False)
   yield api.test(
       'chrome driver',
       api.step_data('read browser lock yaml.parse',
@@ -67,11 +58,9 @@ def GenTests(api):
               'linux', 64)) + api.platform.name('linux')
   yield api.test(
       'mac-post-submit',
-      api.step_data('read yaml.parse', api.json.output(golden_yaml_file)),
       api.properties(
           goma_jobs='200',
-          gcs_goldens_bucket='mybucket',
-          web_dependencies=['goldens_repo'],
+          web_dependencies=[],
           command_args=['test', '--browser=ios-safari'],
           command_name='ios-safari-unit-tests'), api.platform(
               'mac', 64)) + api.runtime(is_experimental=False)

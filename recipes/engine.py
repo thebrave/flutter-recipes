@@ -769,10 +769,10 @@ def PackageLinuxDesktopVariant(api, label, bucket_name):
 
 
 def BuildLinux(api):
-  RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--prebuilt-dart-sdk')
+  RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--prebuilt-dart-sdk', '--build-embedder-examples')
   RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk')
-  RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk')
-  RunGN(api, '--runtime-mode', 'release', '--prebuilt-dart-sdk')
+  RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk', '--build-embedder-examples')
+  RunGN(api, '--runtime-mode', 'release', '--prebuilt-dart-sdk', '--build-embedder-examples')
   # flutter/sky/packages from host_debug_unopt is needed for RunTests 'dart'
   # type.
   Build(api, 'host_debug_unopt', 'flutter/sky/packages')
@@ -1023,9 +1023,9 @@ def SetupXcode(api):
 
 def BuildMac(api):
   if api.properties.get('build_host', True):
-    RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--full-dart-sdk', '--prebuilt-dart-sdk')
-    RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk')
-    RunGN(api, '--runtime-mode', 'release', '--no-lto', '--prebuilt-dart-sdk')
+    RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--full-dart-sdk', '--prebuilt-dart-sdk', '--build-embedder-examples')
+    RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk', '--build-embedder-examples')
+    RunGN(api, '--runtime-mode', 'release', '--no-lto', '--prebuilt-dart-sdk', '--build-embedder-examples')
 
     Build(api, 'host_debug')
     Build(api, 'host_profile')

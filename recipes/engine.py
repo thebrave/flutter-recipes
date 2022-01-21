@@ -394,9 +394,9 @@ def UploadFlutterPatchedSdk(api):
   )
 
 
-def UploadDartSdk(api, archive_name):
+def UploadDartSdk(api, archive_name, target_path='src/out/host_debug'):
   api.bucket_util.upload_folder(
-      'Upload Dart SDK', 'src/out/host_debug', 'dart-sdk', archive_name
+      'Upload Dart SDK', target_path, 'dart-sdk', archive_name
   )
 
 
@@ -1035,6 +1035,13 @@ def BuildMac(api):
         'host_release zips',
         GetCheckoutPath(api).join('out', 'host_release', 'zip_archives'))
 
+    # At the moment, we only need the Dart SDK for arm64 macOS.
+    RunGN(
+        api, '--mac', '--mac-cpu', 'arm64', '--runtime-mode', 'debug',
+        '--full-dart-sdk', '--prebuilt-dart-sdk'
+    )
+    Build(api, 'mac_debug_arm64', 'flutter:dart_sdk')
+
     host_debug_path = GetCheckoutPath(api).join('out', 'host_debug')
     host_profile_path = GetCheckoutPath(api).join('out', 'host_profile')
     host_release_path = GetCheckoutPath(api).join('out', 'host_release')
@@ -1126,6 +1133,11 @@ def BuildMac(api):
     )
 
     UploadDartSdk(api, archive_name='dart-sdk-darwin-x64.zip')
+    UploadDartSdk(
+        api,
+        archive_name='dart-sdk-darwin-arm64.zip',
+        target_path='src/out/mac_debug_arm64'
+    )
     UploadWebSdk(api, archive_name='flutter-web-sdk-darwin-x64.zip')
 
   if api.properties.get('build_android_aot', True):

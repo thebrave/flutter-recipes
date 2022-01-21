@@ -9,5 +9,9 @@ set -e
 # is run on the binaries for the commit passed as property to the builder.
 git fetch origin master:master
 
+if [ -z "$REVISION" ]; then
+  echo 'This script requires the env variable $REVISION to be set, but it is empty!'
+  exit 1
+fi
 # Run the actual validation.
-./dev/conductor/bin/conductor codesign --verify
+./dev/conductor/bin/conductor codesign --verify --revision $REVISION

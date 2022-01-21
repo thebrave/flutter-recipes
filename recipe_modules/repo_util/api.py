@@ -179,6 +179,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             ('darwin' if self.m.platform.name == 'mac' else 'win'),
         'ANDROID_HOME': str(android_home),
         'LUCI_WORKDIR': str(self.m.path['start_dir']),
+        'REVISION': self.m.buildbucket.gitiles_commit.id or ''
     }
     env_prefixes = {'PATH': ['%s' % str(dart_bin)]}
     return env, env_prefixes

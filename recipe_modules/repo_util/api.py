@@ -151,7 +151,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'GIT_BRANCH': self.m.properties.get('git_branch', ''),
         'OS':
             'linux' if self.m.platform.name == 'linux' else
-            ('darwin' if self.m.platform.name == 'mac' else 'win')
+            ('darwin' if self.m.platform.name == 'mac' else 'win'),
+        'REVISION': self.m.buildbucket.gitiles_commit.id or ''
     }
     env_prefixes = {'PATH': ['%s' % str(flutter_bin), '%s' % str(dart_bin)]}
     return env, env_prefixes

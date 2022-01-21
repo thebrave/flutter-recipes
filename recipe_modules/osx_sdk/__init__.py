@@ -7,6 +7,7 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 DEPS = [
     'recipe_engine/cipd',
     'recipe_engine/context',
+    'recipe_engine/file',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/step',
@@ -14,7 +15,7 @@ DEPS = [
 ]
 
 from recipe_engine.recipe_api import Property
-from recipe_engine.config import ConfigGroup, Single
+from recipe_engine.config import ConfigGroup, Single, List
 
 PROPERTIES = {
     '$flutter/osx_sdk': Property(
@@ -28,6 +29,8 @@ PROPERTIES = {
       #
       # For an up to date list of the latest SDK builds.
       sdk_version=Single(str),
+      # Runtime version to be installed along the xcode version.
+      runtime_versions=List(str),
 
       # The CIPD toolchain tool package and version
       toolchain_pkg=Single(str),

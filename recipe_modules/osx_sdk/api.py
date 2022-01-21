@@ -22,6 +22,20 @@ _DEFAULT_VERSION_MAP = [('10.12.6', '9c40b'), ('10.13.2', '9f2000'),
                         ('10.14.4', '11b52'), ('10.15.4', '12a7209')]
 
 
+_RUNTIMESPATH = [
+        'Contents',
+        'Developer',
+        'Platforms',
+        'iPhoneOS.platform',
+        'Library',
+        'Developer',
+        'CoreSimulator',
+        'Profiles',
+        'Runtimes'
+        ]
+
+
+
 class OSXSDKApi(recipe_api.RecipeApi):
   """API for using OS X SDK distributed via CIPD."""
 
@@ -29,6 +43,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
     super(OSXSDKApi, self).__init__(*args, **kwargs)
     self._sdk_properties = sdk_properties
     self._sdk_version = None
+    self._runtime_versions = None
     self._tool_pkg = 'infra/tools/mac_toolchain/${platform}'
     self._tool_ver = 'latest'
 
@@ -43,6 +58,9 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     if 'toolchain_ver' in self._sdk_properties:
       self._tool_ver = self._sdk_properties['toolchain_ver'].lower()
+
+    if 'runtime_versions' in self._sdk_properties:
+      self._runtime_versions = self._sdk_properties['runtime_versions']
 
     if 'sdk_version' in self._sdk_properties:
       self._sdk_version = self._sdk_properties['sdk_version'].lower()
@@ -67,11 +85,18 @@ class OSXSDKApi(recipe_api.RecipeApi):
     To avoid machines rebuilding these on every run, set up a named cache in
     your cr-buildbucket.cfg file like:
 
-        caches: {
-          # Cache for mac_toolchain tool and XCode.app
-          name: "osx_sdk"
-          path: "osx_sdk"
-        }
+        caches: [
+          {
+            # Cache for mac_toolchain tool and XCode.app
+            name: "osx_sdk"
+            path: "osx_sdk"
+          },
+          {
+            # Runtime version
+            name: xcode_runtime_ios-14-0,
+            path: xcode_runtime_ios-14-0
+          }
+        ]
 
     If you have builders which e.g. use a non-current SDK, you can give them
     a uniqely named cache:
@@ -81,6 +106,28 @@ class OSXSDKApi(recipe_api.RecipeApi):
           name: "osx_sdk_old"
           path: "osx_sdk"
         }
+
+    If you use multiple runtimes you'll need to provide a cache for each of
+    the runtimes.
+
+        caches: [
+          {
+            # Cache for mac_toolchain tool and XCode.app
+            name: "osx_sdk"
+            path: "osx_sdk"
+          },
+          {
+            # Runtime version
+            name: xcode_runtime_ios-14-0,
+            path: xcode_runtime_ios-14-0
+          },
+          {
+            # Runtime version
+            name: xcode_runtime_ios-13-0,
+            path: xcode_runtime_ios-13-0
+          }
+
+        ]
 
     Similarly, if you have mac and iOS builders you may want to distinguish the
     cache name by adding '_ios' to it. However, if you're sharing the same bots
@@ -144,4 +191,26 @@ class OSXSDKApi(recipe_api.RecipeApi):
             'flutter_internal/ios/xcode',
         ],
     )
+    if self._runtime_versions:
+      for version in self._runtime_versions:
+        runtime_cache_dir = self.m.path['cache'].join('xcode_runtime_%s' % version.lower())
+        self.m.step(
+            'install xcode runtime %s' % version.lower(),
+            [
+                cache_dir.join('mac_toolchain'),
+                'install-runtime',
+                '-cipd-package-prefix',
+                'flutter_internal/ios/xcode',
+                '-runtime-version',
+                version.lower(),
+                '-output-dir',
+                runtime_cache_dir,
+            ],
+        )
+        # Move the runtimes
+        runtime_name = 'iOS %s.simruntime' % version.lower().replace('ios-', '').replace('-', '.')
+        source = runtime_cache_dir.join(runtime_name)
+        dest = sdk_app.join(*_RUNTIMESPATH).join(runtime_name)
+        self.m.file.rmglob('Removing stale %s' % runtime_name, sdk_app.join(*_RUNTIMESPATH), runtime_name)
+        self.m.file.symlink('Moving %s to final dest' % version.lower(), source, dest)
     return sdk_app

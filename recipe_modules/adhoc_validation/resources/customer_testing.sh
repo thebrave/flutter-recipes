@@ -5,6 +5,6 @@
 # found in the LICENSE file.
 
 set -e
-
+git fetch origin $GIT_BRANCH:$GIT_BRANCH
 cd dev/customer_testing/
 bash ci.sh

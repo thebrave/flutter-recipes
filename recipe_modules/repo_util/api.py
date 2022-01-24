@@ -117,6 +117,37 @@ class RepoUtilApi(recipe_api.RecipeApi):
 
       return self.m.utils.retry(do_checkout, max_attempts=2)
 
+  def get_branch(self, checkout_path):
+    """Get git branch for beta and stable channels.
+
+    Post submit tests for release candidate branches pass the channel stable|beta in
+    the git_branch property. As the commits are being tested before they are publised
+    is not possible to use the channels to checkout the correct versions of dependencies
+    from other repositories, furthermore the channels are only applicable to
+    flutter/flutter repository. For tests with dependencies on other repositories we are
+    using the release candidate branch to check out the equivalent to the commit under test.
+    E.g. if the current commit comes from flutter@flutter-2.8-candiddate.16 then we checkout
+    plugins@flutter-2.8-candiddate.16.
+
+    To guess the branch name we get the current commit from the checkout and then we find
+    all the different branches the commit exist on, if there is a branch that starts with
+    flutter- then we assume that's the release candidate branch under test.
+    """
+    if self.m.properties.get('git_branch', '') in ['beta', 'stable']:
+      with self.m.context(cwd=checkout_path):
+        commit = self.m.git(
+                'rev-parse', 'HEAD',
+                stdout=self.m.raw_io.output_text()).stdout.strip()
+        branches = self.m.git(
+                'branch', '-a', '--contains', commit,
+                stdout=self.m.raw_io.output_text()).stdout.splitlines()
+        branches = [b.strip().replace('remotes/origin/', '') for b in branches]
+        return next(
+                iter(filter(lambda branch: branch.startswith('flutter-'), branches)),
+                self.m.properties.get('git_branch', '')
+        )
+    return self.m.properties.get('git_branch', '')
+
   def flutter_environment(self, checkout_path):
     """Returns env and env_prefixes of an flutter/dart command environment."""
     dart_bin = checkout_path.join('bin', 'cache', 'dart-sdk', 'bin')
@@ -148,7 +179,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             re.sub('refs\/pull\/|\/head', '', git_ref),
         'LUCI_BRANCH':
             self.m.properties.get('release_ref', '').replace('refs/heads/', ''),
-        'GIT_BRANCH': self.m.properties.get('git_branch', ''),
+        'GIT_BRANCH': self.get_branch(checkout_path),
         'OS':
             'linux' if self.m.platform.name == 'linux' else
             ('darwin' if self.m.platform.name == 'mac' else 'win'),

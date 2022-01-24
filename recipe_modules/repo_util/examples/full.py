@@ -9,11 +9,13 @@ DEPS = [
     'recipe_engine/context',
     'recipe_engine/path',
     'recipe_engine/properties',
+    'recipe_engine/raw_io',
 ]
 
 
 def RunSteps(api):
   flutter_checkout_path = api.path['start_dir'].join('flutter')
+  api.repo_util.get_branch(flutter_checkout_path)
   api.repo_util.checkout('flutter', flutter_checkout_path, ref='refs/heads/master')
   api.repo_util.checkout('engine', api.path['start_dir'].join('engine'), ref='refs/heads/master')
   api.repo_util.checkout('cocoon', api.path['start_dir'].join('cocoon'), ref='refs/heads/master')
@@ -26,7 +28,13 @@ def RunSteps(api):
 
 
 def GenTests(api):
-  yield api.test('basic') + api.repo_util.flutter_environment_data()
+  yield (
+      api.test(
+          'basic',
+          api.properties(git_branch='beta'),
+          api.repo_util.flutter_environment_data(),
+          api.step_data('git rev-parse', stdout=api.raw_io.output_text('abchash')))
+  )
   yield api.test('failed_flutter_environment')
   yield (
       api.test(

@@ -72,7 +72,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
           # Increasing priority won't fix the problem but will make the deadlock
           # situation less unlikely.
           # https://github.com/flutter/flutter/issues/59169.
-          priority=25
+          priority=25,
+          exe_cipd_version=self.m.properties.get('exe_cipd_version', 'refs/heads/main')
       )
       reqs.append(req)
     return self.m.buildbucket.schedule(reqs)

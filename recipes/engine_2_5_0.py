@@ -140,7 +140,8 @@ def ScheduleBuilds(api, builder_name, drone_props):
       # Increasing priority won't fix the problem but will make the deadlock
       # situation less unlikely.
       # https://github.com/flutter/flutter/issues/59169.
-      priority=25
+      priority=25,
+      exe_cipd_version=api.properties.get('exe_cipd_version', 'refs/heads/main')
   )
   return api.buildbucket.schedule([req])
 

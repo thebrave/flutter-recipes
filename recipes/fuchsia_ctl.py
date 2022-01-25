@@ -56,7 +56,8 @@ def ScheduleBuilds(api, builder_name, drone_props):
   req = api.buildbucket.schedule_request(
       swarming_parent_run_id=api.swarming.task_id,
       builder=builder_name,
-      properties=drone_props)
+      properties=drone_props,
+      exe_cipd_version=api.properties.get('exe_cipd_version', 'refs/heads/main'))
   return api.buildbucket.schedule([req])
 
 

@@ -294,7 +294,8 @@ def addShardTask(
       swarming_parent_run_id=api.swarming.task_id,
       builder='Linux Web Drone',
       properties=drone_props,
-      priority=25
+      priority=25,
+      exe_cipd_version=api.properties.get('exe_cipd_version', 'refs/heads/main')
   )
   reqs.append(req)
 

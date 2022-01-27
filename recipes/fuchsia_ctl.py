@@ -7,8 +7,8 @@ from recipe_engine.recipe_api import Property
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
+    'flutter/display_util',
     'flutter/repo_util',
-    'fuchsia/display_util',
     'recipe_engine/buildbucket',
     'recipe_engine/cipd',
     'recipe_engine/context',

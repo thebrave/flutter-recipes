@@ -8,7 +8,7 @@ set -e
 
 # Customer testing require both master and the branch
 # under test to be checkout out.
-if [$GIT_BRANCH != 'master']
+if [ "$GIT_BRANCH" != 'master' ]
 then
   git fetch origin master
   git checkout master

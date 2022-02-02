@@ -1022,51 +1022,131 @@ def SetupXcode(api):
     yield
 
 
+def PackageMacOSVariant(
+    api,
+    label,
+    arm64_out,
+    x64_out,
+    bucket_name,
+):
+  checkout = GetCheckoutPath(api)
+  out_dir = checkout.join('out')
+
+  # Package the multi-arch framework for macOS.
+  label_dir = out_dir.join(label)
+  create_macos_framework_cmd = [
+      checkout.join('flutter/sky/tools/create_macos_framework.py'),
+      '--dst',
+      label_dir,
+      '--arm64-out-dir',
+      api.path.join(out_dir, arm64_out),
+      '--x64-out-dir',
+      api.path.join(out_dir, x64_out),
+  ]
+  if label == 'release':
+    create_macos_framework_cmd.extend([
+        "--dsym",
+        "--strip",
+    ])
+
+  with api.context(cwd=checkout):
+    api.step(
+        'Create macOS %s FlutterMacOS.framework' % label,
+        create_macos_framework_cmd
+    )
+
+  # Package the multi-arch gen_snapshot for macOS.
+  create_macos_gen_snapshot_cmd = [
+      checkout.join('flutter/sky/tools/create_macos_gen_snapshots.py'),
+      '--dst',
+      label_dir,
+      '--arm64-out-dir',
+      api.path.join(out_dir, arm64_out),
+      '--x64-out-dir',
+      api.path.join(out_dir, x64_out),
+  ]
+
+  with api.context(cwd=checkout):
+    api.step(
+        'Create macOS %s gen_snapshot' % label,
+        create_macos_gen_snapshot_cmd
+    )
+
+  api.zip.directory(
+      'Archive FlutterMacOS.framework',
+      label_dir.join('FlutterMacOS.framework'),
+      label_dir.join('FlutterMacOS.framework.zip')
+  )
+
+  flutter_podspec = \
+      'flutter/shell/platform/darwin/macos/framework/FlutterMacOS.podspec'
+  UploadArtifacts(
+      api,
+      bucket_name, [
+          'out/%s/FlutterMacOS.framework.zip' % label,
+          flutter_podspec,
+      ],
+      archive_name='FlutterMacOS.framework.zip'
+  )
+  UploadArtifacts(
+      api, bucket_name, [
+          'out/%s/gen_snapshot_x64' % label,
+          'out/%s/gen_snapshot_arm64' % label,
+      ],
+      archive_name='gen_snapshot.zip'
+  )
+
+
 def BuildMac(api):
   if api.properties.get('build_host', True):
-    RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--full-dart-sdk', '--prebuilt-dart-sdk', '--build-embedder-examples')
-    RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk', '--build-embedder-examples')
-    RunGN(api, '--runtime-mode', 'release', '--no-lto', '--prebuilt-dart-sdk', '--build-embedder-examples')
+    RunGN(
+        api, '--runtime-mode', 'debug', '--no-lto', '--full-dart-sdk',
+        '--prebuilt-dart-sdk', '--build-embedder-examples'
+    )
+    RunGN(
+        api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk',
+        '--build-embedder-examples'
+    )
+    RunGN(
+        api, '--runtime-mode', 'release', '--no-lto', '--prebuilt-dart-sdk',
+        '--build-embedder-examples'
+    )
+    RunGN(
+        api, '--mac', '--mac-cpu', 'arm64', '--runtime-mode', 'debug',
+        '--no-lto', '--full-dart-sdk', '--prebuilt-dart-sdk'
+    )
+    RunGN(
+        api, '--mac', '--mac-cpu', 'arm64', '--runtime-mode', 'profile',
+        '--no-lto', '--prebuilt-dart-sdk'
+    )
+    RunGN(
+        api, '--mac', '--mac-cpu', 'arm64', '--runtime-mode', 'release',
+        '--no-lto', '--prebuilt-dart-sdk'
+    )
 
     Build(api, 'host_debug')
     Build(api, 'host_profile')
     RunTests(api, 'host_profile', types='engine')
     Build(api, 'host_release')
-    api.file.listdir(
-        'host_release zips',
-        GetCheckoutPath(api).join('out', 'host_release', 'zip_archives'))
+    Build(api, 'mac_debug_arm64')
+    Build(api, 'mac_profile_arm64')
+    Build(api, 'mac_release_arm64')
 
-    # At the moment, we only need the Dart SDK for arm64 macOS.
-    RunGN(
-        api, '--mac', '--mac-cpu', 'arm64', '--runtime-mode', 'debug',
-        '--full-dart-sdk', '--prebuilt-dart-sdk'
+    PackageMacOSVariant(
+        api, 'debug', 'mac_debug_arm64', 'host_debug', 'darwin-x64'
     )
-    Build(api, 'mac_debug_arm64', 'flutter:dart_sdk')
+    PackageMacOSVariant(
+        api, 'profile', 'mac_profile_arm64', 'host_profile', 'darwin-x64-profile'
+    )
+    PackageMacOSVariant(
+        api, 'release', 'mac_release_arm64', 'host_release', 'darwin-x64-release'
+    )
 
     host_debug_path = GetCheckoutPath(api).join('out', 'host_debug')
-    host_profile_path = GetCheckoutPath(api).join('out', 'host_profile')
-    host_release_path = GetCheckoutPath(api).join('out', 'host_release')
-
     api.zip.directory(
         'Archive FlutterEmbedder.framework',
         host_debug_path.join('FlutterEmbedder.framework'),
         host_debug_path.join('FlutterEmbedder.framework.zip')
-    )
-
-    api.zip.directory(
-        'Archive FlutterMacOS.framework',
-        host_debug_path.join('FlutterMacOS.framework'),
-        host_debug_path.join('FlutterMacOS.framework.zip')
-    )
-    api.zip.directory(
-        'Archive FlutterMacOS.framework profile',
-        host_profile_path.join('FlutterMacOS.framework'),
-        host_profile_path.join('FlutterMacOS.framework.zip')
-    )
-    api.zip.directory(
-        'Archive FlutterMacOS.framework release',
-        host_release_path.join('FlutterMacOS.framework'),
-        host_release_path.join('FlutterMacOS.framework.zip')
     )
 
     UploadArtifacts(
@@ -1076,14 +1156,17 @@ def BuildMac(api):
             'out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin',
             'out/host_debug/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
             'out/host_debug/gen/frontend_server.dart.snapshot',
+            # Remove after the tool no longer uses it.
             'out/host_debug/gen_snapshot',
         ]
     )
+    # Remove after the tool no longer uses it.
     UploadArtifacts(
         api, 'darwin-x64-profile', [
             'out/host_profile/gen_snapshot',
         ]
     )
+    # Remove after the tool no longer uses it.
     UploadArtifacts(
         api, 'darwin-x64-release', [
             'out/host_release/gen_snapshot',
@@ -1096,42 +1179,7 @@ def BuildMac(api):
         archive_name='FlutterEmbedder.framework.zip'
     )
 
-    flutter_podspec = \
-        'flutter/shell/platform/darwin/macos/framework/FlutterMacOS.podspec'
-    UploadArtifacts(
-        api,
-        'darwin-x64-debug', [
-            'out/host_debug/FlutterMacOS.framework.zip',
-            flutter_podspec,
-        ],
-        archive_name='FlutterMacOS.framework.zip'
-    )
-    UploadArtifacts(
-        api,
-        'darwin-x64-profile', [
-            'out/host_profile/FlutterMacOS.framework.zip',
-            flutter_podspec,
-        ],
-        archive_name='FlutterMacOS.framework.zip'
-    )
-    UploadArtifacts(
-        api,
-        'darwin-x64-release', [
-            'out/host_release/FlutterMacOS.framework.zip',
-            flutter_podspec,
-        ],
-        archive_name='FlutterMacOS.framework.zip'
-    )
     UploadFontSubset(api, 'darwin-x64')
-    # Legacy; remove once Flutter tooling is updated to use the -debug location.
-    UploadArtifacts(
-        api,
-        'darwin-x64', [
-            'out/host_debug/FlutterMacOS.framework.zip',
-            flutter_podspec,
-        ],
-        archive_name='FlutterMacOS.framework.zip'
-    )
 
     UploadDartSdk(api, archive_name='dart-sdk-darwin-x64.zip')
     UploadDartSdk(

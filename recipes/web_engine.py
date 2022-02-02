@@ -182,12 +182,12 @@ def RunSteps(api, properties, env_properties):
         ]
 
     # Update dart packages and run tests.
-    local_pub = checkout.join('out', target_name, 'dart-sdk', 'bin', 'pub')
+    local_dart = checkout.join('out', target_name, 'dart-sdk', 'bin', 'dart')
     with api.context(
         cwd=checkout.join('flutter', 'web_sdk', 'web_engine_tester')):
-      api.step('pub get in web_engine_tester', [local_pub, 'get'])
+      api.step('dart pub get in web_engine_tester', [local_dart, 'pub', 'get'])
     with api.context(cwd=checkout.join('flutter', 'lib', 'web_ui')):
-      api.step('pub get in web_engine_tester', [local_pub, 'get'])
+      api.step('dart pub get in web_engine_tester', [local_dart, 'pub', 'get'])
       # TODO(nurhan): carry licenses to another shard when we have more
       # resources.
       felt_licenses = copy.deepcopy(felt_cmd)

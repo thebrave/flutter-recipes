@@ -117,14 +117,14 @@ def RunSteps(api, properties, env_properties):
                      env_prefixes=env_prefixes), api.depot_tools.on_path():
       # Update dart packages and run tests.
       local_engine_path = env.get('LOCAL_ENGINE')
-      local_pub = local_engine_path.join('dart-sdk', 'bin', 'pub')
+      local_dart = local_engine_path.join('dart-sdk', 'bin', 'dart')
       with api.context(
           cwd=checkout.join('flutter', 'web_sdk', 'web_engine_tester')):
         api.retry.step(
-            'pub get in web_engine_tester', [local_pub, 'get'], infra_step=True
+            'dart pub get in web_engine_tester', [local_dart, 'pub', 'get'], infra_step=True
         )
       with api.context(cwd=checkout.join('flutter', 'lib', 'web_ui')):
-        api.retry.step('pub get in web_ui', [local_pub, 'get'], infra_step=True)
+        api.retry.step('pub get in web_ui', [local_dart, 'pub', 'get'], infra_step=True)
         web_dependencies = api.web_util.get_web_dependencies()
         if api.platform.is_mac:
           with api.osx_sdk('ios'):

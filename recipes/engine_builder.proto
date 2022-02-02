@@ -26,6 +26,14 @@ message EngineBuild {
   // For example, if you want to isolate the "flutter_runner_far" directory,
   // it would be `['flutter_runner_far']`.
   repeated string output_dirs = 6;
+
+  // Variables passed to gclient when checking out the  source code.
+  GClientVariables gclient_variables = 7;
+}
+
+message GClientVariables {
+  string download_fuchsia_sdk = 1;
+  string fuchsia_sdk_hash = 2;
 }
 
 message InputProperties {

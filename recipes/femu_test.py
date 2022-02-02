@@ -19,6 +19,7 @@ DEPS = [
     'flutter/repo_util',
     'flutter/retry',
     'flutter/sdk',
+    'flutter/shard_util_v2',
     'flutter/ssh',
     'flutter/test_utils',
     'flutter/vdl',
@@ -287,8 +288,11 @@ def RunSteps(api, properties, env_properties):
   env = {'GOMA_DIR': api.goma.goma_dir}
   env_prefixes = {'PATH': [dart_bin]}
 
+  gclient_vars = api.shard_util_v2.unfreeze_dict(
+          api.properties.get('gclient_variables', {}))
   api.repo_util.engine_checkout(
-      cache_root, env, env_prefixes, clobber=properties.clobber)
+      cache_root, env, env_prefixes, clobber=properties.clobber,
+      custom_vars=gclient_vars)
 
   # Various scripts we run assume access to depot_tools on path for `ninja`.
   with api.context(

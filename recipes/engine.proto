@@ -5,6 +5,11 @@
 syntax = "proto3";
 package recipes.flutter.engine;
 
+message GClientVariables {
+  bool download_fuchsia_sdk = 1;
+  string fuchsia_sdk_hash = 2;
+}
+
 message InputProperties {
   string mastername = 1;
   string goma_jobs = 2;
@@ -56,6 +61,9 @@ message InputProperties {
 
   // Upload engine benchmarks.
   bool upload_metrics = 30;
+
+  // GClient variables.
+  GClientVariables gclient_variables = 31;
 }
 
 message EnvProperties {

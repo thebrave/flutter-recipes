@@ -24,6 +24,7 @@ DEPS = [
     'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/retry',
+    'flutter/shard_util_v2',
     'flutter/test_utils',
     'flutter/zip',
     'fuchsia/gcloud',
@@ -935,12 +936,16 @@ def ShouldPublishToCIPD(api, package_name, git_rev):
   return len(instances) == 0
 
 
-def BuildFuchsia(api):
+def BuildFuchsia(api, gclient_vars):
   """
   This schedules release and profile builds for x64 and arm64 on other bots,
   and then builds the x64 and arm64 runners (which do not require LTO and thus
   are faster to build). On Linux, we also run tests for the runner against x64,
   and if they fail we cancel the scheduled builds.
+
+  Args:
+    gclient_vars: A dictionary with gclient variable names as keys and their
+      associated values as the dictionary values.
   """
   fuchsia_build_pairs = [
       ('arm64', 'profile'),
@@ -960,12 +965,12 @@ def BuildFuchsia(api):
             'targets': GetFlutterFuchsiaBuildTargets(product),
             'output_files': GetFuchsiaOutputFiles(product),
             'output_dirs': fuchsia_output_dirs,
+            'gclient_variables': gclient_vars,
         }],
     }
     if 'git_url' in api.properties and 'git_ref' in api.properties:
       props['git_url'] = api.properties['git_url']
       props['git_ref'] = api.properties['git_ref']
-
     builds += ScheduleBuilds(api, 'Linux Engine Drone', props)
 
   checkout = GetCheckoutPath(api)
@@ -1647,14 +1652,18 @@ def RunSteps(api, properties, env_properties):
   api.os_utils.enable_long_paths()
 
   clobber = api.properties.get('clobber', True)
-  api.repo_util.engine_checkout(cache_root, env, env_prefixes, clobber)
+  gclient_vars = api.shard_util_v2.unfreeze_dict(api.properties.get('gclient_variables', {}))
+  api.repo_util.engine_checkout(
+          cache_root, env, env_prefixes, clobber,
+          custom_vars=gclient_vars
+  )
 
   # Delete derived data on mac. This is a noop for other platforms.
   api.os_utils.clean_derived_data()
 
   # Ensure required deps are installed
   api.flutter_deps.required_deps(
-      env, env_prefixes, api.properties.get('dependencies', [])
+      env, env_prefixes, api.properties.get('dependencies', {})
   )
 
   # Various scripts we run assume access to depot_tools on path for `ninja`.
@@ -1670,7 +1679,7 @@ def RunSteps(api, properties, env_properties):
         if env_properties.SKIP_ANDROID != 'TRUE':
           BuildLinuxAndroid(api, env_properties.SWARMING_TASK_ID)
         if api.properties.get('build_fuchsia', True):
-          BuildFuchsia(api)
+          BuildFuchsia(api, gclient_vars)
         VerifyExportedSymbols(api)
 
       if api.platform.is_mac:
@@ -1680,7 +1689,7 @@ def RunSteps(api, properties, env_properties):
             with InstallGems(api):
               BuildIOS(api)
           if api.properties.get('build_fuchsia', True):
-            BuildFuchsia(api)
+            BuildFuchsia(api, gclient_vars)
           VerifyExportedSymbols(api)
 
       if api.platform.is_win:
@@ -1850,7 +1859,8 @@ def GenTests(api):
               'build_android_aot': True,
               'build_android_debug': True,
               'android_sdk_license': 'android_sdk_hash',
-              'android_sdk_preview_license': 'android_sdk_preview_hash'
+              'android_sdk_preview_license': 'android_sdk_preview_hash',
+              'gclient_variables': {'upload_fuchsia_sdk': True, 'fuchsia_sdk_hash': 'thehash'},
           }
       ),
   )

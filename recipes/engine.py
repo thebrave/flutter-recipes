@@ -965,8 +965,8 @@ def BuildFuchsia(api, gclient_vars):
             'targets': GetFlutterFuchsiaBuildTargets(product),
             'output_files': GetFuchsiaOutputFiles(product),
             'output_dirs': fuchsia_output_dirs,
-            'gclient_variables': gclient_vars,
         }],
+        'gclient_variables': gclient_vars,
     }
     if 'git_url' in api.properties and 'git_ref' in api.properties:
       props['git_url'] = api.properties['git_url']

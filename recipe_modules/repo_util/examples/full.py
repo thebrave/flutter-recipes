@@ -22,6 +22,7 @@ def RunSteps(api):
   api.repo_util.checkout('packages', api.path['start_dir'].join('packages'), ref='refs/heads/master')
   env, env_paths = api.repo_util.engine_environment(flutter_checkout_path)
   env, env_paths = api.repo_util.flutter_environment(flutter_checkout_path)
+  api.repo_util.in_release_and_main(flutter_checkout_path)
   api.repo_util.engine_checkout(api.path['start_dir'].join('engine'), {}, {})
   with api.context(env=env, env_prefixes=env_paths):
     api.repo_util.sdk_checkout_path()
@@ -33,7 +34,10 @@ def GenTests(api):
           'basic',
           api.properties(git_branch='beta'),
           api.repo_util.flutter_environment_data(),
-          api.step_data('git rev-parse', stdout=api.raw_io.output_text('abchash')))
+          api.step_data('Identify branches.git rev-parse', stdout=api.raw_io.output_text('abchash')),
+          api.step_data('Identify branches.git branch', stdout=api.raw_io.output_text('branch1\nbranch2')),
+          api.step_data('Identify branches (2).git branch', stdout=api.raw_io.output_text('branch1\nbranch2')),
+          api.step_data('Identify branches (3).git branch', stdout=api.raw_io.output_text('branch1\nbranch2')))
   )
   yield api.test('failed_flutter_environment')
   yield (

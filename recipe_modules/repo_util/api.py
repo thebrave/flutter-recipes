@@ -117,6 +117,30 @@ class RepoUtilApi(recipe_api.RecipeApi):
 
       return self.m.utils.retry(do_checkout, max_attempts=2)
 
+  def in_release_and_main(self, checkout_path):
+    """Determine if a commit was already tested on main branch.
+
+    This is used to skip build in release branches to avoid consuming all the capacity
+    testing commits in release branches that were already tested on main.
+    """
+    if self.m.properties.get('git_branch', '') in ['beta', 'stable']:
+      branches = self.current_commit_branches(checkout_path)
+      return len(branches) > 1
+    # We assume the commit is not duplicated if it is not comming from beta or stable.
+    return False
+
+  def current_commit_branches(self, checkout_path):
+    """Gets the list of branches for the current commit."""
+    with self.m.step.nest('Identify branches'):
+      with self.m.context(cwd=checkout_path):
+        commit = self.m.git(
+            'rev-parse', 'HEAD',
+            stdout=self.m.raw_io.output_text()).stdout.strip()
+        branches = self.m.git(
+            'branch', '-a', '--contains', commit,
+            stdout=self.m.raw_io.output_text()).stdout.splitlines()
+        return [b.strip().replace('remotes/origin/', '') for b in branches] or []
+
   def get_branch(self, checkout_path):
     """Get git branch for beta and stable channels.
 
@@ -134,18 +158,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
     flutter- then we assume that's the release candidate branch under test.
     """
     if self.m.properties.get('git_branch', '') in ['beta', 'stable']:
-      with self.m.context(cwd=checkout_path):
-        commit = self.m.git(
-                'rev-parse', 'HEAD',
-                stdout=self.m.raw_io.output_text()).stdout.strip()
-        branches = self.m.git(
-                'branch', '-a', '--contains', commit,
-                stdout=self.m.raw_io.output_text()).stdout.splitlines()
-        branches = [b.strip().replace('remotes/origin/', '') for b in branches]
-        return next(
-                iter(filter(lambda branch: branch.startswith('flutter-'), branches)),
-                self.m.properties.get('git_branch', '')
-        )
+      branches = self.current_commit_branches(checkout_path)
+      return next(iter(branches))
     return self.m.properties.get('git_branch', '')
 
   def flutter_environment(self, checkout_path):
@@ -205,7 +219,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             re.sub('refs\/pull\/|\/head', '', git_ref),
         'LUCI_BRANCH':
             self.m.properties.get('release_ref', '').replace('refs/heads/', ''),
-        'GIT_BRANCH': self.m.properties.get('git_branch', ''),
+        'GIT_BRANCH': self.get_branch(checkout_path.join('flutter')),
         'OS':
             'linux' if self.m.platform.name == 'linux' else
             ('darwin' if self.m.platform.name == 'mac' else 'win'),

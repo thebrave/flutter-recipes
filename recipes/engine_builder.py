@@ -14,6 +14,7 @@ DEPS = [
   'depot_tools/osx_sdk',
   'flutter/os_utils',
   'flutter/repo_util',
+  'flutter/shard_util_v2',
   'fuchsia/goma',
   'recipe_engine/buildbucket',
   'recipe_engine/cas',
@@ -64,7 +65,8 @@ def RunSteps(api, properties):
   # Collect memory/cpu/process after task execution.
   api.os_utils.collect_os_info()
   cache_root = api.path['cache'].join('builder')
-  api.repo_util.engine_checkout(cache_root, {}, {})
+  gclient_vars = api.shard_util_v2.unfreeze_dict(api.properties.get('gclient_variables', {}))
+  api.repo_util.engine_checkout(cache_root, {}, {}, custom_vars=gclient_vars)
   with api.context(cwd=cache_root):
     api.goma.ensure()
 

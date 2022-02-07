@@ -89,8 +89,8 @@ def Build(api, checkout, env, env_prefixes, outputs):
       for script in generator_task.get('scripts'):
         full_path_script = checkout.join(script)
         cmd.append(full_path_script)
-      cmd.extend(generator_task.get('parameters'))
-      api.step(generator_task.get('name', []), cmd)
+      cmd.extend(generator_task.get('parameters', []))
+      api.step(generator_task.get('name'), cmd)
     # Run local tests in the builder to optimize resource usage.
     for test in tests:
       command = [test.get('language')] if test.get('language') else []
@@ -183,7 +183,9 @@ def GenTests(api):
           api.path['cache'].join('builder', 'src', 'dev'),
       )
   )
-  build["gclient_custom_vars"] = {"example_custom_var": True}
+  build_custom = dict(build)
+  build_custom["gclient_custom_vars"] = {"example_custom_var": True}
+  build_custom["tests"] = []
   yield api.test(
-      'basic_custom_vars', api.properties(build=build, goma_jobs="100")
+      'basic_custom_vars', api.properties(build=build_custom, goma_jobs="100")
   )

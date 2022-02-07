@@ -52,11 +52,12 @@ def RunSteps(api, properties, env_properties):
   # Read builds configuration from repository under test.
   config_path = checkout_path.join('ci', 'builders', '%s.json' % config_name)
   builds = api.properties.get('builds')
-  builds = builds or api.json.read(
-      'Read build config file',
-      config_path,
-      step_test_data=lambda: api.json.test_api.output({})
-  ).json.output.get('builds', [])
+  if builds is None:
+    builds = api.json.read(
+        'Read build config file',
+        config_path,
+        step_test_data=lambda: api.json.test_api.output({})
+    ).json.output.get('builds', [])
   with api.step.nest('launch builds') as presentation:
     tasks = api.shard_util_v2.schedule_builds(builds, presentation)
   with api.step.nest('collect builds') as presentation:
@@ -70,11 +71,12 @@ def RunSteps(api, properties, env_properties):
 
   # Run tests
   tests = api.properties.get('tests')
-  tests = tests or api.json.read(
-      'Read build config file',
-      config_path,
-      step_test_data=lambda: api.json.test_api.output({})
-  ).json.output.get('tests', [])
+  if tests is None:
+    tests = api.json.read(
+        'Read build config file',
+        config_path,
+        step_test_data=lambda: api.json.test_api.output({})
+    ).json.output.get('tests', [])
   with api.step.nest('launch tests') as presentation:
     tasks = api.shard_util_v2.schedule_tests(tests, results, presentation)
   with api.step.nest('collect tests') as presentation:
@@ -102,7 +104,7 @@ def GenTests(api):
 
   yield api.test(
       'basic',
-      api.properties(builds=builds, environment='Staging'),
+      api.properties(builds=builds, tests=[], environment='Staging'),
       api.buildbucket.try_build(
           project='proj',
           builder='try-builder',
@@ -115,4 +117,27 @@ def GenTests(api):
           launch_step="launch builds",
           collect_step="collect builds",
       ),
+  )
+
+  yield api.test(
+      'config_from_file',
+      api.properties(environment='Staging'),
+      api.buildbucket.try_build(
+          project='proj',
+          builder='try-builder',
+          git_repo='https://github.com/repo/a',
+          revision='a' * 40,
+          build_number=123,
+      ),
+      api.shard_util_v2.child_build_steps(
+          builds=[try_subbuild1],
+          launch_step="launch builds",
+          collect_step="collect builds",
+      ),
+      api.step_data(
+          'Read build config file',
+          api.json.output({'builds': builds})),
+      api.step_data(
+          'Read build config file (2)',
+          api.json.output({'builds': builds})),
   )

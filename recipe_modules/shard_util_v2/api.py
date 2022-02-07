@@ -285,7 +285,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
     task_ids = [build.build_id for build in tasks.values()]
     swarming_results = self.m.swarming.collect(
         "collect", task_ids, output_dir=self.m.path["cleanup"]
-    )
+      ) if task_ids else []
     builds = {}
     for result in swarming_results:
       task_id = result.id

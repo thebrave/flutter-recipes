@@ -9,8 +9,8 @@
 from contextlib import contextmanager
 import re
 
-from PB.recipes.flutter.engine import InputProperties
-from PB.recipes.flutter.engine import EnvProperties
+from PB.recipes.flutter.engine.engine import InputProperties
+from PB.recipes.flutter.engine.engine import EnvProperties
 
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
 

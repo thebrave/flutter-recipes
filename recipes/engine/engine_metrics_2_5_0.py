@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from PB.recipes.flutter.engine import InputProperties
-from PB.recipes.flutter.engine import EnvProperties
+from PB.recipes.flutter.engine.engine import InputProperties
+from PB.recipes.flutter.engine.engine import EnvProperties
 
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
 

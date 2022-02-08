@@ -6,8 +6,8 @@
 
 from contextlib import contextmanager
 
-from PB.recipes.flutter.engine import InputProperties
-from PB.recipes.flutter.engine import EnvProperties
+from PB.recipes.flutter.engine.engine import InputProperties
+from PB.recipes.flutter.engine.engine import EnvProperties
 
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from google.protobuf import struct_pb2

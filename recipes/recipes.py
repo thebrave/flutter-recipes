@@ -17,8 +17,10 @@ DEPS = [
     'fuchsia/git',
     'fuchsia/recipe_testing',
     'fuchsia/status_check',
+    'fuchsia/gerrit',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
+    'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/properties',
     'recipe_engine/step',
@@ -118,23 +120,39 @@ class Project(object):
 # TODO(fxbug.dev/88439): Convert this to a proto.
 @attr.s
 class RecipeTestingOptions(object):
-    projects = attr.ib()
-    use_buildbucket = attr.ib(default=False)
+  projects = attr.ib()
+  use_buildbucket = attr.ib(default=False)
+
+
+def GetBranch(api, change):
+  details = api.gerrit.change_details(
+      'details',
+      change_id=str(change.change),
+      host=change.host,
+      max_attempts=5,
+      query_params=['CURRENT_COMMIT', 'CURRENT_REVISION',],
+      timeout=30,
+      test_data=api.json.test_api.output(
+         {
+           'branch': 'main',
+           'current_revision': 'f' * 40,
+           'revisions': {'f' * 40: {'commit': {'parents': [{}],},},},
+         }
+      ),
+  ).json.output
+  return details['branch']
 
 
 def RunSteps(api, remote, unittest_only):
   checkout_path = api.path['start_dir'].join('recipes')
   bb_input = api.buildbucket.build.input
-  if bb_input.gerrit_changes:
-    api.git.checkout_cl(
-        bb_input.gerrit_changes[0], checkout_path, onto='refs/heads/main'
-    )
-    with api.context(cwd=checkout_path):
-      api.git('log', 'log', '--oneline', '-n', '10')
-  else:
-    api.git.checkout(remote, ref='refs/heads/main')
-    with api.context(cwd=checkout_path):
-      api.git('log', 'log', '--oneline', '-n', '10')
+  branch = GetBranch(api, bb_input.gerrit_changes[0])
+  api.git.checkout_cl(
+      bb_input.gerrit_changes[0], checkout_path,
+      onto=branch
+  )
+  with api.context(cwd=checkout_path):
+    api.git('log', 'log', '--oneline', '-n', '10')
   api.recipe_testing.projects = ('flutter',)
   with api.step.defer_results():
     api.recipe_testing.run_lint(checkout_path)
@@ -155,7 +173,10 @@ def GenTests(api):
       api.recipe_testing
       .build_data('flutter/try/flutter-bar', 'flutter', skip=True) +
       api.recipe_testing
-      .build_data('flutter/try/flutter-baz', 'project', skip=True)
+      .build_data('flutter/try/flutter-baz', 'project', skip=True) + 
+      api.buildbucket.try_build(
+          git_repo='https://flutter.googlesource.com/recipes'
+      )
   )
   yield (
       api.status_check.test('cq_try') + api.properties(unittest_only=False) +

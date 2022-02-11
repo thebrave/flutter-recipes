@@ -53,6 +53,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         soln.name = 'src/flutter'
         soln.url = git_url
         soln.revision = git_id
+        soln.managed = False
         soln.custom_vars = custom_vars
         src_cfg.parent_got_revision_mapping['parent_got_revision'
                                            ] = 'got_revision'

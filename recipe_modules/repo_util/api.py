@@ -12,7 +12,7 @@ REPOS = {
     'infra':
       'https://flutter.googlesource.com/infra',
     'packages':
-        'https://github.com/flutter/packages',
+        'https://flutter.googlesource.com/mirrors/packages',
     'plugins':
         'https://flutter.googlesource.com/mirrors/plugins'
 }

@@ -49,6 +49,7 @@ def RunSteps(api):
         env, env_prefixes, [{'dependency': 'xcode'}, {'dependency': 'xcode'}]
     )
   api.flutter_deps.android_sdk(env, env_prefixes, '')
+  api.flutter_deps.android_sdk(env, env_prefixes, 'version:29.0')
   api.flutter_deps.gradle_cache(env, env_prefixes, '')
   api.flutter_deps.flutter_engine(env, env_prefixes)
   api.flutter_deps.firebase(env, env_prefixes)

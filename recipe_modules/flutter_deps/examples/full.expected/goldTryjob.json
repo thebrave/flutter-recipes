@@ -273,7 +273,7 @@
       "-root",
       "[CACHE]/android",
       "-ensure-file",
-      "flutter_internal/android/sdk/${platform} latest",
+      "flutter/android/sdk/all/${platform} latest",
       "-max-threads",
       "0",
       "-json-output",
@@ -286,7 +286,35 @@
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter_internal/android/sdk/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/android/sdk/all/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/android",
+      "-ensure-file",
+      "flutter/android/sdk/all/${platform} version:29.0",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "ensure_installed (5)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:29.0----\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/android/sdk/all/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -464,7 +492,7 @@
       "-json-output",
       "/path/to/tmp/json"
     ],
-    "name": "ensure_installed (5)",
+    "name": "ensure_installed (6)",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
@@ -586,6 +614,7 @@
     "cwd": "[CACHE]/avd",
     "env": {
       "ANDROID_HOME": "[CACHE]/android",
+      "ANDROID_NDK_PATH": "[CACHE]/android/ndk-bundle",
       "ANDROID_SDK_ROOT": "[CACHE]/android",
       "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
       "CHROME_NO_SANDBOX": "true",

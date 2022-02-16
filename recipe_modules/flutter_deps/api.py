@@ -229,13 +229,23 @@ class FlutterDepsApi(recipe_api.RecipeApi):
   def android_sdk(self, env, env_prefixes, version):
     """Installs android sdk."""
     version = version or 'latest'
-    android_sdk_path = self.m.path['cache'].join('android')
-    android_sdk = self.m.cipd.EnsureFile()
-    android_sdk.add_package('flutter_internal/android/sdk/${platform}', version)
-    self.m.cipd.ensure(android_sdk_path, android_sdk)
+    sdk_root = self.m.path['cache'].join('android')
+    self.m.cipd.ensure(
+        sdk_root,
+        self.m.cipd.EnsureFile().add_package(
+            'flutter/android/sdk/all/${platform}',
+            version,
+        ),
+    )
     # Setup environment variables
-    env['ANDROID_SDK_ROOT'] = android_sdk_path
-    env['ANDROID_HOME'] = android_sdk_path
+    if (version == 'version:29.0'): # Handle the legacy case
+      env['ANDROID_SDK_ROOT'] = sdk_root
+      env['ANDROID_HOME'] = sdk_root
+      env['ANDROID_NDK_PATH'] = sdk_root.join('ndk-bundle')
+    else:
+      env['ANDROID_SDK_ROOT'] = sdk_root.join('sdk')
+      env['ANDROID_HOME'] = sdk_root.join('sdk')
+      env['ANDROID_NDK_PATH'] = sdk_root.join('ndk')
     self.gradle_cache(env, env_prefixes, version)
 
   def gradle_cache(self, env, env_prefixes, version):

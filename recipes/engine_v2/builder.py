@@ -82,7 +82,7 @@ def Build(api, checkout, env, env_prefixes, outputs):
       )
       with api.context(env=env, env_prefixes=env_prefixes,
                        cwd=pub_dir):
-        api.step('pub get', ['pub', 'get'])
+        api.step('dart pub get', ['dart', 'pub', 'get'])
     for generator_task in generator_tasks:
       # Generators must run from inside flutter folder.
       cmd = []

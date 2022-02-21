@@ -80,7 +80,7 @@ def RunSteps(api):
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=cocoon_path.join('app_dart')):
     api.step('flutter doctor', cmd=['flutter', 'doctor'])
-    api.step('pub get', cmd=['pub', 'get'])
+    api.step('dart pub get', cmd=['dart', 'pub', 'get'])
     generate_jspb_path = cocoon_path.join('app_dart', 'bin', 'generate_jspb.dart')
     config_name = '%s_config.json' % repo
     if git_branch and not _is_default_branch(git_branch):

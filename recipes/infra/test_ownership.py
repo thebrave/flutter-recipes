@@ -46,7 +46,7 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=cocoon_path.join('app_dart')):
     api.step('flutter doctor', cmd=['flutter', 'doctor'])
-    api.step('pub get', cmd=['pub', 'get'])
+    api.step('dart pub get', cmd=['dart', 'pub', 'get'])
     validate_task_owernship_path = cocoon_path.join(
         'app_dart', 'bin', 'validate_task_ownership.dart'
     )

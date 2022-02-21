@@ -95,7 +95,7 @@ def RunSteps(api):
         max_attempts=3,
         timeout=300,
     )
-    api.step('pub get', ['pub', 'get'], infra_step=True)
+    api.step('dart pub get', ['dart', 'pub', 'get'], infra_step=True)
     dep_list = {d['dependency']: d.get('version') for d in deps}
     if 'xcode' in dep_list:
       api.os_utils.clean_derived_data()

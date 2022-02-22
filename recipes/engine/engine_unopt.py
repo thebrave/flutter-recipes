@@ -4,8 +4,8 @@
 
 from contextlib import contextmanager
 
-from PB.recipes.flutter.engine_unopt import InputProperties
-from PB.recipes.flutter.engine_unopt import EnvProperties
+from PB.recipes.flutter.engine.engine_unopt import InputProperties
+from PB.recipes.flutter.engine.engine_unopt import EnvProperties
 
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
 

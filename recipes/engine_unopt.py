@@ -93,6 +93,13 @@ def FormatAndDartTest(api):
     )
 
 
+def Lint(api, config):
+  checkout = GetCheckoutPath(api)
+  with api.context(cwd=checkout):
+    lint_cmd = checkout.join('flutter', 'ci', 'lint.sh')
+    api.step(api.test_utils.test_step_name('lint %s' % config), [lint_cmd, '--lint-all', '--variant', config])
+
+
 def LintAndroidHost(api):
   android_lint_path = GetCheckoutPath(api
                                      ).join('flutter', 'tools', 'android_lint')
@@ -176,6 +183,7 @@ def BuildIOS(api):
   # Simulator doesn't use bitcode.
   # Simulator binary is needed in all runtime modes.
   RunGN(api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto')
+  Lint(api, 'ios_debug_sim')
   Build(api, 'ios_debug_sim')
   Build(api, 'ios_debug_sim', 'ios_test_flutter')
 

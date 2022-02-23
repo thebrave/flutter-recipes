@@ -106,17 +106,27 @@ def Build(api, checkout, env, env_prefixes, outputs):
       outputs[archive_config['name']] = Archive(api, checkout, archive_config)
 
 
-def Archive(api, checkout, archive_config):
+def Archive(api, checkout,  archive_config):
   archive_dir = api.path.mkdtemp(archive_config['name'])
   # First remove paths from excluding list.
-  for exclude_path in archive_config['exclude_paths']:
+  for exclude_path in archive_config.get('exclude_paths', []):
     full_exclude_path = api.path.abspath(checkout.join(exclude_path))
     api.file.rmtree('Remove %s' % exclude_path, full_exclude_path)
-  for include_path in archive_config['include_paths']:
-    #raise Exception(type(checkout.join(include_path)))
+  # Mock a directory path to make tests pass.
+  api.path.mock_add_directory(api.path.abspath(checkout.join('out/host_debug_unopt/')))
+  api.path.mock_add_file(api.path.abspath(checkout.join('out/host_debug_unopt/file.zip')))
+  for include_path in archive_config.get('include_paths', []):
     full_include_path = api.path.abspath(checkout.join(include_path))
-    dirname = api.path.basename(full_include_path)
-    api.file.copytree('Copy %s' % include_path, full_include_path, archive_dir.join(dirname))
+    if api.path.isdir(full_include_path):
+      dir_name = api.path.basename(full_include_path)
+      api.file.copytree('Copy %s' % include_path, full_include_path, archive_dir.join(dir_name))
+    else:
+      dir_name = api.path.dirname(full_include_path)
+      full_base_path = api.path.abspath(checkout.join(archive_config.get('base_path','')))
+      rel_path = api.path.relpath(dir_name, full_base_path)
+      base_name = api.path.basename(full_include_path)
+      api.file.ensure_directory('Ensuring %s' % archive_dir.join(rel_path), archive_dir.join(rel_path))
+      api.file.copy('Copy %s' % include_path, full_include_path, archive_dir.join(rel_path, base_name))
   return api.cas_util.upload(archive_dir, step_name='Archive %s' % archive_config['name'])
 
 
@@ -153,7 +163,7 @@ def GenTests(api):
       "archives": [
           {
               "name": "host_debug_unopt",
-              "include_paths": ['out/host_debug_unopt/'],
+              "include_paths": ['out/host_debug_unopt/', 'out/host_debug_unopt/file.zip'],
               "exclude_paths": ['out/host_debug_unopt/obj', 'out/host_debug_unopt/stripped.exe']
           }
       ],
@@ -181,6 +191,7 @@ def GenTests(api):
       api.platform('mac', 64),
       api.path.exists(
           api.path['cache'].join('builder', 'src', 'dev'),
+          api.path['cache'].join('builder', 'src', 'dev', 'file.txt'),
       )
   )
   build_custom = dict(build)

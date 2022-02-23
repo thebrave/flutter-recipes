@@ -5,7 +5,7 @@
 from contextlib import contextmanager
 import contextlib
 
-from PB.recipes.flutter.engine_builder import InputProperties, EngineBuild
+from PB.recipes.flutter.engine.engine_builder import InputProperties, EngineBuild
 
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
 

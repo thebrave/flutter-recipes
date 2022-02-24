@@ -124,6 +124,7 @@ def Archive(api, checkout,  archive_config):
       dir_name = api.path.dirname(full_include_path)
       full_base_path = api.path.abspath(checkout.join(archive_config.get('base_path','')))
       rel_path = api.path.relpath(dir_name, full_base_path)
+      rel_path = '' if rel_path == '.' else rel_path
       base_name = api.path.basename(full_include_path)
       api.file.ensure_directory('Ensuring %s' % archive_dir.join(rel_path), archive_dir.join(rel_path))
       api.file.copy('Copy %s' % include_path, full_include_path, archive_dir.join(rel_path, base_name))

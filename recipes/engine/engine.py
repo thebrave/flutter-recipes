@@ -71,6 +71,7 @@ def UploadFontSubset(api, platform):
       'out',
       'host_release',
       'zip_archives',
+      platform,
       'font-subset.zip'
   )
   api.bucket_util.safe_upload(

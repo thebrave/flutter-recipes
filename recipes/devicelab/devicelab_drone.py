@@ -68,8 +68,9 @@ def RunSteps(api):
     api.flutter_deps.required_deps(env, env_prefixes, deps)
     api.flutter_deps.vpython(env, env_prefixes, 'latest')
 
-  tags = api.test_utils.collect_benchmark_tags(env, env_prefixes, api.properties.get('buildername'))
-  benchmark_tags = api.json.dumps(tags)
+  target_tags = api.properties.get('tags', [])
+  device_tags = api.test_utils.collect_benchmark_tags(env, env_prefixes, target_tags)
+  benchmark_tags = api.json.dumps(device_tags)
 
   devicelab_path = flutter_path.join('dev', 'devicelab')
   git_branch = api.properties.get('git_branch')
@@ -297,6 +298,7 @@ def GenTests(api):
       api.properties(
           buildername='Mac_ios abc',
           task_name='abc',
+          tags=['ios'],
           dependencies=[{'dependency': 'xcode'}],
           git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
@@ -316,6 +318,7 @@ def GenTests(api):
       api.properties(
           buildername='Mac_ios abc',
           task_name='abc',
+          tags=['ios'],
           dependencies=[{'dependency': 'xcode'}],
           git_branch='master',
       ),
@@ -346,6 +349,7 @@ def GenTests(api):
       api.properties(
           buildername='Mac_ios abc',
           dependencies=[{'dependency': 'xcode'}],
+          tags=['ios'],
           task_name='abc',
           upload_metrics=True,
           upload_metrics_to_cas=True,

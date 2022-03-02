@@ -166,13 +166,13 @@ class TestUtilsApi(recipe_api.RecipeApi):
           infra_step=True,
       )
 
-  def collect_benchmark_tags(self, env, env_prefixes, builder_name):
+  def collect_benchmark_tags(self, env, env_prefixes, target_tags):
     """Collect host and device tags for devicelab benchmarks.
 
     Args:
       env(dict): Current environment variables.
       env_prefixes(dict):  Current environment prefixes variables.
-      builder_name(str): The builder name of the current build.
+      target_tags(list(str)): Builder tags defined in .ci.yaml targets.
 
     Returns:
       A dictionary representation of the tag names and values.
@@ -203,7 +203,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
           'host_version': 'windows-10.0'
         }
     """
-    tags = {}
+    device_tags = {}
 
     def _get_tag(step_name, commands):
       return self.m.step(
@@ -221,41 +221,41 @@ class TestUtilsApi(recipe_api.RecipeApi):
     # We may need to support other platforms like desktop, and
     # https://github.com/flutter/flutter/issues/92296 to track a more
     # generic way to collect device tags.
-    if 'Mac_ios' in builder_name:
+    if 'ios' in target_tags:
       with self.m.context(env=env, env_prefixes=env_prefixes):
         iphone_identifier = _get_tag(
             'Find device type', ['ideviceinfo', '--key', 'ProductType']
         )
-        tags['device_type'] = IDENTIFIER_NAME_MAP[iphone_identifier]
-        tags['device_version'] = 'iOS-' + _get_tag(
+        device_tags['device_type'] = IDENTIFIER_NAME_MAP[iphone_identifier]
+        device_tags['device_version'] = 'iOS-' + _get_tag(
             'Find device version', ['ideviceinfo', '--key', 'ProductVersion']
         )
-    elif '_android ' in builder_name:
+    elif 'android' in target_tags:
       with self.m.context(env=env, env_prefixes=env_prefixes):
-        tags['device_type'] = _get_tag(
+        device_tags['device_type'] = _get_tag(
             'Find device type', ['adb', 'shell', 'getprop', 'ro.product.model']
         )
-        tags['device_version'] = 'android-' + _get_tag(
+        device_tags['device_version'] = 'android-' + _get_tag(
             'Find device version',
             ['adb', 'shell', 'getprop', 'ro.build.version.sdk']
         )
     else:
-      tags['device_type'] = 'none'
-      tags['device_version'] = 'none'
+      device_tags['device_type'] = 'none'
+      device_tags['device_version'] = 'none'
 
     # Collect host tags.
     if self.m.platform.is_mac:
-      tags['host_version'] = 'mac-' + str(self.m.platform.mac_release)
+      device_tags['host_version'] = 'mac-' + str(self.m.platform.mac_release)
     elif self.m.platform.is_linux:
-      tags['host_version'] = 'debian-' + _get_tag(
+      device_tags['host_version'] = 'debian-' + _get_tag(
           'Find debian version', ['cat', '/etc/debian_version']
       )
     else:
       win_version = _get_tag('Find windows version', ['cmd.exe', '/c', 'ver'])
 
       matches = re.search(_WINDOWS_OS_RE, win_version.strip(), re.IGNORECASE)
-      tags['host_version'] = 'windows-' + matches.group(1) if matches else ''
-    tags['host_type'] = self.m.platform.name
-    tags['arch'] = self.m.platform.arch
+      device_tags['host_version'] = 'windows-' + matches.group(1) if matches else ''
+    device_tags['host_type'] = self.m.platform.name
+    device_tags['arch'] = self.m.platform.arch
 
-    return tags
+    return device_tags

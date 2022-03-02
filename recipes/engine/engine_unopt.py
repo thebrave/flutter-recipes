@@ -127,7 +127,8 @@ def BuildLinux(api):
       'debug',
       '--unoptimized',
       '--prebuilt-dart-sdk',
-      '--asan'
+      '--asan',
+      '--dart-debug'
   )
   Build(api, 'host_debug_unopt')
   RunTests(api, 'host_debug_unopt', types='dart,engine', suppress_sanitizers=True)

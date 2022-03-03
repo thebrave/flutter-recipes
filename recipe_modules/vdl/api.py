@@ -53,7 +53,7 @@ class VDLApi(recipe_api.RecipeApi):
       with self.m.context(infra_steps=True):
         ensure_file = self.m.cipd.EnsureFile()
         ensure_file.add_package(
-            'fuchsia/third_party/aemu/${platform}', self._aemu_version_tag
+            'fuchsia/third_party/android/aemu/release/${platform}', self._aemu_version_tag
         )
         cache_path = self.m.buildbucket.builder_cache_path.join('aemu')
         self.m.cipd.ensure(root=cache_path, ensure_file=ensure_file)

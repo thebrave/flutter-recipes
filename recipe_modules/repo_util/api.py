@@ -69,6 +69,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
         # Run this out of context
         if clobber:
           self.m.file.rmtree('Clobber cache', checkout_path)
+          self.m.file.rmtree(
+              'Clobber git cache', self.m.path['cache'].join('git')
+          )
           self.m.file.ensure_directory('Ensure checkout cache', checkout_path)
         _InnerCheckout()
       except (self.m.step.StepFailure, self.m.step.InfraFailure):

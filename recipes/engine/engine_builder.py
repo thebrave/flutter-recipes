@@ -26,7 +26,7 @@ DEPS = [
 ]
 
 GIT_REPO = \
-    'https://chromium.googlesource.com/external/github.com/flutter/engine'
+    'https://flutter.googlesource.com/mirrors/engine'
 
 PROPERTIES = InputProperties
 

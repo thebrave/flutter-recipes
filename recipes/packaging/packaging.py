@@ -49,7 +49,7 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch):
   # to package, to find out the hash to use, and again here so that we have the
   # current version of the packaging script.
   api.git.checkout(
-      'https://chromium.googlesource.com/external/github.com/flutter/flutter',
+      'https://flutter.googlesource.com/mirrors/engine',
       ref='master',
       recursive=True,
       set_got_revision=True

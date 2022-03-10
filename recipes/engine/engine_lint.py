@@ -32,9 +32,7 @@ DEPS = [
     'recipe_engine/step',
 ]
 
-GIT_REPO = (
-   'https://chromium.googlesource.com/external/github.com/flutter/engine'
-)
+GIT_REPO = 'https://flutter.googlesource.com/mirrors/engine'
 
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties

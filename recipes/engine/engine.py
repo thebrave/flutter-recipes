@@ -54,7 +54,7 @@ FUCHSIA_ARTIFACTS_BUCKET_NAME = 'fuchsia-artifacts-release'
 FUCHSIA_ARTIFACTS_DEBUG_NAMESPACE = 'debug'
 ICU_DATA_PATH = 'third_party/icu/flutter/icudtl.dat'
 GIT_REPO = (
-    'https://chromium.googlesource.com/external/github.com/flutter/engine'
+    'https://flutter.googlesource.com/mirrors/engine'
 )
 
 PROPERTIES = InputProperties

@@ -160,7 +160,7 @@ def GenTests(api):
         ),
         api.buildbucket.ci_build(
             builder='Linux Engine',
-            git_repo='https://chromium.googlesource.com/external/github.com/flutter/engine',
+            git_repo='https://flutter.googlesource.com/mirrors/engine',
             project='flutter',
             revision='abcd1234',
         ),
@@ -186,7 +186,7 @@ def GenTests(api):
         ),
         api.buildbucket.ci_build(
             builder='Linux Engine',
-            git_repo='https://chromium.googlesource.com/external/github.com/flutter/engine',
+            git_repo='https://flutter.googlesource.com/mirrors/engine',
             project='flutter',
             revision='abcd1234',
         ),

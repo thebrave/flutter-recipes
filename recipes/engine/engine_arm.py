@@ -39,7 +39,7 @@ BUCKET_NAME = 'flutter_infra_release'
 MAVEN_BUCKET_NAME = 'download.flutter.io'
 ICU_DATA_PATH = 'third_party/icu/flutter/icudtl.dat'
 GIT_REPO = (
-    'https://chromium.googlesource.com/external/github.com/flutter/engine')
+    'https://flutter.googlesource.com/mirrors/engine')
 
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties

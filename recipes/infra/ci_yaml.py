@@ -123,7 +123,7 @@ def GenTests(api):
       'basic',
       api.buildbucket.ci_build(
           bucket='prod',
-          git_repo='https://chromium.googlesource.com/external/github.com/flutter/engine',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
           revision = 'abc123'
       ),
       api.properties(
@@ -140,7 +140,7 @@ def GenTests(api):
       'release',
       api.buildbucket.ci_build(
           bucket='prod',
-          git_repo='https://chromium.googlesource.com/external/github.com/flutter/engine',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
           revision = 'abc123'
       ),
       api.properties(
@@ -157,7 +157,7 @@ def GenTests(api):
       'staging',
       api.buildbucket.ci_build(
           bucket='staging',
-          git_repo='https://chromium.googlesource.com/external/github.com/flutter/engine',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
           revision = 'abc123'
       ),
       api.properties(

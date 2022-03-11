@@ -40,9 +40,7 @@ DEPS = [
     'recipe_engine/swarming',
 ]
 
-GIT_REPO = (
-    'https://chromium.googlesource.com/external/github.com/flutter/engine'
-)
+GIT_REPO = 'https://flutter.googlesource.com/mirrors/engine'
 
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties

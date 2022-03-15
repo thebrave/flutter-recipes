@@ -105,6 +105,7 @@ def DoLints(api):
         RunGN(
             api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto',
         )
+        Build(api, 'ios_debug_sim')
         Lint(api, 'ios_debug_sim')
 
 

@@ -39,7 +39,7 @@
       "-root",
       "[CACHE]/osx_sdk",
       "-ensure-file",
-      "infra/tools/mac_toolchain/${platform} git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1",
+      "infra/tools/mac_toolchain/${platform} latest",
       "-max-threads",
       "0",
       "-json-output",
@@ -70,7 +70,7 @@
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:723\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
@@ -88,7 +88,9 @@
       "-xcode-version",
       "9f2000",
       "-output-dir",
-      "[CACHE]/osx_sdk/XCode.app"
+      "[CACHE]/osx_sdk/XCode.app",
+      "-cipd-package-prefix",
+      "flutter_internal/ios/xcode"
     ],
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
@@ -139,6 +141,35 @@
     },
     "infra_step": true,
     "name": "Docs.select XCode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "simctl",
+      "list"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "Docs.list simulators",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

@@ -8,7 +8,7 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
     'depot_tools/gsutil',
-    'depot_tools/osx_sdk',
+    'flutter/osx_sdk',
     'flutter/zip',
     'recipe_engine/buildbucket',
     'recipe_engine/file',

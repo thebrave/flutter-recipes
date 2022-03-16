@@ -1,10 +1,10 @@
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
-    'depot_tools/osx_sdk',
     'flutter/firebase',
     'flutter/flutter_deps',
     'flutter/kms',
+    'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/test_utils',
     'recipe_engine/context',

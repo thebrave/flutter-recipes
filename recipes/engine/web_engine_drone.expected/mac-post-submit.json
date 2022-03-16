@@ -405,7 +405,7 @@
       "-root",
       "[CACHE]/osx_sdk",
       "-ensure-file",
-      "infra/tools/mac_toolchain/${platform} git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1",
+      "infra/tools/mac_toolchain/${platform} latest",
       "-max-threads",
       "0",
       "-json-output",
@@ -442,7 +442,7 @@
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:723\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
@@ -460,7 +460,9 @@
       "-xcode-version",
       "9f2000",
       "-output-dir",
-      "[CACHE]/osx_sdk/XCode.app"
+      "[CACHE]/osx_sdk/XCode.app",
+      "-cipd-package-prefix",
+      "flutter_internal/ios/xcode"
     ],
     "cwd": "[CLEANUP]/builder/src/flutter/lib/web_ui",
     "env": {
@@ -522,6 +524,39 @@
     },
     "infra_step": true,
     "name": "select XCode"
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "simctl",
+      "list"
+    ],
+    "cwd": "[CLEANUP]/builder/src/flutter/lib/web_ui",
+    "env": {
+      "ANDROID_HOME": "[CLEANUP]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CLEANUP]/builder",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host_debug_unopt"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CLEANUP]/builder/src/out/host_debug_unopt/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0",
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]",
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "list simulators"
   },
   {
     "cmd": [

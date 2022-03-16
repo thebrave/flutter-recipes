@@ -23,9 +23,9 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
     'depot_tools/depot_tools',
-    'depot_tools/osx_sdk',
     'flutter/flutter_deps',
     'flutter/os_utils',
+    'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/retry',
     'flutter/web_util',

@@ -1343,9 +1343,15 @@ def BuildIOS(api):
   # Simulator doesn't use bitcode.
   # Simulator binary is needed in all runtime modes.
   RunGN(api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto')
-  RunGN(api, '--ios', '--runtime-mode', 'debug', '--simulator', '--simulator-cpu=arm64', '--no-lto', '--no-goma')
   Build(api, 'ios_debug_sim')
-  Build(api, 'ios_debug_sim_arm64')
+
+  # This build uses Xcode, so cannot use goma. Instead it uses autoninja to
+  # parallelize the build.
+  RunGN(
+      api, '--ios', '--runtime-mode', 'debug', '--simulator',
+      '--simulator-cpu=arm64', '--no-lto', '--no-goma'
+  )
+  AutoninjaBuild(api, 'ios_debug_sim_arm64')
 
   if api.properties.get('ios_debug', True):
     RunGN(api, '--ios', '--runtime-mode', 'debug', '--bitcode')
@@ -1366,6 +1372,7 @@ def BuildIOS(api):
     RunGN(
         api, '--ios', '--runtime-mode', 'profile', '--bitcode', '--ios-cpu=arm'
     )
+
     Build(api, 'ios_profile')
     Build(api, 'ios_profile_arm')
     PackageIOSVariant(
@@ -1379,10 +1386,8 @@ def BuildIOS(api):
         api, '--ios', '--runtime-mode', 'release', '--bitcode', '--no-goma',
         '--ios-cpu=arm'
     )
-    x64_release = api.futures.spawn(AutoninjaBuild, api, 'ios_release')
-    arm64_release = api.futures.spawn(AutoninjaBuild, api, 'ios_release_arm')
-    for rel_future in api.futures.iwait([x64_release, arm64_release]):
-      rel_future.result()
+    AutoninjaBuild(api, 'ios_release')
+    AutoninjaBuild(api, 'ios_release_arm')
     PackageIOSVariant(
         api, 'release', 'ios_release', 'ios_release_arm', 'ios_debug_sim',
         'ios_debug_sim_arm64', 'ios-release'

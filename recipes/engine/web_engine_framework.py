@@ -134,7 +134,7 @@ def RunSteps(api, properties, env_properties):
     f_env, f_env_prefix = api.repo_util.flutter_environment(flutter_checkout_path)
     f_env['FLUTTER_CLONE_REPO_PATH'] = flutter_checkout_path
 
-    deps = [{'dependency': 'chrome_and_driver'}, {"dependency": "curl"}]
+    deps = [{'dependency': 'chrome_and_driver', 'version': 'version:96.2'}, {"dependency": "curl"}]
     api.flutter_deps.required_deps(f_env, f_env_prefix, deps)
     with api.context(cwd=cache_root, env=f_env, env_prefixes=f_env_prefix):
       configure_script = checkout.join(
@@ -171,7 +171,7 @@ def schedule_builds(api, cas_hash, ref, url):
   reqs = []
 
   shard = api.properties.get('shard')
-  dependencies = [{'dependency': 'chrome_and_driver'}]
+  dependencies = [{'dependency': 'chrome_and_driver', 'version': 'version:96.2'}]
   for subshard in api.properties.get('subshards'):
     task_name = '%s-%s' % (shard, subshard)
     drone_props = {
@@ -200,7 +200,7 @@ def GenTests(api):
       'linux-pre-submit',
       api.repo_util.flutter_environment_data(api.path['cache'].join('flutter')),
       api.properties(
-          dependencies=[{'dependency': 'chrome_and_driver'}],
+          dependencies=[{'dependency': 'chrome_and_driver', 'version': 'version:96.2'}],
           shard='web_tests',
           subshards=['0', '1_last'],
           goma_jobs='200',

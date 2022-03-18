@@ -68,7 +68,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
         output = self.m.python(
             'Start Android emulator (API level %s)' % self.version,
             avd_script_path,
-            ['start', '--no-read-only', '--writable-system', '--avd-config', avd_config],
+            ['start', '--no-read-only', '--writable-system', '--wipe-data', '--avd-config', avd_config],
             stdout=self.m.raw_io.output_text()
         ).stdout
         m = re.match('.*pid: (\d+)\)', output)

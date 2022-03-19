@@ -22,6 +22,7 @@ DEPS = [
     'flutter/os_utils',
     'flutter/repo_util',
     'flutter/shard_util',
+    'flutter/shard_util_v2',
     'fuchsia/cas_util',
     'fuchsia/goma',
     'recipe_engine/buildbucket',
@@ -134,7 +135,7 @@ def RunSteps(api, properties, env_properties):
     f_env, f_env_prefix = api.repo_util.flutter_environment(flutter_checkout_path)
     f_env['FLUTTER_CLONE_REPO_PATH'] = flutter_checkout_path
 
-    deps = [{'dependency': 'chrome_and_driver', 'version': 'version:96.2'}, {"dependency": "curl"}]
+    deps = api.properties.get('dependencies', [])
     api.flutter_deps.required_deps(f_env, f_env_prefix, deps)
     with api.context(cwd=cache_root, env=f_env, env_prefixes=f_env_prefix):
       configure_script = checkout.join(
@@ -154,7 +155,7 @@ def RunSteps(api, properties, env_properties):
       assert (len(ref) > 0)
     # The SHA of the youngest commit older than the engine in the framework
     # side is kept in `ref`.
-    builds = schedule_builds(api, cas_hash, ref.strip(), url)
+    builds = schedule_builds(api, cas_hash, ref.strip(), url, deps)
 
 
   with api.context(cwd=cache_root, env=env, env_prefixes=env_prefixes):
@@ -166,18 +167,17 @@ def RunSteps(api, properties, env_properties):
     )
 
 
-def schedule_builds(api, cas_hash, ref, url):
+def schedule_builds(api, cas_hash, ref, url, deps):
   """Schedules one subbuild per subshard."""
   reqs = []
 
   shard = api.properties.get('shard')
-  dependencies = [{'dependency': 'chrome_and_driver', 'version': 'version:96.2'}]
   for subshard in api.properties.get('subshards'):
     task_name = '%s-%s' % (shard, subshard)
     drone_props = {
         'subshard': subshard,
         'shard': shard,
-        'dependencies': dependencies,
+        'dependencies': [api.shard_util_v2.unfreeze_dict(dep) for dep in deps],
         'task_name': task_name,
         'local_engine_cas_hash': cas_hash,
     }

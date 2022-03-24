@@ -42,6 +42,7 @@ def RunSteps(api):
         'flutter',
         checkout_path=flutter_checkout_path,
         ref=flutter_ref,
+        url='https://github.com/flutter/flutter',
     )
   env, env_prefixes = api.repo_util.flutter_environment(flutter_checkout_path)
   with api.step.nest('Dependencies'):

@@ -91,7 +91,7 @@ def RunSteps(api):
     )
   env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
   git_url = \
-    'https://chromium.googlesource.com/external/github.com/flutter/flutter'
+    'https://flutter.googlesource.com/mirrors/flutter'
   git_url = api.properties.get('git_url') or git_url
   git_hash = api.git.checkout(
       git_url, ref=git_ref, recursive=True, set_got_revision=True, tags=True

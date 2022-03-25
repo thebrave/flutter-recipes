@@ -4,7 +4,7 @@
 
 REPOS = {
     'flutter':
-        'https://chromium.googlesource.com/external/github.com/flutter/flutter',
+        'https://flutter.googlesource.com/mirrors/flutter',
     'engine':
         'https://flutter.googlesource.com/mirrors/engine',
     'cocoon':

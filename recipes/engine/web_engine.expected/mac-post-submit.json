@@ -897,9 +897,8 @@
     "cmd": [
       "[CACHE]/builder/src/out/host_debug_unopt/dart-sdk/bin/dart",
       "dev/felt.dart",
-      "test",
-      "--browser",
-      "safari"
+      "run",
+      "compile_tests"
     ],
     "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
     "env": {
@@ -922,7 +921,37 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "test: felt test safari desktop"
+    "name": "test: Compile tests"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/out/host_debug_unopt/dart-sdk/bin/dart",
+      "dev/felt.dart",
+      "run",
+      "run_tests_safari"
+    ],
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "test: Run tests on macOS Safari"
   },
   {
     "cmd": [
@@ -1076,10 +1105,9 @@
     "cmd": [
       "[CACHE]/builder/src/out/host_debug_unopt/dart-sdk/bin/dart",
       "dev/felt.dart",
-      "test",
-      "--browser",
-      "ios-safari",
-      "--require-skia-gold"
+      "run",
+      "--require-skia-gold",
+      "run_tests_ios-safari"
     ],
     "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
     "env": {
@@ -1102,7 +1130,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "test: felt ios-safari test"
+    "name": "test: Run tests on iOS Safari"
   },
   {
     "cmd": [],

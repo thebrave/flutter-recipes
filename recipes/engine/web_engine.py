@@ -186,18 +186,25 @@ def RunSteps(api, properties, env_properties):
       api.step('dart pub get in web_engine_tester', [local_dart, 'pub', 'get'])
     with api.context(cwd=checkout.join('flutter', 'lib', 'web_ui')):
       api.step('dart pub get in web_engine_tester', [local_dart, 'pub', 'get'])
-      # TODO(nurhan): carry licenses to another shard when we have more
-      # resources.
       felt_licenses = copy.deepcopy(felt_cmd)
       felt_licenses.append('check-licenses')
       api.step('felt licenses', felt_licenses)
       if api.platform.is_mac:
-        additional_args_safari_desktop = ['--browser', 'safari']
-        felt_test_safari_desktop = copy.deepcopy(felt_cmd)
-        felt_test_safari_desktop.append('test')
-        felt_test_safari_desktop.extend(additional_args_safari_desktop)
+        # On macOS, compile tests once, then reuse compiled tests across iOS and
+        # desktop Safari.
+        felt_run_compile_tests = copy.deepcopy(felt_cmd)
+        felt_run_compile_tests.append('run')
+        felt_run_compile_tests.append('compile_tests')
         api.retry.step(
-            api.test_utils.test_step_name('felt test safari desktop'),
+            api.test_utils.test_step_name('Compile tests'),
+            felt_run_compile_tests
+        )
+
+        felt_test_safari_desktop = copy.deepcopy(felt_cmd)
+        felt_test_safari_desktop.append('run')
+        felt_test_safari_desktop.append('run_tests_safari')
+        api.retry.step(
+            api.test_utils.test_step_name('Run tests on macOS Safari'),
             felt_test_safari_desktop
         )
       if api.platform.is_linux:
@@ -220,10 +227,11 @@ def RunSteps(api, properties, env_properties):
         with SetupXcode(api):
           with recipe_api.defer_results():
             felt_test = copy.deepcopy(felt_cmd)
-            felt_test.append('test')
-            felt_test.extend(additional_args)
+            felt_test.append('run')
+            felt_test.append('--require-skia-gold')
+            felt_test.append('run_tests_ios-safari')
             api.step(
-                api.test_utils.test_step_name('felt ios-safari test'), felt_test
+                api.test_utils.test_step_name('Run tests on iOS Safari'), felt_test
             )
             CleanUpProcesses(api)
       else:

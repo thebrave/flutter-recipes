@@ -276,7 +276,7 @@
   },
   {
     "cmd": [
-      "python3",
+      "vpython3",
       "-u",
       "RECIPE_MODULE[depot_tools::bot_update]/resources/bot_update.py",
       "--spec-path",
@@ -375,7 +375,7 @@
   },
   {
     "cmd": [
-      "python3",
+      "vpython3",
       "-u",
       "RECIPE_REPO[depot_tools]/gclient.py",
       "runhooks"
@@ -422,7 +422,7 @@
   },
   {
     "cmd": [
-      "python3",
+      "vpython3",
       "-u",
       "RECIPE_REPO[depot_tools]/gclient.py",
       "runhooks"
@@ -651,8 +651,222 @@
     "name": "setup goma"
   },
   {
+    "cmd": [],
+    "name": "setup goma.ensure cpython3",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
     "cmd": [
-      "python3",
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[fuchsia::python3]/resources/tool_manifest.json",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GLOG_log_dir": "[CLEANUP]",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
+      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
+      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
+      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
+      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "setup goma.ensure cpython3.read manifest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/cpython3\",@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
+      "@@@STEP_LOG_END@tool_manifest.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "setup goma.ensure cpython3.install path/to/cpython3",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GLOG_log_dir": "[CLEANUP]",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
+      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
+      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
+      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
+      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "setup goma.ensure cpython3.install path/to/cpython3.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version",
+      "-ensure-file",
+      "path/to/cpython3 version:pinned-version",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GLOG_log_dir": "[CLEANUP]",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
+      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
+      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
+      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
+      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "setup goma.ensure cpython3.install path/to/cpython3.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/cpython3\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -759,7 +973,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -825,7 +1040,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -879,7 +1095,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -1288,7 +1505,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -1395,7 +1613,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -1461,7 +1680,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -1515,7 +1735,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -1735,7 +1956,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -1841,7 +2063,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -1907,7 +2130,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -1961,7 +2185,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -2181,7 +2406,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -2287,7 +2513,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -2353,7 +2580,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -2407,7 +2635,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -2675,7 +2904,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -2781,7 +3011,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -2847,7 +3078,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -2901,7 +3133,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -4071,7 +4304,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -4177,7 +4411,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -4243,7 +4478,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -4297,7 +4533,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -4517,7 +4754,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -4623,7 +4861,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -4689,7 +4928,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -4743,7 +4983,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -4963,7 +5204,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -5069,7 +5311,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -5135,7 +5378,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -5189,7 +5433,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -5805,7 +6050,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -5911,7 +6157,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -5977,7 +6224,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -6031,7 +6279,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -6296,7 +6545,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -6403,7 +6653,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -6469,7 +6720,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -6523,7 +6775,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -6925,7 +7178,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -7031,7 +7285,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -7097,7 +7352,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -7151,7 +7407,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -7416,7 +7673,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -7523,7 +7781,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -7589,7 +7848,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -7643,7 +7903,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -8133,7 +8394,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -8239,7 +8501,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -8305,7 +8568,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -8359,7 +8623,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -8799,7 +9064,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -8905,7 +9171,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -8971,7 +9238,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -9025,7 +9293,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -9465,7 +9734,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -9571,7 +9841,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -9637,7 +9908,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -9691,7 +9963,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -10087,7 +10360,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -10194,7 +10468,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -10260,7 +10535,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -10314,7 +10590,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -11460,7 +11737,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -11574,7 +11852,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -11640,7 +11919,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -11694,7 +11974,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -15005,7 +15286,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -15113,7 +15395,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -15179,7 +15462,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -15233,7 +15517,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -15547,7 +15832,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -15655,7 +15941,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "[CACHE]/goma/client/jsonstatus"
@@ -15721,7 +16008,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -15775,7 +16063,8 @@
   },
   {
     "cmd": [
-      "python3",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "-u",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -16818,7 +17107,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "-u",
       "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
       "--",

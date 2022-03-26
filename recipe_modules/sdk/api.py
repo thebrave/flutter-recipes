@@ -232,17 +232,24 @@ class SDKApi(recipe_api.RecipeApi):
       zbi_tool_path: (optional) path to the zbi binary tool.
         if None, we will fetch the zbi tool from fuchsia sdk in GCS.
     """
+    zbi_path = None
     if zbi_tool_path:
-      self.m.zbi.zbi_path = zbi_tool_path
-    if not self.m.zbi.zbi_path:
-      self.m.zbi.zbi_path = self.m.path.join(self.sdk_path, 'tools', 'zbi')
+      zbi_path = zbi_tool_path
+    if not zbi_path:
+      zbi_path = self.m.path.join(self.sdk_path, 'tools', 'zbi')
     if not zbi_output_path:
       zbi_output_path = zbi_input_path
-    self.m.zbi.copy_and_extend(
-        step_name='authorize zbi',
-        input_image=zbi_input_path,
-        output_image=zbi_output_path,
-        manifest={'data/ssh/authorized_keys': ssh_key_path},
+
+    self.m.step(
+        "authorize zbi",
+        [
+            zbi_path,
+            "--output",
+            self.m.raw_io.output_text(leak_to=zbi_output_path),
+            zbi_input_path,
+            "--entry",
+            "%s=%s" % ('data/ssh/authorized_keys', ssh_key_path),
+        ],
     )
 
   def _select_package_to_download(self):

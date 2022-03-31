@@ -183,24 +183,21 @@ class TestUtilsApi(recipe_api.RecipeApi):
           'arch': 'intel',
           'host_type': 'linux',
           'device_version': 'android-25',
-          'device_type': 'Moto G Play',
-          'host_version': 'debian-10.11'
+          'device_type': 'Moto G Play'
         }
       Mac/ios:
         {
           'arch': 'm1',
           'host_type': 'mac',
           'device_version': 'iOS-14.4.2',
-          'device_type': 'iPhone 6s',
-          'host_version': 'mac-10.16'
+          'device_type': 'iPhone 6s'
         }
       Windows/android:
         {
           'arch': 'intel',
           'host_type': 'win',
           'device_version': 'android-25',
-          'device_type': 'Moto G Play',
-          'host_version': 'windows-10.0'
+          'device_type': 'Moto G Play'
         }
     """
     device_tags = {}
@@ -243,18 +240,6 @@ class TestUtilsApi(recipe_api.RecipeApi):
       device_tags['device_type'] = 'none'
       device_tags['device_version'] = 'none'
 
-    # Collect host tags.
-    if self.m.platform.is_mac:
-      device_tags['host_version'] = 'mac-' + str(self.m.platform.mac_release)
-    elif self.m.platform.is_linux:
-      device_tags['host_version'] = 'debian-' + _get_tag(
-          'Find debian version', ['cat', '/etc/debian_version']
-      )
-    else:
-      win_version = _get_tag('Find windows version', ['cmd.exe', '/c', 'ver'])
-
-      matches = re.search(_WINDOWS_OS_RE, win_version.strip(), re.IGNORECASE)
-      device_tags['host_version'] = 'windows-' + matches.group(1) if matches else ''
     device_tags['host_type'] = self.m.platform.name
     device_tags['arch'] = self.m.platform.arch
 

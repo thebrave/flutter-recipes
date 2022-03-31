@@ -47,11 +47,7 @@ def GenTests(api):
       api.step_data(
           'Find device type',
           stdout=api.raw_io.output_text('iPhone8,1'),
-      ),
-      api.step_data(
-          'Find device version',
-          stdout=api.raw_io.output_text('14'),
-      ),
+      )
   )
   yield api.test(
       'flaky',
@@ -60,11 +56,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
       ),
       api.properties(tags=['hostonly', 'android']),
-      api.platform.name('linux'),
-      api.step_data(
-          'Find debian version',
-          stdout=api.raw_io.output_text('10'),
-      ),
+      api.platform.name('linux')
   )
   yield api.test(
       'failing',

@@ -20,6 +20,9 @@ def RunSteps(api):
   api.repo_util.checkout('engine', api.path['start_dir'].join('engine'), ref='refs/heads/main')
   api.repo_util.checkout('cocoon', api.path['start_dir'].join('cocoon'), ref='refs/heads/main')
   api.repo_util.checkout('packages', api.path['start_dir'].join('packages'), ref='refs/heads/main')
+  # we need an override because all of the previous step calls on checkout directly overrides the ref variable
+  api.repo_util.checkout('flutter', flutter_checkout_path, ref= 'refs/heads/beta')
+
   env, env_paths = api.repo_util.engine_environment(flutter_checkout_path)
   env, env_paths = api.repo_util.flutter_environment(flutter_checkout_path)
   api.repo_util.in_release_and_main(flutter_checkout_path)

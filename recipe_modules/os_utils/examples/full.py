@@ -25,6 +25,8 @@ def RunSteps(api):
   api.os_utils.enable_long_paths()
   api.os_utils.dismiss_dialogs()
   api.os_utils.print_pub_certs()
+  api.os_utils.is_symlink('/a/b/c/simlink')
+  api.os_utils.symlink('/a/file', '/a/b/c/simlink')
 
 
 def GenTests(api):

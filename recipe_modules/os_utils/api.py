@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 from contextlib import contextmanager
 from recipe_engine import recipe_api
 
@@ -35,6 +36,22 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       self.m.step(
           'Print pub.dev certs',
           ['powershell.exe', cmd],
+          infra_step=True,
+      )
+
+  def is_symlink(self, path):
+    """Returns if a path points to a symlink or not."""
+    return os.path.islink(self.m.path.abspath(path))
+
+  def symlink(self, source, dest):
+    """Creates a symbolic link.
+
+    Creates a symbolic link in mac platforms.
+    """
+    if self.m.platform.is_mac:
+      self.m.step(
+          'Link %s to %s' % (dest, source),
+          ['ln', '-s', source, dest],
           infra_step=True,
       )
 

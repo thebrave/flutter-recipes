@@ -185,11 +185,11 @@ class RepoUtilApi(recipe_api.RecipeApi):
         #   "--contains",
         #   ""
     # This manifests that what the test train is seeking is only code coverage, and it has no interest in performing
-    # the exact logic and properly setting up the variables. 
+    # the exact logic and properly setting up the variables.
     # Now that we know tests are placeholders and only line nubmer based coverage is checked, we are left with two options:
     # Either set some sort of api property and pass in to this function for override (which
-    # is not reasonable), or squeeze the if check into a one-liner. 
-      return branches if len(branches) > 0 else self.m.properties.get('git_branch', '')
+    # is not reasonable), or squeeze the if check into a one-liner.
+      return branches[0] if len(branches) > 0 else self.m.properties.get('git_branch', '')
 
     return self.m.properties.get('git_branch', '')
 

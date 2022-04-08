@@ -158,6 +158,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
     try:
       with self.m.context(infra_steps=True):
         app = self._ensure_sdk(kind)
+        self.m.os_utils.kill_simulators()
         self.m.step('select XCode', ['sudo', 'xcode-select', '--switch', app])
         self.m.step('list simulators', ['xcrun', 'simctl', 'list'])
       yield
@@ -189,9 +190,18 @@ class OSXSDKApi(recipe_api.RecipeApi):
             sdk_app,
             '-cipd-package-prefix',
             'flutter_internal/ios/xcode',
+            '-with-runtime=%s' % (not bool(self._runtime_versions))
         ],
     )
     if self._runtime_versions:
+      # Remove default runtime
+      self.remove_runtime(sdk_app.join(*_RUNTIMESPATH).join('iOS.simruntime'))
+      for version in self._runtime_versions:
+        runtime_name = 'iOS %s.simruntime' % version.lower().replace('ios-', '').replace('-', '.')
+        dest = sdk_app.join(*_RUNTIMESPATH).join(runtime_name)
+        self.remove_runtime(dest)
+
+      self.m.file.ensure_directory('Ensuring runtimes directory', sdk_app.join(*_RUNTIMESPATH))
       for version in self._runtime_versions:
         runtime_cache_dir = self.m.path['cache'].join('xcode_runtime_%s' % version.lower())
         self.m.step(
@@ -209,8 +219,15 @@ class OSXSDKApi(recipe_api.RecipeApi):
         )
         # Move the runtimes
         runtime_name = 'iOS %s.simruntime' % version.lower().replace('ios-', '').replace('-', '.')
-        source = runtime_cache_dir.join(runtime_name)
+        path_with_version = runtime_cache_dir.join(runtime_name)
+        # If the runtime was the default for xcode the cipd bundle contains a directory called iOS.simruntime otherwise
+        # it contains a folder called "iOS <version>.simruntime".
+        source = path_with_version if self.m.path.exists(path_with_version) else runtime_cache_dir.join('iOS.simruntime')
         dest = sdk_app.join(*_RUNTIMESPATH).join(runtime_name)
-        self.m.file.rmglob('Removing stale %s' % runtime_name, sdk_app.join(*_RUNTIMESPATH), runtime_name)
-        self.m.file.symlink('Moving %s to final dest' % version.lower(), source, dest)
+        self.m.file.copytree('Copy runtime to %s' % dest, source, dest, symlinks=True)
     return sdk_app
+
+  def remove_runtime(self, dest):
+    is_symlink = self.m.os_utils.is_symlink(dest)
+    msg = 'Removing %s' % dest
+    self.m.file.remove(msg, dest) if is_symlink else self.m.file.rmtree(msg, dest)

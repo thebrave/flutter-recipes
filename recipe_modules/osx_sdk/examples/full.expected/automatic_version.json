@@ -39,10 +39,20 @@
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app",
       "-cipd-package-prefix",
-      "flutter_internal/ios/xcode"
+      "flutter_internal/ios/xcode",
+      "-with-runtime=True"
     ],
     "infra_step": true,
     "name": "install xcode"
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "com.apple.CoreSimulator.CoreSimulatorDevice"
+    ],
+    "infra_step": true,
+    "name": "kill dart"
   },
   {
     "cmd": [

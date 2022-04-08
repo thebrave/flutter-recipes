@@ -90,7 +90,8 @@
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app",
       "-cipd-package-prefix",
-      "flutter_internal/ios/xcode"
+      "flutter_internal/ios/xcode",
+      "-with-runtime=True"
     ],
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
@@ -111,6 +112,35 @@
     },
     "infra_step": true,
     "name": "Docs.install xcode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "com.apple.CoreSimulator.CoreSimulatorDevice"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "Docs.kill dart",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

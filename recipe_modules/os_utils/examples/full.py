@@ -27,9 +27,13 @@ def RunSteps(api):
   api.os_utils.print_pub_certs()
   api.os_utils.is_symlink('/a/b/c/simlink')
   api.os_utils.symlink('/a/file', '/a/b/c/simlink')
+  api.os_utils.kill_simulators()
 
 
 def GenTests(api):
+  # For coverage.
+  api.os_utils.is_symlink(True)
+
   yield api.test(
       'basic',
       api.platform('win', 64),

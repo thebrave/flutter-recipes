@@ -9,8 +9,13 @@ from recipe_engine import recipe_api
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
 
-class FlutterDepsApi(recipe_api.RecipeApi):
+class OsUtilsApi(recipe_api.RecipeApi):
   """Operating system utilities."""
+
+  def initialize(self):
+    self._mock_is_symlink = None
+    if self._test_data.enabled:
+      self._mock_is_symlink = self._test_data.get('is_symlink', True)
 
   def _kill_win(self, name, exe_name):
     """Kills all the windows processes with a given name.
@@ -41,7 +46,8 @@ class FlutterDepsApi(recipe_api.RecipeApi):
 
   def is_symlink(self, path):
     """Returns if a path points to a symlink or not."""
-    return os.path.islink(self.m.path.abspath(path))
+    is_symlink = os.path.islink(self.m.path.abspath(path))
+    return is_symlink if self._mock_is_symlink is None else self._mock_is_symlink
 
   def symlink(self, source, dest):
     """Creates a symbolic link.
@@ -99,6 +105,19 @@ class FlutterDepsApi(recipe_api.RecipeApi):
           'OS info',
           cmd=['top', '-b', '-n', '3', '-o', '%MEM'],
           infra_step=True,
+      )
+
+
+  def kill_simulators(self):
+    """Kills any open simulators.
+
+    This is to ensure builds use xcode from a clean state.
+    """
+    if self.m.platform.is_mac:
+      self.m.step(
+          'kill dart', ['killall', '-9', 'com.apple.CoreSimulator.CoreSimulatorDevice'],
+          ok_ret='any',
+          infra_step=True
       )
 
   def kill_processes(self):
@@ -187,8 +206,8 @@ class FlutterDepsApi(recipe_api.RecipeApi):
 
   def shutdown_simulators(self):
     """It stops simulators if task is running on a devicelab bot."""
-    if str(self.m.swarming.bot_id
-          ).startswith('flutter-devicelab') and self.m.platform.is_mac:
+    if (str(self.m.swarming.bot_id).startswith('flutter-devicelab')
+        and self.m.platform.is_mac):
       with self.m.step.nest('Shutdown simulators'):
         self.m.step(
             'Shutdown simulators',

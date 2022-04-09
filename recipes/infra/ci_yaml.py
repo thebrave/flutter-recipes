@@ -38,7 +38,7 @@ def RunSteps(api):
   infra_path = start_path.join('infra')
 
   # Checkout the stable version of Flutter.
-  flutter_git_ref = 'refs/heads/stable'
+  flutter_git_ref = 'refs/heads/master'
   api.repo_util.checkout('flutter', flutter_path, ref=flutter_git_ref)
 
   # Checkout latest version of flutter/cocoon.

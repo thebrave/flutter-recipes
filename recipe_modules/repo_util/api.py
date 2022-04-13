@@ -122,7 +122,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             tags=True
         )
 
-      return self.m.utils.retry(do_checkout, max_attempts=2)
+      return self.m.utils.retry(do_checkout, sleep=10.0, backoff_factor=2.5, max_attempts=3)
 
   def in_release_and_main(self, checkout_path):
     """Determine if a commit was already tested on main branch.

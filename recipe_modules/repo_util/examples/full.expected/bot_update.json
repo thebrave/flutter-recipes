@@ -556,10 +556,7 @@
   },
   {
     "cmd": [],
-    "name": "Checkout source code",
-    "~followup_annotations": [
-      "@@@STEP_EXCEPTION@@@"
-    ]
+    "name": "Checkout source code"
   },
   {
     "cmd": [
@@ -709,24 +706,19 @@
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
       "@@@SET_BUILD_PROPERTY@got_engine_revision@\"a63681edc0f69a72604596b16c7986513e809995\"@@@",
-      "@@@SET_BUILD_PROPERTY@got_engine_revision_cp@\"refs/pull/1/head@{#84512}\"@@@",
-      "@@@STEP_EXCEPTION@@@"
+      "@@@SET_BUILD_PROPERTY@got_engine_revision_cp@\"refs/pull/1/head@{#84512}\"@@@"
     ]
   },
   {
     "cmd": [
-      "vpython",
+      "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[START_DIR]/engine"
+      "RECIPE_REPO[depot_tools]/gclient.py",
+      "runhooks"
     ],
     "cwd": "[START_DIR]/engine",
     "env_suffixes": {
       "DEPOT_TOOLS_UPDATE": [
-        "0",
         "0"
       ],
       "PATH": [
@@ -734,93 +726,12 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "infra_step": true,
-    "name": "Checkout source code.Clobber cache (2)",
+    "name": "Checkout source code.gclient runhooks",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
-    "cmd": [
-      "vpython",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CACHE]/git"
-    ],
-    "cwd": "[START_DIR]/engine",
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0",
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]",
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "Checkout source code.Clobber git cache (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[START_DIR]/engine"
-    ],
-    "cwd": "[START_DIR]/engine",
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0",
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]",
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "Checkout source code.Ensure checkout cache (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "RECIPE CRASH (Uncaught exception)",
-    "~followup_annotations": [
-      "@@@STEP_EXCEPTION@@@",
-      "The recipe has crashed at point 'Uncaught exception'!",
-      "",
-      "Traceback (most recent call last):",
-      "  File \"RECIPE_REPO[flutter]/recipe_modules/repo_util/examples/full.py\", line 29, in RunSteps",
-      "    api.repo_util.engine_checkout(api.path['start_dir'].join('engine'), {}, {})",
-      "  File \"RECIPE_REPO[flutter]/recipe_modules/repo_util/api.py\", line 86, in engine_checkout",
-      "    self.m.retry.wrap(_InnerCheckout, step_name='Checkout source', sleep=10.0, backoff_factor=2.5)",
-      "  File \"RECIPE_REPO[flutter]/recipe_modules/retry/api.py\", line 88, in wrap",
-      "    step = self.m.step.active_result",
-      "  File \"RECIPE_REPO[recipe_engine]/recipe_modules/step/api.py\", in active_result",
-      "    return self.step_client.previous_step_result()",
-      "  File \"RECIPE_REPO[recipe_engine]/recipe_engine/recipe_api.py\", in previous_step_result",
-      "    raise ValueError(",
-      "ValueError('No steps have been run yet, and you are asking for a previous step result.')"
-    ]
-  },
-  {
-    "failure": {
-      "humanReason": "Uncaught Exception: ValueError('No steps have been run yet, and you are asking for a previous step result.')"
-    },
     "name": "$result"
   }
 ]

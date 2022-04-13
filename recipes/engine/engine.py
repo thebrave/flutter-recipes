@@ -1926,34 +1926,6 @@ def GenTests(api):
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
   )
   yield api.test(
-      'first_bot_update_failed',
-      api.buildbucket.ci_build(
-          builder='Linux Host Engine',
-          git_repo='https://github.com/flutter/engine',
-          project='flutter'
-      ),
-      # Next line force a fail condition for the bot update
-      # first execution.
-      api.step_data("Checkout source code.bot_update", retcode=1),
-      collect_build_output,
-      api.runtime(is_experimental=True),
-      api.properties(
-          **{
-              'clobber': False,
-              'git_url': 'https://github.com/flutter/engine',
-              'goma_jobs': '200',
-              'git_ref': 'refs/pull/1/head',
-              'fuchsia_ctl_version': 'version:0.0.2',
-              'build_host': True,
-              'build_fuchsia': True,
-              'build_android_aot': True,
-              'build_android_debug': True,
-              'android_sdk_license': 'android_sdk_hash',
-              'android_sdk_preview_license': 'android_sdk_preview_hash'
-          }
-      ),
-  )
-  yield api.test(
       'gcloud_pubsub_failure',
       api.buildbucket.ci_build(
           builder='Linux Host Engine',

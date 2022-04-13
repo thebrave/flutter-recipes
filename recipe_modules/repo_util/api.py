@@ -44,49 +44,46 @@ class RepoUtilApi(recipe_api.RecipeApi):
       git_id = self.m.properties['git_ref']
       git_ref = self.m.properties['git_ref']
 
+    # Inner function to clobber the cache
+    def _ClobberCache():
+      # Ensure depot tools is in the path to prevent problems with vpython not
+      # being found after a failure.
+      with self.m.depot_tools.on_path():
+        self.m.file.rmtree('Clobber cache', checkout_path)
+        self.m.file.rmtree(
+            'Clobber git cache', self.m.path['cache'].join('git')
+        )
+        self.m.file.ensure_directory('Ensure checkout cache', checkout_path)
+
     # Inner function to execute code a second time in case of failure.
     def _InnerCheckout():
-      with self.m.context(env=env, env_prefixes=env_prefixes,
-                          cwd=checkout_path), self.m.depot_tools.on_path():
-        src_cfg = self.m.gclient.make_config()
-        soln = src_cfg.solutions.add()
-        soln.name = 'src/flutter'
-        soln.url = git_url
-        soln.revision = git_id
-        soln.managed = False
-        soln.custom_vars = custom_vars
-        src_cfg.parent_got_revision_mapping['parent_got_revision'
-                                           ] = 'got_revision'
-        src_cfg.repo_path_map[git_url] = ('src/flutter', git_ref or 'refs/heads/master')
-        self.m.gclient.c = src_cfg
-        self.m.gclient.c.got_revision_mapping['src/flutter'
-                                             ] = 'got_engine_revision'
-        self.m.bot_update.ensure_checkout()
-        self.m.gclient.runhooks()
-
-    with self.m.step.nest('Checkout source code'):
-      try:
-        # Run this out of context
+      with self.m.step.nest('Checkout source code'):
         if clobber:
-          self.m.file.rmtree('Clobber cache', checkout_path)
-          self.m.file.rmtree(
-              'Clobber git cache', self.m.path['cache'].join('git')
-          )
-          self.m.file.ensure_directory('Ensure checkout cache', checkout_path)
-        _InnerCheckout()
-      except (self.m.step.StepFailure, self.m.step.InfraFailure):
-        # Run this out of context
+          _ClobberCache()
+        with self.m.context(env=env, env_prefixes=env_prefixes,
+                            cwd=checkout_path), self.m.depot_tools.on_path():
+          try:
+            src_cfg = self.m.gclient.make_config()
+            soln = src_cfg.solutions.add()
+            soln.name = 'src/flutter'
+            soln.url = git_url
+            soln.revision = git_id
+            soln.managed = False
+            soln.custom_vars = custom_vars
+            src_cfg.parent_got_revision_mapping['parent_got_revision'
+                                              ] = 'got_revision'
+            src_cfg.repo_path_map[git_url] = ('src/flutter', git_ref or 'refs/heads/master')
+            self.m.gclient.c = src_cfg
+            self.m.gclient.c.got_revision_mapping['src/flutter'
+                                                ] = 'got_engine_revision'
+            self.m.bot_update.ensure_checkout()
+            self.m.gclient.runhooks()
+          except:
+            # On any exception, clean up the cache and raise
+            _ClobberCache()
+            raise
 
-        # Ensure depot tools is in the path to prevent problems with vpython not
-        # being found after a failure.
-        with self.m.depot_tools.on_path():
-          self.m.file.rmtree('Clobber cache', checkout_path)
-          self.m.file.rmtree(
-              'Clobber git cache', self.m.path['cache'].join('git')
-          )
-          self.m.file.ensure_directory('Ensure checkout cache', checkout_path)
-        # Now try a second time
-        _InnerCheckout()
+    self.m.retry.wrap(_InnerCheckout, step_name='Checkout source', sleep=10.0, backoff_factor=2.5)
 
   def checkout(self, name, checkout_path, url=None, ref=None):
     """Checks out a repo and returns sha1 of checked out revision.

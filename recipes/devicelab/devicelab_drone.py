@@ -36,6 +36,9 @@ MAX_TIMEOUT_SECS = 30 * 60
 
 
 def RunSteps(api):
+  # Collect memory/cpu/process before task execution.
+  api.os_utils.collect_os_info()
+
   task_name = api.properties.get("task_name")
   if not task_name:
     raise ValueError('A task_name property is required')
@@ -127,9 +130,7 @@ def RunSteps(api):
               timeout_secs=MAX_TIMEOUT_SECS
           )
         finally:
-          api.logs_util.upload_logs(task_name)
-          # This is to clean up leaked processes.
-          api.os_utils.kill_processes()
+          debug_after_failure(api, task_name)
         if test_status == 'flaky':
           api.test_utils.flaky_step('run %s' % task_name)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
@@ -139,6 +140,15 @@ def RunSteps(api):
         benchmark_tags
     )
     uploadMetricsToCas(api, results_path)
+
+
+def debug_after_failure(api, task_name):
+  """Upload logs and collect OS debug info."""
+  api.logs_util.upload_logs(task_name)
+  # This is to clean up leaked processes.
+  api.os_utils.kill_processes()
+  # Collect memory/cpu/process after task execution.
+  api.os_utils.collect_os_info()
 
 
 def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params):
@@ -165,9 +175,7 @@ def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params):
           timeout_secs=MAX_TIMEOUT_SECS
       )
     finally:
-      api.logs_util.upload_logs(task_name)
-      # This is to clean up leaked processes.
-      api.os_utils.kill_processes()
+      debug_after_failure(api, task_name)
     if test_status == 'flaky':
       api.test_utils.flaky_step('run %s' % task_name)
   return test_status

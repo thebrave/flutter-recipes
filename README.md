@@ -15,12 +15,10 @@ No modifications to flutter/infra are required to work on the recipes.
 
 [Tricium](https://chromium.googlesource.com/infra/infra/+/master/go/src/infra/tricium/README.md) configurations recipes repo.
 
-## Recipe Branching for Releases
+## Testing locally
 
-The script `branch_recipes.py` is used to generate new copies of the LUCI
-recipes for a beta release. See [Recipe Branching for Releases](https://github.com/flutter/flutter/wiki/Recipe-Branching-for-Releases)
-for more information. For usage:
+Running `python recipes.py test train` will execute all of the tests in this repository
 
-```
-$ ./branch_recipes.py --help
-```
+## Troubleshooting
+### `Required binary is not found on PATH: cipd` when testing locally
+You need to ensure [depot_tools](https://chromium.googlesource.com/chromium/tools/depot_tools.git) is installed. See [Depot Tools Installation Tutorial](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up)

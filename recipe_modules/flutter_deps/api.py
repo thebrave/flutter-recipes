@@ -55,6 +55,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     available_deps = {
         'android_sdk': self.android_sdk,
         'android_virtual_device': self.android_virtual_device,
+        'apple_signing': self.apple_signing,
         'certs': self.certs,
         'chrome_and_driver': self.chrome_and_driver,
         'clang': self.clang,
@@ -66,7 +67,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'go_sdk': self.go_sdk,
         'goldctl': self.goldctl,
         'gradle_cache': self.gradle_cache,
-        'ios_signing': self.ios_signing,
+        'ios_signing': self.apple_signing, # TODO(drewroen): Remove this line once ios_signing is not being referenced
         'jazzy': self.jazzy,
         'ninja': self.ninja,
         'open_jdk': self.open_jdk,
@@ -451,7 +452,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
           ['powershell.exe', vs_path.join('install.ps1')],
       )
 
-  def ios_signing(self, env, env_prefixes, version=None):
+  def apple_signing(self, env, env_prefixes, version=None):
     """Sets up mac for code signing.
 
     Args:

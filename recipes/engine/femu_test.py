@@ -88,9 +88,28 @@ def BuildAndTestFuchsia(api, build_script, git_rev):
   RunGN(api, '--fuchsia', '--fuchsia-cpu', 'x64', '--runtime-mode', 'debug',
         '--no-lto')
   Build(api, 'fuchsia_debug_x64', *GetFlutterFuchsiaBuildTargets(False, True))
+
+  # Build with ASAN. This build is unoptimized so it doesn't overwrite the non-ASAN
+  # debug artifacts we just built. Unoptimized builds have the additional benefit of
+  # giving us better debug logging.
+  RunGN(api, '--fuchsia', '--fuchsia-cpu', 'x64', '--runtime-mode', 'debug',
+        '--no-lto', '--unoptimized', '--asan')
+  Build(api, 'fuchsia_debug_unopt_x64', *GetFlutterFuchsiaBuildTargets(False, True))
+
+  # Package the build artifacts and upload to CIPD.
+  #
+  # We pass --skip-build here to take the existing artifacts that have been built
+  # and package them. This will not build fuchsia artifacts despite the name of
+  # the build_script being build_fuchsia_artifacts.
+  #
+  # TODO(akbiggs): Clean this up if we feel brave.
   fuchsia_package_cmd = [
       'python', build_script, '--engine-version', git_rev, '--skip-build',
-      '--archs', 'x64', '--runtime-mode', 'debug'
+      '--archs', 'x64', '--runtime-mode', 'debug',
+
+      # Upload the unoptimized debug build (ASAN) to CIPD along with the rest of the
+      # builds, which are all optimized.
+      '--copy-unoptimized-debug-artifacts'
   ]
   api.step('Package Fuchsia Artifacts', fuchsia_package_cmd)
   TestFuchsiaFEMU(api)

@@ -41,26 +41,11 @@ def Install7za(api):
     yield
 
 
-def CreateAndUploadFlutterPackage(api, git_hash, branch):
+def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
   """Prepares, builds, and uploads an all-inclusive archive package."""
-  # For creating the packages, we need to have the master branch version of the
-  # script, but we need to know what the revision in git_hash is first. So, we
-  # end up checking out the flutter repo twice: once on the branch we're going
-  # to package, to find out the hash to use, and again here so that we have the
-  # current version of the packaging script.
-  api.git.checkout(
-      'https://flutter.googlesource.com/mirrors/engine',
-      ref='master',
-      recursive=True,
-      set_got_revision=True
-  )
-
   flutter_executable = 'flutter' if not api.platform.is_win else 'flutter.bat'
   dart_executable = 'dart' if not api.platform.is_win else 'dart.exe'
   work_dir = api.path['start_dir'].join('archive')
-  prepare_script = api.path['checkout'].join(
-      'dev', 'bots', 'prepare_package.dart'
-  )
   api.step('flutter doctor', [flutter_executable, 'doctor'])
   api.step('download dependencies', [flutter_executable, 'update-packages'])
   api.file.rmtree('clean archive work directory', work_dir)
@@ -68,7 +53,7 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch):
   with Install7za(api):
     with api.context(cwd=api.path['start_dir']):
       step_args = [
-          dart_executable, prepare_script,
+          dart_executable, packaging_script,
           '--temp_dir=%s' % work_dir,
           '--revision=%s' % git_hash,
           '--branch=%s' % branch
@@ -82,30 +67,34 @@ def RunSteps(api):
   git_ref = api.properties.get('git_ref') or api.buildbucket.gitiles_commit.ref
   assert git_ref
   checkout_path = api.path['start_dir'].join('flutter')
-  with api.step.nest('checkout source code'):
-    api.repo_util.checkout(
+  git_url = api.properties.get('git_url') or 'https://flutter.googlesource.com/mirrors/flutter'
+  # For creating the packages, we need to have the master branch version of the
+  # script.
+  with api.step.nest('checkout framework from master'):
+    git_hash = api.repo_util.checkout(
         'flutter',
         checkout_path=checkout_path,
-        url=api.properties.get('git_url'),
-        ref=api.properties.get('git_ref')
+        url=git_url,
+        ref='master',
     )
   env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
-  git_url = \
-    'https://flutter.googlesource.com/mirrors/flutter'
-  git_url = api.properties.get('git_url') or git_url
-  git_hash = api.git.checkout(
-      git_url, ref=git_ref, recursive=True, set_got_revision=True, tags=True
-  )
   release_ref = api.properties.get('release_ref') or git_ref
+
+  packaging_script = checkout_path.join(
+      'dev', 'bots', 'prepare_package.dart'
+  )
   with api.context(env=env, env_prefixes=env_prefixes):
     with api.depot_tools.on_path():
       if release_ref:
         match = PACKAGED_REF_RE.match(release_ref)
         if match:
           branch = match.group(1)
-          CreateAndUploadFlutterPackage(api, git_hash, branch)
+          CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script)
           # Nothing left to do on a packaging branch.
           return
+      raise api.step.StepFailure(
+          'could not determine the release branch: either "release_ref" or "git_ref" properties should be set when manually triggering builds'
+      )
 
 
 def GenTests(api):

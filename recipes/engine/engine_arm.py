@@ -163,6 +163,8 @@ def BuildLinux(api):
   UploadArtifacts(api, 'linux-arm64', [
       ICU_DATA_PATH,
       'out/linux_debug_arm64/flutter_tester',
+      'out/linux_debug_arm64/impellerc',
+      'out/linux_debug_arm64/libtessellator.so',
       'out/linux_debug_arm64/gen/flutter/lib/snapshot/isolate_snapshot.bin',
       'out/linux_debug_arm64/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
       'out/linux_debug_arm64/gen/frontend_server.dart.snapshot',

@@ -68,10 +68,19 @@ def RunSteps(api):
   assert git_ref
   checkout_path = api.path['start_dir'].join('flutter')
   git_url = api.properties.get('git_url') or 'https://flutter.googlesource.com/mirrors/flutter'
+  # Call this just to obtain release_git_hash so the script knows which commit
+  # to release
+  with api.step.nest('determine release revision'):
+    release_git_hash = api.repo_util.checkout(
+        'flutter',
+        checkout_path=checkout_path,
+        url=git_url,
+        ref=git_ref,
+    )
   # For creating the packages, we need to have the master branch version of the
   # script.
   with api.step.nest('checkout framework from master'):
-    git_hash = api.repo_util.checkout(
+    api.repo_util.checkout(
         'flutter',
         checkout_path=checkout_path,
         url=git_url,
@@ -89,7 +98,7 @@ def RunSteps(api):
         match = PACKAGED_REF_RE.match(release_ref)
         if match:
           branch = match.group(1)
-          CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script)
+          CreateAndUploadFlutterPackage(api, release_git_hash, branch, packaging_script)
           # Nothing left to do on a packaging branch.
           return
       raise api.step.StepFailure(

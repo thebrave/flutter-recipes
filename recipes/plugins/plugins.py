@@ -52,17 +52,9 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=flutter_checkout_path):
     with api.step.nest('prepare environment'):
-      config_flag = '--enable-windows-uwp-desktop' if api.properties.get(
-          'uwp'
-      ) else ''
       api.step(
           'flutter config --enable-windows-desktop',
           ['flutter', 'config', '--enable-windows-desktop'],
-          infra_step=True,
-      )
-      api.step(
-          'flutter config --enable-windows-uwp-desktop',
-          ['flutter', 'config', '--enable-windows-uwp-desktop'],
           infra_step=True,
       )
       api.step('flutter doctor', ['flutter', 'doctor', '-v'])

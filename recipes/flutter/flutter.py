@@ -30,17 +30,6 @@ DEPS = [
 
 def RunSteps(api):
   """Recipe to run flutter sdk tests."""
-  # Trigger sharded tests.
-  if not api.properties.get('validation'):
-    builds = api.shard_util.schedule_builds()
-    builds = api.shard_util.collect_builds(builds)
-    api.display_util.display_builds(
-        step_name='display builds',
-        builds=builds,
-        raise_on_failure=True,
-    )
-    return
-
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
   api.os_utils.print_pub_certs()
@@ -92,37 +81,4 @@ def GenTests(api):
           android_sdk_license='android_license',
           android_sdk_preview_license='android_preview_license'
       ), api.repo_util.flutter_environment_data()
-  )
-  props = struct_pb2.Struct()
-  props['task_name'] = 'abc'
-  build = build_pb2.Build(input=build_pb2.Build.Input(properties=props))
-  passed_batch_res = builds_service_pb2.BatchResponse(
-      responses=[
-          dict(
-              schedule_build=dict(
-                  id=build.id, builder=build.builder, input=build.input
-              )
-          )
-      ]
-  )
-  yield api.test(
-      'shards',
-      api.properties(shard='framework_tests', subshards=['0', '1_last']),
-      api.repo_util.flutter_environment_data(),
-      api.buildbucket.simulated_schedule_output(passed_batch_res)
-  )
-
-  err_batch_res = builds_service_pb2.BatchResponse(
-      responses=[
-          dict(error=dict(
-              code=1,
-              message='bad',
-          ),),
-      ],
-  )
-  yield api.test(
-      'shards_fail',
-      api.properties(shard='framework_tests', subshards=['0', '1_last']),
-      api.repo_util.flutter_environment_data(),
-      api.buildbucket.simulated_schedule_output(err_batch_res)
   )

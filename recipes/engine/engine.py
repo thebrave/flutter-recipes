@@ -1444,26 +1444,6 @@ def PackageWindowsDesktopVariant(api, label, bucket_name):
   )
 
 
-def PackageWindowsUwpDesktopVariant(api, label, bucket_name):
-  artifacts = [
-      'out/%s/flutter_export.h' % label,
-      'out/%s/flutter_windows.h' % label,
-      'out/%s/flutter_messenger.h' % label,
-      'out/%s/flutter_plugin_registrar.h' % label,
-      'out/%s/flutter_texture_registrar.h' % label,
-      'out/%s/flutter_windows_winuwp.dll' % label,
-      'out/%s/flutter_windows_winuwp.dll.exp' % label,
-      'out/%s/flutter_windows_winuwp.dll.lib' % label,
-      'out/%s/flutter_windows_winuwp.dll.pdb' % label,
-      'out/%s/uwptool.exe' % label,
-  ]
-  if bucket_name.endswith('profile') or bucket_name.endswith('release'):
-    artifacts.append('out/%s/gen_snapshot.exe' % label)
-  UploadArtifacts(
-      api, bucket_name, artifacts, archive_name='windows-uwp-x64-flutter.zip'
-  )
-
-
 def BuildWindows(api):
   if api.properties.get('build_host', True):
     RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--no-lto', '--prebuilt-dart-sdk')
@@ -1520,21 +1500,6 @@ def BuildWindows(api):
     UploadFontSubset(api, 'windows-x64')
     UploadDartSdk(api, archive_name='dart-sdk-windows-x64.zip')
     UploadWebSdk(api, archive_name='flutter-web-sdk-windows-x64.zip')
-
-  if api.properties.get('build_windows_uwp', True):
-    RunGN(api, '--runtime-mode', 'debug', '--winuwp', '--no-lto', '--prebuilt-dart-sdk')
-    RunGN(api, '--runtime-mode', 'profile', '--winuwp', '--prebuilt-dart-sdk')
-    RunGN(api, '--runtime-mode', 'release', '--winuwp', '--prebuilt-dart-sdk')
-    Build(api, 'winuwp_debug')
-    PackageWindowsUwpDesktopVariant(api, 'winuwp_debug', 'windows-x64-debug')
-    Build(api, 'winuwp_profile')
-    PackageWindowsUwpDesktopVariant(
-        api, 'winuwp_profile', 'windows-x64-profile'
-    )
-    Build(api, 'winuwp_release')
-    PackageWindowsUwpDesktopVariant(
-        api, 'winuwp_release', 'windows-x64-release'
-    )
 
   if api.properties.get('build_android_aot', True):
     RunGN(api, '--runtime-mode', 'profile', '--android')
@@ -1656,7 +1621,6 @@ def RunSteps(api, properties, env_properties):
   }
 
   use_prebuilt_dart = (api.properties.get('build_host', True) or
-                       api.properties.get('build_windows_uwp', True) or
                        api.properties.get('build_android_aot', True))
 
   if use_prebuilt_dart:
@@ -1776,7 +1740,6 @@ def GenTests(api):
                           'build_fuchsia': True,
                           'build_android_aot': True,
                           'build_android_debug': True,
-                          'build_windows_uwp': True,
                           'no_maven': maven,
                           'upload_packages': should_upload,
                           'force_upload': True,

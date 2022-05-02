@@ -71,7 +71,7 @@ def RunSteps(api):
     git_ref = api.buildbucket.gitiles_commit.id
   else:
     # github pull request info
-    git_ref = 'master' # Default to master for LED runs
+    git_ref = 'main' # Default to master for LED runs
     for tag in api.buildbucket.build.tags:
       if 'sha/git/' in tag.value:
           git_ref = tag.value.replace('sha/git/', '')

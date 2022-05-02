@@ -100,7 +100,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
         str(self.m.swarming.bot_id).startswith('flutter-win')
     )
 
-  def run_test(self, step_name, command_list, timeout_secs=TIMEOUT_SECS):
+  def run_test(self, step_name, command_list, timeout_secs=TIMEOUT_SECS, infra_step=False):
     """Recipe's step wrapper to collect stdout and add it to step_summary.
 
     Args:
@@ -108,6 +108,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
       command_list(list(str)): A list of strings with the command and
         parameters to execute.
       timeout_secs(int): The timeout in seconds for this step.
+      infra_step: mark step as an infra step
 
     Returns(str): The status of the test step. A str `flaky` or `success` will
       be returned when step succeeds, and an exception will be thrown out when
@@ -117,6 +118,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
       step = self.m.step(
           step_name,
           command_list,
+          infra_step=infra_step,
           stdout=self.m.raw_io.output_text(),
           stderr=self.m.raw_io.output_text(),
           timeout=timeout_secs

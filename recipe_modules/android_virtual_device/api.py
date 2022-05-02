@@ -92,7 +92,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             ['chmod', '755', resource_name],
             infra_step=True,
         )
-        self.m.test_utils.run_test('avd_setup.sh', [resource_name, str(self.adb_path)])
+        self.m.test_utils.run_test('avd_setup.sh', [resource_name, str(self.adb_path)], infra_step=True)
 
   def kill(self, emulator_pid=None):
     """Kills the emulator and cleans up any zombie QEMU processes.

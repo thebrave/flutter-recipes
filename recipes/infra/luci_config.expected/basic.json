@@ -1,5 +1,9 @@
 [
   {
+    "cmd": [],
+    "name": "checkout"
+  },
+  {
     "cmd": [
       "vpython",
       "-u",
@@ -9,19 +13,26 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/flutter-infra"
+      "[START_DIR]/infra"
     ],
     "infra_step": true,
-    "name": "makedirs"
+    "name": "checkout.makedirs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
       "git",
       "init"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
-    "name": "git init",
-    "timeout": 60.0
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "checkout.git init",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -31,9 +42,13 @@
       "origin",
       "https://flutter.googlesource.com/infra"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
-    "name": "git remote",
-    "timeout": 600.0
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "checkout.git remote",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -42,13 +57,20 @@
       "fetch.uriprotocols",
       "https"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
-    "name": "set fetch.uriprotocols",
-    "timeout": 60.0
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "checkout.set fetch.uriprotocols",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [],
-    "name": "cache"
+    "name": "checkout.cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -62,11 +84,11 @@
       "0777",
       "[CACHE]/git"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
+    "cwd": "[START_DIR]/infra",
     "infra_step": true,
-    "name": "cache.ensure git cache dir",
+    "name": "checkout.cache.ensure git cache dir",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -80,11 +102,11 @@
       "",
       "[CACHE]/git/.GUARD_FILE"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
+    "cwd": "[START_DIR]/infra",
     "infra_step": true,
-    "name": "cache.write git cache guard file",
+    "name": "checkout.cache.write git cache guard file",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -99,11 +121,11 @@
       "0777",
       "[CACHE]/git/flutter.googlesource.com-infra"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
+    "cwd": "[START_DIR]/infra",
     "infra_step": true,
-    "name": "cache.makedirs",
+    "name": "checkout.cache.makedirs",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -113,10 +135,11 @@
       "--bare"
     ],
     "cwd": "[CACHE]/git/flutter.googlesource.com-infra",
-    "name": "cache.git init",
+    "infra_step": true,
+    "name": "checkout.cache.git init",
     "timeout": 60.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -127,10 +150,11 @@
       "https://flutter.googlesource.com/infra"
     ],
     "cwd": "[CACHE]/git/flutter.googlesource.com-infra",
-    "name": "cache.remote set-url",
+    "infra_step": true,
+    "name": "checkout.cache.remote set-url",
     "timeout": 60.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -141,10 +165,11 @@
       "https"
     ],
     "cwd": "[CACHE]/git/flutter.googlesource.com-infra",
-    "name": "cache.set fetch.uriprotocols",
+    "infra_step": true,
+    "name": "checkout.cache.set fetch.uriprotocols",
     "timeout": 60.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -157,10 +182,11 @@
       "\\+refs/heads/\\*:.*"
     ],
     "cwd": "[CACHE]/git/flutter.googlesource.com-infra",
-    "name": "cache.replace fetch configs",
+    "infra_step": true,
+    "name": "checkout.cache.replace fetch configs",
     "timeout": 60.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -172,10 +198,11 @@
       "origin"
     ],
     "cwd": "[CACHE]/git/flutter.googlesource.com-infra",
-    "name": "cache.git fetch",
+    "infra_step": true,
+    "name": "checkout.cache.git fetch",
     "timeout": 1200.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -188,13 +215,13 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/flutter-infra/.git/objects/info"
+      "[START_DIR]/infra/.git/objects/info"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
+    "cwd": "[START_DIR]/infra",
     "infra_step": true,
-    "name": "cache.makedirs object/info",
+    "name": "checkout.cache.makedirs object/info",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -206,13 +233,13 @@
       "/path/to/tmp/json",
       "copy",
       "[CACHE]/git/flutter.googlesource.com-infra/objects\n",
-      "[START_DIR]/flutter-infra/.git/objects/info/alternates"
+      "[START_DIR]/infra/.git/objects/info/alternates"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
+    "cwd": "[START_DIR]/infra",
     "infra_step": true,
-    "name": "cache.alternates",
+    "name": "checkout.cache.alternates",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@alternates@[CACHE]/git/flutter.googlesource.com-infra/objects@@@",
       "@@@STEP_LOG_END@alternates@@@"
     ]
@@ -227,11 +254,11 @@
       "remove",
       "[CACHE]/git/.GUARD_FILE"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
+    "cwd": "[START_DIR]/infra",
     "infra_step": true,
-    "name": "cache.remove git cache guard file",
+    "name": "checkout.cache.remove git cache guard file",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -242,9 +269,13 @@
       "origin",
       "main"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
-    "name": "git fetch",
-    "timeout": 1200.0
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "checkout.git fetch",
+    "timeout": 1200.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -253,9 +284,13 @@
       "-f",
       "FETCH_HEAD"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
-    "name": "git checkout",
-    "timeout": 600.0
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "checkout.git checkout",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -263,9 +298,13 @@
       "rev-parse",
       "HEAD"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
-    "name": "git rev-parse",
-    "timeout": 60.0
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "checkout.git rev-parse",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -275,13 +314,20 @@
       "-d",
       "-x"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
-    "name": "git clean",
-    "timeout": 600.0
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "checkout.git clean",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [],
-    "name": "submodule"
+    "name": "checkout.submodule",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -289,11 +335,12 @@
       "submodule",
       "sync"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
-    "name": "submodule.git submodule sync",
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "checkout.submodule.git submodule sync",
     "timeout": 600.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -305,11 +352,12 @@
       "--jobs",
       "4"
     ],
-    "cwd": "[START_DIR]/flutter-infra",
-    "name": "submodule.git submodule update",
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "name": "checkout.submodule.git submodule update",
     "timeout": 600.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {

@@ -167,7 +167,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     if self.m.properties.get('git_branch', '') in ['beta', 'stable']:
       branches = self.current_commit_branches(checkout_path)
       branches = [b for b in branches if b.startswith('flutter')]
-    # The following paragraph justifies why we need to write in the logic as one - liners 
+    # The following paragraph justifies why we need to write in the logic as one - liners
     # the way these tests work are that they will not execute the actual command, but execute a placeholder command
     #  given its original format of if statement, the closest I can get to trigger the logic is the following:
         #   release_checkout_path = api.path['start_dir'].join('release')

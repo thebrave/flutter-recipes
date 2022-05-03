@@ -1,177 +1,14 @@
 [
   {
     "cmd": [],
-    "name": "ensure gerrit"
-  },
-  {
-    "cmd": [
-      "vpython",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "RECIPE_MODULE[fuchsia::gerrit]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "ensure gerrit.read manifest",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gerrit\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
-    ]
+    "name": "checkout"
   },
   {
     "cmd": [],
-    "name": "ensure gerrit.install path/to/gerrit",
+    "name": "checkout.fetch refs/heads/main",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
-  },
-  {
-    "cmd": [
-      "vpython",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "ensure gerrit.install path/to/gerrit.ensure package directory",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version",
-      "-ensure-file",
-      "path/to/gerrit version:pinned-version",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "ensure gerrit.install path/to/gerrit.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gerrit\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version/gerrit",
-      "change-detail",
-      "-host",
-      "https://flutter-review.googlesource.com",
-      "-input",
-      "{\"change_id\": \"123456\", \"params\": {\"o\": [\"CURRENT_COMMIT\", \"CURRENT_REVISION\"]}}",
-      "-output",
-      "/path/to/tmp/json"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "details",
-    "timeout": 30,
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"branch\": \"main\", @@@",
-      "@@@STEP_LOG_LINE@json.output@  \"current_revision\": \"ffffffffffffffffffffffffffffffffffffffff\", @@@",
-      "@@@STEP_LOG_LINE@json.output@  \"revisions\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"ffffffffffffffffffffffffffffffffffffffff\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"commit\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"parents\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@          {}@@@",
-      "@@@STEP_LOG_LINE@json.output@        ]@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LOG_LINE@json.input@{@@@",
-      "@@@STEP_LOG_LINE@json.input@  \"change_id\": \"123456\", @@@",
-      "@@@STEP_LOG_LINE@json.input@  \"params\": {@@@",
-      "@@@STEP_LOG_LINE@json.input@    \"o\": [@@@",
-      "@@@STEP_LOG_LINE@json.input@      \"CURRENT_COMMIT\", @@@",
-      "@@@STEP_LOG_LINE@json.input@      \"CURRENT_REVISION\"@@@",
-      "@@@STEP_LOG_LINE@json.input@    ]@@@",
-      "@@@STEP_LOG_LINE@json.input@  }@@@",
-      "@@@STEP_LOG_LINE@json.input@}@@@",
-      "@@@STEP_LOG_END@json.input@@@",
-      "@@@STEP_LINK@gerrit link@https://flutter-review.googlesource.com/q/123456@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "fetch main"
   },
   {
     "cmd": [
@@ -198,9 +35,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.makedirs",
+    "name": "checkout.fetch refs/heads/main.makedirs",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -209,6 +46,7 @@
       "init"
     ],
     "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -221,10 +59,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.git init",
+    "name": "checkout.fetch refs/heads/main.git init",
     "timeout": 60.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -236,6 +74,7 @@
       "https://flutter.googlesource.com/recipes"
     ],
     "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -248,10 +87,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.git remote",
+    "name": "checkout.fetch refs/heads/main.git remote",
     "timeout": 600.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -262,6 +101,7 @@
       "https"
     ],
     "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -274,17 +114,17 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.set fetch.uriprotocols",
+    "name": "checkout.fetch refs/heads/main.set fetch.uriprotocols",
     "timeout": 60.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "fetch main.cache",
+    "name": "checkout.fetch refs/heads/main.cache",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -313,9 +153,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.cache.ensure git cache dir",
+    "name": "checkout.fetch refs/heads/main.cache.ensure git cache dir",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
@@ -343,7 +183,587 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.cache.write git cache guard file",
+    "name": "checkout.fetch refs/heads/main.cache.write git cache guard file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/git/flutter.googlesource.com-recipes"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.makedirs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "init",
+      "--bare"
+    ],
+    "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.git init",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "remote.origin.url",
+      "https://flutter.googlesource.com/recipes"
+    ],
+    "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.remote set-url",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "fetch.uriprotocols",
+      "https"
+    ],
+    "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.set fetch.uriprotocols",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "--replace-all",
+      "remote.origin.fetch",
+      "+refs/heads/*:refs/heads/*",
+      "\\+refs/heads/\\*:.*"
+    ],
+    "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.replace fetch configs",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "--prune",
+      "--tags",
+      "origin"
+    ],
+    "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.git fetch",
+    "timeout": 1200.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/recipes/.git/objects/info"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.makedirs object/info",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/git/flutter.googlesource.com-recipes/objects\n",
+      "[START_DIR]/recipes/.git/objects/info/alternates"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.alternates",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@alternates@[CACHE]/git/flutter.googlesource.com-recipes/objects@@@",
+      "@@@STEP_LOG_END@alternates@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "remove",
+      "[CACHE]/git/.GUARD_FILE"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.remove git cache guard file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "--tags",
+      "origin",
+      "main"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.git fetch",
+    "timeout": 1200.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.git checkout",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.git rev-parse",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.git clean",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "checkout.fetch refs/heads/main.submodule",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.submodule.git submodule sync",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--jobs",
+      "4"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.submodule.git submodule update",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/recipes"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.makedirs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "--remove-section",
+      "remote.origin"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.remove section",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "remote",
+      "add",
+      "origin",
+      "https://flutter.googlesource.com/recipes"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.git remote",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "fetch.uriprotocols",
+      "https"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.set fetch.uriprotocols",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "checkout.cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "",
+      "[CACHE]/git/.GUARD_FILE"
+    ],
+    "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.cache.write git cache guard file",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -374,7 +794,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.cache.makedirs",
+    "name": "checkout.cache.makedirs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -386,6 +806,7 @@
       "--bare"
     ],
     "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -398,7 +819,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.cache.git init",
+    "name": "checkout.cache.git init",
     "timeout": 60.0,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -412,6 +833,7 @@
       "https://flutter.googlesource.com/recipes"
     ],
     "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -424,7 +846,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.cache.remote set-url",
+    "name": "checkout.cache.remote set-url",
     "timeout": 60.0,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -438,6 +860,7 @@
       "https"
     ],
     "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -450,7 +873,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.cache.set fetch.uriprotocols",
+    "name": "checkout.cache.set fetch.uriprotocols",
     "timeout": 60.0,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -466,6 +889,7 @@
       "\\+refs/heads/\\*:.*"
     ],
     "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -478,7 +902,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.cache.replace fetch configs",
+    "name": "checkout.cache.replace fetch configs",
     "timeout": 60.0,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -493,6 +917,7 @@
       "origin"
     ],
     "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -505,7 +930,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.cache.git fetch",
+    "name": "checkout.cache.git fetch",
     "timeout": 1200.0,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -537,7 +962,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.cache.makedirs object/info",
+    "name": "checkout.cache.makedirs object/info",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -567,7 +992,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.cache.alternates",
+    "name": "checkout.cache.alternates",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@alternates@[CACHE]/git/flutter.googlesource.com-recipes/objects@@@",
@@ -598,560 +1023,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch main.cache.remove git cache guard file",
+    "name": "checkout.cache.remove git cache guard file",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "fetch",
-      "--tags",
-      "origin",
-      "main"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "fetch main.git fetch",
-    "timeout": 1200.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "checkout",
-      "-f",
-      "FETCH_HEAD"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "fetch main.git checkout",
-    "timeout": 600.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "rev-parse",
-      "HEAD"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "fetch main.git rev-parse",
-    "timeout": 60.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "clean",
-      "-f",
-      "-d",
-      "-x"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "fetch main.git clean",
-    "timeout": 600.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "fetch main.submodule",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "submodule",
-      "sync"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "fetch main.submodule.git submodule sync",
-    "timeout": 600.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "submodule",
-      "update",
-      "--init",
-      "--jobs",
-      "4"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "fetch main.submodule.git submodule update",
-    "timeout": 600.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[START_DIR]/recipes"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "makedirs"
-  },
-  {
-    "cmd": [
-      "git",
-      "config",
-      "--remove-section",
-      "remote.origin"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "remove section",
-    "timeout": 60.0
-  },
-  {
-    "cmd": [
-      "git",
-      "remote",
-      "add",
-      "origin",
-      "https://flutter.googlesource.com/recipes"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "git remote",
-    "timeout": 600.0
-  },
-  {
-    "cmd": [
-      "git",
-      "config",
-      "fetch.uriprotocols",
-      "https"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "set fetch.uriprotocols",
-    "timeout": 60.0
-  },
-  {
-    "cmd": [],
-    "name": "cache"
-  },
-  {
-    "cmd": [
-      "vpython",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "",
-      "[CACHE]/git/.GUARD_FILE"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "cache.write git cache guard file",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CACHE]/git/flutter.googlesource.com-recipes"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "cache.makedirs",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "init",
-      "--bare"
-    ],
-    "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "cache.git init",
-    "timeout": 60.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "config",
-      "remote.origin.url",
-      "https://flutter.googlesource.com/recipes"
-    ],
-    "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "cache.remote set-url",
-    "timeout": 60.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "config",
-      "fetch.uriprotocols",
-      "https"
-    ],
-    "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "cache.set fetch.uriprotocols",
-    "timeout": 60.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "config",
-      "--replace-all",
-      "remote.origin.fetch",
-      "+refs/heads/*:refs/heads/*",
-      "\\+refs/heads/\\*:.*"
-    ],
-    "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "cache.replace fetch configs",
-    "timeout": 60.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "fetch",
-      "--prune",
-      "--tags",
-      "origin"
-    ],
-    "cwd": "[CACHE]/git/flutter.googlesource.com-recipes",
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "cache.git fetch",
-    "timeout": 1200.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[START_DIR]/recipes/.git/objects/info"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "cache.makedirs object/info",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CACHE]/git/flutter.googlesource.com-recipes/objects\n",
-      "[START_DIR]/recipes/.git/objects/info/alternates"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "cache.alternates",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@alternates@[CACHE]/git/flutter.googlesource.com-recipes/objects@@@",
-      "@@@STEP_LOG_END@alternates@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "remove",
-      "[CACHE]/git/.GUARD_FILE"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "cache.remove git cache guard file",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -1163,6 +1037,7 @@
       "refs/changes/56/123456/7"
     ],
     "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -1175,8 +1050,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "git fetch",
-    "timeout": 1200.0
+    "name": "checkout.git fetch",
+    "timeout": 1200.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -1186,6 +1064,7 @@
       "FETCH_HEAD"
     ],
     "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -1198,8 +1077,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "git checkout",
-    "timeout": 600.0
+    "name": "checkout.git checkout",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -1208,6 +1090,7 @@
       "HEAD"
     ],
     "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -1220,8 +1103,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "git rev-parse",
-    "timeout": 60.0
+    "name": "checkout.git rev-parse",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -1232,6 +1118,7 @@
       "-x"
     ],
     "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -1244,12 +1131,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "git clean",
-    "timeout": 600.0
+    "name": "checkout.git clean",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [],
-    "name": "submodule"
+    "name": "checkout.submodule",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -1258,6 +1151,7 @@
       "sync"
     ],
     "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -1270,10 +1164,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "submodule.git submodule sync",
+    "name": "checkout.submodule.git submodule sync",
     "timeout": 600.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -1286,6 +1180,7 @@
       "4"
     ],
     "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -1298,10 +1193,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "submodule.git submodule update",
+    "name": "checkout.submodule.git submodule update",
     "timeout": 600.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -1311,6 +1206,7 @@
       "deadbeef"
     ],
     "cwd": "[START_DIR]/recipes",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:try"
@@ -1323,8 +1219,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "git rebase",
-    "timeout": 60.0
+    "name": "checkout.git rebase",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [

@@ -15,6 +15,7 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 DEPS = [
     'fuchsia/commit_queue',
     'fuchsia/git',
+    'fuchsia/git_checkout',
     'fuchsia/recipe_testing',
     'fuchsia/status_check',
     'fuchsia/gerrit',
@@ -124,33 +125,9 @@ class RecipeTestingOptions(object):
   use_buildbucket = attr.ib(default=False)
 
 
-def GetBranch(api, change):
-  details = api.gerrit.change_details(
-      'details',
-      change_id=str(change.change),
-      host=change.host,
-      max_attempts=5,
-      query_params=['CURRENT_COMMIT', 'CURRENT_REVISION',],
-      timeout=30,
-      test_data=api.json.test_api.output(
-         {
-           'branch': 'main',
-           'current_revision': 'f' * 40,
-           'revisions': {'f' * 40: {'commit': {'parents': [{}],},},},
-         }
-      ),
-  ).json.output
-  return details['branch']
-
-
 def RunSteps(api, remote, unittest_only):
   checkout_path = api.path['start_dir'].join('recipes')
-  bb_input = api.buildbucket.build.input
-  branch = GetBranch(api, bb_input.gerrit_changes[0])
-  api.git.checkout_cl(
-      bb_input.gerrit_changes[0], checkout_path,
-      onto=branch
-  )
+  api.git_checkout(remote, path=checkout_path)
   with api.context(cwd=checkout_path):
     api.git('log', 'log', '--oneline', '-n', '10')
   api.recipe_testing.projects = ('flutter',)
@@ -173,7 +150,7 @@ def GenTests(api):
       api.recipe_testing
       .build_data('flutter/try/flutter-bar', 'flutter', skip=True) +
       api.recipe_testing
-      .build_data('flutter/try/flutter-baz', 'project', skip=True) + 
+      .build_data('flutter/try/flutter-baz', 'project', skip=True) +
       api.buildbucket.try_build(
           git_repo='https://flutter.googlesource.com/recipes'
       )

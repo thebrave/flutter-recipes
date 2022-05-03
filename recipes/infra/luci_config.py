@@ -8,6 +8,7 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
     'fuchsia/git',
+    'fuchsia/git_checkout',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/path',
@@ -19,15 +20,7 @@ def RunSteps(api):
   start_path = api.path['start_dir']
   infra_path = start_path.join('infra')
   # Checkout flutter/infra
-  bb_input = api.buildbucket.build.input
-  if bb_input.gerrit_changes:
-    api.git.checkout_cl(
-        bb_input.gerrit_changes[0], infra_path, onto='refs/heads/main'
-    )
-  else:
-    api.git.checkout(
-        'https://flutter.googlesource.com/infra', ref='refs/heads/main'
-    )
+  api.git_checkout('https://flutter.googlesource.com/infra', path=infra_path)
   with api.context(cwd=infra_path):
     api.git('log', 'log', '--oneline', '-n', '10')
   # Validate LUCI config

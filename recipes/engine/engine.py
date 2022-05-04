@@ -1270,6 +1270,7 @@ def PackageIOSVariant(
     api,
     label,
     arm64_out,
+    armv7_out,
     sim_x64_out,
     sim_arm64_out,
     bucket_name,
@@ -1286,6 +1287,8 @@ def PackageIOSVariant(
       label_dir,
       '--arm64-out-dir',
       api.path.join(out_dir, arm64_out),
+      '--armv7-out-dir',
+      api.path.join(out_dir, armv7_out),
       '--simulator-x64-out-dir',
       api.path.join(out_dir, sim_x64_out),
       '--simulator-arm64-out-dir',
@@ -1312,6 +1315,8 @@ def PackageIOSVariant(
       label_dir,
       '--arm64-out-dir',
       api.path.join(out_dir, arm64_out),
+      '--armv7-out-dir',
+      api.path.join(out_dir, armv7_out),
   ]
 
   with api.context(cwd=checkout):
@@ -1330,6 +1335,7 @@ def PackageIOSVariant(
   # Upload the artifacts to cloud storage.
   file_artifacts = [
       'Flutter.podspec',
+      'gen_snapshot_armv7',
       'gen_snapshot_arm64',
   ]
   directory_artifacts = [
@@ -1370,30 +1376,43 @@ def BuildIOS(api):
 
   if api.properties.get('ios_debug', True):
     RunGN(api, '--ios', '--runtime-mode', 'debug', '--bitcode')
+    RunGN(api, '--ios', '--runtime-mode', 'debug', '--bitcode', '--ios-cpu=arm')
+
     Build(api, 'ios_debug')
+    Build(api, 'ios_debug_arm')
 
     BuildObjcDoc(api)
 
     PackageIOSVariant(
-        api, 'debug', 'ios_debug', 'ios_debug_sim',
+        api, 'debug', 'ios_debug', 'ios_debug_arm', 'ios_debug_sim',
         'ios_debug_sim_arm64', 'ios'
     )
 
   if api.properties.get('ios_profile', True):
     RunGN(api, '--ios', '--runtime-mode', 'profile', '--bitcode')
-    Build(api, 'ios_profile')
+    RunGN(
+        api, '--ios', '--runtime-mode', 'profile', '--bitcode', '--ios-cpu=arm'
+    )
 
+    Build(api, 'ios_profile')
+    Build(api, 'ios_profile_arm')
     PackageIOSVariant(
-        api, 'profile', 'ios_profile', 'ios_debug_sim',
+        api, 'profile', 'ios_profile', 'ios_profile_arm', 'ios_debug_sim',
         'ios_debug_sim_arm64', 'ios-profile'
     )
 
   if api.properties.get('ios_release', True):
     RunGN(api, '--ios', '--runtime-mode', 'release', '--bitcode', '--no-goma')
-    AutoninjaBuild(api, 'ios_release')
-
+    RunGN(
+        api, '--ios', '--runtime-mode', 'release', '--bitcode', '--no-goma',
+        '--ios-cpu=arm'
+    )
+    x64_release = api.futures.spawn(AutoninjaBuild, api, 'ios_release')
+    arm64_release = api.futures.spawn(AutoninjaBuild, api, 'ios_release_arm')
+    for rel_future in api.futures.iwait([x64_release, arm64_release]):
+      rel_future.result()
     PackageIOSVariant(
-        api, 'release', 'ios_release', 'ios_debug_sim',
+        api, 'release', 'ios_release', 'ios_release_arm', 'ios_debug_sim',
         'ios_debug_sim_arm64', 'ios-release'
     )
 
@@ -1401,7 +1420,7 @@ def BuildIOS(api):
     # need bitcode, which significantly increases download size. This should
     # be removed when bitcode is enabled by default in Flutter.
     PackageIOSVariant(
-        api, 'release', 'ios_release', 'ios_debug_sim',
+        api, 'release', 'ios_release', 'ios_release_arm', 'ios_debug_sim',
         'ios_debug_sim_arm64', 'ios-release-nobitcode', True
     )
 

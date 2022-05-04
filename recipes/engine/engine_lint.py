@@ -82,6 +82,9 @@ def Lint(api, config):
 def DoLints(api):
   if api.platform.is_linux:
     RunGN(api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--no-lto')
+    # We have to build before linting because source files #include header
+    # files that are generated during the build.
+    Build(api, 'host_debug')
     Lint(api, 'host_debug')
 
     debug_variants = [
@@ -97,8 +100,8 @@ def DoLints(api):
   if api.platform.is_mac:
     with api.osx_sdk('ios'):
       RunGN(api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--no-lto')
-      # We have to build for mac before linting because source files #incude
-      # header files that are generated during the build.
+      # We have to build before linting because source files #include header
+      # files that are generated during the build.
       Build(api, 'host_debug')
       Lint(api, 'host_debug')
       with InstallGems(api):

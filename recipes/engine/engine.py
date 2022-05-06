@@ -1360,16 +1360,31 @@ def BuildIOS(api):
   RunGN(api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto')
   Build(api, 'ios_debug_sim')
 
+  # Compilation is very expensive in the builds that don't use goma. Therefore,
+  # the imperllerc that was built as part of the goma-enabled build of
+  # ios_debug_sim is used as a prebuilt in the non-goma-enabled builds below
+  # in order to reduce build times. This is not the impellerc that is shipped,
+  # so the exact details of how it is built (e.g. --no-lto) don't matter.
+  checkout = GetCheckoutPath(api)
+  out_dir = checkout.join('out')
+  impellerc_path = api.path.join(
+      out_dir, 'ios_debug_sim', 'clang_x64', 'impellerc'
+  )
+
   # This build uses Xcode, so cannot use goma. Instead it uses autoninja to
   # parallelize the build.
   RunGN(
       api, '--ios', '--runtime-mode', 'debug', '--simulator',
-      '--simulator-cpu=arm64', '--no-lto', '--no-goma'
+      '--simulator-cpu=arm64', '--no-lto', '--no-goma',
+      '--prebuilt-impellerc', impellerc_path
   )
   AutoninjaBuild(api, 'ios_debug_sim_arm64')
 
   if api.properties.get('ios_debug', True):
-    RunGN(api, '--ios', '--runtime-mode', 'debug', '--bitcode')
+    RunGN(
+        api, '--ios', '--runtime-mode', 'debug', '--bitcode',
+        '--prebuilt-impellerc', impellerc_path
+    )
     Build(api, 'ios_debug')
 
     BuildObjcDoc(api)
@@ -1380,7 +1395,10 @@ def BuildIOS(api):
     )
 
   if api.properties.get('ios_profile', True):
-    RunGN(api, '--ios', '--runtime-mode', 'profile', '--bitcode')
+    RunGN(
+        api, '--ios', '--runtime-mode', 'profile', '--bitcode',
+        '--prebuilt-impellerc', impellerc_path
+    )
     Build(api, 'ios_profile')
 
     PackageIOSVariant(
@@ -1389,7 +1407,10 @@ def BuildIOS(api):
     )
 
   if api.properties.get('ios_release', True):
-    RunGN(api, '--ios', '--runtime-mode', 'release', '--bitcode', '--no-goma')
+    RunGN(
+        api, '--ios', '--runtime-mode', 'release', '--bitcode', '--no-goma',
+        '--prebuilt-impellerc', impellerc_path
+    )
     AutoninjaBuild(api, 'ios_release')
 
     PackageIOSVariant(

@@ -1094,13 +1094,10 @@ def PackageMacOSVariant(
       label_dir.join('FlutterMacOS.framework.zip')
   )
 
-  flutter_podspec = \
-      'flutter/shell/platform/darwin/macos/framework/FlutterMacOS.podspec'
   UploadArtifacts(
       api,
       bucket_name, [
           'out/%s/FlutterMacOS.framework.zip' % label,
-          flutter_podspec,
       ],
       archive_name='FlutterMacOS.framework.zip'
   )
@@ -1319,23 +1316,15 @@ def PackageIOSVariant(
         'Create macOS %s gen_snapshot' % label, create_macos_gen_snapshot_cmd
     )
 
-  label_root = checkout.join('out', label)
-  api.file.copy(
-      'Copy podspec for %s' % label,
-      checkout
-      .join('flutter/shell/platform/darwin/ios/framework/Flutter.podspec'),
-      label_root,
-  )
-
   # Upload the artifacts to cloud storage.
   file_artifacts = [
-      'Flutter.podspec',
       'gen_snapshot_arm64',
   ]
   directory_artifacts = [
       'Flutter.xcframework',
   ]
 
+  label_root = checkout.join('out', label)
   UploadArtifacts(
       api,
       bucket_name,

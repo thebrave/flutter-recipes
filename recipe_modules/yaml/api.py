@@ -27,11 +27,12 @@ class YamlApi(recipe_api.RecipeApi):
     with self.m.step.nest(step_name) as presentation:
       content = self.m.file.read_text('read', file_path)
       presentation.logs['yaml'] = content
-      return self.m.python(
+      return self.m.step(
           'parse',
-          self.resource('parse_yaml.py'),
-          args=['--yaml_file', file_path, '--json_file',
-                self.m.json.output()],
-          venv=True,
-          infra_step=True,
+          [
+              'vpython', self.resource('parse_yaml.py'),
+              '--yaml_file', file_path,
+              '--json_file', self.m.json.output()
+          ],
+          infra_step=True
       )

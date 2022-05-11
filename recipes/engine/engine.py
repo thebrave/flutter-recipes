@@ -38,7 +38,6 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
-    'recipe_engine/python',
     'recipe_engine/raw_io',
     'recipe_engine/runtime',
     'recipe_engine/step',
@@ -124,19 +123,20 @@ def RunTests(api, out_dir, android_out_dir=None, types='all'):
   script_path = GetCheckoutPath(api).join('flutter', 'testing', 'run_tests.py')
   # TODO(godofredoc): use .vpython from engine when file are available.
   venv_path = api.depot_tools.root.join('.vpython')
-  args = ['--variant', out_dir, '--type', types, '--engine-capture-core-dump']
+  args = [
+      'vpython', '-vpython-spec', venv_path,
+      script_path,
+      '--variant', out_dir,
+      '--type', types,
+      '--engine-capture-core-dump'
+  ]
   if android_out_dir:
     args.extend(['--android-variant', android_out_dir])
 
   step_name = api.test_utils.test_step_name('Host Tests for %s' % out_dir)
 
   def run_test():
-    return api.python(
-        step_name,
-        script_path,
-        args,
-        venv=venv_path
-    )
+    return api.step(step_name, args)
 
   # Rerun test step 3 times by default if failing.
   # TODO(keyonghan): notify tree gardener for test failures/flakes:
@@ -549,6 +549,7 @@ def BuildLinuxAndroidAOTArm64Profile(api, swarming_task_id, aot_variant):
 
   with api.context(cwd=checkout):
     args = [
+        'python', './flutter/ci/firebase_testlab.py',
         '--variant', build_output_dir,
         '--build-id', swarming_task_id,
     ]
@@ -556,7 +557,7 @@ def BuildLinuxAndroidAOTArm64Profile(api, swarming_task_id, aot_variant):
     step_name = api.test_utils.test_step_name('Android Firebase Test')
 
     def firebase_func():
-      api.python(step_name, './flutter/ci/firebase_testlab.py', args)
+      api.step(step_name, args)
 
     api.retry.wrap(
         firebase_func, step_name=step_name, retriable_codes=(1, 15, 20)

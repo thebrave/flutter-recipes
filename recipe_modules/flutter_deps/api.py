@@ -85,7 +85,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
             '''.format(dependency)
         raise ValueError(msg)
       parsed_deps.append(dependency)
-      if dependency in ['xcode', 'gems', 'swift']:
+      if dependency in ['xcode', 'gems', 'swift', 'arm64ruby']:
         continue
       dep_funct = available_deps.get(dependency)
       if not dep_funct:
@@ -259,6 +259,24 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     # For more, see CI section on https://docs.gradle.org/current/userguide/gradle_daemon.html#sec:disabling_the_daemon
     env['GRADLE_OPTS'] = '-Dorg.gradle.daemon=false'
 
+  def arm64ruby(self, env, env_prefixes):
+    """Installs arm64 Ruby.
+
+    Context of arm64ruby:
+      go/benchmarks-on-platforms
+      https://github.com/flutter/flutter/issues/87508
+    """
+    version = 'version:311_3'
+    with self.m.step.nest('Install arm64ruby'):
+      ruby_path = self.m.path['cache'].join('ruby')
+      ruby = self.m.cipd.EnsureFile()
+      ruby.add_package('flutter/ruby/mac-arm64', version)
+      self.m.cipd.ensure(ruby_path, ruby)
+      paths = env_prefixes.get('PATH', [])
+      paths.insert(0, ruby_path.join('bin'))
+      env_prefixes['PATH'] = paths
+      env['RUBY_HOME'] = ruby_path.join('bin')
+
   def gems(self, env, env_prefixes, gemfile_dir):
     """Installs mac gems.
 
@@ -267,11 +285,14 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       gemfile_dir(Path): The path to the location of the repository gemfile.
     """
+    arm64_ruby = 'arm64ruby'
     deps_list = self.m.properties.get('dependencies', [])
     deps = [d['dependency'] for d in deps_list]
     if 'gems' not in deps:
       # Noop if gems property is not set.
       return
+    if arm64_ruby in deps:
+      self.arm64ruby(env, env_prefixes)
     gem_file = self.m.repo_util.sdk_checkout_path().join('flutter')
     gem_dir = self.m.path['start_dir'].join('gems')
     with self.m.step.nest('Install gems'):
@@ -297,8 +318,12 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         self.m.step('install gems', ['bundler', 'install'], infra_step=True)
       # Update envs to the final destination.
       self.m.file.listdir('list bundle', gem_dir, recursive=True)
-      env['GEM_HOME'] = gem_dir.join('ruby', '2.6.0')
-      paths.append(gem_dir.join('ruby', '2.6.0', 'bin'))
+      if arm64_ruby in deps:
+        env['GEM_HOME'] = gem_dir.join('ruby', '3.1.0')
+        paths.append(gem_dir.join('ruby', '3.1.0', 'bin'))
+      else:
+        env['GEM_HOME'] = gem_dir.join('ruby', '2.6.0')
+        paths.append(gem_dir.join('ruby', '2.6.0', 'bin'))
       env_prefixes['PATH'] = paths
 
   def firebase(self, env, env_prefixes, version='latest'):

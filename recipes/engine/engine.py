@@ -792,8 +792,11 @@ def BuildLinux(api):
       'flutter/lib/spirv/test/exception_shaders:spirv_compile_exception_shaders'
   )
   Build(api, 'host_debug')
+  # 'engine' suite has failing tests in host_debug.
+  # https://github.com/flutter/flutter/issues/103757
+  RunTests(api, 'host_debug', types='dart')
   Build(api, 'host_profile')
-  RunTests(api, 'host_profile', types='engine')
+  RunTests(api, 'host_profile', types='dart,engine')
   Build(api, 'host_release')
   api.file.listdir(
       'host_release zips',
@@ -1115,6 +1118,9 @@ def PackageMacOSVariant(
 def BuildMac(api):
   if api.properties.get('build_host', True):
     RunGN(
+        api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk'
+    )
+    RunGN(
         api, '--runtime-mode', 'debug', '--no-lto', '--full-dart-sdk',
         '--prebuilt-dart-sdk', '--build-embedder-examples'
     )
@@ -1139,10 +1145,17 @@ def BuildMac(api):
         '--no-lto', '--prebuilt-dart-sdk'
     )
 
+    # flutter/sky/packages from host_debug_unopt is needed for RunTests 'dart'
+    # type.
+    Build(api, 'host_debug_unopt', 'flutter/sky/packages')
     Build(api, 'host_debug')
+    # Fix the 'engine' suite for host_debug:
+    # https://github.com/flutter/flutter/issues/103757.
+    RunTests(api, 'host_debug', types='dart')
     Build(api, 'host_profile')
-    RunTests(api, 'host_profile', types='engine')
+    RunTests(api, 'host_profile', types='dart,engine')
     Build(api, 'host_release')
+    RunTests(api, 'host_release', types='dart,engine')
     Build(api, 'mac_debug_arm64')
     Build(api, 'mac_profile_arm64')
     Build(api, 'mac_release_arm64')

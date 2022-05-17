@@ -86,15 +86,9 @@ def DoLints(api):
     Build(api, 'host_debug')
     Lint(api, 'host_debug')
 
-    debug_variants = [
-        ('arm', 'android_debug', 'android-arm', True, 'armeabi_v7a'),
-        ('arm64', 'android_debug_arm64', 'android-arm64', False, 'arm64_v8a'),
-        ('x86', 'android_debug_x86', 'android-x86', False, 'x86'),
-        ('x64', 'android_debug_x64', 'android-x64', False, 'x86_64'),
-    ]
-    for android_cpu, out_dir, artifact_dir, run_tests, abi in debug_variants:
-      RunGN(api, '--android', '--android-cpu=%s' % android_cpu, '--no-lto')
-      Lint(api, out_dir)
+    RunGN(api, '--android', '--android-cpu', 'arm64', '--no-lto')
+    Build(api, 'android_debug_arm64')
+    Lint(api, 'android_debug_arm64')
 
   if api.platform.is_mac:
     with api.osx_sdk('ios'):

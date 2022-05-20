@@ -10,6 +10,7 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/git',
+    'flutter/flutter_deps',
     'flutter/repo_util',
     'recipe_engine/buildbucket',
     'recipe_engine/cipd',
@@ -61,6 +62,54 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
       if not api.runtime.is_experimental:
         step_args.append('--publish')
       api.step('prepare, create and publish a flutter archive', step_args)
+      if api.properties.get('upload_with_cosign') is True:
+        flutter_package_absolute_path = GetFlutterPackageAbsolutePath(api, work_dir)
+        UploadAndSignFlutterPackage(api, flutter_package_absolute_path, git_hash, branch)
+
+
+def GetFlutterPackageAbsolutePath(api, work_dir):
+  """Gets full flutter package directory if it exists."""
+  files = api.file.glob_paths('get flutter archive file name', work_dir, '*flutter*.tar.xz', test_data=['flutter-archive-package.tar.xz'])
+  return files[0] if len(files) == 1 else None
+
+
+def UploadAndSignFlutterPackage(api, flutter_path, git_hash, branch):
+  """Uploads flutter package to the artifact registry, then signs it using a KMS key.
+  This is all done using the package cosign.
+  """
+  if not api.runtime.is_experimental:
+    base_artifact_registry_url = 'us-docker.pkg.dev/flutter-dashboard-dev/flutter-artifacts' # TODO(drewroen) Update production url to an actual production url
+  else:
+    base_artifact_registry_url = 'us-docker.pkg.dev/flutter-dashboard-dev/flutter-artifacts'
+
+  artifact_registry_url = '%s/%s/%s/%s' % (base_artifact_registry_url, branch, git_hash, api.path.basename(flutter_path))
+
+  gcloud_docker_config_args = [
+      'gcloud',
+      'auth',
+      'configure-docker',
+      'us-docker.pkg.dev'
+  ]
+
+  cosign_upload_args = [
+      'cosign',
+      'upload',
+      'blob',
+      '-f',
+      flutter_path,
+      artifact_registry_url
+  ]
+
+  cosign_sign_args = [
+      'cosign',
+      'sign',
+      '--key',
+      'gcpkms://projects/flutter-dashboard-dev/locations/global/keyRings/flutter/cryptoKeys/mykey2',
+      artifact_registry_url
+  ]
+  api.step('configure docker registry', gcloud_docker_config_args)
+  api.step('upload through cosign', cosign_upload_args)
+  api.step('sign flutter artifact', cosign_sign_args)
 
 
 def RunSteps(api):
@@ -87,6 +136,9 @@ def RunSteps(api):
         ref='master',
     )
   env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
+  api.flutter_deps.required_deps(
+      env, env_prefixes, api.properties.get('dependencies', [])
+  )
   release_ref = api.properties.get('release_ref') or git_ref
 
   packaging_script = checkout_path.join(
@@ -111,19 +163,24 @@ def GenTests(api):
     for should_upload in (True, False):
       for platform in ('mac', 'linux', 'win'):
         for branch in ('master', 'dev', 'beta', 'stable'):
-          git_ref = 'refs/heads/' + branch
-          test = api.test(
-              '%s_%s%s%s' % (
-                  platform, branch, '_experimental' if experimental else '',
-                  '_upload' if should_upload else ''
-              ), api.platform(platform, 64),
-              api.buildbucket.ci_build(git_ref=git_ref, revision=None),
-              api.properties(
-                  shard='tests',
-                  fuchsia_ctl_version='version:0.0.2',
-                  upload_packages=should_upload,
-                  gold_tryjob=not should_upload
-              ), api.runtime(is_experimental=experimental),
-              api.repo_util.flutter_environment_data()
-          )
-          yield test
+          for upload_with_cosign in (True, False):
+            git_ref = 'refs/heads/' + branch
+            test = api.test(
+                '%s_%s%s%s%s' % (
+                    platform,
+                    branch,
+                    '_experimental' if experimental else '',
+                    '_upload' if should_upload else '',
+                    '_cosign' if upload_with_cosign else ''
+                ), api.platform(platform, 64),
+                api.buildbucket.ci_build(git_ref=git_ref, revision=None),
+                api.properties(
+                    shard='tests',
+                    fuchsia_ctl_version='version:0.0.2',
+                    upload_packages=should_upload,
+                    gold_tryjob=not should_upload,
+                    upload_with_cosign=upload_with_cosign
+                ), api.runtime(is_experimental=experimental),
+                api.repo_util.flutter_environment_data()
+            )
+            yield test

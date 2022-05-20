@@ -60,6 +60,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'chrome_and_driver': self.chrome_and_driver,
         'clang': self.clang,
         'cmake': self.cmake,
+        'cosign': self.cosign,
         'curl': self.curl,
         'dart_sdk': self.dart_sdk,
         'dashing': self.dashing,
@@ -388,6 +389,23 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       self.m.cipd.ensure(cmake_path, cmake)
     paths = env_prefixes.get('PATH', [])
     paths.append(cmake_path.join('bin'))
+    env_prefixes['PATH'] = paths
+
+  def cosign(self, env, env_prefixes, version=None):
+    """Installs cosign.
+
+    Args:
+      env(dict): Current environment variables.
+      env_prefixes(dict): Current environment prefixes variables.
+    """
+    version = version or 'latest'
+    cosign_path = self.m.path['cache'].join('cosign')
+    cosign = self.m.cipd.EnsureFile()
+    cosign.add_package('flutter/tools/cosign/${platform}', version)
+    with self.m.step.nest('Install cosign'):
+      self.m.cipd.ensure(cosign_path, cosign)
+    paths = env_prefixes.get('PATH', [])
+    paths.append(cosign_path.join('bin'))
     env_prefixes['PATH'] = paths
 
   def ninja(self, env, env_prefixes, version=None):

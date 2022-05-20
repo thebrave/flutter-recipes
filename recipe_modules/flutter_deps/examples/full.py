@@ -54,6 +54,7 @@ def RunSteps(api):
   api.flutter_deps.flutter_engine(env, env_prefixes)
   api.flutter_deps.firebase(env, env_prefixes)
   api.flutter_deps.cmake(env, env_prefixes)
+  api.flutter_deps.cosign(env, env_prefixes)
   api.flutter_deps.ninja(env, env_prefixes)
   api.flutter_deps.clang(env, env_prefixes)
   api.flutter_deps.apple_signing(env, env_prefixes)

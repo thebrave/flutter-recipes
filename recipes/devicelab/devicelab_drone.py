@@ -34,6 +34,8 @@ DEPS = [
 # Fifteen minutes
 MAX_TIMEOUT_SECS = 30 * 60
 
+# Any builder in this list will have logs suppressed.
+SUPPRESS_LOG_BUILDER_LIST = ['Linux abc']
 
 def RunSteps(api):
   # Collect memory/cpu/process before task execution.
@@ -62,7 +64,12 @@ def RunSteps(api):
         stdout=api.raw_io.output_text()
     ).stdout.rstrip()
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
-  api.logs_util.initialize_logs_collection(env)
+
+  builder_name = api.properties.get('buildername')
+  suppress_log = builder_name in SUPPRESS_LOG_BUILDER_LIST
+
+  if not suppress_log:
+    api.logs_util.initialize_logs_collection(env)
   with api.step.nest('Dependencies'):
     api.flutter_deps.flutter_engine(env, env_prefixes)
     deps = api.properties.get('dependencies', [])
@@ -82,7 +89,7 @@ def RunSteps(api):
   # Run test
   runner_params = [
       '-t', task_name, '--results-file', results_path, '--luci-builder',
-      api.properties.get('buildername')
+      builder_name
   ]
   if 'LOCAL_ENGINE' in env:
     runner_params.extend(['--local-engine', env['LOCAL_ENGINE']])
@@ -106,12 +113,12 @@ def RunSteps(api):
       if str(api.swarming.bot_id).startswith('flutter-devicelab'):
         with api.devicelab_osx_sdk('ios'):
           test_status = mac_test(
-              api, env, env_prefixes, flutter_path, task_name, runner_params
+              api, env, env_prefixes, flutter_path, task_name, runner_params, suppress_log
           )
       else:
         with api.osx_sdk('ios'):
           test_status = mac_test(
-              api, env, env_prefixes, flutter_path, task_name, runner_params
+              api, env, env_prefixes, flutter_path, task_name, runner_params, suppress_log
           )
     else:
       with api.context(env=env, env_prefixes=env_prefixes):
@@ -127,17 +134,19 @@ def RunSteps(api):
           test_status = api.test_utils.run_test(
               'run %s' % task_name,
               test_runner_command,
-              timeout_secs=MAX_TIMEOUT_SECS
+              timeout_secs=MAX_TIMEOUT_SECS,
+              suppress_log=suppress_log,
           )
         finally:
-          debug_after_failure(api, task_name)
+          if not suppress_log:
+            debug_after_failure(api, task_name)
         if test_status == 'flaky':
           api.test_utils.flaky_step('run %s' % task_name)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadResults(
         api, env, env_prefixes, results_path, test_status == 'flaky',
         git_branch, api.properties.get('buildername'), commit_time, task_name,
-        benchmark_tags
+        benchmark_tags, suppress_log=suppress_log
     )
     uploadMetricsToCas(api, results_path)
 
@@ -151,7 +160,7 @@ def debug_after_failure(api, task_name):
   api.os_utils.collect_os_info()
 
 
-def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params):
+def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params, suppress_log):
   """Runs a devicelab mac test."""
   api.flutter_deps.gems(
       env, env_prefixes, flutter_path.join('dev', 'ci', 'mac')
@@ -172,7 +181,8 @@ def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params):
       test_status = api.test_utils.run_test(
           'run %s' % task_name,
           test_runner_command,
-          timeout_secs=MAX_TIMEOUT_SECS
+          timeout_secs=MAX_TIMEOUT_SECS,
+          suppress_log=suppress_log,
       )
     finally:
       debug_after_failure(api, task_name)
@@ -206,6 +216,7 @@ def uploadResults(
     task_name,
     benchmark_tags,
     test_status='Succeeded',
+    suppress_log=False,
 ):
   """Upload DeviceLab test results to Cocoon/skia perf.
 
@@ -231,6 +242,7 @@ def uploadResults(
     task_name(str): The task name of the current test.
     benchmark_tags(str): Json dumped str of benchmark tags, which includes host and device info.
     test_status(str): The status of the test running step.
+    suppress_log(bool): Flag whether test logs are suppressed.
   """
   if shouldNotUpdate(api, git_branch):
     return
@@ -263,7 +275,16 @@ def uploadResults(
     upload_command = ['dart', 'bin/test_runner.dart', 'upload-metrics']
     upload_command.extend(runner_params)
     with api.context(env=env, env_prefixes=env_prefixes):
-      api.step('upload results', upload_command, infra_step=True)
+      if suppress_log:
+        api.step(
+            'upload results',
+            upload_command,
+            infra_step=True,
+            stdout=api.raw_io.output_text(),
+            stderr=api.raw_io.output_text(),
+        )
+      else:
+        api.step('upload results', upload_command, infra_step=True)
 
 
 def uploadMetricsToCas(api, results_path):

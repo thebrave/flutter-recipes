@@ -100,7 +100,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
         str(self.m.swarming.bot_id).startswith('flutter-win')
     )
 
-  def run_test(self, step_name, command_list, timeout_secs=TIMEOUT_SECS, infra_step=False):
+  def run_test(self, step_name, command_list, timeout_secs=TIMEOUT_SECS, infra_step=False, suppress_log=False):
     """Recipe's step wrapper to collect stdout and add it to step_summary.
 
     Args:
@@ -109,6 +109,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
         parameters to execute.
       timeout_secs(int): The timeout in seconds for this step.
       infra_step: mark step as an infra step
+      suppress_log: flag whether test logs are suppressed.
 
     Returns(str): The status of the test step. A str `flaky` or `success` will
       be returned when step succeeds, and an exception will be thrown out when
@@ -131,10 +132,11 @@ class TestUtilsApi(recipe_api.RecipeApi):
       stderr = self._truncateString(result.stderr)
       raise self.m.step.StepFailure('\n\n```%s```\n' % (stdout or stderr))
     finally:
-      self.m.step.active_result.presentation.logs[
-          'test_stdout'] = self.m.step.active_result.stdout
-      self.m.step.active_result.presentation.logs[
-          'test_stderr'] = self.m.step.active_result.stderr
+      if not suppress_log:
+        self.m.step.active_result.presentation.logs[
+            'test_stdout'] = self.m.step.active_result.stdout
+        self.m.step.active_result.presentation.logs[
+            'test_stderr'] = self.m.step.active_result.stderr
     if self._is_flaky(step.stdout):
       test_run_status = 'flaky'
     else:

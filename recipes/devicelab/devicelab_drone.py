@@ -35,7 +35,13 @@ DEPS = [
 MAX_TIMEOUT_SECS = 30 * 60
 
 # Any builder in this list will have logs suppressed.
-SUPPRESS_LOG_BUILDER_LIST = ['Linux abc']
+SUPPRESS_LOG_BUILDER_LIST = [
+  'Linux_samsung_a02_staging flutter_gallery__transition_perf',
+  'Linux_samsung_a02_staging new_gallery__crane_perf',
+  'Linux_samsung_a02_staging new_gallery__transition_perf',
+  'Linux_samsung_a02_staging complex_layout_scroll_perf__timeline_summary',
+  'Linux_samsung_a02_staging opacity_peephole_one_rect_perf__e2e_summary',
+]
 
 def RunSteps(api):
   # Collect memory/cpu/process before task execution.
@@ -396,6 +402,20 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           upload_metrics_to_cas=True,
+          git_branch='master',
+      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.buildbucket.ci_build(
+          git_ref='refs/heads/master',
+          bucket='staging',
+      )
+  )
+  yield api.test(
+      "suppress-logs",
+      api.properties(
+          buildername='Linux_samsung_a02_staging flutter_gallery__transition_perf',
+          task_name='flutter_gallery__transition_perf',
+          upload_metrics_to_cas=True,
+          upload_metrics=True,
           git_branch='master',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(

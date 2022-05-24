@@ -12,7 +12,7 @@ set -u
 SRC_DIR="$1"
 REVISION="$2"
 OUTPUT_DIR="$3"
-REMOTE_URL="https://flutter-mirrors.googlesource.com/ios-deploy"
+REMOTE_URL="https://flutter.googlesource.com/third_party/ios-deploy"
 
 git clone "$REMOTE_URL" "$SRC_DIR"
 cd "$SRC_DIR"

@@ -21,7 +21,7 @@ DEPS = [
 BUCKET_NAME = 'flutter_infra_release'
 
 HOMEBREW_FLUTTER_PREFIX = ['flutter', 'homebrew-flutter']
-MIRROR_URL_PREFIX = 'https://flutter-mirrors.googlesource.com'
+MIRROR_URL_PREFIX = 'https://flutter.googlesource.com/third_party/'
 
 INSTALL_PKGS = {
     'libplist-flutter': {

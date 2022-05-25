@@ -23,7 +23,7 @@ DEPS = [
     'recipe_engine/step',
 ]
 
-PACKAGED_REF_RE = re.compile(r'^refs/heads/(dev|beta|stable)$')
+PACKAGED_REF_RE = re.compile(r'^refs/heads/(beta|stable)$')
 
 
 @contextmanager
@@ -162,7 +162,7 @@ def GenTests(api):
   for experimental in (True, False):
     for should_upload in (True, False):
       for platform in ('mac', 'linux', 'win'):
-        for branch in ('master', 'dev', 'beta', 'stable'):
+        for branch in ('master', 'beta', 'stable'):
           for upload_with_cosign in (True, False):
             git_ref = 'refs/heads/' + branch
             test = api.test(

@@ -82,8 +82,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
             # On any exception, clean up the cache and raise
             _ClobberCache()
             raise
-    # Retries should impart >60secs, which would allow the GoB mirrors to catch up.
-    self.m.retry.wrap(_InnerCheckout, step_name='Checkout source', sleep=10.0, backoff_factor=2.5, max_attempts=4)
+    # Some outlier GoB mirror jobs can take >250secs.
+    self.m.retry.wrap(_InnerCheckout, step_name='Checkout source', sleep=10.0, backoff_factor=5, max_attempts=4)
 
   def checkout(self, name, checkout_path, url=None, ref=None):
     """Checks out a repo and returns sha1 of checked out revision.
@@ -121,8 +121,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
             set_got_revision=True,
             tags=True
         )
-      # Retries should impart >60secs, which would allow the GoB mirrors to catch up.
-      return self.m.utils.retry(do_checkout, sleep=10.0, backoff_factor=2.5, max_attempts=4)
+      # Some outlier GoB mirror jobs can take >250secs.
+      return self.m.utils.retry(do_checkout, sleep=10.0, backoff_factor=5, max_attempts=4)
 
   def in_release_and_main(self, checkout_path):
     """Determine if a commit was already tested on main branch.

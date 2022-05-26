@@ -82,20 +82,7 @@ def RunAndroidScenarioTests(api, env, env_prefixes):
     result = api.step(
         'Scenario App Integration Tests',
         ['./run_android_tests.sh', 'android_debug_x64'],
-        ok_ret='all'
     )
-    build_failures_dir = scenario_app_tests.join('build', 'reports', 'diff_failures')
-    if api.path.exists(build_failures_dir):
-      # Upload any diff failures.
-      # If there are any, upload them to the cloud bucket.
-      api.bucket_util.upload_folder(
-          'Upload diff failures',
-          'src/flutter/testing/scenario_app',
-          'build/reports/diff_failures',
-          'diff_failures.zip',
-          bucket_name='flutter_logs',
-      )
-
 
 def RunSteps(api, properties, env_properties):
   # Collect memory/cpu/process after task execution.
@@ -150,66 +137,28 @@ def GenTests(api):
       'flutter', 'testing', 'scenario_app', 'build', 'reports', 'diff_failures'
   )
   avd_api_version = '31'
-  for upload_packages in (True, False):
-    yield api.test(
-        'without_failure_upload_%d' % upload_packages,
-        api.properties(
-            dependencies=[
-              {'dependency':'android_virtual_device', 'version':'31'},
-            ]
+  yield api.test(
+    'without_failure_upload',
+    api.properties(
+        dependencies=[
+            {'dependency':'android_virtual_device', 'version':'31'},
+        ]
+    ),
+    api.buildbucket.ci_build(
+        builder='Linux Engine',
+        git_repo='https://flutter.googlesource.com/mirrors/engine',
+        project='flutter',
+        revision='abcd1234',
+    ),
+    api.properties(
+        InputProperties(
+            goma_jobs='1024',
         ),
-        api.buildbucket.ci_build(
-            builder='Linux Engine',
-            git_repo='https://flutter.googlesource.com/mirrors/engine',
-            project='flutter',
-            revision='abcd1234',
-        ),
-        api.properties(
-            InputProperties(
-                goma_jobs='1024',
-                upload_packages=upload_packages,
-            ),
-        ),
-        api.step_data(
-            'start avd.Start Android emulator (API level %s)' % avd_api_version,
-            stdout=api.raw_io.output_text(
-                'android_' + avd_api_version + '_google_apis_x86|emulator-5554 started (pid: 17687)'
-            )
-        ),
-    )
-    test = api.test(
-        'with_failure_upload_%d' % upload_packages,
-        api.properties(
-            dependencies=[
-              {'dependency':'android_virtual_device', 'version':'31'},
-            ]
-        ),
-        api.buildbucket.ci_build(
-            builder='Linux Engine',
-            git_repo='https://flutter.googlesource.com/mirrors/engine',
-            project='flutter',
-            revision='abcd1234',
-        ),
-        api.properties(
-            InputProperties(
-                goma_jobs='1024',
-                upload_packages=upload_packages,
-                clobber=False,
-            ),
-        ),
-        # Makes the test fail.
-        api.step_data('Scenario App Integration Tests', retcode=1),
-        api.path.exists(scenario_failures),
-        api.step_data(
-            'start avd.Start Android emulator (API level %s)' % avd_api_version,
-            stdout=api.raw_io.output_text(
-                'android_' + avd_api_version + '_google_apis_x86|emulator-5554 started (pid: 17687)'
-            )
-        ),
-    )
-    if upload_packages:
-      test += api.step_data(
-          'Ensure flutter/abcd1234/diff_failures.zip does not already exist on cloud storage',
-          retcode=1
-      )
-    yield test
+    ),
+    api.step_data(
+        'start avd.Start Android emulator (API level %s)' % avd_api_version,
+        stdout=api.raw_io.output_text(
+            'android_' + avd_api_version + '_google_apis_x86|emulator-5554 started (pid: 17687)'
+        )
+    ),
+  )

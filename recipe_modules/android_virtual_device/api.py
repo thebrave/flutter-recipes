@@ -63,15 +63,18 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
         )
         self.m.step(
             'Install Android emulator (API level %s)' % self.version,
-            ['python', avd_script_path, 'install', '--avd-config', avd_config]
+            ['python', avd_script_path, 'install', '--avd-config', avd_config],
+            stdout=self.m.raw_io.output_text(add_output_log=True)
         )
         output = self.m.step(
             'Start Android emulator (API level %s)' % self.version,
-            ['python', avd_script_path, 'start', '--no-read-only', '--writable-system', '--avd-config', avd_config],
-            stdout=self.m.raw_io.output_text()
+            ['python', avd_script_path, 'start', '--no-read-only', '--writable-system', '--debug-tags', 'all', '--avd-config', avd_config],
+            stdout=self.m.raw_io.output_text(add_output_log=True)
         ).stdout
-        m = re.match('.*pid: (\d+)\)', output)
+
+        m = re.search(r'.*pid: (\d+)\)', output)
         self.emulator_pid = m.group(1)
+
     env['EMULATOR_PID'] = self.emulator_pid
     return self.emulator_pid
 

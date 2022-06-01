@@ -217,20 +217,23 @@ def BuildAndPackageFuchsia(api, build_script, git_rev):
         '--no-lto', '--unoptimized', '--asan')
   Build(api, 'fuchsia_debug_unopt_x64', *GetFlutterFuchsiaBuildTargets(False, True))
 
-  # Package debug x64 and upload to CIPD on Linux builds.
+  # Package debug x64 on Linux builds.
   #
   # We pass --skip-build here, which means build_script will only take the existing artifacts
   # that we just built and package them. Invoking this command will not build fuchsia artifacts
   # despite the name of the build_script being build_fuchsia_artifacts.
+  #
+  # TODO(akbiggs): What is this actually used for? The artifacts aren't uploaded here,
+  # they're uploaded in a second call to build_fuchsia_artifacts.py later, and calling
+  # build_fuchsia_artifacts.py again will delete the bucket we created from the previous run. So
+  # what is the package we're creating here used for?
   #
   # TODO(akbiggs): Clean this up if we feel brave.
   if api.platform.is_linux:
     fuchsia_package_cmd = [
         'python', build_script, '--engine-version', git_rev, '--skip-build',
         '--archs', 'x64', '--runtime-mode', 'debug',
-        # Upload the unoptimized debug build (ASAN) to CIPD along with the rest of the
-        # builds, which are all optimized.
-        '--copy-unoptimized-debug-artifacts'
+        '--copy-unoptimized-debug-artifacts',
     ]
     api.step('Package Fuchsia Artifacts', fuchsia_package_cmd)
 
@@ -239,6 +242,14 @@ def BuildAndPackageFuchsia(api, build_script, git_rev):
       '--no-lto',
   )
   Build(api, 'fuchsia_debug_arm64', *GetFlutterFuchsiaBuildTargets(False, True))
+
+  # Build with ASAN. This build is unoptimized so it doesn't overwrite the non-ASAN
+  # debug artifacts we just built. Unoptimized builds have the additional benefit of
+  # giving us better debug logging.
+  RunGN(
+      api, '--fuchsia', '--fuchsia-cpu', 'arm64', '--runtime-mode', 'debug',
+      '--no-lto', '--unoptimized', '--asan')
+  Build(api, 'fuchsia_debug_unopt_arm64', *GetFlutterFuchsiaBuildTargets(False, True))
 
 
 def RunGN(api, *args):
@@ -933,14 +944,14 @@ def UploadFuchsiaDebugSymbolsToCIPD(api, arch, symbol_dirs, upload):
 def UploadFuchsiaDebugSymbols(api, upload):
   checkout = GetCheckoutPath(api)
   archs = ['arm64', 'x64']
-  modes = ['debug', 'profile', 'release']
+  modes = ['debug', 'debug_unopt', 'profile', 'release']
 
   arch_to_symbol_dirs = {}
   for arch in archs:
     symbol_dirs = []
     for mode in modes:
-      base_dir = 'fuchsia_%s_%s' % (mode, arch)
-      symbol_dir = checkout.join('out', base_dir, '.build-id')
+      out_dir = 'fuchsia_%s_%s' % (mode, arch)
+      symbol_dir = checkout.join('out', out_dir, '.build-id')
       symbol_dirs.append(symbol_dir)
     arch_to_symbol_dirs[arch] = symbol_dirs
 
@@ -1040,6 +1051,9 @@ def BuildFuchsia(api, gclient_vars):
       '--engine-version',
       git_rev,
       '--skip-build',
+      # Copy the unoptimized debug ASAN build into our bucket so it gets
+      # uploaded to CIPD.
+      "--copy-unoptimized-debug-artifacts"
   ]
 
   upload = (api.bucket_util.should_upload_packages() and

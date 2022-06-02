@@ -1133,8 +1133,7 @@ def PackageMacOSVariant(
   )
 
   UploadArtifacts(
-      api,
-      bucket_name, [
+      api, bucket_name, [
           'out/%s/FlutterMacOS.framework.zip' % label,
       ],
       archive_name='FlutterMacOS.framework.zip'
@@ -1146,6 +1145,19 @@ def PackageMacOSVariant(
       ],
       archive_name='gen_snapshot.zip'
   )
+
+  if label == 'release':
+    api.zip.directory(
+        'Archive FlutterMacOS.dSYM',
+        label_dir.join('FlutterMacOS.dSYM'),
+        label_dir.join('FlutterMacOS.dSYM.zip')
+    )
+    UploadArtifacts(
+        api, bucket_name, [
+            'out/%s/FlutterMacOS.dSYM.zip' % label,
+        ],
+        archive_name='FlutterMacOS.dSYM.zip'
+    )
 
 
 def BuildMac(api):

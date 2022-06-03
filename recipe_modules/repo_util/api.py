@@ -17,6 +17,16 @@ REPOS = {
         'https://flutter.googlesource.com/mirrors/plugins'
 }
 
+# TODO(keyonghan): deprecate when all repos are migrated to main.
+REPO_BRANCHES = {
+  'flutter': 'master',
+  'engine': 'main',
+  'cocoon': 'main',
+  'infra': 'main',
+  'packages': 'main',
+  'plugins': 'main'
+}
+
 import re
 from recipe_engine import recipe_api
 
@@ -72,7 +82,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             soln.custom_vars = custom_vars
             src_cfg.parent_got_revision_mapping['parent_got_revision'
                                               ] = 'got_revision'
-            src_cfg.repo_path_map[git_url] = ('src/flutter', git_ref or 'refs/heads/master')
+            src_cfg.repo_path_map[git_url] = ('src/flutter', git_ref or 'refs/heads/%s' % REPO_BRANCHES['engine'])
             self.m.gclient.c = src_cfg
             self.m.gclient.c.got_revision_mapping['src/flutter'
                                                 ] = 'got_engine_revision'
@@ -104,13 +114,13 @@ class RepoUtilApi(recipe_api.RecipeApi):
       # gitiles_commit.id is more specific than gitiles_commit.ref, which is
       # branch
       # if this a release build, self.m.buildbucket.gitiles_commit.id should have more priority than
-      # ref since it is more specific, and we don't want to default to refs/heads/master
+      # ref since it is more specific, and we don't want to default to refs/heads/<REPO_BRANCHES[name]>
       if ref in ['refs/heads/beta', 'refs/heads/stable']:
         git_ref = (self.m.buildbucket.gitiles_commit.id or
           self.m.buildbucket.gitiles_commit.ref or ref)
       else:
         git_ref = (ref or self.m.buildbucket.gitiles_commit.id or
-          self.m.buildbucket.gitiles_commit.ref or 'refs/heads/master')
+          self.m.buildbucket.gitiles_commit.ref or 'refs/heads/%s' % REPO_BRANCHES[name])
 
       def do_checkout():
         return self.m.git.checkout(

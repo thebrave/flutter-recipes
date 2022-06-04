@@ -29,7 +29,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             self.avd_root,
             self.m.cipd.EnsureFile().add_package(
                 'chromium/tools/android/avd/linux-amd64',
-                'p-1EgH-og45NbJT5ld4bBmvhayUxyb5Wm0oedSBwXOsC'
+                '1EQ8d87vhYyuBlCFZU8po6bpNXScHFB-9PGR27JlIS8C'
             )
         )
 
@@ -63,12 +63,12 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
         )
         self.m.step(
             'Install Android emulator (API level %s)' % self.version,
-            ['python', avd_script_path, 'install', '--avd-config', avd_config],
+            ['vpython3', avd_script_path, 'install', '--avd-config', avd_config],
             stdout=self.m.raw_io.output_text(add_output_log=True)
         )
         output = self.m.step(
             'Start Android emulator (API level %s)' % self.version,
-            ['python', avd_script_path, 'start', '--no-read-only', '--wipe-data', '--writable-system', '--debug-tags', 'all', '--avd-config', avd_config],
+            ['vpython3', avd_script_path, 'start', '--no-read-only', '--wipe-data', '--writable-system', '--debug-tags', 'all', '--avd-config', avd_config],
             stdout=self.m.raw_io.output_text(add_output_log=True)
         ).stdout
 

@@ -8,13 +8,9 @@ set -e
 
 # Customer testing require both master and the branch
 # under test to be checkout out.
-if [ "$GIT_BRANCH" != 'master' ]
-then
-  git fetch origin master
-  git checkout master
-fi
 
-git fetch origin $GIT_BRANCH:$GIT_BRANCH
-git checkout $GIT_BRANCH
+git fetch origin master
+git checkout master
+git checkout $REVISION
 cd dev/customer_testing/
 bash ci.sh

@@ -146,13 +146,18 @@ class RepoUtilApi(recipe_api.RecipeApi):
     # We assume the commit is not duplicated if it is not comming from beta or stable.
     return False
 
+  def get_commit(self, checkout_path):
+    with self.m.context(cwd=checkout_path):
+      commit = self.m.git(
+          'rev-parse', 'HEAD',
+          stdout=self.m.raw_io.output_text()).stdout.strip()
+      return commit
+
   def current_commit_branches(self, checkout_path):
     """Gets the list of branches for the current commit."""
     with self.m.step.nest('Identify branches'):
       with self.m.context(cwd=checkout_path):
-        commit = self.m.git(
-            'rev-parse', 'HEAD',
-            stdout=self.m.raw_io.output_text()).stdout.strip()
+        commit = self.get_commit(checkout_path)
         branches = self.m.git(
             'branch', '-a', '--contains', commit,
             stdout=self.m.raw_io.output_text()).stdout.splitlines()
@@ -235,7 +240,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'OS':
             'linux' if self.m.platform.name == 'linux' else
             ('darwin' if self.m.platform.name == 'mac' else 'win'),
-        'REVISION': self.m.buildbucket.gitiles_commit.id or ''
+        'REVISION': self.get_commit(checkout_path)
     }
     env_prefixes = {'PATH': ['%s' % str(flutter_bin), '%s' % str(dart_bin)]}
     return env, env_prefixes

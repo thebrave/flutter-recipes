@@ -108,13 +108,14 @@ def RunSteps(api):
     # Only send rolls on postsubmit
     if _is_postsubmit(api):
         api.auto_roller.attempt_roll(
-            gerrit_host = 'flutter-review.googlesource.com',
-            gerrit_project = 'infra',
+            api.auto_roller.Options(
+                remote = 'https://flutter.googlesource.com/infra',
+                cc_on_failure_emails = ['flutter-infra@grotations.appspotmail.com'],
+                labels_to_set = {'Commit-Queue': 2},
+                bot_commit = True,
+            ),
             repo_dir = infra_path,
             commit_message = 'Roll %s to %s' % (repo, git_ref),
-            cc_on_failure = ['flutter-infra@grotations.appspotmail.com'],
-            labels_to_set = {'Commit-Queue': 2},
-            bot_commit = True,
         )
 
 

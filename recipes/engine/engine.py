@@ -823,6 +823,7 @@ def BuildLinux(api):
       api, 'linux-x64', [
           ICU_DATA_PATH,
           'out/host_debug/flutter_tester',
+          'out/host_debug/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
           'out/host_debug/impellerc',
           'out/host_debug/libtessellator.so',
           'out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin',
@@ -1226,6 +1227,7 @@ def BuildMac(api):
         api, 'darwin-x64', [
             ICU_DATA_PATH,
             'out/host_debug/flutter_tester',
+            'out/host_debug/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
             'out/host_debug/impellerc',
             'out/host_debug/libtessellator.dylib',
             'out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin',
@@ -1515,6 +1517,7 @@ def BuildWindows(api):
         api, 'windows-x64', [
             ICU_DATA_PATH,
             'out/host_debug/flutter_tester.exe',
+            'out/host_debug/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
             'out/host_debug/impellerc.exe',
             'out/host_debug/libtessellator.dll',
             'out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin',

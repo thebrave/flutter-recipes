@@ -25,6 +25,7 @@ this recipe in the builds property:
     }
  }
 """
+import copy
 
 from contextlib import contextmanager
 
@@ -36,6 +37,7 @@ from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
+    'depot_tools/gsutil',
     'flutter/build_util',
     'flutter/flutter_deps',
     'flutter/os_utils',
@@ -128,6 +130,14 @@ def Archive(api, checkout,  archive_config):
       base_name = api.path.basename(full_include_path)
       api.file.ensure_directory('Ensuring %s' % archive_dir.join(rel_path), archive_dir.join(rel_path))
       api.file.copy('Copy %s' % include_path, full_include_path, archive_dir.join(rel_path, base_name))
+  if archive_config.get('type') == 'gcs':
+    commit = api.repo_util.get_commit(checkout)
+    api.gsutil.upload(
+        source='%s/*' % archive_dir, bucket='flutter_archives_v2',
+        dest=commit,  args=['-r'],
+        name=archive_config['name'],)
+    return 'gs://flutter_archives_v2/%s' % api.path.basename(archive_dir)
+  # Archive using CAS by default
   return api.cas_util.upload(archive_dir, step_name='Archive %s' % archive_config['name'])
 
 
@@ -164,6 +174,7 @@ def GenTests(api):
       "archives": [
           {
               "name": "host_debug_unopt",
+              "type": "cas",
               "include_paths": ['out/host_debug_unopt/', 'out/host_debug_unopt/file.zip'],
               "exclude_paths": ['out/host_debug_unopt/obj', 'out/host_debug_unopt/stripped.exe']
           }
@@ -201,3 +212,7 @@ def GenTests(api):
   yield api.test(
       'basic_custom_vars', api.properties(build=build_custom, goma_jobs="100")
   )
+  # gcs archives
+  build_gcs = copy.deepcopy(build)
+  build_gcs['archives'][0]['type'] = 'gcs'
+  yield api.test('basic_gcs', api.properties(build=build_gcs, goma_jobs="100"))

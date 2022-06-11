@@ -60,11 +60,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
       # being found after a failure.
       with self.m.depot_tools.on_path():
         self.m.file.rmtree('Clobber cache', checkout_path)
-        self.m.path.mock_add_directory(self.m.path['cache'].join('git'))
-        if self.m.path.exists(self.m.path['cache'].join('git')):
-          self.m.file.rmtree(
-              'Clobber git cache', self.m.path['cache'].join('git')
-          )
+        self.m.file.rmtree(
+            'Clobber git cache', self.m.path['cache'].join('git')
+        )
         self.m.file.ensure_directory('Ensure checkout cache', checkout_path)
 
     # Inner function to execute code a second time in case of failure.
@@ -88,10 +86,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             self.m.gclient.c = src_cfg
             self.m.gclient.c.got_revision_mapping['src/flutter'
                                                 ] = 'got_engine_revision'
-            step_result = self.m.bot_update.ensure_checkout()
-            if ('got_revision' in step_result.presentation.properties and
-                step_result.presentation.properties['got_revision'] == 'BOT_UPDATE_NO_REV_FOUND'):
-              raise self.m.step.StepFailure('BOT_UPDATE_NO_REV_FOUND')
+            self.m.bot_update.ensure_checkout()
             self.m.gclient.runhooks()
           except:
             # On any exception, clean up the cache and raise

@@ -140,8 +140,6 @@ def RunSteps(api, properties, env_properties):
 
     target_name = 'host_debug_unopt'
     gn_flags = ['--unoptimized', '--full-dart-sdk', '--prebuilt-dart-sdk']
-    # Mac needs to install xcode as part of the building process.
-    additional_args = []
     felt_cmd = [
         checkout.join('out', target_name, 'dart-sdk', 'bin', 'dart'),
         'dev/felt.dart'
@@ -164,10 +162,15 @@ def RunSteps(api, properties, env_properties):
       # builders.
       builds = schedule_builds_on_linux(api, cas_hash)
     elif api.platform.is_mac:
-      with SetupXcode(api):
+      # TODO: remove xcode context condition when GN is clear from xcode:
+      # https://github.com/flutter/flutter/issues/105805
+      if api.properties.get('$flutter/osx_sdk'):
+        with SetupXcode(api):
+          RunGN(api, *gn_flags)
+          Build(api, target_name)
+      else:
         RunGN(api, *gn_flags)
         Build(api, target_name)
-        additional_args = ['--browser', 'ios-safari', '--require-skia-gold']
     else:
       # Platform = windows.
       RunGN(api, *gn_flags)
@@ -189,24 +192,6 @@ def RunSteps(api, properties, env_properties):
       felt_licenses = copy.deepcopy(felt_cmd)
       felt_licenses.append('check-licenses')
       api.step('felt licenses', felt_licenses)
-      if api.platform.is_mac:
-        # On macOS, compile tests once, then reuse compiled tests across iOS and
-        # desktop Safari.
-        felt_run_compile_tests = copy.deepcopy(felt_cmd)
-        felt_run_compile_tests.append('run')
-        felt_run_compile_tests.append('compile_tests')
-        api.retry.step(
-            api.test_utils.test_step_name('Compile tests'),
-            felt_run_compile_tests
-        )
-
-        felt_test_safari_desktop = copy.deepcopy(felt_cmd)
-        felt_test_safari_desktop.append('run')
-        felt_test_safari_desktop.append('run_tests_safari')
-        api.retry.step(
-            api.test_utils.test_step_name('Run tests on macOS Safari'),
-            felt_test_safari_desktop
-        )
       if api.platform.is_linux:
         # TODO(nurhan): Web engine analysis can also be part of felt and used
         # in a shard.
@@ -224,21 +209,19 @@ def RunSteps(api, properties, env_properties):
         )
         CleanUpProcesses(api)
       elif api.platform.is_mac:
-        with SetupXcode(api):
-          with recipe_api.defer_results():
-            felt_test = copy.deepcopy(felt_cmd)
-            felt_test.append('run')
-            felt_test.append('--require-skia-gold')
-            felt_test.append('run_tests_ios-safari')
-            api.step(
-                api.test_utils.test_step_name('Run tests on iOS Safari'), felt_test
-            )
-            CleanUpProcesses(api)
+        with recipe_api.defer_results():
+          felt_test = copy.deepcopy(felt_cmd)
+          felt_test.append('test')
+          felt_test.append('--require-skia-gold')
+          felt_test.append('--browser=safari')
+          api.step(
+              api.test_utils.test_step_name('Run tests on macOS Safari'), felt_test
+          )
+          CleanUpProcesses(api)
       else:
         api.web_util.chrome(checkout)
         felt_test = copy.deepcopy(felt_cmd)
         felt_test.append('test')
-        felt_test.extend(additional_args)
         api.step(api.test_utils.test_step_name('felt test chrome'), felt_test)
         CleanUpProcesses(api)
 
@@ -319,6 +302,12 @@ def GenTests(api):
       api.step_data(
           'read browser lock yaml.parse', api.json.output(browser_yaml_file)
       ), api.properties(goma_jobs='200'), api.platform('win', 64)
+  ) + api.runtime(is_experimental=False)
+  yield api.test(
+      'mac-post-submit-with-xcode',
+      api.properties(goma_jobs='200', **{'$flutter/osx_sdk': {
+          'sdk_version': 'deadbeef', 'toolchain_ver': '123abc'
+      }}), api.platform('mac', 64)
   ) + api.runtime(is_experimental=False)
   yield api.test(
       'mac-post-submit',

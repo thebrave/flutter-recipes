@@ -134,7 +134,7 @@ def Archive(api, checkout,  archive_config):
     commit = api.repo_util.get_commit(checkout)
     api.gsutil.upload(
         source='%s/*' % archive_dir, bucket='flutter_archives_v2',
-        dest=commit,  args=['-r'],
+        dest='flutter_infra_release/flutter/%s' % commit,  args=['-r'],
         name=archive_config['name'],)
     return 'gs://flutter_archives_v2/flutter_infra_release/flutter/%s' % api.path.basename(archive_dir)
   # Archive using CAS by default

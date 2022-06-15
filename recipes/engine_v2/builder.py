@@ -130,7 +130,7 @@ def Archive(api, checkout,  archive_config):
       base_name = api.path.basename(full_include_path)
       api.file.ensure_directory('Ensuring %s' % archive_dir.join(rel_path), archive_dir.join(rel_path))
       api.file.copy('Copy %s' % include_path, full_include_path, archive_dir.join(rel_path, base_name))
-  if archive_config.get('type') == 'gcs':
+  if archive_config.get('type') == 'gcs' and archive_config.get('include_paths', []):
     commit = api.repo_util.get_commit(checkout.join('flutter'))
     api.gsutil.upload(
         source='%s/*' % archive_dir, bucket='flutter_archives_v2',

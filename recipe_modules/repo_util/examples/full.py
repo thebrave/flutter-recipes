@@ -35,7 +35,7 @@ def GenTests(api):
   yield (
       api.test(
           'basic',
-          api.properties(git_branch='beta'),
+          api.properties(git_branch='beta', gn_artifacts='true'),
           api.repo_util.flutter_environment_data(),
           api.step_data('Identify branches.git rev-parse', stdout=api.raw_io.output_text('abchash')),
           api.step_data('Identify branches.git branch', stdout=api.raw_io.output_text('branch1\nbranch2')),

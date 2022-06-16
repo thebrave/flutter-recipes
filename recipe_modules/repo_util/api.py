@@ -242,7 +242,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             ('darwin' if self.m.platform.name == 'mac' else 'win'),
         'REVISION': self.get_commit(checkout_path)
     }
-    if self.m.properties.get('gn_artifacts', '') == 'true':
+    if self.m.properties.get('gn_artifacts', False):
       env['FLUTTER_STORAGE_BASE_URL'] = 'https://storage.googleapis.com/flutter_archives_v2'
     env_prefixes = {'PATH': ['%s' % str(flutter_bin), '%s' % str(dart_bin)]}
     return env, env_prefixes

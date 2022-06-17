@@ -178,7 +178,6 @@ def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params, sup
   )
   api.os_utils.dismiss_dialogs()
   api.os_utils.shutdown_simulators()
-  api.os_utils.ios_debug_symbol_doctor()
   with api.context(env=env, env_prefixes=env_prefixes):
     resource_name = api.resource('runner.sh')
     api.step('Set execute permission', ['chmod', '755', resource_name])
@@ -337,11 +336,7 @@ def GenTests(api):
           tags=['ios'],
           dependencies=[{'dependency': 'xcode'}],
           git_branch='master',
-          **{'$flutter/devicelab_osx_sdk': {
-              'sdk_version': 'deadbeef',
-          }}
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-      api.platform.name('mac'),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.step_data(
           'run abc',

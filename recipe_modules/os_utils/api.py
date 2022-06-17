@@ -9,6 +9,8 @@ from recipe_engine import recipe_api
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
 
+TIMEOUT_PROPERTY = 'ios_debug_symbol_doctor_timeout_seconds'
+
 class OsUtilsApi(recipe_api.RecipeApi):
   """Operating system utilities."""
 
@@ -230,6 +232,37 @@ class OsUtilsApi(recipe_api.RecipeApi):
           ['powershell.exe', resource_name],
       )
 
+  def ios_debug_symbol_doctor(self):
+    """Call the ios_debug_symbol_doctor entrypoint of the Device Doctor."""
+    if str(self.m.swarming.bot_id
+          ).startswith('flutter-devicelab') and self.m.platform.is_mac:
+      with self.m.step.nest('ios_debug_symbol_doctor'):
+        cocoon_path = self._checkout_cocoon()
+        entrypoint = cocoon_path.join(
+            'device_doctor',
+            'bin',
+            'ios_debug_symbol_doctor.dart',
+        )
+        # This is not set by the builder config, but can be provided via LED
+        timeout = self.m.properties.get(
+            TIMEOUT_PROPERTY,
+            120, # 2 minutes
+        )
+        with self.m.context(cwd=cocoon_path.join('device_doctor'),
+                infra_steps=True):
+            self.m.step(
+                'pub get device_doctor',
+                ['dart', 'pub', 'get'],
+            )
+            try:
+                self.m.step(
+                    'diagnose',
+                    ['dart', entrypoint, 'diagnose'],
+                )
+            except self.m.step.StepFailure:
+                self._recover_ios_debug_symbols(entrypoint, timeout, cocoon_path)
+
+
   def dismiss_dialogs(self):
     """Dismisses iOS dialogs to avoid problems.
 
@@ -239,10 +272,7 @@ class OsUtilsApi(recipe_api.RecipeApi):
     if str(self.m.swarming.bot_id
           ).startswith('flutter-devicelab') and self.m.platform.is_mac:
       with self.m.step.nest('Dismiss dialogs'):
-        cocoon_path = self.m.path['cache'].join('cocoon')
-        self.m.repo_util.checkout(
-            'cocoon', cocoon_path, ref='refs/heads/main'
-        )
+        cocoon_path = self._checkout_cocoon()
         resource_name = self.resource('dismiss_dialogs.sh')
         self.m.step(
             'Set execute permission',
@@ -259,3 +289,47 @@ class OsUtilsApi(recipe_api.RecipeApi):
           ).stdout.rstrip()
           cmd = [resource_name, device_id]
           self.m.step('Run app to dismiss dialogs', cmd)
+
+  def _checkout_cocoon(self):
+    """Checkout cocoon at HEAD to the cache and return the path."""
+    cocoon_path = self.m.path['cache'].join('cocoon')
+    self.m.repo_util.checkout(
+        'cocoon', cocoon_path, ref='refs/heads/main'
+    )
+    return cocoon_path
+
+  def _recover_ios_debug_symbols(self, entrypoint, timeout, cocoon_path):
+    args = [
+        'dart',
+        entrypoint,
+        'recover',
+        '--cocoon-root',
+        cocoon_path,
+        '--timeout',
+        timeout,
+    ]
+    self.m.step(
+        'recover with %s second timeout' % timeout,
+        args,
+    )
+    # verify recovery worked
+    try:
+        self.m.step(
+            'diagnose',
+            ['dart', entrypoint, 'diagnose'],
+        )
+    except self.m.step.StepFailure as e:
+        message = '''
+The ios_debug_symbol_doctor failed to recover this bot with a timeout of %s
+seconds. Retrying this build with LED and a longer timeout by setting the
+property %s to a greater value (300 should be more than enough) and explicitly
+specifying this bot may be enough to recover the bot.
+
+See https://github.com/flutter/flutter/issues/103511 for more context.
+''' % (timeout, TIMEOUT_PROPERTY)
+        # raise purple
+        self.m.step.empty(
+            'Recovery failed',
+            status=self.m.step.INFRA_FAILURE,
+            step_text=message,
+        )

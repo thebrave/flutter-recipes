@@ -15,6 +15,7 @@ DEPS = [
 
 
 def RunSteps(api):
+  api.os_utils.ios_debug_symbol_doctor()
   api.os_utils.kill_processes()
   api.os_utils.collect_os_info()
 
@@ -39,8 +40,25 @@ def GenTests(api):
       api.platform('win', 64),
   )
   yield api.test(
-      'mac_linux',
+      'mac',
       api.platform('mac', 64),
+  )
+  yield api.test(
+      'ios_debug_symbol_doctor_fails_then_succeeds',
+      api.step_data('ios_debug_symbol_doctor.diagnose', retcode=1),
+      api.platform('mac', 64),
+      api.properties.environ(
+          properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
+      ),
+  )
+  yield api.test(
+      'ios_debug_symbol_doctor_fails_twice',
+      api.step_data('ios_debug_symbol_doctor.diagnose', retcode=1),
+      api.step_data('ios_debug_symbol_doctor.diagnose (2)', retcode=1),
+      api.platform('mac', 64),
+      api.properties.environ(
+          properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
+      ),
   )
   yield api.test(
       'linux_linux',

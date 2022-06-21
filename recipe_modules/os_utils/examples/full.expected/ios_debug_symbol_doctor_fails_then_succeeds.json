@@ -1,7 +1,10 @@
 [
   {
     "cmd": [],
-    "name": "ios_debug_symbol_doctor"
+    "name": "ios_debug_symbol_doctor",
+    "~followup_annotations": [
+      "@@@STEP_EXCEPTION@@@"
+    ]
   },
   {
     "cmd": [],
@@ -139,6 +142,37 @@
     "cwd": "[CACHE]/cocoon/device_doctor",
     "infra_step": true,
     "name": "ios_debug_symbol_doctor.diagnose",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "dart",
+      "[CACHE]/cocoon/device_doctor/bin/ios_debug_symbol_doctor.dart",
+      "recover",
+      "--cocoon-root",
+      "[CACHE]/cocoon",
+      "--timeout",
+      "120"
+    ],
+    "cwd": "[CACHE]/cocoon/device_doctor",
+    "infra_step": true,
+    "name": "ios_debug_symbol_doctor.recover with 120 second timeout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "dart",
+      "[CACHE]/cocoon/device_doctor/bin/ios_debug_symbol_doctor.dart",
+      "diagnose"
+    ],
+    "cwd": "[CACHE]/cocoon/device_doctor",
+    "infra_step": true,
+    "name": "ios_debug_symbol_doctor.diagnose (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

@@ -8,6 +8,7 @@ from recipe_engine import recipe_api
 
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
+TIMEOUT_PROPERTY = 'ios_debug_symbol_doctor_timeout_seconds'
 
 class OsUtilsApi(recipe_api.RecipeApi):
   """Operating system utilities."""
@@ -230,6 +231,53 @@ class OsUtilsApi(recipe_api.RecipeApi):
           ['powershell.exe', resource_name],
       )
 
+  def ios_debug_symbol_doctor(self):
+    """Call the ios_debug_symbol_doctor entrypoint of the Device Doctor."""
+    if str(self.m.swarming.bot_id
+          ).startswith('flutter-devicelab') and self.m.platform.is_mac:
+      with self.m.step.nest('ios_debug_symbol_doctor'):
+        cocoon_path = self._checkout_cocoon()
+        entrypoint = cocoon_path.join(
+            'device_doctor',
+            'bin',
+            'ios_debug_symbol_doctor.dart',
+        )
+        # This is not set by the builder config, but can be provided via LED
+        timeout = self.m.properties.get(
+            TIMEOUT_PROPERTY,
+            120, # 2 minutes
+        )
+        # Since we double the timeout on each retry, the last retry will have a
+        # timeout of 16 minutes
+        retry_count = 4
+        with self.m.context(cwd=cocoon_path.join('device_doctor'),
+                infra_steps=True):
+            self.m.step(
+                'pub get device_doctor',
+                ['dart', 'pub', 'get'],
+            )
+            for _ in range(retry_count):
+                result = self._diagnose_and_recover_debug_symbols(entrypoint, timeout, cocoon_path)
+                # No errors in attached phones
+                if result:
+                    return
+                # Try for twice as long next time
+                timeout *= 2
+            message = '''
+The ios_debug_symbol_doctor is detecting phones attached with errors and failed
+to recover this bot with a timeout of %s seconds.
+
+See https://github.com/flutter/flutter/issues/103511 for more context.
+''' % timeout
+            # raise purple
+            self.m.step.empty(
+                'Recovery failed after %s attempts' % retry_count,
+                status=self.m.step.INFRA_FAILURE,
+                step_text=message,
+            )
+
+
+
   def dismiss_dialogs(self):
     """Dismisses iOS dialogs to avoid problems.
 
@@ -239,10 +287,7 @@ class OsUtilsApi(recipe_api.RecipeApi):
     if str(self.m.swarming.bot_id
           ).startswith('flutter-devicelab') and self.m.platform.is_mac:
       with self.m.step.nest('Dismiss dialogs'):
-        cocoon_path = self.m.path['cache'].join('cocoon')
-        self.m.repo_util.checkout(
-            'cocoon', cocoon_path, ref='refs/heads/main'
-        )
+        cocoon_path = self._checkout_cocoon()
         resource_name = self.resource('dismiss_dialogs.sh')
         self.m.step(
             'Set execute permission',
@@ -259,3 +304,42 @@ class OsUtilsApi(recipe_api.RecipeApi):
           ).stdout.rstrip()
           cmd = [resource_name, device_id]
           self.m.step('Run app to dismiss dialogs', cmd)
+
+  def _checkout_cocoon(self):
+    """Checkout cocoon at HEAD to the cache and return the path."""
+    cocoon_path = self.m.path['cache'].join('cocoon')
+    self.m.repo_util.checkout(
+        'cocoon', cocoon_path, ref='refs/heads/main'
+    )
+    return cocoon_path
+
+  def _diagnose_and_recover_debug_symbols(self, entrypoint, timeout, cocoon_path):
+    """Diagnose if attached phones have errors with debug symbols.
+
+    If there are errors, a recovery will be attempted. This function is intended
+    to be called in a retry loop until it returns True, or until a max retry
+    count is reached.
+
+    Returns a boolean for whether or not the initial diagnose succeeded.
+    """
+    try:
+        self.m.step(
+            'diagnose',
+            ['dart', entrypoint, 'diagnose'],
+        )
+        return True
+    except self.m.step.StepFailure as e:
+        self.m.step(
+            'recover with %s second timeout' % timeout,
+            [
+                'dart',
+                entrypoint,
+                'recover',
+                '--cocoon-root',
+                cocoon_path,
+                '--timeout',
+                timeout,
+            ],
+        )
+        return False
+

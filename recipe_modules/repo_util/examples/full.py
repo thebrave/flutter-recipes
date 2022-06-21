@@ -6,6 +6,7 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
     'flutter/repo_util',
+    'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/path',
     'recipe_engine/properties',
@@ -26,7 +27,10 @@ def RunSteps(api):
   env, env_paths = api.repo_util.engine_environment(flutter_checkout_path)
   env, env_paths = api.repo_util.flutter_environment(flutter_checkout_path)
   api.repo_util.in_release_and_main(flutter_checkout_path)
-  api.repo_util.engine_checkout(api.path['start_dir'].join('engine'), {}, {})
+  if api.buildbucket.gitiles_commit.project == 'monorepo':
+    api.repo_util.monorepo_checkout(api.path['start_dir'], {}, {})
+  else:
+    api.repo_util.engine_checkout(api.path['start_dir'].join('engine'), {}, {})
   with api.context(env=env, env_prefixes=env_paths):
     api.repo_util.sdk_checkout_path()
 
@@ -43,6 +47,32 @@ def GenTests(api):
           api.step_data('Identify branches (3).git branch', stdout=api.raw_io.output_text('branch1\nbranch2')))
   )
   yield api.test('failed_flutter_environment')
+  yield api.test(
+      'monorepo', api.repo_util.flutter_environment_data(),
+      api.buildbucket.ci_build(
+          git_repo='https://dart.googlesource.com/monorepo',
+          git_ref='refs/heads/main'
+      )
+  )
+  yield api.test(
+      'monorepo_wrong_host', api.repo_util.flutter_environment_data(),
+      api.buildbucket.ci_build(
+          git_repo='https://not-dart.googlesource.com/monorepo',
+          git_ref='refs/heads/main'
+      ), api.expect_exception('ValueError')
+  )
+  yield api.test(
+      'monorepo_first_bot_update_failed',
+      api.repo_util.flutter_environment_data(),
+      api.buildbucket.ci_build(
+          git_repo='https://dart.googlesource.com/monorepo',
+          git_ref='refs/heads/main'
+      ),
+      # Next line force a fail condition for the bot update
+      # first execution.
+      api.expect_exception('ValueError'),
+      api.step_data("Checkout source code.bot_update", retcode=1)
+  )
   yield (
       api.test(
           'bot_update',

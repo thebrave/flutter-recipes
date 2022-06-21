@@ -44,6 +44,7 @@ DEPS = [
     'flutter/osx_sdk',
     'flutter/repo_util',
     'fuchsia/cas_util',
+    'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
@@ -156,9 +157,15 @@ def RunSteps(api, properties, env_properties):
   env['ENGINE_PATH'] = api.path['cache'].join('builder')
 
   custom_vars = api.properties.get('gclient_custom_vars', {})
-  api.repo_util.engine_checkout(
-      cache_root, env, env_prefixes, custom_vars=custom_vars
-  )
+  if api.buildbucket.gitiles_commit.project == 'monorepo':
+    api.repo_util.monorepo_checkout(
+        cache_root, env, env_prefixes, custom_vars=custom_vars
+    )
+    checkout = api.path['cache'].join('builder', 'engine', 'src')
+  else:
+    api.repo_util.engine_checkout(
+        cache_root, env, env_prefixes, custom_vars=custom_vars
+    )
   outputs = {}
   if api.platform.is_mac:
     with api.osx_sdk('ios'):
@@ -201,6 +208,19 @@ def GenTests(api):
   yield api.test(
       'mac', api.properties(build=build, goma_jobs="100"),
       api.platform('mac', 64),
+      api.path.exists(
+          api.path['cache'].join('builder', 'src', 'dev'),
+          api.path['cache'].join('builder', 'src', 'dev', 'file.txt'),
+      )
+  )
+  yield api.test(
+      'monorepo', api.properties(build=build, goma_jobs="100"),
+      api.buildbucket.ci_build(
+          project='dart',
+          bucket='ci.sandbox',
+          git_repo='https://dart.googlesource.com/monorepo',
+          git_ref='refs/heads/main'
+      ),
       api.path.exists(
           api.path['cache'].join('builder', 'src', 'dev'),
           api.path['cache'].join('builder', 'src', 'dev', 'file.txt'),

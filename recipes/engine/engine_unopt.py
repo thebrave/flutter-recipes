@@ -135,6 +135,7 @@ def BuildLinux(api):
       '--unoptimized',
       '--prebuilt-dart-sdk',
       '--asan',
+      '--lsan',
       '--dart-debug'
   )
   Build(api, 'host_debug_unopt')

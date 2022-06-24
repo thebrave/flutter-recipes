@@ -118,8 +118,14 @@ def Archive(api, checkout,  archive_config):
   # Mock a directory path to make tests pass.
   api.path.mock_add_directory(api.path.abspath(checkout.join('out/host_debug_unopt/')))
   api.path.mock_add_file(api.path.abspath(checkout.join('out/host_debug_unopt/file.zip')))
+
+  # Android artifacts are uploaded to a different bucket. If they exist we need a second
+  # gsutil upload.
+  upload_android_artifacts = False
   for include_path in archive_config.get('include_paths', []):
     full_include_path = api.path.abspath(checkout.join(include_path))
+    if include_path.endswith('download.flutter.io'):
+      upload_android_artifacts = True
     if api.path.isdir(full_include_path):
       dir_name = api.path.basename(full_include_path)
       api.file.copytree('Copy %s' % include_path, full_include_path, archive_dir.join(dir_name))
@@ -133,10 +139,23 @@ def Archive(api, checkout,  archive_config):
       api.file.copy('Copy %s' % include_path, full_include_path, archive_dir.join(rel_path, base_name))
   if archive_config.get('type') == 'gcs' and archive_config.get('include_paths', []):
     commit = api.repo_util.get_commit(checkout.join('flutter'))
+
+    artifact_path = 'flutter_infra_release/flutter/%s' % commit
     api.gsutil.upload(
         source='%s/*' % archive_dir, bucket='flutter_archives_v2',
-        dest='flutter_infra_release/flutter/%s' % commit,  args=['-r'],
+        dest=artifact_path,  args=['-r'],
         name=archive_config['name'],)
+    # Jar and pom files are uploaed to download.flutter.io while all the other artifacts
+    # are uploaded to flutter_infra_release. If we override paths artifacts need to be organized
+    # as gs://<overriden_bucket>/flutter_infra_release for non android artifacts and
+    # gs://<overriden_bucket>/download.flutter.io for android artifacts.
+    if upload_android_artifacts:
+      artifact_path = ''
+      api.gsutil.upload(
+          source='%s/download.flutter.io/' % archive_dir, bucket='flutter_archives_v2',
+          dest=artifact_path,  args=['-r'],
+          name=archive_config['name'],)
+
     return 'gs://flutter_archives_v2/flutter_infra_release/flutter/%s' % api.path.basename(archive_dir)
   # Archive using CAS by default
   return api.cas_util.upload(archive_dir, step_name='Archive %s' % archive_config['name'])
@@ -182,7 +201,8 @@ def GenTests(api):
           {
               "name": "host_debug_unopt",
               "type": "cas",
-              "include_paths": ['out/host_debug_unopt/', 'out/host_debug_unopt/file.zip'],
+              "include_paths": ['out/host_debug_unopt/', 'out/host_debug_unopt/file.zip',
+                                'out/host_debug_unopt/download.flutter.io'],
               "exclude_paths": ['out/host_debug_unopt/obj', 'out/host_debug_unopt/stripped.exe']
           }
       ],

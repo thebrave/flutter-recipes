@@ -198,23 +198,6 @@ def BuildWindows(api):
   RunTests(api, 'host_debug_unopt', types='engine')
 
 
-@contextmanager
-def InstallGems(api):
-  gem_dir = api.path['start_dir'].join('gems')
-  api.file.ensure_directory('mkdir gems', gem_dir)
-
-  with api.context(cwd=gem_dir):
-    api.step(
-        'install jazzy', [
-            'gem', 'install', 'jazzy:' + api.properties['jazzy_version'],
-            '--install-dir', '.'
-        ]
-    )
-  with api.context(env={"GEM_HOME": gem_dir},
-                   env_prefixes={'PATH': [gem_dir.join('bin')]}):
-    yield
-
-
 def RunSteps(api, properties, env_properties):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
@@ -273,8 +256,7 @@ def RunSteps(api, properties, env_properties):
       if api.platform.is_mac:
         with SetupXcode(api):
           BuildMac(api)
-          with InstallGems(api):
-            BuildIOS(api)
+          BuildIOS(api)
 
       if api.platform.is_win:
         BuildWindows(api)
@@ -313,12 +295,4 @@ def GenTests(api):
               EnvProperties(SWARMING_TASK_ID='deadbeef')
           ),
       )
-      if platform == 'mac':
-        test += (
-            api.properties(
-                InputProperties(
-                    jazzy_version='0.8.4',
-                )
-            )
-        )
       yield test

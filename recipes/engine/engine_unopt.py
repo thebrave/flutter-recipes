@@ -108,13 +108,6 @@ def LintAndroidHost(api):
       api.step('dart bin/main.dart', ['dart', 'bin/main.dart'])
 
 
-def CheckLicenses(api):
-  checkout = GetCheckoutPath(api)
-  with api.context(cwd=checkout):
-    licenses_cmd = checkout.join('flutter', 'ci', 'licenses.sh')
-    api.step('licenses check', [licenses_cmd])
-
-
 def BuildLinuxAndroid(api, swarming_task_id):
   # Build Android Unopt and run tests
   RunGN(api, '--android', '--unoptimized')
@@ -246,7 +239,6 @@ def RunSteps(api, properties, env_properties):
       # Checks before building the engine. Only run on Linux.
       if api.platform.is_linux:
         FormatAndDartTest(api)
-        CheckLicenses(api)
         BuildLinux(api)
         AnalyzeDartUI(api)
         TestObservatory(api)

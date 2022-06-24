@@ -61,7 +61,7 @@ class RetryApi(recipe_api.RecipeApi):
       retriable_codes='any',
       **kwargs
   ):
-    """Retry wrapped function with exponential backoff.
+    """Retry wrapped function which needs step support.
     Args:
         step_name (str): Name of the step.
         func (callable): A function that performs the action that should be
@@ -92,3 +92,31 @@ class RetryApi(recipe_api.RecipeApi):
           raise
         self.m.time.sleep(sleep)
         sleep *= backoff_factor
+
+  def basic_wrap(
+        self,
+        func,
+        max_attempts=3,
+        sleep=5.0,
+        backoff_factor=1.5,
+        **kwargs
+    ):
+      """Retry basic wrapped function without step support.
+      Args:
+          func (callable): A function that performs the action that should be
+            retried on failure. If it raises a `StepFailure`, it will be retried.
+            Any other exception will end the retry loop and bubble up.
+          max_attempts (int): How many times to try before giving up.
+          sleep (int or float): The initial time to sleep between attempts.
+          backoff_factor (int or float): The factor by which the sleep time
+              will be multiplied after each attempt.
+      """
+      for attempt in range(max_attempts):
+        try:
+          func()
+          return
+        except self.m.step.StepFailure:
+          if attempt == max_attempts - 1:
+            raise
+          self.m.time.sleep(sleep)
+          sleep *= backoff_factor

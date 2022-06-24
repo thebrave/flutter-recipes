@@ -21,7 +21,6 @@ REPO_BRANCHES = {
 import re
 from recipe_engine import recipe_api
 
-
 class RepoUtilApi(recipe_api.RecipeApi):
   """Provides utilities to work with flutter repos."""
 
@@ -50,10 +49,12 @@ class RepoUtilApi(recipe_api.RecipeApi):
       # Ensure depot tools is in the path to prevent problems with vpython not
       # being found after a failure.
       with self.m.depot_tools.on_path():
-        self.m.file.rmtree('Clobber cache', checkout_path)
-        self.m.file.rmtree(
-            'Clobber git cache', self.m.path['cache'].join('git')
-        )
+        if self.m.path.exists(checkout_path):
+          self.m.file.rmcontents('Clobber cache', checkout_path)
+        git_cache_path = self.m.path['cache'].join('git')
+        self.m.path.mock_add_directory(git_cache_path)
+        if self.m.path.exists(git_cache_path):
+          self.m.file.rmtree('Clobber git cache', git_cache_path)
         self.m.file.ensure_directory('Ensure checkout cache', checkout_path)
 
     # Inner function to execute code a second time in case of failure.
@@ -80,7 +81,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
             self.m.gclient.c = src_cfg
             self.m.gclient.c.got_revision_mapping['src/flutter'
                                                  ] = 'got_engine_revision'
-            self.m.bot_update.ensure_checkout()
+            step_result = self.m.bot_update.ensure_checkout()
+            if ('got_revision' in step_result.presentation.properties and
+                step_result.presentation.properties['got_revision'] == 'BOT_UPDATE_NO_REV_FOUND'):
+              raise self.m.step.StepFailure('BOT_UPDATE_NO_REV_FOUND')
             self.m.gclient.runhooks()
           except:
             # On any exception, clean up the cache and raise
@@ -88,7 +92,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             raise
 
     # Some outlier GoB mirror jobs can take >250secs.
-    self.m.retry.wrap(
+    self.m.retry.basic_wrap(
         _InnerCheckout,
         step_name='Checkout source',
         sleep=10.0,
@@ -122,10 +126,12 @@ class RepoUtilApi(recipe_api.RecipeApi):
       # Ensure depot tools is in the path to prevent problems with vpython not
       # being found after a failure.
       with self.m.depot_tools.on_path():
-        self.m.file.rmtree('Clobber cache', checkout_path)
-        self.m.file.rmtree(
-            'Clobber git cache', self.m.path['cache'].join('git')
-        )
+        if self.m.path.exists(checkout_path):
+          self.m.file.rmcontents('Clobber cache', checkout_path)
+        git_cache_path = self.m.path['cache'].join('git')
+        self.m.path.mock_add_directory(git_cache_path)
+        if self.m.path.exists(git_cache_path):
+          self.m.file.rmtree('Clobber git cache', git_cache_path)
         self.m.file.ensure_directory('Ensure checkout cache', checkout_path)
 
     # Inner function to execute code a second time in case of failure.
@@ -165,7 +171,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             raise
 
     # Some outlier GoB mirror jobs can take >250secs.
-    self.m.retry.wrap(
+    self.m.retry.basic_wrap(
         _InnerCheckout,
         step_name='Checkout source',
         sleep=10.0,

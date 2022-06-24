@@ -1009,7 +1009,7 @@
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
-      "rmtree",
+      "rmcontents",
       "[START_DIR]"
     ],
     "env_suffixes": {
@@ -1266,7 +1266,7 @@
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
-      "rmtree",
+      "rmcontents",
       "[START_DIR]"
     ],
     "env_suffixes": {
@@ -1377,29 +1377,301 @@
   },
   {
     "cmd": [],
-    "name": "RECIPE CRASH (Uncaught exception)",
+    "name": "Checkout source code (2)"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmcontents",
+      "[START_DIR]"
+    ],
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout source code (2).Clobber cache",
     "~followup_annotations": [
-      "@@@STEP_EXCEPTION@@@",
-      "The recipe has crashed at point 'Uncaught exception'!",
-      "",
-      "Traceback (most recent call last):",
-      "  File \"RECIPE_REPO[flutter]/recipe_modules/repo_util/examples/full.py\", line 31, in RunSteps",
-      "    api.repo_util.monorepo_checkout(api.path['start_dir'], {}, {})",
-      "  File \"RECIPE_REPO[flutter]/recipe_modules/repo_util/api.py\", line 168, in monorepo_checkout",
-      "    self.m.retry.wrap(",
-      "  File \"RECIPE_REPO[flutter]/recipe_modules/retry/api.py\", line 88, in wrap",
-      "    step = self.m.step.active_result",
-      "  File \"RECIPE_REPO[recipe_engine]/recipe_modules/step/api.py\", in active_result",
-      "    return self.step_client.previous_step_result()",
-      "  File \"RECIPE_REPO[recipe_engine]/recipe_engine/recipe_api.py\", in previous_step_result",
-      "    raise ValueError(",
-      "ValueError('No steps have been run yet, and you are asking for a previous step result.')"
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
-    "failure": {
-      "humanReason": "Uncaught Exception: ValueError('No steps have been run yet, and you are asking for a previous step result.')"
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CACHE]/git"
+    ],
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
     },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout source code (2).Clobber git cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]"
+    ],
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout source code (2).Ensure checkout cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::bot_update]/resources/bot_update.py",
+      "--spec-path",
+      "cache_dir = '[CACHE]/git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': False, 'name': 'monorepo', 'url': 'https://dart.googlesource.com/monorepo'}]",
+      "--revision_mapping_file",
+      "{\"got_buildroot_revision\": \"engine/src\", \"got_dart_revision\": \"engine/src/third_party/dart\", \"got_engine_revision\": \"engine/src/flutter\", \"got_flutter_revision\": \"flutter\", \"got_monorepo_revision\": \"monorepo\"}",
+      "--git-cache-dir",
+      "[CACHE]/git",
+      "--cleanup-dir",
+      "[CLEANUP]/bot_update",
+      "--output_json",
+      "/path/to/tmp/json",
+      "--revision",
+      "monorepo@2d72510e447ab60a9728aeea2362d8be2cbd7789",
+      "--refs",
+      "refs/heads/main"
+    ],
+    "env": {
+      "DEPOT_TOOLS_REPORT_BUILD": "project/ci/builder/8945511751514863184",
+      "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
+      "GIT_HTTP_LOW_SPEED_TIME": "1800"
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0",
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]",
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout source code (2).bot_update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@Some step text@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"did_run\": true, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"fixed_revisions\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"monorepo\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"manifest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"engine/src\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"repository\": \"https://fake.org/engine/src.git\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"revision\": \"851705163d0a071411a2461348b2fa0f4365dd2b\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }, @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"engine/src/flutter\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"repository\": \"https://fake.org/engine/src/flutter.git\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"revision\": \"8d715353df333b3d997121c3d17cfe043f0a33ee\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }, @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"engine/src/third_party/dart\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"repository\": \"https://fake.org/engine/src/third_party/dart.git\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"revision\": \"56b272d88fce292881d9d6a89d1a88b53f868a7f\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }, @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"flutter\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"repository\": \"https://fake.org/flutter.git\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"revision\": \"ff25d17873bba4bc564d8c7217280aa254ed4541\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }, @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"monorepo\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"repository\": \"https://fake.org/monorepo.git\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"revision\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"patch_failure\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"patch_root\": \"monorepo\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_buildroot_revision\": \"851705163d0a071411a2461348b2fa0f4365dd2b\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_buildroot_revision_cp\": \"refs/heads/main@{#278358}\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_dart_revision\": \"56b272d88fce292881d9d6a89d1a88b53f868a7f\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_dart_revision_cp\": \"refs/heads/main@{#135384}\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision\": \"8d715353df333b3d997121c3d17cfe043f0a33ee\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision_cp\": \"refs/heads/main@{#14355}\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_flutter_revision\": \"ff25d17873bba4bc564d8c7217280aa254ed4541\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_flutter_revision_cp\": \"refs/heads/main@{#268536}\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_monorepo_revision\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_monorepo_revision_cp\": \"refs/heads/main@{#255931}\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"46cec4dbb087a7b43490e8c82b6899fa32937bd9\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"root\": \"monorepo\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"source_manifest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"directories\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"engine/src\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"git_checkout\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"repo_url\": \"https://fake.org/engine/src.git\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"851705163d0a071411a2461348b2fa0f4365dd2b\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"engine/src/flutter\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"git_checkout\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"repo_url\": \"https://fake.org/engine/src/flutter.git\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"8d715353df333b3d997121c3d17cfe043f0a33ee\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"engine/src/third_party/dart\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"git_checkout\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"repo_url\": \"https://fake.org/engine/src/third_party/dart.git\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"56b272d88fce292881d9d6a89d1a88b53f868a7f\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"flutter\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"git_checkout\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"repo_url\": \"https://fake.org/flutter.git\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"ff25d17873bba4bc564d8c7217280aa254ed4541\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"monorepo\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"git_checkout\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"repo_url\": \"https://fake.org/monorepo.git\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }, @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"version\": 0@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"step_text\": \"Some step text\"@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@SET_BUILD_PROPERTY@got_buildroot_revision@\"851705163d0a071411a2461348b2fa0f4365dd2b\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_buildroot_revision_cp@\"refs/heads/main@{#278358}\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_dart_revision@\"56b272d88fce292881d9d6a89d1a88b53f868a7f\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_dart_revision_cp@\"refs/heads/main@{#135384}\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_engine_revision@\"8d715353df333b3d997121c3d17cfe043f0a33ee\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_engine_revision_cp@\"refs/heads/main@{#14355}\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_flutter_revision@\"ff25d17873bba4bc564d8c7217280aa254ed4541\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_flutter_revision_cp@\"refs/heads/main@{#268536}\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_monorepo_revision@\"2d72510e447ab60a9728aeea2362d8be2cbd7789\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_monorepo_revision_cp@\"refs/heads/main@{#255931}\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"46cec4dbb087a7b43490e8c82b6899fa32937bd9\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_REPO[depot_tools]/gclient.py",
+      "runhooks"
+    ],
+    "env": {
+      "DEPOT_TOOLS_REPORT_BUILD": "project/ci/builder/8945511751514863184"
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]",
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout source code (2).gclient runhooks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
     "name": "$result"
   }
 ]

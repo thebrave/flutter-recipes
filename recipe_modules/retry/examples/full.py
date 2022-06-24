@@ -37,10 +37,14 @@ def RunSteps(api, max_attempts):
   )
   api.retry.step('test: mytest', ['ls', '-la'], max_attempts=max_attempts)
 
-  def func():
+  def func1():
     api.step('test: mytest_func', ['ls', '-a'])
 
-  api.retry.wrap(func, step_name='test: mytest_func', max_attempts=max_attempts)
+  def func2():
+    api.step('test: mytest_func_basic', ['ls', '-a'])
+
+  api.retry.wrap(func1, step_name='test: mytest_func', max_attempts=max_attempts)
+  api.retry.basic_wrap(func2, max_attempts=max_attempts)
 
 
 def GenTests(api):
@@ -54,10 +58,17 @@ def GenTests(api):
                                                      'test: mytest_func',
                                                      retcode=1
                                                  )
+  yield api.test('failing_basic_wrap') + api.properties(max_attempts=1
+                                                 ) + api.step_data(
+                                                     'test: mytest_func_basic',
+                                                     retcode=1
+                                                 )
   yield api.test('pass_with_retries') + api.properties(
       max_attempts=2
   ) + api.step_data(
       'test: mytest', retcode=1
   ) + api.step_data(
       'test: mytest_func', retcode=1
+  ) + api.step_data(
+      'test: mytest_func_basic', retcode=1
   )

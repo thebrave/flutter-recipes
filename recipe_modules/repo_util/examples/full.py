@@ -8,6 +8,7 @@ DEPS = [
     'flutter/repo_util',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
+    'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
@@ -70,7 +71,6 @@ def GenTests(api):
       ),
       # Next line force a fail condition for the bot update
       # first execution.
-      api.expect_exception('ValueError'),
       api.step_data("Checkout source code.bot_update", retcode=1)
   )
   yield (
@@ -93,7 +93,23 @@ def GenTests(api):
       ) +
       # Next line force a fail condition for the bot update
       # first execution.
-      api.expect_exception('ValueError') +
       api.step_data("Checkout source code.bot_update", retcode=1) +
+      api.repo_util.flutter_environment_data()
+  )
+  yield (
+      api.test(
+          'first_bot_update_revision_not_found',
+          api.properties(
+              git_url='https://github.com/flutter/engine',
+              git_ref='refs/pull/1/head'
+          )
+      ) +
+      # Next line force a fail condition for the bot update
+      # first execution.
+      api.path.exists(api.path['cache'].join('git'), api.path['start_dir'].join('engine')) +
+      api.override_step_data(
+          "Checkout source code.bot_update",
+          api.json.output({'properties': {'got_revision': 'BOT_UPDATE_NO_REV_FOUND'}}),
+          retcode=0) +
       api.repo_util.flutter_environment_data()
   )

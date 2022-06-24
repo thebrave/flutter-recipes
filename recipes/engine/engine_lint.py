@@ -51,23 +51,6 @@ def Build(api, config, *targets):
   api.build_util.build(config, checkout, targets)
 
 
-@contextmanager
-def InstallGems(api):
-  gem_dir = api.path['start_dir'].join('gems')
-  api.file.ensure_directory('mkdir gems', gem_dir)
-
-  with api.context(cwd=gem_dir):
-    api.step(
-        'install jazzy', [
-            'gem', 'install', 'jazzy:' + api.properties['jazzy_version'],
-            '--install-dir', '.'
-        ]
-    )
-  with api.context(env={"GEM_HOME": gem_dir},
-                   env_prefixes={'PATH': [gem_dir.join('bin')]}):
-    yield
-
-
 def Lint(api, config):
   checkout = GetCheckoutPath(api)
   with api.context(cwd=checkout):
@@ -97,12 +80,11 @@ def DoLints(api):
       # files that are generated during the build.
       Build(api, 'host_debug')
       Lint(api, 'host_debug')
-      with InstallGems(api):
-        RunGN(
-            api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto',
-        )
-        Build(api, 'ios_debug_sim')
-        Lint(api, 'ios_debug_sim')
+      RunGN(
+          api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto',
+      )
+      Build(api, 'ios_debug_sim')
+      Lint(api, 'ios_debug_sim')
 
 
 def RunSteps(api, properties, env_properties):
@@ -184,12 +166,4 @@ def GenTests(api):
             EnvProperties(SWARMING_TASK_ID='deadbeef')
         ),
     )
-    if platform == 'mac':
-      test += (
-          api.properties(
-              InputProperties(
-                  jazzy_version='0.8.4',
-              )
-          )
-      )
     yield test

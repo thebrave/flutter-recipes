@@ -1618,19 +1618,20 @@ def InstallGems(api):
 
 def BuildObjcDoc(api):
   """Builds documentation for the Objective-C variant of engine."""
-  checkout = GetCheckoutPath(api)
-  with api.os_utils.make_temp_directory('BuildObjcDoc') as temp_dir:
-    objcdoc_cmd = [checkout.join('flutter/tools/gen_objcdoc.sh'), temp_dir]
-    with api.context(cwd=checkout.join('flutter')):
-      api.step('build obj-c doc', objcdoc_cmd)
-    api.zip.directory(
-        'archive obj-c doc', temp_dir, checkout.join('out/ios-objcdoc.zip')
-    )
+  with InstallGems(api):
+    checkout = GetCheckoutPath(api)
+    with api.os_utils.make_temp_directory('BuildObjcDoc') as temp_dir:
+      objcdoc_cmd = [checkout.join('flutter/tools/gen_objcdoc.sh'), temp_dir]
+      with api.context(cwd=checkout.join('flutter')):
+        api.step('build obj-c doc', objcdoc_cmd)
+      api.zip.directory(
+          'archive obj-c doc', temp_dir, checkout.join('out/ios-objcdoc.zip')
+      )
 
-    api.bucket_util.safe_upload(
-        checkout.join('out/ios-objcdoc.zip'),
-        GetCloudPath(api, 'ios-objcdoc.zip')
-    )
+      api.bucket_util.safe_upload(
+          checkout.join('out/ios-objcdoc.zip'),
+          GetCloudPath(api, 'ios-objcdoc.zip')
+      )
 
 
 def RunSteps(api, properties, env_properties):
@@ -1707,8 +1708,7 @@ def RunSteps(api, properties, env_properties):
         with SetupXcode(api):
           BuildMac(api)
           if api.properties.get('build_ios', True):
-            with InstallGems(api):
-              BuildIOS(api)
+            BuildIOS(api)
           if api.properties.get('build_fuchsia', True):
             BuildFuchsia(api, gclient_vars)
           VerifyExportedSymbols(api)

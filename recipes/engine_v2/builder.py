@@ -43,6 +43,8 @@ DEPS = [
     'flutter/os_utils',
     'flutter/osx_sdk',
     'flutter/repo_util',
+    'flutter/retry',
+    'flutter/test_utils',
     'fuchsia/cas_util',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
@@ -104,7 +106,17 @@ def Build(api, checkout, env, env_prefixes, outputs):
       # TODO(godofredoc): Optimize to run multiple local tests in parallel.
       command.append(checkout.join(test.get('script')))
       command.extend(test.get('parameters', []))
-      api.step(test.get('name'), command)
+      #api.step(test.get('name'), command)
+      step_name = api.test_utils.test_step_name(test.get('name'))
+
+      def run_test():
+        return api.step(step_name, command)
+
+      # Rerun test step 3 times by default if failing.
+      # TODO(keyonghan): notify tree gardener for test failures/flakes:
+      # https://github.com/flutter/flutter/issues/89308
+      api.retry.wrap(run_test, step_name=test.get('name'))
+
     for archive_config in archives:
       outputs[archive_config['name']] = Archive(api, checkout, archive_config)
 

@@ -60,6 +60,15 @@ def RunSteps(api):
       api.properties.get('git_url'),
       api.properties.get('git_ref'),
   )
+  # Checkout openpay repo if property exists in builder config.
+  if api.properties.get('openpay'):
+    openpay_path = api.path.mkdtemp().join('openpay')
+    api.repo_util.checkout(
+        'openpay',
+        openpay_path,
+        ref='refs/heads/main',
+    )
+
   with api.context(cwd=flutter_path):
     commit_time = api.git(
         'git commit time',
@@ -316,7 +325,7 @@ def GenTests(api):
   )
   yield api.test(
       "basic",
-      api.properties(buildername='Linux abc', task_name='abc', git_branch='master'),
+      api.properties(buildername='Linux abc', task_name='abc', git_branch='master', openpay=True),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
           'run abc',

@@ -9,13 +9,19 @@ REPOS = {
     'infra': 'https://flutter.googlesource.com/infra',
     'monorepo': 'https://dart.googlesource.com/monorepo',
     'packages': 'https://flutter.googlesource.com/mirrors/packages',
-    'plugins': 'https://flutter.googlesource.com/mirrors/plugins'
+    'plugins': 'https://flutter.googlesource.com/mirrors/plugins',
+    'openpay': 'https://dash-internal.googlesource.com/openpay',
 }
 
 # TODO(keyonghan): deprecate when all repos are migrated to main.
 REPO_BRANCHES = {
-    'flutter': 'master', 'engine': 'main', 'cocoon': 'main', 'infra': 'main',
-    'packages': 'main', 'plugins': 'main'
+  'flutter': 'master',
+  'engine': 'main',
+  'cocoon': 'main',
+  'infra': 'main',
+  'packages': 'main',
+  'plugins': 'main',
+  'openpay': 'main',
 }
 
 import re

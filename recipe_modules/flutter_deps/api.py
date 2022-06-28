@@ -65,6 +65,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'dart_sdk': self.dart_sdk,
         'dashing': self.dashing,
         'firebase': self.firebase,
+        'gh_cli': self.gh_cli,
         'go_sdk': self.go_sdk,
         'goldctl': self.goldctl,
         'gradle_cache': self.gradle_cache,
@@ -178,6 +179,18 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         env['CHROME_EXECUTABLE'] = exec_path
       else:
         env['CHROME_EXECUTABLE'] = chrome_path.join(binary_name)
+
+  def gh_cli(self, env, env_prefixes, version):
+    """Installs GitHub CLI."""
+    version = version or 'latest'
+    gh_path = self.m.path['cache'].join('gh-cli')
+    gh_file = self.m.cipd.EnsureFile()
+    gh_file.add_package('flutter_internal/tools/gh-cli/${platform}', version)
+    self.m.cipd.ensure(gh_path, gh_file)
+    self.m.step('check gh version', [gh_path.join('bin', 'gh'), '--version'])
+    paths = env_prefixes.get('PATH', [])
+    paths.append(gh_path.join('bin'))
+    env_prefixes['PATH'] = paths
 
   def go_sdk(self, env, env_prefixes, version):
     """Installs go sdk."""

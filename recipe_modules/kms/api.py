@@ -12,7 +12,7 @@ class KMSApi(recipe_api.RecipeApi):
     """Decrypts the encrypted secret.
 
     Args:
-      input_file (str): encrypted file of the secret.
+      input_file (str): path on GCS to encrypted file of the secret relative to 'flutter_configs'.
       secret_path (Path): path of decrypted secret.
     """
     cloudkms_dir = self.m.path['start_dir'].join('cloudkms')

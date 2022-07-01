@@ -152,7 +152,7 @@ def Archive(api, checkout,  archive_config):
   if archive_config.get('type') == 'gcs' and archive_config.get('include_paths', []):
     commit = api.repo_util.get_commit(checkout.join('flutter'))
 
-    artifact_path = 'flutter_infra_release/flutter/%s' % commit
+    artifact_path = 'flutter_infra_release/flutter/%s/' % commit
     api.gsutil.upload(
         source='%s/*' % archive_dir, bucket='flutter_archives_v2',
         dest=artifact_path,  args=['-r'],

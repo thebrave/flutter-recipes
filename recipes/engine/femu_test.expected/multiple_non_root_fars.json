@@ -67,6 +67,37 @@
   },
   {
     "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "RECIPE_REPO[depot_tools]/.cipd_bin",
+      "-ensure-file",
+      "RECIPE_REPO[depot_tools]/cipd_manifest.txt",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "name": "Checkout source code.ensure depot_tools/.cipd_bin",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {}@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
       "vpython3",
       "-u",
       "RECIPE_MODULE[depot_tools::bot_update]/resources/bot_update.py",
@@ -2544,6 +2575,8 @@
       "projects/example-cas-server/instances/default_instance",
       "-dump-digest",
       "/path/to/tmp/",
+      "-log-level",
+      "debug",
       "-paths",
       "[CLEANUP]/vdl_runfiles__tmp_1:."
     ],

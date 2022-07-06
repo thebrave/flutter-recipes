@@ -26,6 +26,29 @@
       "cipd",
       "ensure",
       "-root",
+      "RECIPE_REPO[depot_tools]/.cipd_bin",
+      "-ensure-file",
+      "RECIPE_REPO[depot_tools]/cipd_manifest.txt",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]/builder/avd",
+    "name": "download avd package.ensure depot_tools/.cipd_bin",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {}@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
       "[CACHE]/builder/avd",
       "-ensure-file",
       "chromium/tools/android/avd/linux-amd64 1EQ8d87vhYyuBlCFZU8po6bpNXScHFB-9PGR27JlIS8C",

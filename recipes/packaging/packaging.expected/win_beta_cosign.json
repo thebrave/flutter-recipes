@@ -427,6 +427,99 @@
   },
   {
     "cmd": [
+      "cipd.bat",
+      "ensure",
+      "-root",
+      "RECIPE_REPO[depot_tools]\\.cipd_bin",
+      "-ensure-file",
+      "RECIPE_REPO[depot_tools]\\cipd_manifest.txt",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
+      "REVISION": "",
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure depot_tools/.cipd_bin",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {}@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_REPO[depot_tools]\\.cipd_bin\\ninja.exe",
+      "RECIPE_REPO[depot_tools]\\ninja.exe"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
+      "REVISION": "",
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "copy depot_tools/.cipd_bin/ninja.exe to depot_tools/"
+  },
+  {
+    "cmd": [
       "flutter.bat",
       "doctor"
     ],

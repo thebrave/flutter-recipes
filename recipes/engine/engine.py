@@ -776,7 +776,6 @@ def PackageLinuxDesktopVariant(api, label, bucket_name):
 
 def BuildLinux(api):
   RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--prebuilt-dart-sdk', '--build-embedder-examples')
-  RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--prebuilt-dart-sdk', '--build-embedder-examples', '--support-fractional-translation')
   RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk')
   RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk', '--build-embedder-examples')
   RunGN(api, '--runtime-mode', 'release', '--prebuilt-dart-sdk', '--build-embedder-examples')
@@ -791,10 +790,6 @@ def BuildLinux(api):
   # 'engine' suite has failing tests in host_debug.
   # https://github.com/flutter/flutter/issues/103757
   RunTests(api, 'host_debug', types='dart')
-
-  # Temporary engine variant with SUPPORT_FRACTIONAL_TRANSLATION
-  Build(api, 'host_debug_fractional')
-  RunTests(api, 'host_debug_fractional', types='dart')
 
   Build(api, 'host_profile')
   RunTests(api, 'host_profile', types='dart,engine')
@@ -813,19 +808,6 @@ def BuildLinux(api):
           'out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin',
           'out/host_debug/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
           'out/host_debug/gen/frontend_server.dart.snapshot',
-      ]
-  )
-
-  # Temporary engine variant with SUPPORT FRACTIONAL_TRANSLATION
-  UploadArtifacts(
-      api, 'linux-x64-fractional', [
-          ICU_DATA_PATH,
-          'out/host_debug_fractional/flutter_tester',
-          'out/host_debug_fractional/impellerc',
-          'out/host_debug_fractional/libtessellator.so',
-          'out/host_debug_fractional/gen/flutter/lib/snapshot/isolate_snapshot.bin',
-          'out/host_debug_fractional/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
-          'out/host_debug_fractional/gen/frontend_server.dart.snapshot',
       ]
   )
 

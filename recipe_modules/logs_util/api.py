@@ -67,8 +67,8 @@ class LogUtilsApi(recipe_api.RecipeApi):
       )
       for log_file in log_files:
         base_name = self.m.path.basename(log_file)
-        path_plus_base_name = re.sub('^.*flutter_logs_dir/', '', str(log_file))
+
         url = pattern_str % (
-            'flutter_logs', invocation_id, task, uuid, path_plus_base_name
+            'flutter_logs', invocation_id, task, uuid, base_name
         )
-        presentation.links[path_plus_base_name] = url
+        presentation.links[base_name] = url

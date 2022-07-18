@@ -60,14 +60,6 @@ def RunSteps(api):
       api.properties.get('git_url'),
       api.properties.get('git_ref'),
   )
-  # Checkout openpay repo if property exists in builder config.
-  if api.properties.get('openpay'):
-    openpay_path = api.path.mkdtemp().join('openpay')
-    api.repo_util.checkout(
-        'openpay',
-        openpay_path,
-        ref='refs/heads/main',
-    )
 
   with api.context(cwd=flutter_path):
     commit_time = api.git(
@@ -79,6 +71,16 @@ def RunSteps(api):
         stdout=api.raw_io.output_text()
     ).stdout.rstrip()
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
+
+  # Checkout openpay repo if property exists in builder config.
+  if api.properties.get('openpay'):
+    openpay_path = api.path.mkdtemp().join('openpay')
+    api.repo_util.checkout(
+        'openpay',
+        openpay_path,
+        ref='refs/heads/main',
+    )
+    env['OPENPAY_CHECKOUT_PATH'] = openpay_path
 
   builder_name = api.properties.get('buildername')
   suppress_log = builder_name in SUPPRESS_LOG_BUILDER_LIST

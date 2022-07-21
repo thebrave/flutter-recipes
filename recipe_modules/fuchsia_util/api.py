@@ -94,7 +94,7 @@ class FuchsiaUtilsApi(recipe_api.RecipeApi):
       destination_path: Path to store the downloaded Fuchsia dependencies.
     """
     flutter_bin = checkout_path.join('bin')
-    fuchsia_tools = flutter_bin.join('cache', 'artifacts', 'fuchsia', 'tools')
+    fuchsia_tools = flutter_bin.join('cache', 'artifacts', 'fuchsia', 'tools', 'x64')
     self.download_fuchsia_deps(flutter_bin, destination_path)
     with self.m.step.nest('Collect tool deps'):
       self.m.file.copy(

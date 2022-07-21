@@ -65,7 +65,7 @@ def GetFlutterFuchsiaBuildTargets(product, include_test_targets=False):
 
 @contextmanager
 def DebugSymbols(api, out_variant):
-  symbol_index = api.sdk.sdk_path.join('tools', 'symbol-index')
+  symbol_index = api.sdk.sdk_path.join('tools', 'x64', 'symbol-index')
 
   # Purge obsolete debug symbols.
   api.step('Purge debug symbols', [symbol_index, 'purge'])

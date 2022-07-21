@@ -236,7 +236,7 @@ class SDKApi(recipe_api.RecipeApi):
     if zbi_tool_path:
       zbi_path = zbi_tool_path
     if not zbi_path:
-      zbi_path = self.m.path.join(self.sdk_path, 'tools', 'zbi')
+      zbi_path = self.m.path.join(self.sdk_path, 'tools', 'x64', 'zbi')
     if not zbi_output_path:
       zbi_output_path = zbi_input_path
 

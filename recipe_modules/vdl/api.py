@@ -205,8 +205,8 @@ class VDLApi(recipe_api.RecipeApi):
       add(fuchsia_images.build_args, 'qemu_buildargs')
       add(fuchsia_images.kernel_file, 'qemu_kernel')
       add(fuchsia_images.system_fvm, 'qemu_fvm')
-      add(self.m.sdk.sdk_path.join('tools', 'far'), 'far')
-      add(self.m.sdk.sdk_path.join('tools', 'fvm'), 'fvm')
+      add(self.m.sdk.sdk_path.join('tools', 'x64', 'far'), 'far')
+      add(self.m.sdk.sdk_path.join('tools', 'x64', 'fvm'), 'fvm')
 
       # Provision and add zircon-a
       authorized_zircona = self.m.buildbucket.builder_cache_path.join(

@@ -782,10 +782,6 @@ def BuildLinux(api):
   # flutter/sky/packages from host_debug_unopt is needed for RunTests 'dart'
   # type.
   Build(api, 'host_debug_unopt', 'flutter/sky/packages')
-  Build(
-      api, 'host_debug_unopt',
-      'flutter/lib/spirv/test/exception_shaders:spirv_compile_exception_shaders'
-  )
   Build(api, 'host_debug')
   # 'engine' suite has failing tests in host_debug.
   # https://github.com/flutter/flutter/issues/103757

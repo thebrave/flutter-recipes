@@ -157,8 +157,8 @@ def CasRoot(api):
     add(fuchsia_images.build_args, "qemu_buildargs")
     add(fuchsia_images.kernel_file, "qemu_kernel")
     add(fuchsia_images.system_fvm, "qemu_fvm")
-    add(api.sdk.sdk_path.join("tools", "far"), "far")
-    add(api.sdk.sdk_path.join("tools", "fvm"), "fvm")
+    add(api.sdk.sdk_path.join("tools", "x64", "far"), "far")
+    add(api.sdk.sdk_path.join("tools", "x64", "fvm"), "fvm")
     add(api.sdk.sdk_path.join("tools", "x64", "symbolizer"), "symbolizer")
 
     ## Provision and add zircon-a

@@ -265,6 +265,201 @@
   },
   {
     "cmd": [],
+    "name": "Checkout flutter/openpay"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[CLEANUP]/tmp_tmp_2/openpay",
+      "--url",
+      "https://dash-internal.googlesource.com/openpay"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "project:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/openpay.git setup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "main",
+      "--recurse-submodules",
+      "--progress",
+      "--tags"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_2/openpay",
+    "env": {
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/openpay.git fetch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_2/openpay",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/openpay.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_2/openpay",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/openpay.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"deadbeef\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_2/openpay",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/openpay.git clean",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_2/openpay",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/openpay.submodule sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_2/openpay",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/openpay.submodule update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
     "name": "Dependencies"
   },
   {
@@ -272,7 +467,7 @@
       "cipd",
       "ensure",
       "-root",
-      "[CLEANUP]/tmp_tmp_2/vpython",
+      "[CLEANUP]/tmp_tmp_3/vpython",
       "-ensure-file",
       "infra/tools/luci/vpython/${platform} latest",
       "-max-threads",
@@ -320,6 +515,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
@@ -329,7 +525,7 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "luci_context": {
@@ -360,6 +556,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
@@ -369,7 +566,7 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "infra_step": true,
@@ -400,6 +597,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
@@ -409,10 +607,10 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython",
+        "[CLEANUP]/tmp_tmp_3/vpython",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "luci_context": {
@@ -451,6 +649,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
@@ -460,10 +659,10 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython",
+        "[CLEANUP]/tmp_tmp_3/vpython",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "luci_context": {
@@ -501,6 +700,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
@@ -510,7 +710,7 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "infra_step": true,
@@ -540,7 +740,7 @@
       "/path/to/tmp/json",
       "copy",
       "extra.secret.token.should.not.be.logged",
-      "[CLEANUP]/tmp_tmp_3"
+      "[CLEANUP]/tmp_tmp_4"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -549,6 +749,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
@@ -558,7 +759,7 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "infra_step": true,
@@ -593,6 +794,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
@@ -602,7 +804,7 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "infra_step": true,
@@ -632,7 +834,7 @@
       "/path/to/tmp/json",
       "copy",
       "extra.secret.token.should.not.be.logged",
-      "[CLEANUP]/tmp_tmp_4"
+      "[CLEANUP]/tmp_tmp_5"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -641,6 +843,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
@@ -650,7 +853,7 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "infra_step": true,
@@ -689,7 +892,7 @@
       "--benchmark-tags",
       "{\"arch\": \"intel\", \"device_type\": \"none\", \"device_version\": \"none\", \"host_type\": \"linux\"}",
       "--service-account-token-file",
-      "[CLEANUP]/tmp_tmp_4"
+      "[CLEANUP]/tmp_tmp_5"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -699,20 +902,21 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_3"
+      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_4"
     },
     "env_prefixes": {
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython",
+        "[CLEANUP]/tmp_tmp_3/vpython",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "infra_step": true,
@@ -751,6 +955,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
@@ -760,7 +965,7 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "infra_step": true,
@@ -805,6 +1010,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
@@ -814,7 +1020,7 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "infra_step": true,
@@ -855,6 +1061,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
@@ -864,7 +1071,7 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "infra_step": true,
@@ -914,6 +1121,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
+      "OPENPAY_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_2/openpay",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
@@ -923,7 +1131,7 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_2/vpython"
+        "[CLEANUP]/tmp_tmp_3/vpython"
       ]
     },
     "infra_step": true,

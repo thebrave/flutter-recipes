@@ -34,15 +34,6 @@ DEPS = [
 # Fifteen minutes
 MAX_TIMEOUT_SECS = 30 * 60
 
-# Any builder in this list will have logs suppressed.
-SUPPRESS_LOG_BUILDER_LIST = [
-  'Linux_samsung_a02_staging flutter_gallery__transition_perf',
-  'Linux_samsung_a02_staging new_gallery__crane_perf',
-  'Linux_samsung_a02_staging new_gallery__transition_perf',
-  'Linux_samsung_a02_staging complex_layout_scroll_perf__timeline_summary',
-  'Linux_samsung_a02_staging opacity_peephole_one_rect_perf__e2e_summary',
-]
-
 def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
@@ -72,6 +63,9 @@ def RunSteps(api):
     ).stdout.rstrip()
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
 
+  # Flag to suppress logs.
+  suppress_log = False
+
   # Checkout openpay repo if property exists in builder config.
   if api.properties.get('openpay'):
     openpay_path = api.path.mkdtemp().join('openpay')
@@ -81,9 +75,9 @@ def RunSteps(api):
         ref='refs/heads/main',
     )
     env['OPENPAY_CHECKOUT_PATH'] = openpay_path
+    suppress_log = True
 
   builder_name = api.properties.get('buildername')
-  suppress_log = builder_name in SUPPRESS_LOG_BUILDER_LIST
 
   if not suppress_log:
     api.logs_util.initialize_logs_collection(env)
@@ -433,6 +427,7 @@ def GenTests(api):
           upload_metrics_to_cas=True,
           upload_metrics=True,
           git_branch='master',
+          openpay=True
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           git_ref='refs/heads/master',

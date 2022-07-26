@@ -8,6 +8,7 @@ import collections
 
 import attr
 
+from PB.recipe_modules.fuchsia.recipe_testing import options as options_pb2
 from recipe_engine.recipe_api import Property
 
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
@@ -109,22 +110,6 @@ COMMIT_QUEUE_CFG = """
     >
 """
 
-# TODO(fxbug.dev/88439): Convert this to a proto.
-@attr.s
-class Project(object):
-  name = attr.ib(type=str)
-  include_restricted = attr.ib(default=False)
-  include_unrestricted = attr.ib(default=False)
-  cq_config_name = attr.ib(default='')
-  excluded_buckets = attr.ib(default=attr.Factory(list))
-
-
-# TODO(fxbug.dev/88439): Convert this to a proto.
-@attr.s
-class RecipeTestingOptions(object):
-  projects = attr.ib()
-  use_buildbucket = attr.ib(default=False)
-
 
 def RunSteps(api, remote, unittest_only):
   checkout_path = api.path['start_dir'].join('recipes')
@@ -136,9 +121,8 @@ def RunSteps(api, remote, unittest_only):
     api.recipe_testing.run_lint(checkout_path)
     api.recipe_testing.run_unit_tests(checkout_path)
   if not unittest_only:
-    opts = RecipeTestingOptions(
-        projects=[Project(name='flutter', include_unrestricted=True)],
-    )
+    flutter = options_pb2.Project(name='flutter', include_unrestricted=True)
+    opts = options_pb2.Options(projects=[flutter])
     api.recipe_testing.run_tests(checkout_path, SELFTEST_CL, opts)
 
 

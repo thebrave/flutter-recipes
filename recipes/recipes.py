@@ -116,6 +116,7 @@ class Project(object):
   include_restricted = attr.ib(default=False)
   include_unrestricted = attr.ib(default=False)
   cq_config_name = attr.ib(default='')
+  excluded_buckets = attr.ib(default=attr.Factory(list))
 
 
 # TODO(fxbug.dev/88439): Convert this to a proto.

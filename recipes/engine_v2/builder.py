@@ -52,6 +52,7 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/raw_io',
     'recipe_engine/step',
 ]
 
@@ -150,25 +151,36 @@ def Archive(api, checkout,  archive_config):
       api.file.ensure_directory('Ensuring %s' % archive_dir.join(rel_path), archive_dir.join(rel_path))
       api.file.copy('Copy %s' % include_path, full_include_path, archive_dir.join(rel_path, base_name))
   if archive_config.get('type') == 'gcs' and archive_config.get('include_paths', []):
-    commit = api.repo_util.get_commit(checkout.join('flutter'))
-
-    artifact_path = 'flutter_infra_release/flutter/%s/' % commit
+    bucket = 'flutter_archives_v2'
+    if api.buildbucket.gitiles_commit.project == 'monorepo':
+      commit = api.repo_util.get_commit(checkout.join('../../monorepo'))
+      artifact_prefix = 'monorepo/'
+    else:
+      commit = api.repo_util.get_commit(checkout.join('flutter'))
+      artifact_prefix = ''
+    artifact_path = '%sflutter_infra_release/flutter/%s/' % (artifact_prefix,
+                                                               commit)
     api.gsutil.upload(
-        source='%s/*' % archive_dir, bucket='flutter_archives_v2',
-        dest=artifact_path,  args=['-r'],
-        name=archive_config['name'],)
-    # Jar and pom files are uploaed to download.flutter.io while all the other artifacts
+        source='%s/*' % archive_dir,
+        bucket=bucket,
+        dest=artifact_path,
+        args=['-r'],
+        name=archive_config['name'],
+    )
+    # Jar and pom files are uploaded to download.flutter.io while all the other artifacts
     # are uploaded to flutter_infra_release. If we override paths artifacts need to be organized
     # as gs://<overriden_bucket>/flutter_infra_release for non android artifacts and
     # gs://<overriden_bucket>/download.flutter.io for android artifacts.
     if upload_android_artifacts:
-      artifact_path = ''
+      android_artifact_path = artifact_prefix
       api.gsutil.upload(
-          source='%s/download.flutter.io/' % archive_dir, bucket='flutter_archives_v2',
-          dest=artifact_path,  args=['-r'],
-          name=archive_config['name'],)
-
-    return 'gs://flutter_archives_v2/flutter_infra_release/flutter/%s' % api.path.basename(archive_dir)
+          source='%s/download.flutter.io/' % archive_dir,
+          bucket=bucket,
+          dest=android_artifact_path,
+          args=['-r'],
+          name=archive_config['name'],
+      )
+    return 'gs://%s/%s/%s' % ( bucket, artifact_path, api.path.basename(archive_dir))
   # Archive using CAS by default
   return api.cas_util.upload(archive_dir, step_name='Archive %s' % archive_config['name'])
 
@@ -240,10 +252,6 @@ def GenTests(api):
   yield api.test(
       'mac', api.properties(build=build, goma_jobs="100"),
       api.platform('mac', 64),
-      api.path.exists(
-          api.path['cache'].join('builder', 'src', 'dev'),
-          api.path['cache'].join('builder', 'src', 'dev', 'file.txt'),
-      )
   )
   yield api.test(
       'monorepo', api.properties(build=build, goma_jobs="100"),
@@ -253,10 +261,6 @@ def GenTests(api):
           git_repo='https://dart.googlesource.com/monorepo',
           git_ref='refs/heads/main'
       ),
-      api.path.exists(
-          api.path['cache'].join('builder', 'src', 'dev'),
-          api.path['cache'].join('builder', 'src', 'dev', 'file.txt'),
-      )
   )
   build_custom = dict(build)
   build_custom["gclient_custom_vars"] = {"example_custom_var": True}
@@ -267,4 +271,25 @@ def GenTests(api):
   # gcs archives
   build_gcs = copy.deepcopy(build)
   build_gcs['archives'][0]['type'] = 'gcs'
-  yield api.test('basic_gcs', api.properties(build=build_gcs, goma_jobs="100"))
+  yield api.test(
+      'basic_gcs', api.properties(build=build_gcs, goma_jobs="100"),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
+  )
+  yield api.test(
+      'monorepo_gcs', api.properties(build=build_gcs, goma_jobs="100"),
+      api.buildbucket.ci_build(
+          project='dart',
+          bucket='ci.sandbox',
+          git_repo='https://dart.googlesource.com/monorepo',
+          git_ref='refs/heads/main'
+      ),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
+  )

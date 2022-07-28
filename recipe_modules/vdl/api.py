@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from recipe_engine import recipe_api
+import functools
 
-from RECIPE_MODULES.fuchsia.utils import cached_property
+from recipe_engine import recipe_api
 
 VDL_CIPD_PREFIX = 'fuchsia/vdl/${platform}'
 DEFAULT_VDL_VERSION_TAG = 'latest'
@@ -35,7 +35,7 @@ class VDLApi(recipe_api.RecipeApi):
     self._vdl_version_tag = DEFAULT_VDL_VERSION_TAG
     self._device_proto_path = None
 
-  @cached_property
+  @functools.cached_property
   def vdl_path(self):
     """Fetches and installs VDL from CIPD."""
     with self.m.step.nest('ensure vdl'):
@@ -46,7 +46,7 @@ class VDLApi(recipe_api.RecipeApi):
         self.m.cipd.ensure(root=cache_path, ensure_file=ensure_file)
         return cache_path.join('device_launcher')
 
-  @cached_property
+  @functools.cached_property
   def aemu_dir(self):
     """Fetches and installs AEMU from CIPD."""
     with self.m.step.nest('ensure aemu'):

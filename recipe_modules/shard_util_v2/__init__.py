@@ -5,7 +5,9 @@
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
+    'fuchsia/cas_util',
     'recipe_engine/buildbucket',
+    'recipe_engine/cas',
     'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/led',

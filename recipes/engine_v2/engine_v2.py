@@ -61,11 +61,11 @@ def RunSteps(api, properties, env_properties):
   with api.step.nest('launch builds') as presentation:
     tasks = api.shard_util_v2.schedule_builds(builds, presentation)
   with api.step.nest('collect builds') as presentation:
-    results = api.shard_util_v2.collect(tasks, presentation)
+    build_results = api.shard_util_v2.collect(tasks, presentation)
 
   api.display_util.display_builds(
       step_name='display builds',
-      builds=[b.build_proto for b in results.values()],
+      builds=[b.build_proto for b in build_results.values()],
       raise_on_failure=True,
   )
 
@@ -78,15 +78,19 @@ def RunSteps(api, properties, env_properties):
         step_test_data=lambda: api.json.test_api.output({})
     ).json.output.get('tests', [])
   with api.step.nest('launch tests') as presentation:
-    tasks = api.shard_util_v2.schedule_tests(tests, results, presentation)
+    tasks = api.shard_util_v2.schedule_tests(tests, build_results, presentation)
   with api.step.nest('collect tests') as presentation:
-    results = api.shard_util_v2.collect(tasks, presentation)
+    test_results = api.shard_util_v2.collect(tasks, presentation)
 
   api.display_util.display_builds(
       step_name='display tests',
-      builds=[b.build_proto for b in results.values()],
+      builds=[b.build_proto for b in test_results.values()],
       raise_on_failure=True,
   )
+
+  # Download sub-builds
+  out_builds_path = api.path['cleanup'].join('out')
+  api.shard_util_v2.download_full_builds(build_results, out_builds_path)
 
 
 def GenTests(api):

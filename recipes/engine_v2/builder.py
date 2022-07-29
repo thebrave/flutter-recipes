@@ -44,6 +44,7 @@ DEPS = [
     'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/retry',
+    'flutter/shard_util_v2',
     'flutter/test_utils',
     'fuchsia/cas_util',
     'recipe_engine/buildbucket',
@@ -73,6 +74,10 @@ def Build(api, checkout, env, env_prefixes, outputs):
   ninja = build.get('ninja')
   ninja_tool[ninja.get('tool', 'ninja')
             ](ninja.get('config'), checkout, ninja.get('targets'))
+  # Archive full build. This is inneficient but necessary for global generators.
+  full_build_hash = api.shard_util_v2.archive_full_build(
+          checkout.join('out', build.get('name')), build.get('name'))
+  outputs['full_build'] = full_build_hash
   generator_tasks = build.get('generators', {}).get('tasks', [])
   pub_dirs = build.get('generators', {}).get('pub_dirs', [])
   archives = build.get('archives', [])
@@ -200,14 +205,15 @@ def RunSteps(api, properties, env_properties):
   env['ENGINE_PATH'] = api.path['cache'].join('builder')
 
   custom_vars = api.properties.get('gclient_custom_vars', {})
+  clobber = api.properties.get('clobber', False)
   if api.buildbucket.gitiles_commit.project == 'monorepo':
     api.repo_util.monorepo_checkout(
-        cache_root, env, env_prefixes, custom_vars=custom_vars
+        cache_root, env, env_prefixes, clobber=clobber, custom_vars=custom_vars
     )
     checkout = api.path['cache'].join('builder', 'engine', 'src')
   else:
     api.repo_util.engine_checkout(
-        cache_root, env, env_prefixes, custom_vars=custom_vars
+        cache_root, env, env_prefixes, clobber=clobber, custom_vars=custom_vars
     )
   outputs = {}
   if api.platform.is_mac:

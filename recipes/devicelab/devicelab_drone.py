@@ -79,8 +79,7 @@ def RunSteps(api):
 
   builder_name = api.properties.get('buildername')
 
-  if not suppress_log:
-    api.logs_util.initialize_logs_collection(env)
+  api.logs_util.initialize_logs_collection(env)
   with api.step.nest('Dependencies'):
     api.flutter_deps.flutter_engine(env, env_prefixes)
     deps = api.properties.get('dependencies', [])

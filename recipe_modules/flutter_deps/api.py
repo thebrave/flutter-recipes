@@ -60,6 +60,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'chrome_and_driver': self.chrome_and_driver,
         'clang': self.clang,
         'cmake': self.cmake,
+        'codesign': self.codesign,
         'cosign': self.cosign,
         'curl': self.curl,
         'dart_sdk': self.dart_sdk,
@@ -402,6 +403,26 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       self.m.cipd.ensure(cmake_path, cmake)
     paths = env_prefixes.get('PATH', [])
     paths.append(cmake_path.join('bin'))
+    env_prefixes['PATH'] = paths
+
+  def codesign(self, env, env_prefixes, version=None):
+    """Installs codesign at https://chrome-infra-packages.appspot.com/p/flutter/codesign.
+
+    Args:
+      env(dict): Current environment variables.
+      env_prefixes(dict): Current environment prefixes variables.
+    """
+    if version != 'latest':
+        msg = 'codesign version is None.'
+        raise ValueError(msg)
+    version = version or 'latest'
+    codesign_path = self.m.path.mkdtemp().join('codesign')
+    codesign = self.m.cipd.EnsureFile()
+    codesign.add_package('flutter/codesign/${platform}', version)
+    with self.m.step.nest('Installing Mac codesign CIPD pkg'):
+      self.m.cipd.ensure(codesign_path, codesign)
+    paths = env_prefixes.get('PATH', [])
+    paths.append(codesign_path)
     env_prefixes['PATH'] = paths
 
   def cosign(self, env, env_prefixes, version=None):

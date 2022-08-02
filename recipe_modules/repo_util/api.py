@@ -49,7 +49,6 @@ class RepoUtilApi(recipe_api.RecipeApi):
       git_url = self.m.properties['git_url']
       git_id = self.m.properties['git_ref']
       git_ref = self.m.properties['git_ref']
-
     # Inner function to clobber the cache
     def _ClobberCache():
       # Ensure depot tools is in the path to prevent problems with vpython not

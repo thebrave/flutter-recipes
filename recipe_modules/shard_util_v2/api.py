@@ -401,7 +401,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
           self.m.cas.download(
               'Download for build %s and cas key %s' % (build_id, build_name),
               cas_out_dict['full_build'],
-              out_build_paths.join(build_name)
+              out_build_paths
         )
 
   def archive_full_build(self, build_dir, target):

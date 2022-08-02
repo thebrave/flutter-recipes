@@ -25,12 +25,16 @@ from google.protobuf import struct_pb2
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
+    'depot_tools/gsutil',
     'flutter/display_util',
     'flutter/repo_util',
+    'flutter/osx_sdk',
     'flutter/shard_util_v2',
     'recipe_engine/buildbucket',
+    'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/path',
+    'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/step',
 ]
@@ -88,9 +92,73 @@ def RunSteps(api, properties, env_properties):
       raise_on_failure=True,
   )
 
-  # Download sub-builds
-  out_builds_path = api.path['cleanup'].join('out')
-  api.shard_util_v2.download_full_builds(build_results, out_builds_path)
+
+  # Global generators
+  generators = api.properties.get('generators')
+  if generators is None:
+    generators = api.json.read(
+        'Read build config file',
+        config_path,
+        step_test_data=lambda: api.json.test_api.output({})
+    ).json.output.get('generators', [])
+  if generators:
+    # Generators require a full engine checkout.
+    full_engine_checkout = api.path['cache'].join('builder')
+    api.file.ensure_directory('Ensure full engine checkout folder', full_engine_checkout)
+    clobber = api.properties.get('clobber', True)
+    gclient_vars = api.shard_util_v2.unfreeze_dict(api.properties.get('gclient_variables', {}))
+    env, env_prefixes = api.repo_util.engine_environment(full_engine_checkout)
+    api.repo_util.engine_checkout(
+        full_engine_checkout, env, env_prefixes, clobber,
+        custom_vars=gclient_vars
+    )
+    # Download sub-builds
+    out_builds_path = full_engine_checkout.join('src', 'out')
+    api.file.rmtree('Clobber build download folder', out_builds_path)
+    api.shard_util_v2.download_full_builds(build_results, out_builds_path)
+    with api.step.nest('Global generators') as presentation:
+      if 'tasks' in generators: 
+        for generator_task in generators['tasks']:
+          # Generators must run from inside flutter folder.
+          # If platform is mac we need to run the generator from an xcode context.
+          if api.platform.is_mac:
+            with api.osx_sdk('ios'):
+              _run_global_generator(api, generator_task, full_engine_checkout)
+          else:
+            _run_global_generator(api, generator_task, full_engine_checkout)
+    api.file.listdir('Final List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
+  # Global archives
+  archives = api.properties.get('archives')
+  if archives is None:
+    archives = api.json.read(
+        'Read build config file',
+        config_path,
+        step_test_data=lambda: api.json.test_api.output({})
+    ).json.output.get('archives', [])
+  # Global archives are stored in out folder from full_engine_checkout inside release, debug or profile
+  # depending of the runtime mode. So far we are uploading files only.
+  bucket = 'flutter_archives_v2'
+  for archive in archives:
+    source = full_engine_checkout.join('src', archive.get('source'))
+    commit = api.repo_util.get_commit(full_engine_checkout.join('src', 'flutter'))
+    artifact_path = 'flutter_infra_release/flutter/%s/%s' % (commit, archive.get('destination'))
+    api.gsutil.upload(
+        source=source,
+        bucket=bucket,
+        dest=artifact_path,
+        args=['-r'],
+        name=archive.get('name'),
+    )
+
+
+def _run_global_generator(api, generator_task, full_engine_checkout):
+  cmd = []
+  api.file.listdir('List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
+  script = generator_task.get('script')
+  full_path_script = full_engine_checkout.join('src', script)
+  cmd.append(full_path_script)
+  cmd.extend(generator_task.get('parameters', []))
+  api.step(generator_task.get('name'), cmd)
 
 
 def GenTests(api):
@@ -105,14 +173,60 @@ def GenTests(api):
       "ninja": {"config": "ios_debug", "targets": []},
       "generators": [{"name": "generator1", "script": "script1.sh"}]
   }]
+  generators = {
+          "tasks":
+              [
+                  {
+                    "language": "python",
+                    "name": "Debug-FlutterMacOS.framework",
+                    "parameters": [
+                        "--variant",
+                        "host_profile",
+                        "--type",
+                        "engine",
+                        "--engine-capture-core-dump"
+                    ],
+                    "script": "flutter/sky/tools/create_macos_framework.py",
+                    "type": "local"
+                  }
+              ]
+  }
+  archives = [
+      {
+          'source': '/a/b/c.txt',
+          'destination': 'bucket/c.txt',
+          'name': 'c.txt'
+
+      }
+  ]
+
 
   yield api.test(
-      'basic',
-      api.properties(builds=builds, tests=[], environment='Staging'),
+      'basic_mac',
+      api.platform.name('mac'),
+      api.properties(builds=builds, tests=[], generators=generators, archives=archives, environment='Staging'),
       api.buildbucket.try_build(
           project='proj',
           builder='try-builder',
-          git_repo='https://github.com/repo/a',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          revision='a' * 40,
+          build_number=123,
+      ),
+      api.shard_util_v2.child_build_steps(
+          builds=[try_subbuild1],
+          launch_step="launch builds",
+          collect_step="collect builds",
+      ),
+  )
+
+  yield api.test(
+      'basic_linux',
+      api.platform.name('linux'),
+      api.properties(builds=builds, tests=[], generators=generators, environment='Staging'),
+      api.buildbucket.try_build(
+          project='proj',
+          builder='try-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
           revision='a' * 40,
           build_number=123,
       ),

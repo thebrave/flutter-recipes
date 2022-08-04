@@ -100,12 +100,12 @@ def UploadAndSignFlutterPackage(api, flutter_path, git_hash, branch):
       artifact_registry_url
   ]
 
+  ## The force parameter bypasses the confirmation prompt from cosign
   cosign_sign_args = [
       'cosign',
       'sign',
-      '--key',
-      'gcpkms://projects/flutter-dashboard-dev/locations/global/keyRings/flutter/cryptoKeys/mykey2',
-      artifact_registry_url
+      artifact_registry_url,
+      '--force'
   ]
   api.step('configure docker registry', gcloud_docker_config_args)
   api.step('upload through cosign', cosign_upload_args)
@@ -136,6 +136,12 @@ def RunSteps(api):
         ref='master',
     )
   env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
+
+  # TODO(drewroen): Remove this once cosign supports keyless signing without enabling
+  # experimental features.
+  if api.properties.get('upload_with_cosign') is True:
+    env['COSIGN_EXPERIMENTAL'] = 'true'
+
   api.flutter_deps.required_deps(
       env, env_prefixes, api.properties.get('dependencies', [])
   )

@@ -28,7 +28,7 @@ DEPS = [
 
 def RunSteps(api):
   checkout_path = api.path['start_dir'].join('flutter')
-  gcs_bucket = 'flutter_firebase_testlab'
+  gcs_bucket = 'flutter_firebase_testlab_staging'
   api.repo_util.checkout(
       'flutter',
       checkout_path=checkout_path,
@@ -109,7 +109,7 @@ def RunSteps(api):
           'config',
           'set',
           'project',
-          'flutter-infra',
+          'flutter-infra-staging',
           infra_step=True,
       )
       for step_name, build_command, binary, devices in test_configurations:

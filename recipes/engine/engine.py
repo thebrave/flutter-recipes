@@ -542,7 +542,12 @@ def BuildLinuxAndroidAOTArm64Profile(api, swarming_task_id, aot_variant):
   RunGN(api, *aot_variant.GetGNArgs('profile'))
   Build(api, build_output_dir, *aot_variant.GetNinjaTargets())
 
-  with api.context(cwd=checkout):
+  env = {
+    'STORAGE_BUCKET': 'gs://flutter_firebase_testlab_staging',
+    'GCP_PROJECT': 'flutter-infra-staging'
+  }
+
+  with api.context(env=env, cwd=checkout):
     args = [
         'python', './flutter/ci/firebase_testlab.py',
         '--variant', build_output_dir,

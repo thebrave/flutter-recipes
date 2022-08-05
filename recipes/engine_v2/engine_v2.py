@@ -117,7 +117,7 @@ def RunSteps(api, properties, env_properties):
     api.file.rmtree('Clobber build download folder', out_builds_path)
     api.shard_util_v2.download_full_builds(build_results, out_builds_path)
     with api.step.nest('Global generators') as presentation:
-      if 'tasks' in generators: 
+      if 'tasks' in generators:
         for generator_task in generators['tasks']:
           # Generators must run from inside flutter folder.
           # If platform is mac we need to run the generator from an xcode context.
@@ -127,6 +127,7 @@ def RunSteps(api, properties, env_properties):
           else:
             _run_global_generator(api, generator_task, full_engine_checkout)
     api.file.listdir('Final List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
+    api.file.listdir('Final List checkout 2', full_engine_checkout.join('src', 'flutter', 'sky'), recursive=True)
   # Global archives
   archives = api.properties.get('archives')
   if archives is None:
@@ -152,7 +153,7 @@ def RunSteps(api, properties, env_properties):
 
 
 def _run_global_generator(api, generator_task, full_engine_checkout):
-  cmd = []
+  cmd = [generator_task.get('language')] if generator_task.get('language') else []
   api.file.listdir('List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
   script = generator_task.get('script')
   full_path_script = full_engine_checkout.join('src', script)

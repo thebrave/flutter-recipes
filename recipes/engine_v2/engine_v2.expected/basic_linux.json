@@ -945,6 +945,7 @@
   },
   {
     "cmd": [
+      "python",
       "[CACHE]/builder/src/flutter/sky/tools/create_macos_framework.py",
       "--variant",
       "host_profile",
@@ -994,6 +995,35 @@
       }
     },
     "name": "Final List checkout",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder/src/flutter/sky",
+      "--recursive"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Final List checkout 2",
     "~followup_annotations": [
       "@@@STEP_LOG_END@listdir@@@"
     ]

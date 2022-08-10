@@ -1,0 +1,323 @@
+[
+  {
+    "cmd": [
+      "curl",
+      "https://api.github.com/repos/sigstore/cosign/releases"
+    ],
+    "name": "Get cosign releases from github"
+  },
+  {
+    "cmd": [
+      "curl",
+      "https://api.github.com/releases/1"
+    ],
+    "name": "Get artifacts from sigstore/cosign for a specific release version"
+  },
+  {
+    "cmd": [
+      "curl",
+      "-L",
+      "cosign-darwin-amd64",
+      "-o",
+      "[START_DIR]/cosign/darwin/bin/cosign",
+      "--create-dirs"
+    ],
+    "infra_step": true,
+    "name": "Download darwin cosign binary"
+  },
+  {
+    "cmd": [
+      "curl",
+      "-L",
+      "cosign-darwin-amd64-keyless.pem",
+      "-o",
+      "[START_DIR]/cosign/darwin/certificate/cosign-cert.pem",
+      "--create-dirs"
+    ],
+    "infra_step": true,
+    "name": "Download darwin cosign certificate"
+  },
+  {
+    "cmd": [
+      "curl",
+      "-L",
+      "cosign-darwin-amd64-keyless.sig",
+      "-o",
+      "[START_DIR]/cosign/darwin/certificate/cosign-sig.sig",
+      "--create-dirs"
+    ],
+    "infra_step": true,
+    "name": "Download darwin cosign signature"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "[START_DIR]/cosign/darwin/bin/cosign"
+    ],
+    "name": "Make darwin cosign binary executable"
+  },
+  {
+    "cmd": [
+      "cosign",
+      "verify-blob",
+      "--cert",
+      "[START_DIR]/cosign/darwin/certificate/cosign-cert.pem",
+      "--signature",
+      "[START_DIR]/cosign/darwin/certificate/cosign-sig.sig",
+      "[START_DIR]/cosign/darwin/bin/cosign"
+    ],
+    "name": "Verify darwin cosign binary is legitimate"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-in",
+      "[START_DIR]/cosign/darwin",
+      "-name",
+      "flutter/tools/cosign/mac-amd64",
+      "-out",
+      "cosign.zip",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "build mac-amd64",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"flutter/tools/cosign/mac-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-register",
+      "cosign.zip",
+      "-ref",
+      "latest",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "register flutter/tools/cosign/mac-amd64",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"flutter/tools/cosign/mac-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@flutter/tools/cosign/mac-amd64@https://chrome-infra-packages.appspot.com/p/flutter/tools/cosign/mac-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "curl",
+      "-L",
+      "cosign-linux-amd64",
+      "-o",
+      "[START_DIR]/cosign/linux/bin/cosign",
+      "--create-dirs"
+    ],
+    "infra_step": true,
+    "name": "Download linux cosign binary"
+  },
+  {
+    "cmd": [
+      "curl",
+      "-L",
+      "cosign-linux-amd64-keyless.pem",
+      "-o",
+      "[START_DIR]/cosign/linux/certificate/cosign-cert.pem",
+      "--create-dirs"
+    ],
+    "infra_step": true,
+    "name": "Download linux cosign certificate"
+  },
+  {
+    "cmd": [
+      "curl",
+      "-L",
+      "cosign-linux-amd64-keyless.sig",
+      "-o",
+      "[START_DIR]/cosign/linux/certificate/cosign-sig.sig",
+      "--create-dirs"
+    ],
+    "infra_step": true,
+    "name": "Download linux cosign signature"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "[START_DIR]/cosign/linux/bin/cosign"
+    ],
+    "name": "Make linux cosign binary executable"
+  },
+  {
+    "cmd": [
+      "cosign",
+      "verify-blob",
+      "--cert",
+      "[START_DIR]/cosign/linux/certificate/cosign-cert.pem",
+      "--signature",
+      "[START_DIR]/cosign/linux/certificate/cosign-sig.sig",
+      "[START_DIR]/cosign/linux/bin/cosign"
+    ],
+    "name": "Verify linux cosign binary is legitimate"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-in",
+      "[START_DIR]/cosign/linux",
+      "-name",
+      "flutter/tools/cosign/linux-amd64",
+      "-out",
+      "cosign.zip",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "build linux-amd64",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"flutter/tools/cosign/linux-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-register",
+      "cosign.zip",
+      "-ref",
+      "latest",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "register flutter/tools/cosign/linux-amd64",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"flutter/tools/cosign/linux-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@flutter/tools/cosign/linux-amd64@https://chrome-infra-packages.appspot.com/p/flutter/tools/cosign/linux-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "curl",
+      "-L",
+      "cosign-windows-amd64.exe",
+      "-o",
+      "[START_DIR]/cosign/windows/bin/cosign.exe",
+      "--create-dirs"
+    ],
+    "infra_step": true,
+    "name": "Download windows cosign binary"
+  },
+  {
+    "cmd": [
+      "curl",
+      "-L",
+      "cosign-windows-amd64.exe-keyless.pem",
+      "-o",
+      "[START_DIR]/cosign/windows/certificate/cosign-cert.exe.pem",
+      "--create-dirs"
+    ],
+    "infra_step": true,
+    "name": "Download windows cosign certificate"
+  },
+  {
+    "cmd": [
+      "curl",
+      "-L",
+      "cosign-windows-amd64.exe-keyless.sig",
+      "-o",
+      "[START_DIR]/cosign/windows/certificate/cosign-sig.exe.sig",
+      "--create-dirs"
+    ],
+    "infra_step": true,
+    "name": "Download windows cosign signature"
+  },
+  {
+    "cmd": [
+      "cosign",
+      "verify-blob",
+      "--cert",
+      "[START_DIR]/cosign/windows/certificate/cosign-cert.exe.pem",
+      "--signature",
+      "[START_DIR]/cosign/windows/certificate/cosign-sig.exe.sig",
+      "[START_DIR]/cosign/windows/bin/cosign.exe"
+    ],
+    "name": "Verify windows cosign binary is legitimate"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-in",
+      "[START_DIR]/cosign/windows",
+      "-name",
+      "flutter/tools/cosign/windows-amd64",
+      "-out",
+      "cosign.zip",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "build windows-amd64",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"flutter/tools/cosign/windows-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-register",
+      "cosign.zip",
+      "-ref",
+      "latest",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "register flutter/tools/cosign/windows-amd64",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"flutter/tools/cosign/windows-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@flutter/tools/cosign/windows-amd64@https://chrome-infra-packages.appspot.com/p/flutter/tools/cosign/windows-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]

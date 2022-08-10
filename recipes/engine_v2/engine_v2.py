@@ -27,10 +27,12 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 DEPS = [
     'depot_tools/gsutil',
     'flutter/display_util',
+    'flutter/flutter_deps',
     'flutter/repo_util',
     'flutter/osx_sdk',
     'flutter/shard_util_v2',
     'recipe_engine/buildbucket',
+    'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/path',
@@ -53,6 +55,7 @@ def RunSteps(api, properties, env_properties):
       url=api.properties.get('git_url'),
       ref=api.properties.get('git_ref')
   )
+
   # Read builds configuration from repository under test.
   config_path = checkout_path.join('ci', 'builders', '%s.json' % config_name)
   builds = api.properties.get('builds')
@@ -108,6 +111,7 @@ def RunSteps(api, properties, env_properties):
     clobber = api.properties.get('clobber', True)
     gclient_vars = api.shard_util_v2.unfreeze_dict(api.properties.get('gclient_variables', {}))
     env, env_prefixes = api.repo_util.engine_environment(full_engine_checkout)
+
     api.repo_util.engine_checkout(
         full_engine_checkout, env, env_prefixes, clobber,
         custom_vars=gclient_vars
@@ -123,9 +127,18 @@ def RunSteps(api, properties, env_properties):
           # If platform is mac we need to run the generator from an xcode context.
           if api.platform.is_mac:
             with api.osx_sdk('ios'):
-              _run_global_generator(api, generator_task, full_engine_checkout)
+              # Install dependencies from within the ios context use
+              # xcode's ruby version.
+              deps = api.properties.get('dependencies', [])
+              api.flutter_deps.required_deps(env, env_prefixes, deps)
+              with api.context(env=env, cwd=full_engine_checkout):
+                _run_global_generator(api, generator_task, full_engine_checkout)
           else:
-            _run_global_generator(api, generator_task, full_engine_checkout)
+            # Install dependencies.
+            deps = api.properties.get('dependencies', [])
+            api.flutter_deps.required_deps(env, env_prefixes, deps)
+            with api.context(env=env, cwd=full_engine_checkout):
+              _run_global_generator(api, generator_task, full_engine_checkout)
     api.file.listdir('Final List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
     api.file.listdir('Final List checkout 2', full_engine_checkout.join('src', 'flutter', 'sky'), recursive=True)
   # Global archives

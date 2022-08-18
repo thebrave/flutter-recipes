@@ -7,8 +7,6 @@ from contextlib import contextmanager
 from PB.recipes.flutter.engine.engine_license import InputProperties
 from PB.recipes.flutter.engine.engine_license import EnvProperties
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/gclient',

@@ -12,8 +12,6 @@ import re
 from PB.recipes.flutter.engine.engine import InputProperties
 from PB.recipes.flutter.engine.engine import EnvProperties
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'flutter/android_virtual_device',
     'flutter/flutter_deps',

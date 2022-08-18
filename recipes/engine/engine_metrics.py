@@ -5,8 +5,6 @@
 from PB.recipes.flutter.engine.engine import InputProperties
 from PB.recipes.flutter.engine.engine import EnvProperties
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'depot_tools/depot_tools',
     'flutter/build_util',

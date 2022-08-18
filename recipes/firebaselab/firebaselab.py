@@ -9,8 +9,6 @@
 from contextlib import contextmanager
 import re
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'flutter/flutter_deps',
     'flutter/repo_util',

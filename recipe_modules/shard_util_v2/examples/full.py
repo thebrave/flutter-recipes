@@ -6,8 +6,6 @@ import copy
 
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'flutter/shard_util_v2',
     'fuchsia/buildbucket_util',

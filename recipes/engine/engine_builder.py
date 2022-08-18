@@ -7,8 +7,6 @@ import contextlib
 
 from PB.recipes.flutter.engine.engine_builder import InputProperties, EngineBuild
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
   'depot_tools/depot_tools',
   'flutter/os_utils',

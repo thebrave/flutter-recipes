@@ -11,8 +11,6 @@ import attr
 from PB.recipe_modules.fuchsia.recipe_testing import options as options_pb2
 from recipe_engine.recipe_api import Property
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'fuchsia/commit_queue',
     'fuchsia/git',

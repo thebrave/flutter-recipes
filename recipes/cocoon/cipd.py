@@ -5,8 +5,6 @@
 from platform import platform
 from recipe_engine.recipe_api import Property
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'flutter/repo_util',
     'flutter/yaml',

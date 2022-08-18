@@ -4,8 +4,6 @@
 
 """Recipe for testing LUCI configs."""
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'fuchsia/git',
     'fuchsia/git_checkout',

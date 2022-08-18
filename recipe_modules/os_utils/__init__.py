@@ -1,5 +1,3 @@
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'flutter/repo_util',
     'recipe_engine/context',

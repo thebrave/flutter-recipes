@@ -5,8 +5,6 @@
 import json
 from datetime import datetime
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'flutter/repo_util',
     'flutter/flutter_deps',

@@ -6,8 +6,6 @@
 from contextlib import contextmanager
 import re
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'flutter/fuchsia_util',
     'flutter/repo_util',

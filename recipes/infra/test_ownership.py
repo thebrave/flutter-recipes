@@ -11,8 +11,6 @@
 # The pre-submit `sha` and `repo` are needed for validation. Violated builders will
 # be returned in stdout when ownership is missing.
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'flutter/repo_util',
     'recipe_engine/context',

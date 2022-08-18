@@ -1,5 +1,3 @@
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'flutter/firebase',
     'flutter/flutter_deps',

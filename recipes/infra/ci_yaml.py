@@ -6,8 +6,6 @@
 
 from PB.go.chromium.org.luci.common.proto.gerrit import gerrit as gerrit_pb2
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'flutter/repo_util',
     'fuchsia/auto_roller',

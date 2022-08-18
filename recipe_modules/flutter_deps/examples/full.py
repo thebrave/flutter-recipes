@@ -4,8 +4,6 @@
 
 from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'flutter/flutter_deps',
     'flutter/repo_util',

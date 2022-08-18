@@ -1,5 +1,3 @@
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'depot_tools/gsutil',
     'flutter/display_util',

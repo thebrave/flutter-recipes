@@ -4,9 +4,6 @@
 
 from recipe_engine.recipe_api import Property
 
-
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'flutter/devicelab_osx_sdk',
     'flutter/flutter_deps',

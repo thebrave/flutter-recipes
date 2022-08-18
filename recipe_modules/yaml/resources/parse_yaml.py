@@ -22,7 +22,7 @@ def main():
 
   with open(args.yaml_file) as f:
     with open(args.json_file, 'w+') as j:
-      json.dump(yaml.load(f), j)
+      json.dump(yaml.safe_load(f), j)
 
 
 if __name__ == '__main__':

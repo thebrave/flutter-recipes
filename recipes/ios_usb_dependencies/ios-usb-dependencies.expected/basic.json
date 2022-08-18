@@ -1,0 +1,796 @@
+[
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/ios-deploy"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/ios-deploy"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/ios-deploy_install"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/ios-deploy_install"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/ios-deploy_output"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/ios-deploy_output"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "777",
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/ios-deploy.sh"
+    ],
+    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/ios-deploy.sh executable"
+  },
+  {
+    "cmd": [
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/ios-deploy.sh",
+      "[START_DIR]/src/ios-deploy",
+      "[START_DIR]/src/ios-deploy_install",
+      "[START_DIR]/src/ios-deploy_output"
+    ],
+    "name": "install ios-deploy"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[START_DIR]/src/ios-deploy/commit_sha.txt",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "read commit_sha.txt for ios-deploy",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@commit_sha.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python",
+      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+    ],
+    "name": "zipping ios-deploy dir",
+    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/src/ios-deploy_output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/ios-deploy.zip\", \"root\": \"[START_DIR]/src/ios-deploy_output\"}"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "[START_DIR]/ios-deploy.zip",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/ios-deploy//ios-deploy.zip"
+    ],
+    "infra_step": true,
+    "name": "gsutil upload of ios-deploy.zip",
+    "~followup_annotations": [
+      "@@@STEP_LINK@ios-deploy.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/unsigned/ios-deploy//ios-deploy.zip@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libplist"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libplist"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libplist_install"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libplist_install"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libplist_output"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libplist_output"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "777",
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libplist.sh"
+    ],
+    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libplist.sh executable"
+  },
+  {
+    "cmd": [
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libplist.sh",
+      "[START_DIR]/src/libplist",
+      "[START_DIR]/src/libplist_install",
+      "[START_DIR]/src/libplist_output"
+    ],
+    "name": "install libplist"
+  },
+  {
+    "cmd": [
+      "python",
+      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+    ],
+    "name": "zipping libplist dir",
+    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/src/libplist_output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/libplist.zip\", \"root\": \"[START_DIR]/src/libplist_output\"}"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "[START_DIR]/libplist.zip",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/libplist/None/libplist.zip"
+    ],
+    "infra_step": true,
+    "name": "gsutil upload of libplist.zip",
+    "~followup_annotations": [
+      "@@@STEP_LINK@libplist.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/unsigned/libplist/None/libplist.zip@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/bison"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/bison"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/bison_install"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/bison_install"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/bison_output"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/bison_output"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "777",
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/bison.sh"
+    ],
+    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/bison.sh executable"
+  },
+  {
+    "cmd": [
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/bison.sh",
+      "[START_DIR]/src/bison",
+      "[START_DIR]/src/bison_install",
+      "[START_DIR]/src/bison_output"
+    ],
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/src/libplist_install/bin"
+      ]
+    },
+    "name": "install bison"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libtasn1"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libtasn1"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libtasn1_install"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libtasn1_install"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libtasn1_output"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libtasn1_output"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "777",
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libtasn1.sh"
+    ],
+    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libtasn1.sh executable"
+  },
+  {
+    "cmd": [
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libtasn1.sh",
+      "[START_DIR]/src/libtasn1",
+      "[START_DIR]/src/libtasn1_install",
+      "[START_DIR]/src/libtasn1_output"
+    ],
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/src/libplist_install/bin",
+        "[START_DIR]/src/bison_install/bin"
+      ]
+    },
+    "name": "install libtasn1"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libusb"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libusb"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libusb_install"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libusb_install"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libusb_output"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libusb_output"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "777",
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libusb.sh"
+    ],
+    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libusb.sh executable"
+  },
+  {
+    "cmd": [
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libusb.sh",
+      "[START_DIR]/src/libusb",
+      "[START_DIR]/src/libusb_install",
+      "[START_DIR]/src/libusb_output"
+    ],
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/src/libplist_install/bin",
+        "[START_DIR]/src/bison_install/bin",
+        "[START_DIR]/src/libtasn1_install/bin"
+      ]
+    },
+    "name": "install libusb"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libimobiledeviceglue"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libimobiledeviceglue"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libimobiledeviceglue_install"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libimobiledeviceglue_install"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libimobiledeviceglue_output"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libimobiledeviceglue_output"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "777",
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libimobiledeviceglue.sh"
+    ],
+    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libimobiledeviceglue.sh executable"
+  },
+  {
+    "cmd": [
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libimobiledeviceglue.sh",
+      "[START_DIR]/src/libimobiledeviceglue",
+      "[START_DIR]/src/libimobiledeviceglue_install",
+      "[START_DIR]/src/libimobiledeviceglue_output"
+    ],
+    "env_prefixes": {
+      "LIBRARY_PATH": [
+        "[START_DIR]/src/libusb_install/lib"
+      ],
+      "PATH": [
+        "[START_DIR]/src/libplist_install/bin",
+        "[START_DIR]/src/bison_install/bin",
+        "[START_DIR]/src/libtasn1_install/bin"
+      ]
+    },
+    "name": "install libimobiledeviceglue"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libusbmuxd"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libusbmuxd"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libusbmuxd_install"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libusbmuxd_install"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libusbmuxd_output"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libusbmuxd_output"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "777",
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libusbmuxd.sh"
+    ],
+    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libusbmuxd.sh executable"
+  },
+  {
+    "cmd": [
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libusbmuxd.sh",
+      "[START_DIR]/src/libusbmuxd",
+      "[START_DIR]/src/libusbmuxd_install",
+      "[START_DIR]/src/libusbmuxd_output"
+    ],
+    "env": {
+      "CPATH": "[START_DIR]/src/libimobiledeviceglue_install/include"
+    },
+    "env_prefixes": {
+      "LIBRARY_PATH": [
+        "[START_DIR]/src/libusb_install/lib",
+        "[START_DIR]/src/libimobiledeviceglue_install/lib"
+      ],
+      "PATH": [
+        "[START_DIR]/src/libplist_install/bin",
+        "[START_DIR]/src/bison_install/bin",
+        "[START_DIR]/src/libtasn1_install/bin"
+      ],
+      "PKG_CONFIG_PATH": [
+        "[START_DIR]/src/libimobiledeviceglue_install/lib/pkgconfig"
+      ]
+    },
+    "name": "install libusbmuxd"
+  },
+  {
+    "cmd": [
+      "python",
+      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+    ],
+    "name": "zipping libusbmuxd dir",
+    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/src/libusbmuxd_output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/libusbmuxd.zip\", \"root\": \"[START_DIR]/src/libusbmuxd_output\"}"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "[START_DIR]/libusbmuxd.zip",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/libusbmuxd/None/libusbmuxd.zip"
+    ],
+    "infra_step": true,
+    "name": "gsutil upload of libusbmuxd.zip",
+    "~followup_annotations": [
+      "@@@STEP_LINK@libusbmuxd.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/unsigned/libusbmuxd/None/libusbmuxd.zip@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/openssl"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/openssl"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/openssl_install"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/openssl_install"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/openssl_output"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/openssl_output"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "777",
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/openssl.sh"
+    ],
+    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/openssl.sh executable"
+  },
+  {
+    "cmd": [
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/openssl.sh",
+      "[START_DIR]/src/openssl",
+      "[START_DIR]/src/openssl_install",
+      "[START_DIR]/src/openssl_output"
+    ],
+    "env": {
+      "CPATH": "[START_DIR]/src/libimobiledeviceglue_install/include"
+    },
+    "env_prefixes": {
+      "LIBRARY_PATH": [
+        "[START_DIR]/src/libusb_install/lib",
+        "[START_DIR]/src/libimobiledeviceglue_install/lib"
+      ],
+      "PATH": [
+        "[START_DIR]/src/libplist_install/bin",
+        "[START_DIR]/src/bison_install/bin",
+        "[START_DIR]/src/libtasn1_install/bin",
+        "[START_DIR]/src/libusbmuxd_install/bin"
+      ],
+      "PKG_CONFIG_PATH": [
+        "[START_DIR]/src/libimobiledeviceglue_install/lib/pkgconfig",
+        "[START_DIR]/src/libusbmuxd_install/lib/pkgconfig"
+      ]
+    },
+    "name": "install openssl"
+  },
+  {
+    "cmd": [
+      "python",
+      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+    ],
+    "name": "zipping openssl dir",
+    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/src/openssl_output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/openssl.zip\", \"root\": \"[START_DIR]/src/openssl_output\"}"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "[START_DIR]/openssl.zip",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/openssl/None/openssl.zip"
+    ],
+    "infra_step": true,
+    "name": "gsutil upload of openssl.zip",
+    "~followup_annotations": [
+      "@@@STEP_LINK@openssl.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/unsigned/openssl/None/openssl.zip@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libimobiledevice"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libimobiledevice"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libimobiledevice_install"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libimobiledevice_install"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/src/libimobiledevice_output"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libimobiledevice_output"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "777",
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libimobiledevice.sh"
+    ],
+    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libimobiledevice.sh executable"
+  },
+  {
+    "cmd": [
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libimobiledevice.sh",
+      "[START_DIR]/src/libimobiledevice",
+      "[START_DIR]/src/libimobiledevice_install",
+      "[START_DIR]/src/libimobiledevice_output"
+    ],
+    "env": {
+      "CPATH": "[START_DIR]/src/libimobiledeviceglue_install/include"
+    },
+    "env_prefixes": {
+      "LIBRARY_PATH": [
+        "[START_DIR]/src/libusb_install/lib",
+        "[START_DIR]/src/libimobiledeviceglue_install/lib",
+        "[START_DIR]/src/openssl_install/lib"
+      ],
+      "PATH": [
+        "[START_DIR]/src/libplist_install/bin",
+        "[START_DIR]/src/bison_install/bin",
+        "[START_DIR]/src/libtasn1_install/bin",
+        "[START_DIR]/src/libusbmuxd_install/bin",
+        "[START_DIR]/src/openssl_install/bin"
+      ],
+      "PKG_CONFIG_PATH": [
+        "[START_DIR]/src/libimobiledeviceglue_install/lib/pkgconfig",
+        "[START_DIR]/src/libusbmuxd_install/lib/pkgconfig",
+        "[START_DIR]/src/openssl_install/lib/pkgconfig"
+      ]
+    },
+    "name": "install libimobiledevice"
+  },
+  {
+    "cmd": [
+      "python",
+      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+    ],
+    "name": "zipping libimobiledevice dir",
+    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/src/libimobiledevice_output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/libimobiledevice.zip\", \"root\": \"[START_DIR]/src/libimobiledevice_output\"}"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "[START_DIR]/libimobiledevice.zip",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/libimobiledevice/None/libimobiledevice.zip"
+    ],
+    "infra_step": true,
+    "name": "gsutil upload of libimobiledevice.zip",
+    "~followup_annotations": [
+      "@@@STEP_LINK@libimobiledevice.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/unsigned/libimobiledevice/None/libimobiledevice.zip@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]

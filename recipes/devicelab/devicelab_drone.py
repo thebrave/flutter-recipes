@@ -83,7 +83,7 @@ def RunSteps(api):
     # TODO: If deps contains dart_sdk and we are running a local engine,
     # we don't want to fetch it with cipd, so don't fetch it with required_deps
     api.flutter_deps.required_deps(env, env_prefixes, deps)
-    api.flutter_deps.vpython(env, env_prefixes, 'latest')
+    api.flutter_deps.vpython(env, env_prefixes, 'git_revision:9d1c6e6f932c9eaef34e3170c09080c7a1aec601')
 
   target_tags = api.properties.get('tags', [])
   device_tags = api.test_utils.collect_benchmark_tags(env, env_prefixes, target_tags)

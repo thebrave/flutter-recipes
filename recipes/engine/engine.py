@@ -504,6 +504,9 @@ class AndroidAotVariant:
   def GetGenSnapshotPath(self):
     return '%s/gen_snapshot' % (self.clang_dir)
 
+  def GetAnalyzeSnapshotPath(self):
+    return '%s/analyze_snapshot' % (self.clang_dir)
+
   def GetLibFlutterPath(self):
     return 'libflutter.so'
 
@@ -524,12 +527,16 @@ class AndroidAotVariant:
     return ['default', '%s/gen_snapshot' % self.clang_dir]
 
   def GetOutputFiles(self, runtime_mode):
-    return [
+    analyze_snapshot = []
+    if self.android_cpu == "x64" or self.android_cpu == "arm64":
+      analyze_snapshot = [self.GetAnalyzeSnapshotPath()]
+    return ([
         self.GetFlutterJarPath(),
         self.GetGenSnapshotPath(),
-        self.GetLibFlutterPath()
-    ] + self.GetMavenArtifacts(runtime_mode
-                              ) + self.GetEmbeddingArtifacts(runtime_mode)
+        self.GetLibFlutterPath(),
+    ] + self.GetMavenArtifacts(runtime_mode)
+      + self.GetEmbeddingArtifacts(runtime_mode)
+      + analyze_snapshot)
 
 
 # This variant is built on the scheduling bot to run firebase tests.
@@ -664,6 +671,16 @@ def BuildLinuxAndroidAOT(api, swarming_task_id):
             upload_dir, [prefix_build_dir(aot_variant.GetGenSnapshotPath())],
             archive_name='linux-x64.zip'
         )
+
+        # analyze_snapshot is only needed for x64 and arm64 Android running on
+        # Linux.
+        if aot_variant.android_cpu == 'x64' or aot_variant.android_cpu == 'arm64':
+          UploadArtifacts(
+              api,
+              upload_dir,
+              [prefix_build_dir(aot_variant.GetAnalyzeSnapshotPath())],
+              archive_name='analyze-snapshot-linux-x64.zip',
+          )
 
         unstripped_lib_flutter_path = prefix_build_dir(
             aot_variant.GetLibFlutterPath()

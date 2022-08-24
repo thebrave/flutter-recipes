@@ -25,4 +25,5 @@ def RunSteps(api):
 
 
 def GenTests(api):
-  yield api.test('basic', api.properties(no_lto=True, goma_jobs=100))
+  yield api.test('goma', api.properties(no_lto=True, goma_jobs=100))
+  yield api.test('no_goma', api.properties(no_lto=True, goma_jobs=100, no_goma=True))

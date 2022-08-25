@@ -61,12 +61,12 @@ ENV_PROPERTIES = EnvProperties
 def BuildFontSubset(api):
   return api.properties.get('build_font_subset', True)
 
-def UploadFontSubset(api, platform):
+def UploadFontSubset(api, platform, config='host_release'):
   if not BuildFontSubset(api):
     return
   font_subset_path = GetCheckoutPath(api).join(
       'out',
-      'host_release',
+      config,
       'zip_archives',
       platform,
       'font-subset.zip'
@@ -1228,16 +1228,43 @@ def BuildMac(api):
             'out/host_debug/gen_snapshot',
         ]
     )
+    UploadArtifacts(
+        api, 'darwin-arm64', [
+            ICU_DATA_PATH,
+            'out/mac_debug_arm64/flutter_tester',
+            'out/mac_debug_arm64/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
+            'out/mac_debug_arm64/gen/flutter/tools/path_ops/LICENSE.path_ops.md',
+            'out/mac_debug_arm64/impellerc',
+            'out/mac_debug_arm64/libpath_ops.dylib',
+            'out/mac_debug_arm64/libtessellator.dylib',
+            'out/mac_debug_arm64/gen/flutter/lib/snapshot/isolate_snapshot.bin',
+            'out/mac_debug_arm64/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
+            'out/mac_debug_arm64/gen/frontend_server.dart.snapshot',
+            # Remove after the tool no longer uses it.
+            'out/mac_debug_arm64/gen_snapshot',
+        ]
+    )
+
     # Remove after the tool no longer uses it.
     UploadArtifacts(
         api, 'darwin-x64-profile', [
             'out/host_profile/gen_snapshot',
         ]
     )
+    UploadArtifacts(
+        api, 'darwin-arm64-profile', [
+            'out/mac_profile_arm64/gen_snapshot',
+        ]
+    )
     # Remove after the tool no longer uses it.
     UploadArtifacts(
         api, 'darwin-x64-release', [
             'out/host_release/gen_snapshot',
+        ]
+    )
+    UploadArtifacts(
+        api, 'darwin-arm64-release', [
+            'out/mac_release_arm64/gen_snapshot',
         ]
     )
 
@@ -1248,6 +1275,7 @@ def BuildMac(api):
     )
 
     UploadFontSubset(api, 'darwin-x64')
+    UploadFontSubset(api, 'darwin-arm64', config='mac_release_arm64')
 
     UploadDartSdk(api, archive_name='dart-sdk-darwin-x64.zip')
     UploadDartSdk(

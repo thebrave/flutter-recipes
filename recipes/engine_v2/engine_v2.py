@@ -45,24 +45,41 @@ ENV_PROPERTIES = EnvProperties
 
 def RunSteps(api, properties, env_properties):
   config_name = api.properties.get('config_name')
-  # Checkout engine repository only.
-  checkout_path = api.path['start_dir'].join('engine')
-  api.repo_util.checkout(
-      'engine',
-      checkout_path=checkout_path,
-      url=api.properties.get('git_url'),
-      ref=api.properties.get('git_ref')
-  )
-
-  # Read builds configuration from repository under test.
-  config_path = checkout_path.join('ci', 'builders', '%s.json' % config_name)
   builds = api.properties.get('builds')
+  tests = api.properties.get('tests')
+  generators = api.properties.get('generators')
+  archives = api.properties.get('archives')
+  if config_name:
+    # Read builds configuration from repository under test.
+    # Checkout engine repository only.
+    checkout_path = api.path['start_dir'].join('engine')
+    api.repo_util.checkout(
+        'engine',
+        checkout_path=checkout_path,
+        url=api.properties.get('git_url'),
+        ref=api.properties.get('git_ref')
+    )
+    config_path = checkout_path.join('ci', 'builders', '%s.json' % config_name)
+    config = api.file.read_json(
+        'Read build config file', config_path, test_data={}
+    )
+    if builds is None:
+      builds = config.get('builds')
+    if tests is None:
+      tests = config.get('tests')
+    if generators is None:
+      generators = config.get('generators')
+    if archives is None:
+      archives = config.get('archives')
   if builds is None:
-    builds = api.json.read(
-        'Read build config file',
-        config_path,
-        step_test_data=lambda: api.json.test_api.output({})
-    ).json.output.get('builds', [])
+    builds = []
+  if tests is None:
+    tests = []
+  if generators is None:
+    generators = []
+  if archives is None:
+    archives = []
+
   with api.step.nest('launch builds') as presentation:
     tasks = api.shard_util_v2.schedule_builds(builds, presentation)
   with api.step.nest('collect builds') as presentation:
@@ -75,13 +92,6 @@ def RunSteps(api, properties, env_properties):
   )
 
   # Run tests
-  tests = api.properties.get('tests')
-  if tests is None:
-    tests = api.json.read(
-        'Read build config file',
-        config_path,
-        step_test_data=lambda: api.json.test_api.output({})
-    ).json.output.get('tests', [])
   with api.step.nest('launch tests') as presentation:
     tasks = api.shard_util_v2.schedule_tests(tests, build_results, presentation)
   with api.step.nest('collect tests') as presentation:
@@ -95,15 +105,8 @@ def RunSteps(api, properties, env_properties):
 
 
   # Global generators
-  generators = api.properties.get('generators')
-  if generators is None:
-    generators = api.json.read(
-        'Read build config file',
-        config_path,
-        step_test_data=lambda: api.json.test_api.output({})
-    ).json.output.get('generators', [])
-  if generators:
-    # Generators require a full engine checkout.
+  if generators or archives:
+    # Generators and archives require a full engine checkout.
     full_engine_checkout = api.path['cache'].join('builder')
     api.file.ensure_directory('Ensure full engine checkout folder', full_engine_checkout)
     clobber = api.properties.get('clobber', True)
@@ -114,6 +117,8 @@ def RunSteps(api, properties, env_properties):
         full_engine_checkout, env, env_prefixes, clobber,
         custom_vars=gclient_vars
     )
+
+  if generators:
     # Download sub-builds
     out_builds_path = full_engine_checkout.join('src', 'out')
     api.file.rmtree('Clobber build download folder', out_builds_path)
@@ -140,27 +145,26 @@ def RunSteps(api, properties, env_properties):
     api.file.listdir('Final List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
     api.file.listdir('Final List checkout 2', full_engine_checkout.join('src', 'flutter', 'sky'), recursive=True)
   # Global archives
-  archives = api.properties.get('archives')
-  if archives is None:
-    archives = api.json.read(
-        'Read build config file',
-        config_path,
-        step_test_data=lambda: api.json.test_api.output({})
-    ).json.output.get('archives', [])
-  # Global archives are stored in out folder from full_engine_checkout inside release, debug or profile
-  # depending of the runtime mode. So far we are uploading files only.
-  bucket = 'flutter_archives_v2'
-  for archive in archives:
-    source = full_engine_checkout.join('src', archive.get('source'))
-    commit = api.repo_util.get_commit(full_engine_checkout.join('src', 'flutter'))
-    artifact_path = 'flutter_infra_release/flutter/%s/%s' % (commit, archive.get('destination'))
-    api.gsutil.upload(
-        source=source,
-        bucket=bucket,
-        dest=artifact_path,
-        args=['-r'],
-        name=archive.get('name'),
-    )
+  if archives:
+    # Global archives are stored in out folder from full_engine_checkout inside
+    # release, debug or profile depending on the runtime mode.
+    # So far we are uploading files only.
+    bucket = 'flutter_archives_v2'
+    for archive in archives:
+      source = full_engine_checkout.join('src', archive.get('source'))
+      commit = api.repo_util.get_commit(
+          full_engine_checkout.join('src', 'flutter')
+      )
+      artifact_path = 'flutter_infra_release/flutter/%s/%s' % (
+          commit, archive.get('destination')
+      )
+      api.gsutil.upload(
+          source=source,
+          bucket=bucket,
+          dest=artifact_path,
+          args=['-r'],
+          name=archive.get('name'),
+      )
 
 
 def _run_global_generator(api, generator_task, full_engine_checkout):
@@ -216,7 +220,13 @@ def GenTests(api):
   yield api.test(
       'basic_mac',
       api.platform.name('mac'),
-      api.properties(builds=builds, tests=[], generators=generators, archives=archives, environment='Staging'),
+      api.properties(
+          builds=builds,
+          tests=[],
+          generators=generators,
+          archives=archives,
+          environment='Staging'
+      ),
       api.buildbucket.try_build(
           project='proj',
           builder='try-builder',
@@ -234,7 +244,9 @@ def GenTests(api):
   yield api.test(
       'basic_linux',
       api.platform.name('linux'),
-      api.properties(builds=builds, tests=[], generators=generators, environment='Staging'),
+      api.properties(
+          builds=builds, generators=generators, environment='Staging'
+      ),
       api.buildbucket.try_build(
           project='proj',
           builder='try-builder',
@@ -251,11 +263,11 @@ def GenTests(api):
 
   yield api.test(
       'config_from_file',
-      api.properties(environment='Staging'),
+      api.properties(config_name='config_name', environment='Staging'),
       api.buildbucket.try_build(
           project='proj',
           builder='try-builder',
-          git_repo='https://github.com/repo/a',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
           revision='a' * 40,
           build_number=123,
       ),
@@ -266,8 +278,44 @@ def GenTests(api):
       ),
       api.step_data(
           'Read build config file',
-          api.json.output({'builds': builds})),
+          api.file.read_json({'builds': builds, 'archives': archives})
+      ),
+  )
+
+  yield api.test(
+      'overridden_config_from_file',
+      api.properties(
+          config_name='overridden_config_name',
+          archives=[],
+          generators=[],
+          environment='Staging'
+      ),
+      api.buildbucket.try_build(
+          project='proj',
+          builder='try-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          revision='a' * 40,
+          build_number=123,
+      ),
       api.step_data(
-          'Read build config file (2)',
-          api.json.output({'builds': builds})),
+          'Read build config file', api.file.read_json({'archives': archives})
+      ),
+  )
+
+  yield api.test(
+      'monorepo_linux',
+      api.platform.name('linux'),
+      api.properties(builds=builds, environment='Staging'),
+      api.buildbucket.try_build(
+          project='proj',
+          builder='try-builder',
+          git_repo='https://dart.googlesource.com/monorepo',
+          revision='a' * 40,
+          build_number=123,
+      ),
+      api.shard_util_v2.child_build_steps(
+          builds=[try_subbuild1],
+          launch_step="launch builds",
+          collect_step="collect builds",
+      ),
   )

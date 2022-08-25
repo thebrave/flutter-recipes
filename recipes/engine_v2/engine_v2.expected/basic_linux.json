@@ -1,200 +1,6 @@
 [
   {
     "cmd": [],
-    "name": "Checkout flutter/engine"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
-      "--path",
-      "[START_DIR]/engine",
-      "--url",
-      "https://flutter.googlesource.com/mirrors/engine"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Checkout flutter/engine.git setup",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "fetch",
-      "origin",
-      "--recurse-submodules",
-      "--progress",
-      "--tags"
-    ],
-    "cwd": "[START_DIR]/engine",
-    "env": {
-      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Checkout flutter/engine.git fetch",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "checkout",
-      "-f",
-      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-    ],
-    "cwd": "[START_DIR]/engine",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Checkout flutter/engine.git checkout",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "rev-parse",
-      "HEAD"
-    ],
-    "cwd": "[START_DIR]/engine",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Checkout flutter/engine.read revision",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
-      "@@@SET_BUILD_PROPERTY@got_revision@\"deadbeef\"@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "clean",
-      "-f",
-      "-d",
-      "-x"
-    ],
-    "cwd": "[START_DIR]/engine",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Checkout flutter/engine.git clean",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "submodule",
-      "sync"
-    ],
-    "cwd": "[START_DIR]/engine",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Checkout flutter/engine.submodule sync",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "submodule",
-      "update",
-      "--init",
-      "--recursive"
-    ],
-    "cwd": "[START_DIR]/engine",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Checkout flutter/engine.submodule update",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
     "name": "launch builds"
   },
   {
@@ -218,7 +24,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Staging Engine Drone\", \"project\": \"proj\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/engine\"}], \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 25, \"properties\": {\"build\": {\"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}}, \"builds\": [{\"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}}], \"environment\": \"Staging\", \"generators\": {\"tasks\": [{\"language\": \"python\", \"name\": \"Debug-FlutterMacOS.framework\", \"parameters\": [\"--variant\", \"host_profile\", \"--type\", \"engine\", \"--engine-capture-core-dump\"], \"script\": \"flutter/sky/tools/create_macos_framework.py\", \"type\": \"local\"}]}, \"recipe\": \"engine_v2/builder\", \"tests\": []}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Staging Engine Drone\", \"project\": \"proj\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/engine\"}], \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 25, \"properties\": {\"build\": {\"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}}, \"builds\": [{\"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}}], \"environment\": \"Staging\", \"generators\": {\"tasks\": [{\"language\": \"python\", \"name\": \"Debug-FlutterMacOS.framework\", \"parameters\": [\"--variant\", \"host_profile\", \"--type\", \"engine\", \"--engine-capture-core-dump\"], \"script\": \"flutter/sky/tools/create_macos_framework.py\", \"type\": \"local\"}]}, \"recipe\": \"engine_v2/builder\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -321,8 +127,7 @@
       "@@@STEP_LOG_LINE@request@              }@@@",
       "@@@STEP_LOG_LINE@request@            ]@@@",
       "@@@STEP_LOG_LINE@request@          }, @@@",
-      "@@@STEP_LOG_LINE@request@          \"recipe\": \"engine_v2/builder\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"tests\": []@@@",
+      "@@@STEP_LOG_LINE@request@          \"recipe\": \"engine_v2/builder\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", @@@",
       "@@@STEP_LOG_LINE@request@        \"swarming\": {@@@",
@@ -1052,32 +857,6 @@
     "name": "Final List checkout 2",
     "~followup_annotations": [
       "@@@STEP_LOG_END@listdir@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::json]/resources/read.py",
-      "[START_DIR]/engine/ci/builders/None.json",
-      "/path/to/tmp/json"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Read build config file",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
     ]
   },
   {

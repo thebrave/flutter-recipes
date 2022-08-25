@@ -35,7 +35,6 @@ def RunSteps(api):
   )
   api.flutter_deps.go_sdk(env, env_prefixes, 'v4')
   api.flutter_deps.dashing(env, env_prefixes, 'v5')
-  api.flutter_deps.vpython(env, env_prefixes, 'v6')
   deps = api.properties.get("dependencies", [])
   api.flutter_deps.required_deps(env, env_prefixes, deps)
   with api.assertions.assertRaises(ValueError):

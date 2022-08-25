@@ -74,7 +74,6 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'jazzy': self.jazzy,
         'ninja': self.ninja,
         'open_jdk': self.open_jdk,
-        'vpython': self.vpython,
         'vs_build': self.vs_build,
     }
     parsed_deps = []
@@ -219,17 +218,6 @@ class FlutterDepsApi(recipe_api.RecipeApi):
           ['go', 'get', '-u', 'github.com/technosophos/dashing'],
           infra_step=True,
       )
-
-  def vpython(self, env, env_prefixes, version):
-    """Installs vpython."""
-    version = version or 'latest'
-    vpython_path = self.m.path.mkdtemp().join('vpython')
-    vpython = self.m.cipd.EnsureFile()
-    vpython.add_package('infra/tools/luci/vpython/${platform}', version)
-    self.m.cipd.ensure(vpython_path, vpython)
-    paths = env_prefixes.get('PATH', [])
-    paths.append(vpython_path)
-    env_prefixes['PATH'] = paths
 
   def curl(self, env, env_prefixes, version):
     """Installs curl."""

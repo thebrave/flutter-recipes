@@ -104,6 +104,7 @@ def GenTests(api):
   presubmit_props = copy.deepcopy(props)
   presubmit_props['git_url'] = 'http://abc'
   presubmit_props['git_ref'] = 'refs/123/master'
+  presubmit_props['builds'][0]['drone_builder_name'] = 'custom drone builder'
 
   yield api.test(
       'presubmit_led', api.properties(**presubmit_props),
@@ -124,6 +125,7 @@ def GenTests(api):
   presubmit_props_bb = copy.deepcopy(props_bb)
   presubmit_props_bb['git_url'] = 'http://abc'
   presubmit_props_bb['git_ref'] = 'refs/123/master'
+  presubmit_props_bb['builds'][0]['drone_builder_name'] = 'custom drone builder'
 
   yield (
       api.buildbucket_util.test("presubmit_bb", tryjob=True, status="failure") +

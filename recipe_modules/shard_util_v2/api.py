@@ -161,41 +161,41 @@ class ShardUtilApi(recipe_api.RecipeApi):
       # Override recipe.
       drone_properties['recipe'] = recipe_name
 
-      if self.m.led.launched_by_led:
-        # If coming from led Launch sub-build using led.
-        environment = drone_properties['environment']
-        environment = '%s ' % environment if environment else ''
-        builder_name = '%s %sEngine Drone' % (platform_name, environment)
-        parent = self.m.buildbucket.build.builder
-        led_data = self.m.led(
-            "get-builder",
-            "luci.%s.%s:%s" % (parent.project, parent.bucket, builder_name),
-        )
-        edit_args = []
-        for k, v in sorted(drone_properties.items()):
-          edit_args.extend(["-p", "%s=%s" % (k, self.m.json.dumps(v))])
-        # led reduces the priority of tasks by 10 from their values in
-        # buildbucket which we do not want.
-        # TODO(crbug.com/1138533) Add an option to led to handle this.
-        led_data.result.buildbucket.bbagent_args.build.infra.swarming.priority -= 20
-        led_data = led_data.then("edit", *edit_args)
-        led_data = led_data.then("edit", "-name", task_name)
-        led_data = led_data.then("edit", "-r", recipe_name)
-        for d in drone_dimensions:
-          led_data = led_data.then("edit", "-d", d)
-        led_data = self.m.led.inject_input_recipes(led_data)
-        launch_res = led_data.then("launch", "-modernize")
-        task_id = launch_res.launch_result.task_id
-        build_url = "https://ci.chromium.org/swarming/task/%s?server=%s" % (
-            task_id,
-            launch_res.launch_result.swarming_hostname,
-        )
-        results[task_name] = SubbuildResult(
-            builder=task_name,
-            build_id=task_id,
-            url=build_url,
-            build_name=task_name
-        )
+      environment = drone_properties['environment']
+      environment = '%s ' % environment if environment else ''
+      builder_name = build.get(
+          'drone_builder_name',
+          '%s %sEngine Drone' % (platform_name, environment))
+      parent = self.m.buildbucket.build.builder
+      led_data = self.m.led(
+          "get-builder",
+          "luci.%s.%s:%s" % (parent.project, parent.bucket, builder_name),
+      )
+      edit_args = []
+      for k, v in sorted(drone_properties.items()):
+        edit_args.extend(["-p", "%s=%s" % (k, self.m.json.dumps(v))])
+      # led reduces the priority of tasks by 10 from their values in
+      # buildbucket which we do not want.
+      # TODO(crbug.com/1138533) Add an option to led to handle this.
+      led_data.result.buildbucket.bbagent_args.build.infra.swarming.priority -= 20
+      led_data = led_data.then("edit", *edit_args)
+      led_data = led_data.then("edit", "-name", task_name)
+      led_data = led_data.then("edit", "-r", recipe_name)
+      for d in drone_dimensions:
+        led_data = led_data.then("edit", "-d", d)
+      led_data = self.m.led.inject_input_recipes(led_data)
+      launch_res = led_data.then("launch", "-modernize")
+      task_id = launch_res.launch_result.task_id
+      build_url = "https://ci.chromium.org/swarming/task/%s?server=%s" % (
+          task_id,
+          launch_res.launch_result.swarming_hostname,
+      )
+      results[task_name] = SubbuildResult(
+          builder=task_name,
+          build_id=task_id,
+          url=build_url,
+          build_name=task_name
+      )
     return results
 
   def _schedule_with_bb(self, builds, recipe_name):
@@ -221,7 +221,10 @@ class ShardUtilApi(recipe_api.RecipeApi):
           self.m.platform.name
       )
       environment = drone_properties['environment']
-      builder_name = '%s %s Engine Drone' % (platform_name, environment)
+      environment = '%s ' % environment if environment else ''
+      builder_name = build.get(
+          'drone_builder_name',
+          '%s %sEngine Drone' % (platform_name, environment))
       for d in drone_dimensions:
         k, v = d.split('=')
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))

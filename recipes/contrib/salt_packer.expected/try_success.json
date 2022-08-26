@@ -1,0 +1,1521 @@
+[
+  {
+    "cmd": [],
+    "name": "checkout"
+  },
+  {
+    "cmd": [],
+    "name": "checkout.ensure gerrit",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[fuchsia::gerrit]/resources/tool_manifest.json",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.ensure gerrit.read manifest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gerrit\",@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
+      "@@@STEP_LOG_END@tool_manifest.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "checkout.ensure gerrit.install path/to/gerrit",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.ensure gerrit.install path/to/gerrit.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version",
+      "-ensure-file",
+      "path/to/gerrit version:pinned-version",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.ensure gerrit.install path/to/gerrit.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gerrit\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version/gerrit",
+      "change-detail",
+      "-host",
+      "https://dash-internal-review.googlesource.com",
+      "-input",
+      "{\"change_id\": \"salt~123456\"}",
+      "-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.get change details",
+    "timeout": 600,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"branch\": \"main\"@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@json.input@{@@@",
+      "@@@STEP_LOG_LINE@json.input@  \"change_id\": \"salt~123456\"@@@",
+      "@@@STEP_LOG_LINE@json.input@}@@@",
+      "@@@STEP_LOG_END@json.input@@@",
+      "@@@STEP_LINK@gerrit link@https://dash-internal-review.googlesource.com/q/salt~123456@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "checkout.fetch refs/heads/main",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/dash-internal-salt"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.makedirs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "init"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.git init",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "remote",
+      "add",
+      "origin",
+      "https://dash-internal.googlesource.com/salt"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.git remote",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "fetch.uriprotocols",
+      "https"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.set fetch.uriprotocols",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "checkout.fetch refs/heads/main.cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/git"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.ensure git cache dir",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "",
+      "[CACHE]/git/.GUARD_FILE"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.write git cache guard file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/git/dash-internal.googlesource.com-salt"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.makedirs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "init",
+      "--bare"
+    ],
+    "cwd": "[CACHE]/git/dash-internal.googlesource.com-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.git init",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "remote.origin.url",
+      "https://dash-internal.googlesource.com/salt"
+    ],
+    "cwd": "[CACHE]/git/dash-internal.googlesource.com-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.remote set-url",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "fetch.uriprotocols",
+      "https"
+    ],
+    "cwd": "[CACHE]/git/dash-internal.googlesource.com-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.set fetch.uriprotocols",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "--replace-all",
+      "remote.origin.fetch",
+      "+refs/heads/*:refs/heads/*",
+      "\\+refs/heads/\\*:.*"
+    ],
+    "cwd": "[CACHE]/git/dash-internal.googlesource.com-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.replace fetch configs",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "--prune",
+      "--tags",
+      "origin"
+    ],
+    "cwd": "[CACHE]/git/dash-internal.googlesource.com-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.git fetch",
+    "timeout": 1200.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/dash-internal-salt/.git/objects/info"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.makedirs object/info",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/git/dash-internal.googlesource.com-salt/objects\n",
+      "[START_DIR]/dash-internal-salt/.git/objects/info/alternates"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.alternates",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@alternates@[CACHE]/git/dash-internal.googlesource.com-salt/objects@@@",
+      "@@@STEP_LOG_END@alternates@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "remove",
+      "[CACHE]/git/.GUARD_FILE"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.cache.remove git cache guard file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "--tags",
+      "origin",
+      "main"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.git fetch",
+    "timeout": 1200.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.git checkout",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.git rev-parse",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.git clean",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "checkout.fetch refs/heads/main.submodule",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.submodule.git submodule sync",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--jobs",
+      "4"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.fetch refs/heads/main.submodule.git submodule update",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/dash-internal-salt"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.makedirs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "--remove-section",
+      "remote.origin"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.remove section",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "remote",
+      "add",
+      "origin",
+      "https://dash-internal.googlesource.com/salt"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.git remote",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "fetch.uriprotocols",
+      "https"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.set fetch.uriprotocols",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "checkout.cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "",
+      "[CACHE]/git/.GUARD_FILE"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.cache.write git cache guard file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/git/dash-internal.googlesource.com-salt"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.cache.makedirs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "init",
+      "--bare"
+    ],
+    "cwd": "[CACHE]/git/dash-internal.googlesource.com-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.cache.git init",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "remote.origin.url",
+      "https://dash-internal.googlesource.com/salt"
+    ],
+    "cwd": "[CACHE]/git/dash-internal.googlesource.com-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.cache.remote set-url",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "fetch.uriprotocols",
+      "https"
+    ],
+    "cwd": "[CACHE]/git/dash-internal.googlesource.com-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.cache.set fetch.uriprotocols",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "--replace-all",
+      "remote.origin.fetch",
+      "+refs/heads/*:refs/heads/*",
+      "\\+refs/heads/\\*:.*"
+    ],
+    "cwd": "[CACHE]/git/dash-internal.googlesource.com-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.cache.replace fetch configs",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "--prune",
+      "--tags",
+      "origin"
+    ],
+    "cwd": "[CACHE]/git/dash-internal.googlesource.com-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.cache.git fetch",
+    "timeout": 1200.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/dash-internal-salt/.git/objects/info"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.cache.makedirs object/info",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/git/dash-internal.googlesource.com-salt/objects\n",
+      "[START_DIR]/dash-internal-salt/.git/objects/info/alternates"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.cache.alternates",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@alternates@[CACHE]/git/dash-internal.googlesource.com-salt/objects@@@",
+      "@@@STEP_LOG_END@alternates@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "remove",
+      "[CACHE]/git/.GUARD_FILE"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.cache.remove git cache guard file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "--tags",
+      "origin",
+      "refs/changes/56/123456/7"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.git fetch",
+    "timeout": 1200.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.git checkout",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.git rev-parse",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.git clean",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "checkout.submodule",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.submodule.git submodule sync",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--jobs",
+      "4"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.submodule.git submodule update",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rebase",
+      "--rebase-merges",
+      "deadbeef"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.git rebase",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "--short",
+      "deadbeef"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git rev-parse",
+    "timeout": 600.0
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "glob",
+      "[START_DIR]/dash-internal-salt/packer",
+      "*.packer.generated.json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "find packer templates",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@glob@[START_DIR]/dash-internal-salt/packer/pass.packer.generated.json@@@",
+      "@@@STEP_LOG_END@glob@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "packer",
+      "validate",
+      "-var",
+      "revision=",
+      "[START_DIR]/dash-internal-salt/packer/pass.packer.generated.json"
+    ],
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "env": {
+      "CHECKPOINT_DISABLE": "1",
+      "PACKER_LOG": "1",
+      "PACKER_NO_COLOR": "1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "packer validate"
+  },
+  {
+    "cmd": [],
+    "name": "pass"
+  },
+  {
+    "cmd": [
+      "packer",
+      "build",
+      "-var",
+      "revision=",
+      "-var",
+      "dry_run=true",
+      "-var",
+      "use_internal_ip=true",
+      "-only=pass",
+      "[START_DIR]/dash-internal-salt/packer/pass.packer.generated.json"
+    ],
+    "cost": {
+      "cpu": 0,
+      "disk": 0,
+      "memory": 0,
+      "net": 0
+    },
+    "cwd": "[START_DIR]/dash-internal-salt",
+    "env": {
+      "CHECKPOINT_DISABLE": "1",
+      "PACKER_LOG": "1",
+      "PACKER_NO_COLOR": "1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "pass.packer build",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@DRYRUN SUCCEEDED@@@",
+      "@@@STEP_LOG_LINE@output@DRYRUN SUCCEEDED@@@",
+      "@@@STEP_LOG_END@output@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]

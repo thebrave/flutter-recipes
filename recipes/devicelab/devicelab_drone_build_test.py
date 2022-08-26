@@ -45,7 +45,7 @@ def check_artifact_exist(api, url):
   step_result = api.gsutil.list(
       url, stdout=api.raw_io.output_text(), ok_ret='any'
   ).stdout.rstrip()
-  if step_result == url:
+  if step_result:
     artifacts_exist = True
   else:
     artifacts_exist = False

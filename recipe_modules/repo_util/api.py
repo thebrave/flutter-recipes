@@ -15,17 +15,18 @@ REPOS = {
 
 # TODO(keyonghan): deprecate when all repos are migrated to main.
 REPO_BRANCHES = {
-  'flutter': 'master',
-  'engine': 'main',
-  'cocoon': 'main',
-  'infra': 'main',
-  'packages': 'main',
-  'plugins': 'main',
-  'openpay': 'main',
+    'flutter': 'master',
+    'engine': 'main',
+    'cocoon': 'main',
+    'infra': 'main',
+    'packages': 'main',
+    'plugins': 'main',
+    'openpay': 'main',
 }
 
 import re
 from recipe_engine import recipe_api
+
 
 class RepoUtilApi(recipe_api.RecipeApi):
   """Provides utilities to work with flutter repos."""
@@ -88,7 +89,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
                                                  ] = 'got_engine_revision'
             step_result = self.m.bot_update.ensure_checkout()
             if ('got_revision' in step_result.presentation.properties and
-                step_result.presentation.properties['got_revision'] == 'BOT_UPDATE_NO_REV_FOUND'):
+                step_result.presentation.properties['got_revision']
+                == 'BOT_UPDATE_NO_REV_FOUND'):
               raise self.m.step.StepFailure('BOT_UPDATE_NO_REV_FOUND')
             self.m.gclient.runhooks()
           except:
@@ -250,6 +252,21 @@ class RepoUtilApi(recipe_api.RecipeApi):
       ).stdout.strip()
       return commit
 
+  def run_flutter_doctor(self):
+    self.m.retry.step(
+        'flutter doctor',
+        ['flutter', 'doctor', '--verbose'],
+        max_attempts=3,
+        timeout=300,
+    )
+
+  def get_env_commit(self):
+    '''Get the commit sha of the current repo from env.'''
+    gitiles_commit = self.m.buildbucket.gitiles_commit.id
+    if gitiles_commit:
+      return gitiles_commit
+    return self.m.properties.get('git_ref', 'led')
+
   def current_commit_branches(self, checkout_path):
     """Gets the list of branches for the current commit."""
     with self.m.step.nest('Identify branches'):
@@ -331,7 +348,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
             self.get_commit(checkout_path)
     }
     if self.m.properties.get('gn_artifacts', False):
-      env['FLUTTER_STORAGE_BASE_URL'] = 'https://storage.googleapis.com/flutter_archives_v2'
+      env['FLUTTER_STORAGE_BASE_URL'
+         ] = 'https://storage.googleapis.com/flutter_archives_v2'
     env_prefixes = {'PATH': ['%s' % str(flutter_bin), '%s' % str(dart_bin)]}
     return env, env_prefixes
 

@@ -17,6 +17,6 @@ git clone "$REMOTE_URL" "$SRC_DIR"
 cd "$SRC_DIR"
 git rev-parse HEAD > "commit_sha.txt"
 
-xcodebuild -configuration Release SYMROOT=build -arch x86_64
+xcodebuild -configuration Release SYMROOT=build
 
 cp LICENSE LICENSE2 ./build/Release/ios-deploy "$OUTPUT_DIR"

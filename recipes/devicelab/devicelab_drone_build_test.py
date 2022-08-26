@@ -89,6 +89,8 @@ def RunSteps(api):
 def test(api, task_name, deps, artifact):
   '''Run devicelab test assuming build artifact is available.'''
   git_branch = api.properties.get('git_branch')
+  bucket = api.buildbucket.build.builder.bucket
+  builder_name = 'Linux_android_staging test_drone' if bucket == 'staging' else 'Linux Devicelab Test Drone'
   reqs = []
   # These are dependencies specified in the yaml file. We want to pass them down
   # to test so they also install these dependencies.
@@ -100,7 +102,7 @@ def test(api, task_name, deps, artifact):
 
   req = api.buildbucket.schedule_request(
       swarming_parent_run_id=api.swarming.task_id,
-      builder='Linux Devicelab Test Drone',
+      builder=builder_name,
       properties=test_props,
       priority=25,
       exe_cipd_version=api.properties.get(

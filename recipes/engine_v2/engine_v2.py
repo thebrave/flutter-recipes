@@ -51,10 +51,15 @@ def RunSteps(api, properties, env_properties):
   archives = api.properties.get('archives')
   if config_name:
     # Read builds configuration from repository under test.
-    # Checkout engine repository only.
-    checkout_path = api.path['start_dir'].join('engine')
+    if api.buildbucket.gitiles_commit.project == 'monorepo':
+      project = 'monorepo'
+    else:
+      project = 'engine'
+
+    # Only check out the repository, not dependencies.
+    checkout_path = api.path['start_dir'].join(project)
     api.repo_util.checkout(
-        'engine',
+        project,
         checkout_path=checkout_path,
         url=api.properties.get('git_url'),
         ref=api.properties.get('git_ref')
@@ -317,5 +322,30 @@ def GenTests(api):
           builds=[try_subbuild1],
           launch_step="launch builds",
           collect_step="collect builds",
+      ),
+  )
+
+  yield api.test(
+      'monorepo_config_file',
+      api.platform.name('linux'),
+      api.properties(
+          config_name='config_name',
+          builds=builds,
+          environment='Staging'),
+      api.buildbucket.try_build(
+          project='proj',
+          builder='try-builder',
+          git_repo='https://dart.googlesource.com/monorepo',
+          revision='a' * 40,
+          build_number=123,
+      ),
+      api.shard_util_v2.child_build_steps(
+          builds=[try_subbuild1],
+          launch_step="launch builds",
+          collect_step="collect builds",
+      ),
+      api.step_data(
+          'Read build config file',
+          api.file.read_json({'builds': builds})
       ),
   )

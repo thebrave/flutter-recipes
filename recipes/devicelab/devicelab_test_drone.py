@@ -137,7 +137,7 @@ def RunSteps(api):
 
 def download_artifact(api, artifact, artifact_destination_dir):
   '''Download pre-build artifact.'''
-  commit_sha = api.repo_util.get_env_commit()
+  commit_sha = api.repo_util.get_env_ref()
   bucket = api.buildbucket.build.builder.bucket
   artifact_gcs_dir = 'flutter/%s/%s' % (bucket, commit_sha)
   artifact_gcs_path = '%s/%s' % (artifact_gcs_dir, artifact)

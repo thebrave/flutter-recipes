@@ -61,7 +61,7 @@ def RunSteps(api):
   if not task_name:
     raise ValueError('A task_name property is required')
 
-  commit_sha = api.repo_util.get_env_commit()
+  commit_sha = api.repo_util.get_env_ref()
   artifact = api.properties.get('artifact', None)
   if not artifact:
     raise ValueError('An artifact property is required')
@@ -99,8 +99,8 @@ def test(api, task_name, deps, artifact):
       'dependencies': [api.shard_util_v2.unfreeze_dict(dep) for dep in deps],
       'task_name': task_name,
       'artifact': artifact,
-      'git_ref': api.properties.get('git_ref'),
-      'git_url': api.properties.get('git_url'),
+      'git_ref': api.repo_util.get_env_ref(),
+      'git_url': api.repo_util.get_env_url('flutter'),
   }
 
   req = api.buildbucket.schedule_request(
@@ -214,7 +214,8 @@ def GenTests(api):
           task_name='abc',
           git_branch='master',
           artifact='def',
-          git_ref='refs/pull/1/head'
+          git_ref='refs/pull/1/head',
+          git_url='test/repo'
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(

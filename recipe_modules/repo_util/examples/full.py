@@ -33,7 +33,8 @@ def RunSteps(api):
       'flutter', flutter_checkout_path, ref='refs/heads/beta'
   )
   api.repo_util.run_flutter_doctor()
-  api.repo_util.get_env_commit()
+  api.repo_util.get_env_ref()
+  api.repo_util.get_env_url('flutter')
 
   env, env_paths = api.repo_util.engine_environment(flutter_checkout_path)
   env, env_paths = api.repo_util.flutter_environment(flutter_checkout_path)

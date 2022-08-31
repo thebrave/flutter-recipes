@@ -65,7 +65,8 @@ def RunSteps(api):
   artifact = api.properties.get('artifact', None)
   if not artifact:
     raise ValueError('An artifact property is required')
-  artifact_gcs_dir = 'flutter/%s' % commit_sha
+  bucket = api.buildbucket.build.builder.bucket
+  artifact_gcs_dir = 'flutter/%s/%s' % (bucket, commit_sha)
   artifact_gcs_path = '%s/%s' % (artifact_gcs_dir, artifact)
   artifact_exist = check_artifact_exist(
       api, 'gs://%s/%s' % (DEVICELAB_BUCKET, artifact_gcs_path)
@@ -98,6 +99,8 @@ def test(api, task_name, deps, artifact):
       'dependencies': [api.shard_util_v2.unfreeze_dict(dep) for dep in deps],
       'task_name': task_name,
       'artifact': artifact,
+      'git_ref': api.properties.get('git_ref'),
+      'git_url': api.properties.get('git_url'),
   }
 
   req = api.buildbucket.schedule_request(

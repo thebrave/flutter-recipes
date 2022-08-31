@@ -32,7 +32,7 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "ls",
-      "gs://flutter_devicelab/flutter/2d72510e447ab60a9728aeea2362d8be2cbd7789/def"
+      "gs://flutter_devicelab/flutter/ci/2d72510e447ab60a9728aeea2362d8be2cbd7789/def"
     ],
     "infra_step": true,
     "luci_context": {
@@ -635,7 +635,7 @@
       "cp",
       "-r",
       "[CLEANUP]/tmp_tmp_2",
-      "gs://flutter_devicelab/flutter/2d72510e447ab60a9728aeea2362d8be2cbd7789"
+      "gs://flutter_devicelab/flutter/ci/2d72510e447ab60a9728aeea2362d8be2cbd7789"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -675,7 +675,7 @@
     },
     "name": "gsutil upload artifacts",
     "~followup_annotations": [
-      "@@@STEP_LINK@artifacts@https://console.cloud.google.com/storage/browser/flutter_devicelab/flutter/2d72510e447ab60a9728aeea2362d8be2cbd7789@@@"
+      "@@@STEP_LINK@artifacts@https://console.cloud.google.com/storage/browser/flutter_devicelab/flutter/ci/2d72510e447ab60a9728aeea2362d8be2cbd7789@@@"
     ]
   },
   {
@@ -980,7 +980,7 @@
       }
     },
     "name": "buildbucket.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"ci\", \"builder\": \"Linux Devicelab Test Drone\", \"project\": \"test\"}, \"exe\": {\"cipdVersion\": \"refs/heads/master\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"git.example.com\", \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", \"project\": \"test/repo\", \"ref\": \"refs/heads/master\"}, \"priority\": 25, \"properties\": {\"artifact\": \"def\", \"dependencies\": [], \"task_name\": \"abc\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"ci\", \"builder\": \"Linux Devicelab Test Drone\", \"project\": \"test\"}, \"exe\": {\"cipdVersion\": \"refs/heads/master\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"git.example.com\", \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", \"project\": \"test/repo\", \"ref\": \"refs/heads/master\"}, \"priority\": 25, \"properties\": {\"artifact\": \"def\", \"dependencies\": [], \"git_ref\": null, \"git_url\": null, \"task_name\": \"abc\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
@@ -1024,6 +1024,8 @@
       "@@@STEP_LOG_LINE@request@        \"properties\": {@@@",
       "@@@STEP_LOG_LINE@request@          \"artifact\": \"def\", @@@",
       "@@@STEP_LOG_LINE@request@          \"dependencies\": [], @@@",
+      "@@@STEP_LOG_LINE@request@          \"git_ref\": null, @@@",
+      "@@@STEP_LOG_LINE@request@          \"git_url\": null, @@@",
       "@@@STEP_LOG_LINE@request@          \"task_name\": \"abc\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", @@@",

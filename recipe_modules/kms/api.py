@@ -29,7 +29,7 @@ class KMSApi(recipe_api.RecipeApi):
     self.m.step(
         'cloudkms get key', [
             cloudkms, 'decrypt', '-input', encrypt_file, '-output', secret_path,
-            'projects/flutter-infra/locations/global'
+            'projects/flutter-infra-staging/locations/global'
             '/keyRings/luci/cryptoKeys/flutter-infra'
         ]
     )

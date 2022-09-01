@@ -99,9 +99,11 @@ def test(api, task_name, deps, artifact):
       'dependencies': [api.shard_util_v2.unfreeze_dict(dep) for dep in deps],
       'task_name': task_name,
       'artifact': artifact,
-      'git_ref': api.repo_util.get_env_ref(),
-      'git_url': api.repo_util.get_env_url('flutter'),
+      'git_branch': api.properties.get('git_branch'),
   }
+  if 'git_url' in api.properties and 'git_ref' in api.properties:
+    test_props['git_ref'] = api.properties['git_ref']
+    test_props['git_url'] = api.properties['git_url']
 
   req = api.buildbucket.schedule_request(
       swarming_parent_run_id=api.swarming.task_id,

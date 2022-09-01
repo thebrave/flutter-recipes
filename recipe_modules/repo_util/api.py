@@ -267,13 +267,6 @@ class RepoUtilApi(recipe_api.RecipeApi):
       return gitiles_commit
     return self.m.properties.get('git_ref', 'led')
 
-  def get_env_url(self, repo):
-    '''Get the url of the current build from env.'''
-    git_url = REPOS[repo]
-    if 'git_url' in self.m.properties:
-      git_url = self.m.properties['git_url']
-    return git_url
-
   def current_commit_branches(self, checkout_path):
     """Gets the list of branches for the current commit."""
     with self.m.step.nest('Identify branches'):

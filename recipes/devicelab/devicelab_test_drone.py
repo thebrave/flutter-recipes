@@ -86,9 +86,10 @@ def RunSteps(api):
   # Create tmp file to store results in
   results_path = api.path.mkdtemp(prefix='results').join('results')
   # Run test
+  parent_builder = api.properties.get('parent_builder')
   runner_params = [
       '-t', task_name, '--results-file', results_path, '--luci-builder',
-      api.properties.get('buildername')
+      parent_builder
   ]
   # Downloads artifact
   artifact_destination_dir = api.path.mkdtemp()
@@ -129,7 +130,7 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadResults(
         api, env, env_prefixes, results_path, test_status == 'flaky',
-        git_branch, api.properties.get('buildername'), commit_time, task_name,
+        git_branch, parent_builder, commit_time, task_name,
         benchmark_tags
     )
     uploadMetricsToCas(api, results_path)
@@ -279,7 +280,8 @@ def GenTests(api):
           task_name='abc',
           git_branch='master',
           artifact='def',
-          git_ref='refs/pull/1/head'
+          git_ref='refs/pull/1/head',
+          parent_builder='ghi',
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
   )
@@ -291,7 +293,8 @@ def GenTests(api):
           git_branch='master',
           artifact='def',
           upload_metrics=True,
-          upload_metrics_to_cas=True
+          upload_metrics_to_cas=True,
+          parent_builder='ghi',
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -310,7 +313,8 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           git_branch='master',
-          artifact='def'
+          artifact='def',
+          parent_builder='ghi',
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -332,6 +336,7 @@ def GenTests(api):
           artifact='def',
           upload_metrics_to_cas=True,
           git_branch='master',
+          parent_builder='ghi',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           git_ref='refs/heads/master',
@@ -347,6 +352,7 @@ def GenTests(api):
           local_engine='host-release',
           git_branch='master',
           artifact='def',
+          parent_builder='ghi',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',

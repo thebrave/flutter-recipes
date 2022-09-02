@@ -98,6 +98,7 @@ def test(api, task_name, deps, artifact):
   test_props = {
       'dependencies': [api.shard_util_v2.unfreeze_dict(dep) for dep in deps],
       'task_name': task_name,
+      'parent_builder': api.properties.get('buildername'),
       'artifact': artifact,
       'git_branch': api.properties.get('git_branch'),
   }

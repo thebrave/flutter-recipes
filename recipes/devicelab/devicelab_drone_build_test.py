@@ -101,7 +101,6 @@ def test(api, task_name, deps, artifact):
       'parent_builder': api.properties.get('buildername'),
       'artifact': artifact,
       'git_branch': api.properties.get('git_branch'),
-      'tags': api.properties.get('tags', []),
   }
   if 'git_url' in api.properties and 'git_ref' in api.properties:
     test_props['git_ref'] = api.properties['git_ref']

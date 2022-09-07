@@ -140,13 +140,13 @@ def RunSteps(api, properties, env_properties):
               deps = api.properties.get('dependencies', [])
               api.flutter_deps.required_deps(env, env_prefixes, deps)
               with api.context(env=env, cwd=full_engine_checkout):
-                _run_global_generator(api, generator_task, full_engine_checkout)
+                _run_global_generator(api, generator_task, full_engine_checkout, env, env_prefixes)
           else:
             # Install dependencies.
             deps = api.properties.get('dependencies', [])
             api.flutter_deps.required_deps(env, env_prefixes, deps)
             with api.context(env=env, cwd=full_engine_checkout):
-              _run_global_generator(api, generator_task, full_engine_checkout)
+              _run_global_generator(api, generator_task, full_engine_checkout, env, env_prefixes)
     api.file.listdir('Final List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
     api.file.listdir('Final List checkout 2', full_engine_checkout.join('src', 'flutter', 'sky'), recursive=True)
   # Global archives
@@ -172,14 +172,16 @@ def RunSteps(api, properties, env_properties):
       )
 
 
-def _run_global_generator(api, generator_task, full_engine_checkout):
+def _run_global_generator(api, generator_task, full_engine_checkout, env, env_prefixes):
   cmd = [generator_task.get('language')] if generator_task.get('language') else []
   api.file.listdir('List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
   script = generator_task.get('script')
   full_path_script = full_engine_checkout.join('src', script)
   cmd.append(full_path_script)
   cmd.extend(generator_task.get('parameters', []))
-  api.step(generator_task.get('name'), cmd)
+  # Run within an engine context to make dart available.
+  with api.context(env=env, env_prefixes=env_prefixes):
+    api.step(generator_task.get('name'), cmd)
 
 
 def GenTests(api):

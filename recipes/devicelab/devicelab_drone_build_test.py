@@ -93,6 +93,8 @@ def test(api, task_name, deps, artifact):
   bucket = api.buildbucket.build.builder.bucket
   builder_name = 'Linux_android_staging test_drone' if bucket == 'staging' else 'Linux Devicelab Test Drone'
   reqs = []
+  # Updates tuple to buildbucket API supported list.
+  tags = [tag for tag in api.properties.get('tags', [])]
   # These are dependencies specified in the yaml file. We want to pass them down
   # to test so they also install these dependencies.
   test_props = {
@@ -101,6 +103,7 @@ def test(api, task_name, deps, artifact):
       'parent_builder': api.properties.get('buildername'),
       'artifact': artifact,
       'git_branch': api.properties.get('git_branch'),
+      'tags': tags,
   }
   if 'git_url' in api.properties and 'git_ref' in api.properties:
     test_props['git_ref'] = api.properties['git_ref']

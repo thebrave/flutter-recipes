@@ -356,10 +356,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
   def engine_environment(self, checkout_path):
     """Returns env and env_prefixes of an flutter/dart command environment."""
     dart_bin = checkout_path.join(
-        'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
+        'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
     )
     git_ref = self.m.properties.get('git_ref', '')
-    android_home = checkout_path.join('third_party', 'android_tools', 'sdk')
+    android_home = checkout_path.join('src', 'third_party', 'android_tools', 'sdk')
     env = {
         # Windows Packaging script assumes this is set.
         'DEPOT_TOOLS':

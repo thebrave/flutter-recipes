@@ -196,7 +196,7 @@ def RunSteps(api, properties, env_properties):
 
   # Enable long path support on Windows.
   api.os_utils.enable_long_paths()
-  env, env_prefixes = api.repo_util.engine_environment(checkout)
+  env, env_prefixes = api.repo_util.engine_environment(api.path['cache'].join('builder'))
 
   # Engine path is used inconsistently across the engine repo. We'll start
   # with [cache]/builder and will adjust it to start using it consistently.

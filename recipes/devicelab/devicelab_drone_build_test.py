@@ -73,7 +73,7 @@ def RunSteps(api):
   )
   # Run build step.
   if not artifact_exist:
-    build(api, task_name, artifact, artifact_gcs_dir)
+    build(api, task_name, artifact, artifact_gcs_path)
 
   # Run test step.
   builds = test(
@@ -181,7 +181,7 @@ def build(api, task_name, artifact, artifact_gcs_dir):
           )
           api.gsutil.upload(
               bucket='flutter_devicelab',
-              source=artifact_dir,
+              source='%s/*' % artifact_dir,
               dest=artifact_gcs_dir,
               link_name='artifacts',
               args=['-r'],

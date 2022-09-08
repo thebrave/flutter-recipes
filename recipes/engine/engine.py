@@ -1644,13 +1644,12 @@ def InstallGems(api):
   gem_dir = api.path['start_dir'].join('gems')
   api.file.ensure_directory('mkdir gems', gem_dir)
 
-  with api.context(cwd=gem_dir):
-    api.step(
-        'install jazzy', [
-            'gem', 'install', 'jazzy:' + api.properties['jazzy_version'],
-            '--install-dir', '.'
-        ]
-    )
+  api.cipd.ensure(
+      gem_dir,
+      api.cipd.EnsureFile().add_package(
+          'flutter/jazzy/${platform}', 'version:0.14.1'
+      )
+  )
   with api.context(env={"GEM_HOME": gem_dir},
                    env_prefixes={'PATH': [gem_dir.join('bin')]}):
     yield

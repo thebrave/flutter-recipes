@@ -12511,13 +12511,18 @@
   },
   {
     "cmd": [
-      "gem",
-      "install",
-      "jazzy:0.8.4",
-      "--install-dir",
-      "."
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/gems",
+      "-ensure-file",
+      "flutter/jazzy/${platform} version:0.14.1",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
     ],
-    "cwd": "[START_DIR]/gems",
+    "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -12550,7 +12555,20 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "install jazzy"
+    "name": "ensure_installed (2)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:0.14.1--\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/jazzy/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
   },
   {
     "cmd": [

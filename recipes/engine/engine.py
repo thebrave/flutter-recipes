@@ -1457,7 +1457,13 @@ def BuildIOS(api):
     )
     Build(api, 'ios_debug')
 
-    BuildObjcDoc(api)
+    # TODO: Re-enable Obj-C doc generation.
+    # https://github.com/flutter/flutter/issues/111209
+    # 
+    # It was disabled to mitigate installation issues with `sqlite3-ruby`.
+    # https://github.com/flutter/flutter/issues/87508
+
+    # BuildObjcDoc(api)
 
     PackageIOSVariant(
         api, 'debug', 'ios_debug', 'ios_debug_sim',
@@ -1637,40 +1643,6 @@ def UploadJavadoc(api, variant):
       checkout.join('out/%s/zip_archives/android-javadoc.zip' % variant),
       GetCloudPath(api, 'android-javadoc.zip')
   )
-
-
-@contextmanager
-def InstallGems(api):
-  gem_dir = api.path['start_dir'].join('gems')
-  api.file.ensure_directory('mkdir gems', gem_dir)
-
-  api.cipd.ensure(
-      gem_dir,
-      api.cipd.EnsureFile().add_package(
-          'flutter/jazzy/${platform}', 'version:0.14.1'
-      )
-  )
-  with api.context(env={"GEM_HOME": gem_dir},
-                   env_prefixes={'PATH': [gem_dir.join('bin')]}):
-    yield
-
-
-def BuildObjcDoc(api):
-  """Builds documentation for the Objective-C variant of engine."""
-  with InstallGems(api):
-    checkout = GetCheckoutPath(api)
-    with api.os_utils.make_temp_directory('BuildObjcDoc') as temp_dir:
-      objcdoc_cmd = [checkout.join('flutter/tools/gen_objcdoc.sh'), temp_dir]
-      with api.context(cwd=checkout.join('flutter')):
-        api.step('build obj-c doc', objcdoc_cmd)
-      api.zip.directory(
-          'archive obj-c doc', temp_dir, checkout.join('out/ios-objcdoc.zip')
-      )
-
-      api.bucket_util.safe_upload(
-          checkout.join('out/ios-objcdoc.zip'),
-          GetCloudPath(api, 'ios-objcdoc.zip')
-      )
 
 
 def RunSteps(api, properties, env_properties):

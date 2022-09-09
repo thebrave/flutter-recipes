@@ -1457,13 +1457,7 @@ def BuildIOS(api):
     )
     Build(api, 'ios_debug')
 
-    # TODO: Re-enable Obj-C doc generation.
-    # https://github.com/flutter/flutter/issues/111209
-    # 
-    # It was disabled to mitigate installation issues with `sqlite3-ruby`.
-    # https://github.com/flutter/flutter/issues/87508
-
-    # BuildObjcDoc(api)
+    BuildObjcDoc(api)
 
     PackageIOSVariant(
         api, 'debug', 'ios_debug', 'ios_debug_sim',
@@ -1643,6 +1637,55 @@ def UploadJavadoc(api, variant):
       checkout.join('out/%s/zip_archives/android-javadoc.zip' % variant),
       GetCloudPath(api, 'android-javadoc.zip')
   )
+
+
+@contextmanager
+def InstallGems(api):
+  gem_dir = api.path['start_dir'].join('gems')
+  api.file.ensure_directory('mkdir gems', gem_dir)
+
+  with api.context(cwd=gem_dir):
+    # TODO: Un-pin sqlite3 version.
+    # https://github.com/flutter/flutter/issues/111226
+
+    # The next minor release of `sqlite3-ruby`, 1.5.0, caused build issues,
+    # so 1.4.4 is pinned. A proper fix should remove this step, as jazzy
+    # attempts to install sqlite3 on its own.
+    # https://github.com/flutter/flutter/issues/111193
+    api.step(
+        'install sqlite3', [
+            'gem', 'install', 'sqlite3:1.4.4',
+            '--install-dir', '.'
+        ]
+    )
+
+    api.step(
+        'install jazzy', [
+            'gem', 'install', 'jazzy:' + api.properties['jazzy_version'],
+            '--install-dir', '.'
+        ]
+    )
+  with api.context(env={"GEM_HOME": gem_dir},
+                   env_prefixes={'PATH': [gem_dir.join('bin')]}):
+    yield
+
+
+def BuildObjcDoc(api):
+  """Builds documentation for the Objective-C variant of engine."""
+  with InstallGems(api):
+    checkout = GetCheckoutPath(api)
+    with api.os_utils.make_temp_directory('BuildObjcDoc') as temp_dir:
+      objcdoc_cmd = [checkout.join('flutter/tools/gen_objcdoc.sh'), temp_dir]
+      with api.context(cwd=checkout.join('flutter')):
+        api.step('build obj-c doc', objcdoc_cmd)
+      api.zip.directory(
+          'archive obj-c doc', temp_dir, checkout.join('out/ios-objcdoc.zip')
+      )
+
+      api.bucket_util.safe_upload(
+          checkout.join('out/ios-objcdoc.zip'),
+          GetCloudPath(api, 'ios-objcdoc.zip')
+      )
 
 
 def RunSteps(api, properties, env_properties):

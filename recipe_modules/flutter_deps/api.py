@@ -550,6 +550,19 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     with self.m.step.nest('Install jazzy'):
       self.m.file.ensure_directory('mkdir gems', gem_dir)
       with self.m.context(cwd=gem_dir):
+        # TODO: Un-pin sqlite3 version.
+        # https://github.com/flutter/flutter/issues/111226
+
+        # The next minor release of `sqlite3-ruby`, 1.5.0, caused build issues,
+        # so 1.4.4 is pinned. A proper fix should remove this step, as jazzy
+        # attempts to install sqlite3 on its own.
+        # https://github.com/flutter/flutter/issues/111193
+        self.m.step(
+            'install sqlite3', [
+                'gem', 'install', 'sqlite3:1.4.4',
+            '--install-dir', '.'
+            ]
+        )
         self.m.step(
             'install jazzy', [
                 'gem', 'install', 'jazzy:%s' % version,

@@ -93,8 +93,9 @@ def GenTests(api):
   )
 
   yield api.test(
-      'with-arm64ruby', api.properties(dependencies=[{"dependency": "gems"}, {"dependency": "arm64ruby"}]),
+      'with-arm64ruby', api.properties(dependencies=[{"dependency": "gems"}]),
       api.repo_util.flutter_environment_data(checkout_path),
+      api.platform.arch('arm'),
   )
 
   yield api.test(

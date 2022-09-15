@@ -28,6 +28,7 @@ DEPS = [
     'flutter/retry',
     'flutter/web_util',
     'fuchsia/goma',
+    'recipe_engine/cas',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/json',
@@ -86,6 +87,11 @@ def RunSteps(api, properties, env_properties):
 
     # Load local engine information if available.
     api.flutter_deps.flutter_engine(env, env_prefixes)
+
+    # Download local CanvasKit build.
+    wasm_cas_hash = api.properties.get('wasm_release_cas_hash')
+    out_dir = checkout.join('out')
+    api.cas.download('Download CanvasKit build from CAS', wasm_cas_hash, out_dir)
 
     android_home = checkout.join('third_party', 'android_tools', 'sdk')
     env['GOMA_DIR'] = api.goma.goma_dir
@@ -158,7 +164,8 @@ def GenTests(api):
           web_dependencies=['chrome_driver', 'chrome'],
           command_args=['test', '--browser=chrome'],
           command_name='chrome-tests',
-          local_engine_cas_hash='abceqwe'
+          local_engine_cas_hash='abceqwe',
+          wasm_release_cas_hash='deadbeef'
       ), api.platform('linux', 64)
   ) + api.runtime(is_experimental=False) + api.platform.name('linux')
   yield api.test(
@@ -168,11 +175,13 @@ def GenTests(api):
           web_dependencies=['firefox_driver'],
           command_args=['test', '--browser=firefox'],
           command_name='firefox-tests',
-          local_engine_cas_hash='abceqwe'
+          local_engine_cas_hash='abceqwe',
+          wasm_release_cas_hash='deadbeef'
       ), api.platform.name('linux'), api.platform('linux', 64)
   ) + api.runtime(is_experimental=False)
   yield api.test('windows-post-submit') + api.properties(
-      goma_jobs='200', local_engine_cas_hash='abceqwe'
+      goma_jobs='200', local_engine_cas_hash='abceqwe',
+      wasm_release_cas_hash='deadbeef'
   ) + api.platform('win', 32) + api.runtime(is_experimental=False)
   yield api.test(
       'mac-post-submit',
@@ -181,7 +190,8 @@ def GenTests(api):
           web_dependencies=[],
           command_args=['test', '--browser=ios-safari', '--require-skia-gold'],
           command_name='ios-safari-unit-tests',
-          local_engine_cas_hash='abceqwe'
+          local_engine_cas_hash='abceqwe',
+          wasm_release_cas_hash='deadbeef'
       ), api.platform('mac', 64)
   ) + api.runtime(is_experimental=False)
   yield api.test(
@@ -193,7 +203,8 @@ def GenTests(api):
           git_ref='refs/pull/1/head',
           web_dependencies=[],
           clobber=True,
-          local_engine_cas_hash='abceqwe'
+          local_engine_cas_hash='abceqwe',
+          wasm_release_cas_hash='deadbeef'
       ), api.platform('linux', 64)
   ) + api.runtime(is_experimental=True)
   yield api.test(
@@ -204,6 +215,7 @@ def GenTests(api):
           git_ref='refs/pull/1/head',
           web_dependencies=['invalid_dependency'],
           clobber=True,
-          local_engine_cas_hash='abceqwe'
+          local_engine_cas_hash='abceqwe',
+          wasm_release_cas_hash='deadbeef'
       ), api.platform('linux', 64), api.expect_exception('ValueError')
   ) + api.runtime(is_experimental=True)

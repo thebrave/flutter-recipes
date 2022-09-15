@@ -10,7 +10,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
   """Utilities to install flutter build/test dependencies at runtime."""
 
   def flutter_engine(self, env, env_prefixes):
-    """ Sets the local engine related information to environment variables.
+    """Sets the local engine related information to environment variables.
 
     If the drone is started to run the tests with a local engine, it will
     contain a `local_engine_cas_hash` property where we can download engine files.

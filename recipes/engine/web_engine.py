@@ -68,8 +68,8 @@ def Archive(api, target):
   build_dir = checkout.join('out', target)
   cas_dir = api.path.mkdtemp('cas-directory')
   cas_engine = cas_dir.join(target)
-  api.file.copytree('Copy host_debug_unopt', build_dir, cas_engine)
-  return api.cas_util.upload(cas_dir, step_name='Archive Flutter Engine Test CAS')
+  api.file.copytree('Copy %s' % target, build_dir, cas_engine)
+  return api.cas_util.upload(cas_dir, step_name='Archive %s for tests' % target)
 
 
 def RunGN(api, *args):
@@ -124,7 +124,7 @@ def RunSteps(api, properties, env_properties):
   api.os_utils.enable_long_paths()
 
   # Checkout source code and build
-  api.repo_util.engine_checkout(cache_root, env, env_prefixes)
+  api.repo_util.engine_checkout(cache_root, env, env_prefixes, custom_vars={'download_emsdk': True})
 
   # Ensure required deps are installed
   api.flutter_deps.required_deps(
@@ -148,17 +148,20 @@ def RunSteps(api, properties, env_properties):
     if api.platform.is_linux:
       RunGN(api, *gn_flags)
       Build(api, target_name)
+      RunGN(api, '--wasm', '--runtime-mode=release')
+      Build(api, 'wasm_release')
       # Archieve the engine. Start the drones. Due to capacity limits we are
       # Only using the drones on the Linux for now.
       # Archive build directory into CAS.
       cas_hash = Archive(api, target_name)
+      wasm_cas_hash = Archive(api, 'wasm_release')
       # Schedule builds.
       # TODO(nurhan): Currently this recipe only shards Linux. The web drones
       # recipe is written in a way that it can also support sharding for
       # macOS and Windows OSes. When more resources are available or when
       # MWE or WWE builders start running more than 1 hour, also shard those
       # builders.
-      builds = schedule_builds_on_linux(api, cas_hash)
+      builds = schedule_builds_on_linux(api, cas_hash, wasm_cas_hash)
     elif api.platform.is_mac:
       # TODO: remove xcode context condition when GN is clear from xcode:
       # https://github.com/flutter/flutter/issues/105805
@@ -224,7 +227,7 @@ def RunSteps(api, properties, env_properties):
         CleanUpProcesses(api)
 
 
-def schedule_builds_on_linux(api, cas_hash):
+def schedule_builds_on_linux(api, cas_hash, wasm_cas_hash):
   """Schedules one subbuild per subshard."""
   reqs = []
 
@@ -235,7 +238,17 @@ def schedule_builds_on_linux(api, cas_hash):
   # These are the felt commands which will be used.
   command_args = ['test', '--browser=chrome', '--require-skia-gold']
   addShardTask(
-      api, reqs, command_name, web_dependencies, command_args, cas_hash
+      api, reqs, command_name, web_dependencies, command_args, cas_hash, wasm_cas_hash
+  )
+
+  # For running Chrome Unit tests with CanvasKit
+  command_name = 'chrome-unit-linux-canvaskit'
+  # These are the required dependencies.
+  web_dependencies = ['chrome']
+  # These are the felt commands which will be used.
+  command_args = ['test', '--browser=chrome', '--require-skia-gold', '--use-local-canvaskit']
+  addShardTask(
+      api, reqs, command_name, web_dependencies, command_args, cas_hash, wasm_cas_hash
   )
 
   # For running Firefox Unit tests:
@@ -247,14 +260,14 @@ def schedule_builds_on_linux(api, cas_hash):
   # These are the felt commands which will be used.
   command_args = ['test', '--browser=firefox']
   addShardTask(
-      api, reqs, command_name, web_dependencies, command_args, cas_hash
+      api, reqs, command_name, web_dependencies, command_args, cas_hash, wasm_cas_hash
   )
 
   return api.buildbucket.schedule(reqs)
 
 
 def addShardTask(
-    api, reqs, command_name, web_dependencies, command_args, cas_hash
+    api, reqs, command_name, web_dependencies, command_args, cas_hash, wasm_cas_hash
 ):
   # These are dependencies specified in the yaml file. We want to pass them down
   # to drones so they also install these dependencies.
@@ -262,7 +275,7 @@ def addShardTask(
   drone_props = {
       'command_name': command_name, 'web_dependencies': web_dependencies,
       'command_args': command_args, 'local_engine_cas_hash': cas_hash,
-      'inherited_dependencies': inherited_dependencies,
+      'inherited_dependencies': inherited_dependencies, 'wasm_release_cas_hash': wasm_cas_hash,
   }
 
   git_url = GIT_REPO

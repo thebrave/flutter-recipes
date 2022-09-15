@@ -388,6 +388,29 @@
   },
   {
     "cmd": [
+      "[START_DIR]/cipd_tool/infra/tools/luci/cas/git_revision%3Amock_infra_git_revision/cas",
+      "download",
+      "-cas-instance",
+      "projects/example-cas-server/instances/default_instance",
+      "-digest",
+      "deadbeef",
+      "-dir",
+      "[CLEANUP]/builder/src/out"
+    ],
+    "cwd": "[CLEANUP]/builder",
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "Download CanvasKit build from CAS"
+  },
+  {
+    "cmd": [
       "[CLEANUP]/builder/src/out/host_debug_unopt/dart-sdk/bin/dart",
       "pub",
       "get"

@@ -50,7 +50,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
     """
     self._initialize()
     build_dir = checkout_path.join('out/%s' % config)
-    goma_jobs = self.m.properties['goma_jobs']
+    goma_jobs = self.m.properties.get('goma_jobs', '200')
     ninja_args = [tool, '-j', goma_jobs, '-C', build_dir]
     ninja_args.extend(targets)
     self.m.goma.set_path(self.m.goma.goma_dir)

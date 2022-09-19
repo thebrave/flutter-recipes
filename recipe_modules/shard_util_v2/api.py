@@ -220,7 +220,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       platform_name = build.get('platform') or PLATFORM_TO_NAME.get(
           self.m.platform.name
       )
-      environment = drone_properties['environment']
+      environment = drone_properties.get('environment')
       environment = '%s ' % environment if environment else ''
       builder_name = build.get(
           'drone_builder_name',

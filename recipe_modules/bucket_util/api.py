@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 from recipe_engine import recipe_api
 
 INFRA_BUCKET_NAME = 'flutter_infra_release'
@@ -72,7 +73,8 @@ class BucketUtilApi(recipe_api.RecipeApi):
       remote_name = '%s/%s' % (platform, zip_name) if platform else zip_name
       local_zip = temp_dir.join(zip_name)
       remote_zip = self.get_cloud_path(remote_name)
-      parent_directory = self.m.path['cache'].join('builder', parent_directory)
+      if isinstance(parent_directory, str):
+        parent_directory = self.m.path['cache'].join('builder', parent_directory)
       pkg = self.m.zip.make_package(parent_directory, local_zip)
       pkg.add_directory(parent_directory.join(folder_name))
 

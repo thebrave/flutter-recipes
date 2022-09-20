@@ -60,14 +60,12 @@ class AddhocValidationApi(recipe_api.RecipeApi):
       else:
         with self.m.context(env=env, env_prefixes=env_prefixes):
           self.m.test_utils.run_test(validation, [resource_name])
-          docs_path = checkout_path.join('dev', 'docs')
-          if validation == 'docs':
-            self.m.bucket_util.upload_folder('Upload API Docs', docs_path, 'doc', "api_docs.zip")
-            if self.m.properties.get('firebase_project'):
-              project = self.m.properties.get('firebase_project')
-              self.m.firebase.deploy_docs(
-                  env=env,
-                  env_prefixes=env_prefixes,
-                  docs_path=docs_path,
-                  project=project
-              )
+          if validation == 'docs' and self.m.properties.get('firebase_project'):
+            docs_path = checkout_path.join('dev', 'docs')
+            project = self.m.properties.get('firebase_project')
+            self.m.firebase.deploy_docs(
+                env=env,
+                env_prefixes=env_prefixes,
+                docs_path=docs_path,
+                project=project
+            )

@@ -44,7 +44,8 @@
   },
   {
     "cmd": [
-      "RECIPE_MODULE[flutter::adhoc_validation]/resources/docs.sh"
+      "python",
+      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
     ],
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
@@ -63,14 +64,43 @@
         "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
-    "name": "Docs.docs",
-    "timeout": 3600,
+    "name": "Docs.Zip doc",
+    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/flutter sdk/dev/docs/doc\", \"type\": \"dir\"}], \"output\": \"[CLEANUP]/tmp_tmp_1/api_docs.zip\", \"root\": \"[START_DIR]/flutter sdk/dev/docs\"}",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@test_stdout@@@@",
-      "@@@STEP_LOG_END@test_stdout@@@",
-      "@@@STEP_LOG_LINE@test_stderr@@@@",
-      "@@@STEP_LOG_END@test_stderr@@@"
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CLEANUP]/tmp_tmp_1"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "Docs.temp dir for Upload API Docs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -114,7 +144,7 @@
       "/path/to/tmp/json",
       "copy",
       "extra.secret.token.should.not.be.logged",
-      "[CLEANUP]/tmp_tmp_1"
+      "[CLEANUP]/tmp_tmp_2"
     ],
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
@@ -164,7 +194,7 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
       "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk",
-      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_1"
+      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_2"
     },
     "env_prefixes": {
       "PATH": [
@@ -193,7 +223,7 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "",
       "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk",
-      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_1"
+      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_2"
     },
     "env_prefixes": {
       "PATH": [

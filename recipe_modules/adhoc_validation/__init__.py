@@ -1,5 +1,4 @@
 DEPS = [
-    'flutter/bucket_util',
     'flutter/firebase',
     'flutter/flutter_deps',
     'flutter/kms',

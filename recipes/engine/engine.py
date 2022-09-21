@@ -1645,23 +1645,21 @@ def InstallGems(api):
   api.file.ensure_directory('mkdir gems', gem_dir)
 
   with api.context(cwd=gem_dir):
-    # TODO: Un-pin sqlite3 version.
-    # https://github.com/flutter/flutter/issues/111226
+    # jazzy depends on sqlite3, which started serving precompiled gems with version 1.5.0.
+    # The instance of Ruby currently packaged with macOS installs precompiled gems incorrectly.
+    # Specifically, if a gem vends precompiled binaries, it installs the arm64 variant even on x86 machines.
+    # https://github.com/flutter/flutter/issues/111193#issuecomment-1248714857
+    # https://github.com/sparklemotion/nokogiri/issues/2165#issuecomment-754101252
+    # https://rubygems.org/gems/sqlite3/versions
 
-    # The next minor release of `sqlite3-ruby`, 1.5.0, caused build issues,
-    # so 1.4.4 is pinned. A proper fix should remove this step, as jazzy
-    # attempts to install sqlite3 on its own.
-    # https://github.com/flutter/flutter/issues/111193
-    api.step(
-        'install sqlite3', [
-            'gem', 'install', 'sqlite3:1.4.4',
-            '--install-dir', '.'
-        ]
-    )
+    platform_id = ('x86_64-darwin'
+      if api.platform.arch == 'intel'
+      else 'arm64-darwin')
 
     api.step(
         'install jazzy', [
             'gem', 'install', 'jazzy:' + api.properties['jazzy_version'],
+            '--platform', platform_id,
             '--install-dir', '.'
         ]
     )

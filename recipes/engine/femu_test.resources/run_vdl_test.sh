@@ -51,7 +51,7 @@ function find_unused_tcp_port {
 VDL_LOCATION="device_launcher"
 EMULATOR_LOG="raw_emulator.log"
 SYSLOG="syslog.log"
-SYMBOLIZER_TOOL=""
+SYMBOLIZER_CMD=""
 SSH_CONFIG="ssh_config"
 SSH_KEY="id_ed25519"
 TEST_SUITE=""
@@ -78,8 +78,8 @@ for arg in "$@"; do
         SYSLOG="${2}"
         shift
         ;;
-        --symbolizer_tool=*)
-        SYMBOLIZER_TOOL="${arg#*=}"
+        --symbolizer_cmd=*)
+        SYMBOLIZER_CMD="${arg#*=}"
         ;;
         --test_suite=*)
         TEST_SUITE="${arg#*=}"
@@ -96,7 +96,7 @@ for arg in "$@"; do
 done
 
 log "VDL Location: ${VDL_LOCATION}"
-log "Symbolizer Location: ${SYMBOLIZER_TOOL}"
+log "Symbolizer Command: ${SYMBOLIZER_CMD}"
 log "VDL Args: ${VDL_ARGS[@]}"
 log "TEST_SUITE: ${TEST_SUITE}"
 log "TEST_COMMAND: ${TEST_COMMAND}"
@@ -148,7 +148,8 @@ _TEST_EXIT_CODE=0
 
 if [[ ${_LAUNCH_EXIT_CODE} == 0 ]]; then
   log "Successfully launched virtual device proto ${VDL_PROTO}"
-  ssh_to_guest "log_listener" | "${SYMBOLIZER_TOOL}" >"${SYSLOG}" 2>&1 &
+  # SYMBOLIZER_CMD could contain arguments so don't quote it.
+  ssh_to_guest "log_listener" | ${SYMBOLIZER_CMD} >"${SYSLOG}" 2>&1 &
 
   ssh_to_guest "${TEST_COMMAND}"
   _TEST_EXIT_CODE=$?

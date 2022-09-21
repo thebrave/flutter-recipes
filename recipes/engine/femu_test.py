@@ -61,27 +61,6 @@ def GetFlutterFuchsiaBuildTargets(product, include_test_targets=False):
   return targets
 
 
-@contextmanager
-def DebugSymbols(api, out_variant):
-  symbol_index = api.sdk.sdk_path.join('tools', 'x64', 'symbol-index')
-
-  # Purge obsolete debug symbols.
-  api.step('Purge debug symbols', [symbol_index, 'purge'])
-
-  # Add debug symbols.
-  checkout = GetCheckoutPath(api)
-  out_dir = checkout.join('out/%s' % out_variant)
-  build_id_dir = checkout.join('out/%s/.build-id' % out_variant)
-  api.step('Add debug symbols', [symbol_index, 'add', build_id_dir, out_dir])
-
-  # Run context with debug symbols.
-  try:
-    yield
-  finally:
-    # Remove debug symbols.
-    api.step('Remove debug symbols', [symbol_index, 'remove', build_id_dir])
-
-
 def BuildAndTestFuchsia(api, build_script, git_rev):
   RunGN(api, '--fuchsia', '--fuchsia-cpu', 'x64', '--runtime-mode', 'debug',
         '--no-lto')
@@ -225,7 +204,6 @@ def TestFuchsiaFEMU(api):
   cmd.append('--pm_tool=pm')
   cmd.append('--far_tool=far')
   cmd.append('--fvm_tool=fvm')
-  cmd.append('--symbolizer_tool=./symbolizer')
   cmd.append('--resize_fvm=2G')
   cmd.append('--gpu=swiftshader_indirect')
   cmd.append('--headless_mode=true')
@@ -244,8 +222,12 @@ def TestFuchsiaFEMU(api):
           amber_files='amber-files',
       ))
 
-  with DebugSymbols(api, 'fuchsia_debug_x64'), api.context(cwd=root_dir), \
-      api.step.nest('FEMU Test'), api.step.defer_results():
+  # Symbolization
+  checkout = GetCheckoutPath(api)
+  build_id_dir = checkout.join('out/fuchsia_debug_x64/.build-id')
+  cmd.append('--symbolizer_cmd=./symbolizer --build-id-dir={}'.format(build_id_dir))
+
+  with api.context(cwd=root_dir), api.step.nest('FEMU Test'), api.step.defer_results():
     for suite in test_suites:
       test_cmd = cmd + [
         '--serve_packages=flutter_aot_runner-0.far,%s' % ','.join(suite['package_basenames']),

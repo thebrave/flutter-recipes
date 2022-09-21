@@ -14,4 +14,4 @@ if [ -z "$REVISION" ]; then
   exit 1
 fi
 # Run the actual validation.
-./dev/conductor/bin/conductor codesign --verify --revision $REVISION
+./dev/conductor/bin/conductor codesign --verify --revision $REVISION --upstream='https://github.com/flutter/flutter.git'

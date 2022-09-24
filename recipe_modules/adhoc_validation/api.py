@@ -17,7 +17,7 @@ class AddhocValidationApi(recipe_api.RecipeApi):
     """Returns the list of accepted validations."""
     return [
         'analyze', 'customer_testing', 'docs', 'fuchsia_precache',
-        'verify_binaries_codesigned',
+        'verify_binaries_codesigned', 'docs_deploy'
     ]
 
   def run(self, name, validation, env, env_prefixes, secrets=None):
@@ -60,9 +60,12 @@ class AddhocValidationApi(recipe_api.RecipeApi):
       else:
         with self.m.context(env=env, env_prefixes=env_prefixes):
           self.m.test_utils.run_test(validation, [resource_name])
-          if validation == 'docs' and self.m.properties.get('firebase_project'):
+          if ((validation == 'docs' and self.m.properties.get('firebase_project')) or
+              (validation == 'docs_deploy') and self.m.properties.get('firebase_project')):
             docs_path = checkout_path.join('dev', 'docs')
-            self.m.bucket_util.upload_folder('Upload API Docs', docs_path, 'doc', "api_docs.zip")
+            # Do not upload on docs_deploy.
+            if not validation == 'docs_deploy':
+              self.m.bucket_util.upload_folder('Upload API Docs', docs_path, 'doc', "api_docs.zip")
             project = self.m.properties.get('firebase_project')
             self.m.firebase.deploy_docs(
                 env=env,

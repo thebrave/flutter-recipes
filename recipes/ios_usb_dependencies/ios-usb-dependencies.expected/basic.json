@@ -470,6 +470,32 @@
   },
   {
     "cmd": [
+      "python",
+      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+    ],
+    "name": "zipping libimobiledeviceglue dir",
+    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/src/libimobiledeviceglue_output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/libimobiledeviceglue.zip\", \"root\": \"[START_DIR]/src/libimobiledeviceglue_output\"}"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "[START_DIR]/libimobiledeviceglue.zip",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/libimobiledeviceglue/None/libimobiledeviceglue.zip"
+    ],
+    "infra_step": true,
+    "name": "gsutil upload of libimobiledeviceglue.zip",
+    "~followup_annotations": [
+      "@@@STEP_LINK@libimobiledeviceglue.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/unsigned/libimobiledeviceglue/None/libimobiledeviceglue.zip@@@"
+    ]
+  },
+  {
+    "cmd": [
       "vpython3",
       "-u",
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
@@ -546,6 +572,32 @@
       ]
     },
     "name": "install libusbmuxd"
+  },
+  {
+    "cmd": [
+      "otool",
+      "-L",
+      "[START_DIR]/src/libusbmuxd_output/iproxy"
+    ],
+    "name": "Get linked paths from iproxy before patch"
+  },
+  {
+    "cmd": [
+      "install_name_tool",
+      "-change",
+      "/opt/s/w/ir/x/w/src/libusbmuxd_install/lib/libusbmuxd-2.0.6.dylib",
+      "@loader_path/../libusbmuxd-2.0.6.dylib",
+      "[START_DIR]/src/libusbmuxd_output/iproxy"
+    ],
+    "name": "Patch [START_DIR]/src/libusbmuxd_output/iproxy with install_name_tool"
+  },
+  {
+    "cmd": [
+      "otool",
+      "-L",
+      "[START_DIR]/src/libusbmuxd_output/iproxy"
+    ],
+    "name": "Get linked paths from [START_DIR]/src/libusbmuxd_output/iproxy after patch"
   },
   {
     "cmd": [
@@ -656,6 +708,22 @@
   },
   {
     "cmd": [
+      "otool",
+      "-L",
+      "[START_DIR]/src/openssl_output/libcrypto.3.dylib"
+    ],
+    "name": "Get linked paths from libcrypto.3.dylib before patch"
+  },
+  {
+    "cmd": [
+      "otool",
+      "-L",
+      "[START_DIR]/src/openssl_output/libcrypto.3.dylib"
+    ],
+    "name": "Get linked paths from [START_DIR]/src/openssl_output/libcrypto.3.dylib after patch"
+  },
+  {
+    "cmd": [
       "python",
       "RECIPE_MODULE[flutter::zip]/resources/zip.py"
     ],
@@ -763,6 +831,38 @@
       ]
     },
     "name": "install libimobiledevice"
+  },
+  {
+    "cmd": [
+      "otool",
+      "-L",
+      "[START_DIR]/src/libimobiledevice_output/idevicescreenshot"
+    ],
+    "name": "Get linked paths from idevicescreenshot before patch"
+  },
+  {
+    "cmd": [
+      "otool",
+      "-L",
+      "[START_DIR]/src/libimobiledevice_output/idevicescreenshot"
+    ],
+    "name": "Get linked paths from [START_DIR]/src/libimobiledevice_output/idevicescreenshot after patch"
+  },
+  {
+    "cmd": [
+      "otool",
+      "-L",
+      "[START_DIR]/src/libimobiledevice_output/idevicesyslog"
+    ],
+    "name": "Get linked paths from idevicesyslog before patch"
+  },
+  {
+    "cmd": [
+      "otool",
+      "-L",
+      "[START_DIR]/src/libimobiledevice_output/idevicesyslog"
+    ],
+    "name": "Get linked paths from [START_DIR]/src/libimobiledevice_output/idevicesyslog after patch"
   },
   {
     "cmd": [

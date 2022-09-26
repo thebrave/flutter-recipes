@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from contextlib import contextmanager
+import re
 
 DEPS = [
     'depot_tools/gsutil',
@@ -11,12 +12,71 @@ DEPS = [
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
+    'recipe_engine/raw_io',
     'recipe_engine/runtime',
     'recipe_engine/step',
 ]
 
 BUCKET_NAME = 'flutter_infra_release'
 
+# These regex are used to detect lib paths that need to be patched.
+LIBUSBMUXD_PATTERN = r'^\t(\/.*(libusbmuxd.*\.dylib)).*'
+LIBPLIST_PATTERN = r'^\t(\/.*(libplist.*\.dylib)).*'
+LIBSSL_PATTERN = r'^\t(\/.*(libssl.*\.dylib)).*'
+LIBCRYPTO_PATTERN = r'^\t(\/.*(libcrypto.*\.dylib)).*'
+LIBIMOBILEDEVICE_PATTERN = r'^\t(\/.*(libimobiledevice.*\.dylib)).*'
+LIBIMOBILEDEVICEGLUE_PATTERN = r'^\t(\/.*(libimobiledevice-glue.*\.dylib)).*'
+
+DIRNAME_PATTERN_TUPLES = [
+        ('libusbmuxd', LIBUSBMUXD_PATTERN),
+        ('libplist', LIBPLIST_PATTERN),
+        ('lisbssl', LIBSSL_PATTERN),
+        ('libcrypto', LIBCRYPTO_PATTERN),
+        ('libimobiledevice', LIBIMOBILEDEVICE_PATTERN),
+        ('libimobiledevice-glue', LIBIMOBILEDEVICEGLUE_PATTERN)
+        ]
+
+# Map between package and its artifacts that need path patch.
+BIANRY_ARTIFACT_MAP = {
+  'libusbmuxd': ['iproxy'],
+  'openssl': ['libcrypto.3.dylib'],
+  'libimobiledevice': ['idevicescreenshot', 'idevicesyslog']
+}
+
+def ParseOtoolPath(input_string):
+  '''Parse paths that need to be patched to relative paths via otool.'''
+  input_lines = input_string.split('\n')
+  output = {}
+  for input_line in input_lines:
+    for dirname, pattern in DIRNAME_PATTERN_TUPLES:
+      # re.match searches from beginning of string
+      match = re.match(pattern, input_line)
+      if match:
+        old_path = match.group(1)
+        new_path = '@loader_path/../%s' % match.group(2)
+        output[old_path] = new_path
+  return output
+
+def PatchLoadPath(api, ouput_path, package_name):
+  '''Update dynamically linked paths in a binary'''
+  if package_name not in BIANRY_ARTIFACT_MAP:
+    return
+  artifacts = BIANRY_ARTIFACT_MAP[package_name]
+  for artifact in artifacts:
+    artifact_path = ouput_path.join(artifact)
+    otool_step_data = api.step(
+        'Get linked paths from %s before patch' % artifact,
+        ['otool', '-L', artifact_path], stdout=api.raw_io.output_text())
+    old_paths_to_new_paths = ParseOtoolPath(otool_step_data.stdout.rstrip())
+    for old_path in old_paths_to_new_paths:
+        new_path = old_paths_to_new_paths[old_path]
+        api.step(
+                'Patch %s with install_name_tool' % artifact_path,
+                ['install_name_tool', '-change', old_path, new_path, artifact_path],
+                )
+    api.step(
+        'Get linked paths from %s after patch' % artifact_path,
+        ['otool', '-L', artifact_path])
 
 def GetCloudPath(api, package_name, commit_sha):
   """Location of cloud bucket for unsigned binaries"""
@@ -137,6 +197,7 @@ def BuildPackage(
       api, env, env_prefixes, package_name, package_install_dir, update_path,
       update_library_path, update_pkg_config_path
   )
+  PatchLoadPath(api, package_out_dir, package_name)
   UploadPackage(
       api, package_name, work_dir, package_out_dir, upload, commit_sha
   )
@@ -158,6 +219,7 @@ def RunSteps(api):
         env,
         env_prefixes,
         'libimobiledeviceglue',
+        upload=True,
         update_library_path=True,
         update_pkg_config_path=True
     )
@@ -190,4 +252,8 @@ def GenTests(api):
           api.path['start_dir'].join('src').join('ios-deploy'
                                                 ).join('commit_sha.txt'),
       ),
+      api.step_data(
+          'Get linked paths from iproxy before patch',
+          stdout=api.raw_io.output_text('\t/opt/s/w/ir/x/w/src/libusbmuxd_install/lib/libusbmuxd-2.0.6.dylib (compatibility version 7.0.0, current version 7.0.0)'),
+          retcode=0)
   )

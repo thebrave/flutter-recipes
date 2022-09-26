@@ -23,3 +23,5 @@ git rev-parse HEAD > "commit_sha.txt"
 "$SRC_DIR"/configure --prefix="$INSTALL_DIR"
 
 make install
+
+cp "$INSTALL_DIR"/lib/libimobiledevice-glue-1.0.0.dylib "$OUTPUT_DIR"

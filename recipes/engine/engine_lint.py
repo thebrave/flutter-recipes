@@ -53,36 +53,43 @@ def Lint(api, config):
   checkout = GetCheckoutPath(api)
   with api.context(cwd=checkout):
     lint_cmd = checkout.join('flutter', 'ci', 'lint.sh')
-    api.step(
-        api.test_utils.test_step_name('lint %s' % config),
-        [lint_cmd, '--lint-all', '--variant', config],
-    )
+    cmd = [lint_cmd, '--variant', config]
+    if api.properties.get('lint_all', True):
+      cmd += ['--lint-all']
+    if api.properties.get('lint_head', False):
+      cmd += ['--lint-head']
+    api.step(api.test_utils.test_step_name('lint %s' % config), cmd)
 
 
 def DoLints(api):
   if api.platform.is_linux:
-    RunGN(api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--no-lto')
-    # We have to build before linting because source files #include header
-    # files that are generated during the build.
-    Build(api, 'host_debug')
-    Lint(api, 'host_debug')
+    if api.properties.get('lint_android', True):
+      RunGN(api, '--android', '--android-cpu', 'arm64', '--no-lto')
+      Build(api, 'android_debug_arm64')
+      Lint(api, 'android_debug_arm64')
 
-    RunGN(api, '--android', '--android-cpu', 'arm64', '--no-lto')
-    Build(api, 'android_debug_arm64')
-    Lint(api, 'android_debug_arm64')
-
-  if api.platform.is_mac:
-    with api.osx_sdk('ios'):
+    if api.properties.get('lint_host', True):
       RunGN(api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--no-lto')
       # We have to build before linting because source files #include header
       # files that are generated during the build.
       Build(api, 'host_debug')
       Lint(api, 'host_debug')
-      RunGN(
-          api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto',
-      )
-      Build(api, 'ios_debug_sim')
-      Lint(api, 'ios_debug_sim')
+
+  elif api.platform.is_mac:
+    with api.osx_sdk('ios'):
+      if api.properties.get('lint_ios', True):
+        RunGN(
+            api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto',
+        )
+        Build(api, 'ios_debug_sim')
+        Lint(api, 'ios_debug_sim')
+
+      if api.properties.get('lint_host', True):
+        RunGN(api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--no-lto')
+        # We have to build before linting because source files #include header
+        # files that are generated during the build.
+        Build(api, 'host_debug')
+        Lint(api, 'host_debug')
 
 
 def RunSteps(api, properties, env_properties):
@@ -144,24 +151,35 @@ def RunSteps(api, properties, env_properties):
 # pylint: enable=line-too-long
 def GenTests(api):
   for platform in ('mac', 'linux'):
-    test = api.test(
-        '%s' % (
-            platform,
-        ),
-        api.platform(platform, 64),
-        api.buildbucket.ci_build(
-            builder='%s Engine Lint' % platform.capitalize(),
-            git_repo=GIT_REPO,
-            project='flutter',
-        ),
-        api.runtime(is_experimental=False),
-        api.properties(
-            InputProperties(
-                goma_jobs='1024',
+    for lint_set in ('all', 'head', 'branch'):
+      for lint_target in ('host', 'ios', 'android'):
+        if lint_target == 'ios' and platform == 'linux':
+          continue
+        if lint_target == 'android' and platform == 'mac':
+          continue
+        test = api.test(
+            '%s %s %s' % (
+                platform, lint_target, lint_set,
             ),
-        ),
-        api.properties.environ(
-            EnvProperties(SWARMING_TASK_ID='deadbeef')
-        ),
-    )
-    yield test
+            api.platform(platform, 64),
+            api.buildbucket.ci_build(
+                builder='%s Engine Lint' % platform.capitalize(),
+                git_repo=GIT_REPO,
+                project='flutter',
+            ),
+            api.runtime(is_experimental=False),
+            api.properties(
+                InputProperties(
+                    goma_jobs='1024',
+                    lint_all=lint_set == 'all',
+                    lint_head=lint_set == 'head',
+                    lint_host=lint_target == 'host',
+                    lint_android=lint_target == 'android',
+                    lint_ios=lint_target == 'ios',
+                ),
+            ),
+            api.properties.environ(
+                EnvProperties(SWARMING_TASK_ID='deadbeef')
+            ),
+        )
+        yield test

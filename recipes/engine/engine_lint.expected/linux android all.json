@@ -537,9 +537,9 @@
       "python",
       "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
-      "--runtime-mode",
-      "debug",
-      "--prebuilt-dart-sdk",
+      "--android",
+      "--android-cpu",
+      "arm64",
       "--no-lto"
     ],
     "cwd": "[CACHE]/builder",
@@ -575,7 +575,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --runtime-mode debug --prebuilt-dart-sdk --no-lto"
+    "name": "gn --android --android-cpu arm64 --no-lto"
   },
   {
     "cmd": [],
@@ -855,7 +855,7 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/host_debug"
+      "[CACHE]/builder/src/out/android_debug_arm64"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -894,7 +894,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build host_debug"
+    "name": "build android_debug_arm64"
   },
   {
     "cmd": [],
@@ -1428,9 +1428,9 @@
   {
     "cmd": [
       "[CACHE]/builder/src/flutter/ci/lint.sh",
-      "--lint-all",
       "--variant",
-      "host_debug"
+      "android_debug_arm64",
+      "--lint-all"
     ],
     "cwd": "[CACHE]/builder/src",
     "env": {
@@ -1465,16 +1465,16 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "test: lint host_debug"
+    "name": "test: lint android_debug_arm64"
   },
   {
     "cmd": [
       "python",
       "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
-      "--android",
-      "--android-cpu",
-      "arm64",
+      "--runtime-mode",
+      "debug",
+      "--prebuilt-dart-sdk",
       "--no-lto"
     ],
     "cwd": "[CACHE]/builder",
@@ -1510,7 +1510,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --android --android-cpu arm64 --no-lto"
+    "name": "gn --runtime-mode debug --prebuilt-dart-sdk --no-lto"
   },
   {
     "cmd": [],
@@ -1577,7 +1577,7 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/android_debug_arm64"
+      "[CACHE]/builder/src/out/host_debug"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1616,7 +1616,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build android_debug_arm64"
+    "name": "build host_debug"
   },
   {
     "cmd": [],
@@ -1961,9 +1961,9 @@
   {
     "cmd": [
       "[CACHE]/builder/src/flutter/ci/lint.sh",
-      "--lint-all",
       "--variant",
-      "android_debug_arm64"
+      "host_debug",
+      "--lint-all"
     ],
     "cwd": "[CACHE]/builder/src",
     "env": {
@@ -1998,7 +1998,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "test: lint android_debug_arm64"
+    "name": "test: lint host_debug"
   },
   {
     "cmd": [],

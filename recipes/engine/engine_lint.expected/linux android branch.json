@@ -2,10 +2,11 @@
   {
     "cmd": [
       "top",
-      "-l",
+      "-b",
+      "-n",
       "3",
       "-o",
-      "mem"
+      "%MEM"
     ],
     "infra_step": true,
     "luci_context": {
@@ -21,46 +22,6 @@
       }
     },
     "name": "OS info"
-  },
-  {
-    "cmd": [
-      "xattr",
-      "/opt/s/w/ir/cipd_bin_packages/python"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "python xattr info"
-  },
-  {
-    "cmd": [
-      "xattr",
-      "/opt/s/w/ir/cipd_bin_packages/git"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "git xattr info"
   },
   {
     "cmd": [
@@ -335,7 +296,7 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Mac Engine Lint/8945511751514863184",
+      "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Linux Engine Lint/8945511751514863184",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -423,7 +384,7 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Mac Engine Lint/8945511751514863184",
+      "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Linux Engine Lint/8945511751514863184",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -462,27 +423,6 @@
   },
   {
     "cmd": [
-      "rm",
-      "-rf",
-      "[HOME]/Library/Developer/Xcode/DerivedData"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Delete mac deriveddata"
-  },
-  {
-    "cmd": [
       "vpython3",
       "-u",
       "RECIPE_REPO[depot_tools]/gclient.py",
@@ -491,7 +431,7 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Mac Engine Lint/8945511751514863184",
+      "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Linux Engine Lint/8945511751514863184",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -524,245 +464,6 @@
       }
     },
     "name": "gclient runhooks"
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CACHE]/osx_sdk",
-      "-ensure-file",
-      "infra/tools/mac_toolchain/${platform} latest",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/osx_sdk/mac_toolchain",
-      "install",
-      "-kind",
-      "ios",
-      "-xcode-version",
-      "9f2000",
-      "-output-dir",
-      "[CACHE]/osx_sdk/XCode.app",
-      "-cipd-package-prefix",
-      "flutter_internal/ios/xcode",
-      "-with-runtime=True"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install xcode"
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "com.apple.CoreSimulator.CoreSimulatorDevice"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "kill dart"
-  },
-  {
-    "cmd": [
-      "sudo",
-      "xcode-select",
-      "--switch",
-      "[CACHE]/osx_sdk/XCode.app"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "select XCode"
-  },
-  {
-    "cmd": [
-      "xcrun",
-      "simctl",
-      "list"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "list simulators"
   },
   {
     "cmd": [],
@@ -836,9 +537,9 @@
       "python",
       "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
-      "--runtime-mode",
-      "debug",
-      "--prebuilt-dart-sdk",
+      "--android",
+      "--android-cpu",
+      "arm64",
       "--no-lto"
     ],
     "cwd": "[CACHE]/builder",
@@ -874,7 +575,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --runtime-mode debug --prebuilt-dart-sdk --no-lto"
+    "name": "gn --android --android-cpu arm64 --no-lto"
   },
   {
     "cmd": [],
@@ -1154,7 +855,7 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/host_debug"
+      "[CACHE]/builder/src/out/android_debug_arm64"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1193,7 +894,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build host_debug"
+    "name": "build android_debug_arm64"
   },
   {
     "cmd": [],
@@ -1480,7 +1181,7 @@
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Mac Engine Lint\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine Lint\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:53:21.500000\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000003000@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
@@ -1681,7 +1382,7 @@
     "cmd": [
       "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
       "fuchsia-infra.artifacts.builds_beta_goma",
-      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Mac Engine Lint\", \"time_stamp\": \"2012-05-14 12:53:21.500000\", \"time_stamp_int\": 1337000003000}}"
+      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine Lint\", \"time_stamp\": \"2012-05-14 12:53:21.500000\", \"time_stamp_int\": 1337000003000}}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1727,9 +1428,9 @@
   {
     "cmd": [
       "[CACHE]/builder/src/flutter/ci/lint.sh",
-      "--lint-all",
       "--variant",
-      "host_debug"
+      "android_debug_arm64",
+      "--lint-all"
     ],
     "cwd": "[CACHE]/builder/src",
     "env": {
@@ -1764,17 +1465,16 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "test: lint host_debug"
+    "name": "test: lint android_debug_arm64"
   },
   {
     "cmd": [
       "python",
       "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
-      "--ios",
       "--runtime-mode",
       "debug",
-      "--simulator",
+      "--prebuilt-dart-sdk",
       "--no-lto"
     ],
     "cwd": "[CACHE]/builder",
@@ -1810,7 +1510,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --ios --runtime-mode debug --simulator --no-lto"
+    "name": "gn --runtime-mode debug --prebuilt-dart-sdk --no-lto"
   },
   {
     "cmd": [],
@@ -1877,7 +1577,7 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/ios_debug_sim"
+      "[CACHE]/builder/src/out/host_debug"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1916,7 +1616,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build ios_debug_sim"
+    "name": "build host_debug"
   },
   {
     "cmd": [],
@@ -2203,7 +1903,7 @@
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Mac Engine Lint\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine Lint\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:53:24.500000\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000006000@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
@@ -2215,7 +1915,7 @@
     "cmd": [
       "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
       "fuchsia-infra.artifacts.builds_beta_goma",
-      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Mac Engine Lint\", \"time_stamp\": \"2012-05-14 12:53:24.500000\", \"time_stamp_int\": 1337000006000}}"
+      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine Lint\", \"time_stamp\": \"2012-05-14 12:53:24.500000\", \"time_stamp_int\": 1337000006000}}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -2261,9 +1961,9 @@
   {
     "cmd": [
       "[CACHE]/builder/src/flutter/ci/lint.sh",
-      "--lint-all",
       "--variant",
-      "ios_debug_sim"
+      "host_debug",
+      "--lint-all"
     ],
     "cwd": "[CACHE]/builder/src",
     "env": {
@@ -2298,49 +1998,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "test: lint ios_debug_sim"
-  },
-  {
-    "cmd": [
-      "sudo",
-      "xcode-select",
-      "--reset"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "reset XCode"
+    "name": "test: lint host_debug"
   },
   {
     "cmd": [],
@@ -2517,8 +2175,51 @@
   },
   {
     "cmd": [
-      "killall",
-      "-9",
+      "pkill",
+      "chrome"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Killing Processes.kill chrome",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "pkill",
       "dart"
     ],
     "cwd": "[CACHE]/builder",
@@ -2562,8 +2263,7 @@
   },
   {
     "cmd": [
-      "killall",
-      "-9",
+      "pkill",
       "flutter"
     ],
     "cwd": "[CACHE]/builder",
@@ -2607,98 +2307,7 @@
   },
   {
     "cmd": [
-      "killall",
-      "-9",
-      "Chrome"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Killing Processes.kill Chrome",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "Safari"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Killing Processes.kill Safari",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
+      "pkill",
       "java"
     ],
     "cwd": "[CACHE]/builder",
@@ -2735,15 +2344,14 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Killing Processes.kill Safari (2)",
+    "name": "Killing Processes.kill java",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "killall",
-      "-9",
+      "pkill",
       "adb"
     ],
     "cwd": "[CACHE]/builder",
@@ -2780,7 +2388,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Killing Processes.kill Safari (3)",
+    "name": "Killing Processes.kill adb",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -2788,10 +2396,11 @@
   {
     "cmd": [
       "top",
-      "-l",
+      "-b",
+      "-n",
       "3",
       "-o",
-      "mem"
+      "%MEM"
     ],
     "infra_step": true,
     "luci_context": {
@@ -2807,46 +2416,6 @@
       }
     },
     "name": "OS info (2)"
-  },
-  {
-    "cmd": [
-      "xattr",
-      "/opt/s/w/ir/cipd_bin_packages/python"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "python xattr info (2)"
-  },
-  {
-    "cmd": [
-      "xattr",
-      "/opt/s/w/ir/cipd_bin_packages/git"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "git xattr info (2)"
   },
   {
     "name": "$result"

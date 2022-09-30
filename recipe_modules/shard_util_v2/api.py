@@ -224,6 +224,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
       )
       environment = drone_properties.get('environment')
       environment = '%s ' % environment if environment else ''
+      bucket = self.m.buildbucket.build.builder.bucket
+      environment = '' if bucket == 'try' else environment
       builder_name = build.get(
           'drone_builder_name',
           '%s %sEngine Drone' % (platform_name, environment))

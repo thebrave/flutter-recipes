@@ -20,35 +20,33 @@ DEPS = [
 BUCKET_NAME = 'flutter_infra_release'
 
 # These regex are used to detect lib paths that need to be patched.
-LIBUSBMUXD_PATTERN = r'^\t(\/.*(libusbmuxd.*\.dylib)).*'
-LIBPLIST_PATTERN = r'^\t(\/.*(libplist.*\.dylib)).*'
-LIBSSL_PATTERN = r'^\t(\/.*(libssl.*\.dylib)).*'
-LIBCRYPTO_PATTERN = r'^\t(\/.*(libcrypto.*\.dylib)).*'
-LIBIMOBILEDEVICE_PATTERN = r'^\t(\/.*(libimobiledevice.*\.dylib)).*'
-LIBIMOBILEDEVICEGLUE_PATTERN = r'^\t(\/.*(libimobiledevice-glue.*\.dylib)).*'
+LIBUSBMUXD_PATTERN = r'^\t?(.*(libusbmuxd.*\.dylib)).*'
+LIBPLIST_PATTERN = r'^\t?(.*(libplist.*\.dylib)).*'
+LIBSSL_PATTERN = r'^\t?(.*(libssl.*\.dylib)).*'
+LIBCRYPTO_PATTERN = r'^\t?(.*(libcrypto.*\.dylib)).*'
+LIBIMOBILEDEVICE_PATTERN = r'^\t?(.*(libimobiledevice.*\.dylib)).*'
+LIBIMOBILEDEVICEGLUE_PATTERN = r'^\t?(.*(libimobiledevice-glue.*\.dylib)).*'
 
-DIRNAME_PATTERN_TUPLES = [
-        ('libusbmuxd', LIBUSBMUXD_PATTERN),
-        ('libplist', LIBPLIST_PATTERN),
-        ('lisbssl', LIBSSL_PATTERN),
-        ('libcrypto', LIBCRYPTO_PATTERN),
-        ('libimobiledevice', LIBIMOBILEDEVICE_PATTERN),
-        ('libimobiledevice-glue', LIBIMOBILEDEVICEGLUE_PATTERN)
-        ]
+DIRNAME_PATTERN_DICT = {
+    'libusbmuxd': LIBUSBMUXD_PATTERN, 'libplist': LIBPLIST_PATTERN,
+    'libssl': LIBSSL_PATTERN, 'libcrypto': LIBCRYPTO_PATTERN,
+    'libimobiledevice': LIBIMOBILEDEVICE_PATTERN,
+    'libimobiledeviceglue': LIBIMOBILEDEVICEGLUE_PATTERN
+}
 
 # Map between package and its artifacts that need path patch.
 BIANRY_ARTIFACT_MAP = {
-  'libusbmuxd': ['iproxy'],
-  'openssl': ['libcrypto.3.dylib'],
-  'libimobiledevice': ['idevicescreenshot', 'idevicesyslog']
+    'libusbmuxd': ['iproxy'], 'openssl': ['libcrypto.3.dylib'],
+    'libimobiledevice': ['idevicescreenshot', 'idevicesyslog']
 }
+
 
 def ParseOtoolPath(input_string):
   '''Parse paths that need to be patched to relative paths via otool.'''
   input_lines = input_string.split('\n')
   output = {}
   for input_line in input_lines:
-    for dirname, pattern in DIRNAME_PATTERN_TUPLES:
+    for dirname, pattern in DIRNAME_PATTERN_DICT.items():
       # re.match searches from beginning of string
       match = re.match(pattern, input_line)
       if match:
@@ -56,6 +54,7 @@ def ParseOtoolPath(input_string):
         new_path = '@loader_path/../%s' % match.group(2)
         output[old_path] = new_path
   return output
+
 
 def PatchLoadPath(api, ouput_path, package_name):
   '''Update dynamically linked paths in a binary'''
@@ -66,17 +65,21 @@ def PatchLoadPath(api, ouput_path, package_name):
     artifact_path = ouput_path.join(artifact)
     otool_step_data = api.step(
         'Get linked paths from %s before patch' % artifact,
-        ['otool', '-L', artifact_path], stdout=api.raw_io.output_text())
+        ['otool', '-L', artifact_path],
+        stdout=api.raw_io.output_text()
+    )
     old_paths_to_new_paths = ParseOtoolPath(otool_step_data.stdout.rstrip())
     for old_path in old_paths_to_new_paths:
-        new_path = old_paths_to_new_paths[old_path]
-        api.step(
-                'Patch %s with install_name_tool' % artifact_path,
-                ['install_name_tool', '-change', old_path, new_path, artifact_path],
-                )
+      new_path = old_paths_to_new_paths[old_path]
+      api.step(
+          'Patch %s with install_name_tool' % artifact_path,
+          ['install_name_tool', '-change', old_path, new_path, artifact_path],
+      )
     api.step(
         'Get linked paths from %s after patch' % artifact_path,
-        ['otool', '-L', artifact_path])
+        ['otool', '-L', artifact_path]
+    )
+
 
 def GetCloudPath(api, package_name, commit_sha):
   """Location of cloud bucket for unsigned binaries"""
@@ -119,6 +122,93 @@ def UpdateEnv(
     env_prefixes['PKG_CONFIG_PATH'] = pkg_config_path
 
 
+def GetDylibFilenames(api, dir, package_name):
+  """Returns a list of file names that matches dylib file regex in given directory.
+
+  A package_name maps to a regex pattern based on DIRNAME_PATTERN_DICT(dict). All 
+  file names in the current dir that matches this regex pattern are returned.
+
+  Args:
+
+      dir(Path): The directory in which to search for dylib files.
+      package_name(str): Name of the ios usb dependency passed in. 
+  """
+  directory_paths = api.file.listdir(
+      "checking dylib file inside: %s" % dir,
+      dir,
+      test_data=[
+          dir.join("libimobiledevice-1.0.6.dylib"),
+          dir.join("libplist-2.0.3.dylib")
+      ]
+  )
+  directory_string_paths = [('%s' % path) for path in directory_paths]
+  matched_dylib_names = []
+
+  pattern = DIRNAME_PATTERN_DICT[package_name]
+  for dylib_path in directory_string_paths:
+    # re.match searches from beginning of string
+    match = re.match(pattern, dylib_path)
+    if match:
+      matched_dylib_names.append(dylib_path.split("/")[-1])
+  return matched_dylib_names
+
+
+def EmbedCodesignConfiguration(api, package_out_dir, package_name):
+  """Embed metadata file for Mac code signing into ios usb dependency artifacts.
+
+  Two files are embedded into the generated artifact.
+  entitlements.txt: The list of binaries that need to be code signed with entitlements.
+  without_entitlements.txt: Filenames of binaries in artifacts that should be code signed, but not with entitlements.
+
+  Args:
+
+      package_out_dir(Path): The directory in which ios usb dependency artifact is generated.
+      package_name(str): Name of the ios usb dependency passed in. 
+  """
+  entitlement_file_contents = []
+  without_entitlement_file_contents = []
+  if package_name == "ios-deploy":
+    entitlement_file_contents = ["ios-deploy"]
+  elif package_name == "libimobiledevice":
+    entitlement_file_contents = [
+        "idevicescreenshot",
+        "idevicesyslog",
+    ]
+    without_entitlement_file_contents = GetDylibFilenames(
+        api, package_out_dir, package_name
+    )
+  elif package_name == "libplist":
+    without_entitlement_file_contents = GetDylibFilenames(
+        api, package_out_dir, package_name
+    )
+  elif package_name == "libusbmuxd":
+    entitlement_file_contents = [
+        "iproxy",
+    ]
+    without_entitlement_file_contents = GetDylibFilenames(
+        api, package_out_dir, package_name
+    )
+  elif package_name == "openssl":
+    without_entitlement_file_contents = GetDylibFilenames(
+        api, package_out_dir, "libssl"
+    ) + GetDylibFilenames(api, package_out_dir, "libcrypto")
+  elif package_name == "libimobiledeviceglue":
+    without_entitlement_file_contents = GetDylibFilenames(
+        api, package_out_dir, package_name
+    )
+
+  api.file.write_text(
+      "writing entitlements codesign list for %s" % package_name,
+      package_out_dir.join("entitlements.txt"),
+      '\n'.join(entitlement_file_contents) + '\n'
+  )
+  api.file.write_text(
+      "writing the list of files to be codesigned without entitlements for %s" %
+      package_name, package_out_dir.join("without_entitlements.txt"),
+      '\n'.join(without_entitlement_file_contents) + '\n'
+  )
+
+
 def UploadPackage(
     api, package_name, work_dir, package_out_dir, upload, commit_sha
 ):
@@ -134,6 +224,7 @@ def UploadPackage(
   """
   if not upload:
     return
+  EmbedCodesignConfiguration(api, package_out_dir, package_name)
   package_zip_file = work_dir.join('%s.zip' % package_name)
   api.zip.directory(
       'zipping %s dir' % package_name, package_out_dir, package_zip_file
@@ -254,6 +345,9 @@ def GenTests(api):
       ),
       api.step_data(
           'Get linked paths from iproxy before patch',
-          stdout=api.raw_io.output_text('\t/opt/s/w/ir/x/w/src/libusbmuxd_install/lib/libusbmuxd-2.0.6.dylib (compatibility version 7.0.0, current version 7.0.0)'),
-          retcode=0)
+          stdout=api.raw_io.output_text(
+              '\t/opt/s/w/ir/x/w/src/libusbmuxd_install/lib/libusbmuxd-2.0.6.dylib (compatibility version 7.0.0, current version 7.0.0)'
+          ),
+          retcode=0
+      )
   )

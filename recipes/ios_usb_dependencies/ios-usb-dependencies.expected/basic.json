@@ -80,6 +80,42 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "ios-deploy\n",
+      "[START_DIR]/src/ios-deploy_output/entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "writing entitlements codesign list for ios-deploy",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@entitlements.txt@ios-deploy@@@",
+      "@@@STEP_LOG_END@entitlements.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "\n",
+      "[START_DIR]/src/ios-deploy_output/without_entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "writing the list of files to be codesigned without entitlements for ios-deploy",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@without_entitlements.txt@@@@",
+      "@@@STEP_LOG_END@without_entitlements.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
       "python",
       "RECIPE_MODULE[flutter::zip]/resources/zip.py"
     ],
@@ -165,6 +201,61 @@
       "[START_DIR]/src/libplist_output"
     ],
     "name": "install libplist"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[START_DIR]/src/libplist_output"
+    ],
+    "infra_step": true,
+    "name": "checking dylib file inside: [START_DIR]/src/libplist_output",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libplist_output/[START_DIR]/src/libplist_output/libimobiledevice-1.0.6.dylib@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libplist_output/[START_DIR]/src/libplist_output/libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "\n",
+      "[START_DIR]/src/libplist_output/entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "writing entitlements codesign list for libplist",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@entitlements.txt@@@@",
+      "@@@STEP_LOG_END@entitlements.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "libimobiledevice-1.0.6.dylib\nlibplist-2.0.3.dylib\n",
+      "[START_DIR]/src/libplist_output/without_entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "writing the list of files to be codesigned without entitlements for libplist",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@without_entitlements.txt@libimobiledevice-1.0.6.dylib@@@",
+      "@@@STEP_LOG_LINE@without_entitlements.txt@libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_END@without_entitlements.txt@@@"
+    ]
   },
   {
     "cmd": [
@@ -470,6 +561,60 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[START_DIR]/src/libimobiledeviceglue_output"
+    ],
+    "infra_step": true,
+    "name": "checking dylib file inside: [START_DIR]/src/libimobiledeviceglue_output",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledeviceglue_output/[START_DIR]/src/libimobiledeviceglue_output/libimobiledevice-1.0.6.dylib@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledeviceglue_output/[START_DIR]/src/libimobiledeviceglue_output/libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "\n",
+      "[START_DIR]/src/libimobiledeviceglue_output/entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "writing entitlements codesign list for libimobiledeviceglue",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@entitlements.txt@@@@",
+      "@@@STEP_LOG_END@entitlements.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "\n",
+      "[START_DIR]/src/libimobiledeviceglue_output/without_entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "writing the list of files to be codesigned without entitlements for libimobiledeviceglue",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@without_entitlements.txt@@@@",
+      "@@@STEP_LOG_END@without_entitlements.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
       "python",
       "RECIPE_MODULE[flutter::zip]/resources/zip.py"
     ],
@@ -601,6 +746,61 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[START_DIR]/src/libusbmuxd_output"
+    ],
+    "infra_step": true,
+    "name": "checking dylib file inside: [START_DIR]/src/libusbmuxd_output",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libusbmuxd_output/[START_DIR]/src/libusbmuxd_output/libimobiledevice-1.0.6.dylib@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libusbmuxd_output/[START_DIR]/src/libusbmuxd_output/libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "iproxy\n",
+      "[START_DIR]/src/libusbmuxd_output/entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "writing entitlements codesign list for libusbmuxd",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@entitlements.txt@iproxy@@@",
+      "@@@STEP_LOG_END@entitlements.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "libimobiledevice-1.0.6.dylib\nlibplist-2.0.3.dylib\n",
+      "[START_DIR]/src/libusbmuxd_output/without_entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "writing the list of files to be codesigned without entitlements for libusbmuxd",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@without_entitlements.txt@libimobiledevice-1.0.6.dylib@@@",
+      "@@@STEP_LOG_LINE@without_entitlements.txt@libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_END@without_entitlements.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
       "python",
       "RECIPE_MODULE[flutter::zip]/resources/zip.py"
     ],
@@ -721,6 +921,78 @@
       "[START_DIR]/src/openssl_output/libcrypto.3.dylib"
     ],
     "name": "Get linked paths from [START_DIR]/src/openssl_output/libcrypto.3.dylib after patch"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[START_DIR]/src/openssl_output"
+    ],
+    "infra_step": true,
+    "name": "checking dylib file inside: [START_DIR]/src/openssl_output",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libimobiledevice-1.0.6.dylib@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[START_DIR]/src/openssl_output"
+    ],
+    "infra_step": true,
+    "name": "checking dylib file inside: [START_DIR]/src/openssl_output (2)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libimobiledevice-1.0.6.dylib@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "\n",
+      "[START_DIR]/src/openssl_output/entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "writing entitlements codesign list for openssl",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@entitlements.txt@@@@",
+      "@@@STEP_LOG_END@entitlements.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "\n",
+      "[START_DIR]/src/openssl_output/without_entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "writing the list of files to be codesigned without entitlements for openssl",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@without_entitlements.txt@@@@",
+      "@@@STEP_LOG_END@without_entitlements.txt@@@"
+    ]
   },
   {
     "cmd": [
@@ -863,6 +1135,62 @@
       "[START_DIR]/src/libimobiledevice_output/idevicesyslog"
     ],
     "name": "Get linked paths from [START_DIR]/src/libimobiledevice_output/idevicesyslog after patch"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[START_DIR]/src/libimobiledevice_output"
+    ],
+    "infra_step": true,
+    "name": "checking dylib file inside: [START_DIR]/src/libimobiledevice_output",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledevice_output/[START_DIR]/src/libimobiledevice_output/libimobiledevice-1.0.6.dylib@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledevice_output/[START_DIR]/src/libimobiledevice_output/libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "idevicescreenshot\nidevicesyslog\n",
+      "[START_DIR]/src/libimobiledevice_output/entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "writing entitlements codesign list for libimobiledevice",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@entitlements.txt@idevicescreenshot@@@",
+      "@@@STEP_LOG_LINE@entitlements.txt@idevicesyslog@@@",
+      "@@@STEP_LOG_END@entitlements.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "libimobiledevice-1.0.6.dylib\nlibplist-2.0.3.dylib\n",
+      "[START_DIR]/src/libimobiledevice_output/without_entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "writing the list of files to be codesigned without entitlements for libimobiledevice",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@without_entitlements.txt@libimobiledevice-1.0.6.dylib@@@",
+      "@@@STEP_LOG_LINE@without_entitlements.txt@libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_END@without_entitlements.txt@@@"
+    ]
   },
   {
     "cmd": [

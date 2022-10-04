@@ -8,6 +8,7 @@ from recipe_engine.recipe_api import Property
 DEPS = [
     'flutter/repo_util',
     'flutter/yaml',
+    'recipe_engine/buildbucket',
     'recipe_engine/cipd',
     'recipe_engine/context',
     'recipe_engine/json',
@@ -56,24 +57,33 @@ def RunSteps(api):
     cipd_zip_path = project_name + '.zip'
 
     api.cipd.build(project_path.join('build'), cipd_zip_path, cipd_full_name)
-    api.cipd.register(cipd_full_name, cipd_zip_path, refs = ["latest"])
+    if api.buildbucket.build.builder.bucket == 'prod':
+      api.cipd.register(cipd_full_name, cipd_zip_path, refs = ["latest"])
 
 
 def GenTests(api):
   yield api.test(
-      'cipd_mac',
+      'cipd_mac_no_upload',
       api.properties(
           script='codesign/tool/build.sh',
           cipd_name='flutter/codesign/mac-amd64'
       ),
       api.platform('mac', 64),
+      api.buildbucket.ci_build(
+          git_ref='refs/heads/main',
+          bucket='try',
+      ),
   )
 
   yield api.test(
-      'cipd_win',
+      'cipd_win_upload',
       api.properties(
           script='device_doctor\\tool\\build.bat',
           cipd_name='flutter/device_doctor/windows-amd64'
       ),
       api.platform('win', 64),
+      api.buildbucket.ci_build(
+          git_ref='refs/heads/main',
+          bucket='prod',
+      ),
   )

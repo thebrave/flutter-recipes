@@ -11866,7 +11866,6 @@
       "--ios",
       "--runtime-mode",
       "debug",
-      "--bitcode",
       "--prebuilt-impellerc",
       "[CACHE]/builder/src/out/ios_debug_sim/clang_x64/impellerc"
     ],
@@ -11903,7 +11902,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --ios --runtime-mode debug --bitcode --prebuilt-impellerc [CACHE]/builder/src/out/ios_debug_sim/clang_x64/impellerc"
+    "name": "gn --ios --runtime-mode debug --prebuilt-impellerc [CACHE]/builder/src/out/ios_debug_sim/clang_x64/impellerc"
   },
   {
     "cmd": [],
@@ -12866,7 +12865,6 @@
       "--ios",
       "--runtime-mode",
       "profile",
-      "--bitcode",
       "--prebuilt-impellerc",
       "[CACHE]/builder/src/out/ios_debug_sim/clang_x64/impellerc"
     ],
@@ -12903,7 +12901,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --ios --runtime-mode profile --bitcode --prebuilt-impellerc [CACHE]/builder/src/out/ios_debug_sim/clang_x64/impellerc"
+    "name": "gn --ios --runtime-mode profile --prebuilt-impellerc [CACHE]/builder/src/out/ios_debug_sim/clang_x64/impellerc"
   },
   {
     "cmd": [],
@@ -13587,7 +13585,6 @@
       "--ios",
       "--runtime-mode",
       "release",
-      "--bitcode",
       "--no-goma",
       "--prebuilt-impellerc",
       "[CACHE]/builder/src/out/ios_debug_sim/clang_x64/impellerc"
@@ -13625,7 +13622,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --ios --runtime-mode release --bitcode --no-goma --prebuilt-impellerc [CACHE]/builder/src/out/ios_debug_sim/clang_x64/impellerc"
+    "name": "gn --ios --runtime-mode release --no-goma --prebuilt-impellerc [CACHE]/builder/src/out/ios_debug_sim/clang_x64/impellerc"
   },
   {
     "cmd": [
@@ -13989,99 +13986,6 @@
     "~followup_annotations": [
       "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/ios-release/Flutter.dSYM.zip@@@"
     ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/builder/src/flutter/sky/tools/create_ios_framework.py",
-      "--dst",
-      "[CACHE]/builder/src/out/release",
-      "--arm64-out-dir",
-      "[CACHE]/builder/src/out/ios_release",
-      "--simulator-x64-out-dir",
-      "[CACHE]/builder/src/out/ios_debug_sim",
-      "--simulator-arm64-out-dir",
-      "[CACHE]/builder/src/out/ios_debug_sim_arm64",
-      "--strip-bitcode",
-      "--dsym",
-      "--strip"
-    ],
-    "cwd": "[CACHE]/builder/src",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Create iOS release Flutter.xcframework (2)"
-  },
-  {
-    "cmd": [
-      "[CACHE]/builder/src/flutter/sky/tools/create_macos_gen_snapshots.py",
-      "--dst",
-      "[CACHE]/builder/src/out/release",
-      "--arm64-out-dir",
-      "[CACHE]/builder/src/out/ios_release"
-    ],
-    "cwd": "[CACHE]/builder/src",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Create macOS release gen_snapshot (3)"
   },
   {
     "cmd": [

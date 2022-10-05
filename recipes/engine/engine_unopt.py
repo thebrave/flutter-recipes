@@ -173,7 +173,6 @@ def RunIosIntegrationTests(api):
 
 
 def BuildIOS(api):
-  # Simulator doesn't use bitcode.
   # Simulator binary is needed in all runtime modes.
   RunGN(api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto')
   Build(api, 'ios_debug_sim')

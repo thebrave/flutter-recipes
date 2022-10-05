@@ -1350,8 +1350,7 @@ def PackageIOSVariant(
     arm64_out,
     sim_x64_out,
     sim_arm64_out,
-    bucket_name,
-    strip_bitcode=False
+    bucket_names=[],
 ):
   checkout = GetCheckoutPath(api)
   out_dir = checkout.join('out')
@@ -1369,9 +1368,6 @@ def PackageIOSVariant(
       '--simulator-arm64-out-dir',
       api.path.join(out_dir, sim_arm64_out),
   ]
-
-  if strip_bitcode:
-    create_ios_framework_cmd.append('--strip-bitcode')
 
   if label == 'release':
     create_ios_framework_cmd.extend([
@@ -1406,26 +1402,26 @@ def PackageIOSVariant(
   ]
 
   label_root = checkout.join('out', label)
-  UploadArtifacts(
-      api,
-      bucket_name,
-      file_artifacts,
-      directory_artifacts,
-      pkg_root=label_root
-  )
+  for bucket_name in bucket_names:
+    UploadArtifacts(
+        api,
+        bucket_name,
+        file_artifacts,
+        directory_artifacts,
+        pkg_root=label_root
+    )
 
-  if label == 'release':
-    dsym_zip = label_dir.join('Flutter.dSYM.zip')
-    pkg = api.zip.make_package(label_dir, dsym_zip)
-    pkg.add_directory(label_dir.join('Flutter.dSYM'))
-    pkg.zip('Zip Flutter.dSYM')
-    remote_name = '%s/Flutter.dSYM.zip' % bucket_name
-    remote_zip = GetCloudPath(api, remote_name)
-    api.bucket_util.safe_upload(dsym_zip, remote_zip)
+    if label == 'release':
+      dsym_zip = label_dir.join('Flutter.dSYM.zip')
+      pkg = api.zip.make_package(label_dir, dsym_zip)
+      pkg.add_directory(label_dir.join('Flutter.dSYM'))
+      pkg.zip('Zip Flutter.dSYM')
+      remote_name = '%s/Flutter.dSYM.zip' % bucket_name
+      remote_zip = GetCloudPath(api, remote_name)
+      api.bucket_util.safe_upload(dsym_zip, remote_zip)
 
 
 def BuildIOS(api):
-  # Simulator doesn't use bitcode.
   # Simulator binary is needed in all runtime modes.
   RunGN(api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto')
   Build(api, 'ios_debug_sim')
@@ -1452,7 +1448,7 @@ def BuildIOS(api):
 
   if api.properties.get('ios_debug', True):
     RunGN(
-        api, '--ios', '--runtime-mode', 'debug', '--bitcode',
+        api, '--ios', '--runtime-mode', 'debug',
         '--prebuilt-impellerc', impellerc_path
     )
     Build(api, 'ios_debug')
@@ -1461,39 +1457,33 @@ def BuildIOS(api):
 
     PackageIOSVariant(
         api, 'debug', 'ios_debug', 'ios_debug_sim',
-        'ios_debug_sim_arm64', 'ios'
+        'ios_debug_sim_arm64', ['ios']
     )
 
   if api.properties.get('ios_profile', True):
     RunGN(
-        api, '--ios', '--runtime-mode', 'profile', '--bitcode',
+        api, '--ios', '--runtime-mode', 'profile',
         '--prebuilt-impellerc', impellerc_path
     )
     Build(api, 'ios_profile')
 
     PackageIOSVariant(
         api, 'profile', 'ios_profile', 'ios_debug_sim',
-        'ios_debug_sim_arm64', 'ios-profile'
+        'ios_debug_sim_arm64', ['ios-profile']
     )
 
   if api.properties.get('ios_release', True):
     RunGN(
-        api, '--ios', '--runtime-mode', 'release', '--bitcode', '--no-goma',
+        api, '--ios', '--runtime-mode', 'release', '--no-goma',
         '--prebuilt-impellerc', impellerc_path
     )
     AutoninjaBuild(api, 'ios_release')
 
+    # Bitcode has been deprecated, upload the same artifact
+    # to ios-release and ios-release-nobitcode buckets.
     PackageIOSVariant(
         api, 'release', 'ios_release', 'ios_debug_sim',
-        'ios_debug_sim_arm64', 'ios-release'
-    )
-
-    # Create a bitcode-stripped version. This will help customers who do not
-    # need bitcode, which significantly increases download size. This should
-    # be removed when bitcode is enabled by default in Flutter.
-    PackageIOSVariant(
-        api, 'release', 'ios_release', 'ios_debug_sim',
-        'ios_debug_sim_arm64', 'ios-release-nobitcode', True
+        'ios_debug_sim_arm64', ['ios-release', 'ios-release-nobitcode']
     )
 
 

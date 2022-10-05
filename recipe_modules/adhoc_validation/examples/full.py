@@ -31,7 +31,7 @@ def GenTests(api):
   )
   yield api.test(
       'linux', api.platform.name('linux'),
-      api.properties(firebase_project='myproject'),
+      api.properties(firebase_project='myproject', git_branch='main'),
       api.repo_util.flutter_environment_data(checkout_path)
   )
   yield api.test(

@@ -60,16 +60,18 @@ class AddhocValidationApi(recipe_api.RecipeApi):
       else:
         with self.m.context(env=env, env_prefixes=env_prefixes):
           self.m.test_utils.run_test(validation, [resource_name])
-          if ((validation == 'docs' and self.m.properties.get('firebase_project')) or
-              (validation == 'docs_deploy') and self.m.properties.get('firebase_project')):
+          if ((validation == 'docs' or validation == 'docs_deploy') and
+              self.m.properties.get('firebase_project')):
             docs_path = checkout_path.join('dev', 'docs')
             # Do not upload on docs_deploy.
             if not validation == 'docs_deploy':
               self.m.bucket_util.upload_folder('Upload API Docs', docs_path, 'doc', "api_docs.zip")
             project = self.m.properties.get('firebase_project')
-            self.m.firebase.deploy_docs(
-                env=env,
-                env_prefixes=env_prefixes,
-                docs_path=docs_path,
-                project=project
-            )
+            # Only deploy to firebase directly if this is master or main.
+            if (self.m.properties.get('git_branch') in ['master', 'main']):
+              self.m.firebase.deploy_docs(
+                  env=env,
+                  env_prefixes=env_prefixes,
+                  docs_path=docs_path,
+                  project=project
+              )

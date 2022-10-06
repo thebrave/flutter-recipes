@@ -109,14 +109,6 @@ def Build(api, config, *targets):
     api.step(name, ninja_args)
 
 
-def AutoninjaBuild(api, config, *targets):
-  checkout = GetCheckoutPath(api)
-  build_dir = checkout.join('out/%s' % config)
-  ninja_args = [api.depot_tools.autoninja_path, '-C', build_dir]
-  ninja_args.extend(targets)
-  api.step('build %s' % ' '.join([config] + list(targets)), ninja_args)
-
-
 def RunTests(api, out_dir, android_out_dir=None, types='all'):
   script_path = GetCheckoutPath(api).join('flutter', 'testing', 'run_tests.py')
   # TODO(godofredoc): use .vpython from engine when file are available.
@@ -1437,14 +1429,12 @@ def BuildIOS(api):
       out_dir, 'ios_debug_sim', 'clang_x64', 'impellerc'
   )
 
-  # This build uses Xcode, so cannot use goma. Instead it uses autoninja to
-  # parallelize the build.
   RunGN(
       api, '--ios', '--runtime-mode', 'debug', '--simulator',
-      '--simulator-cpu=arm64', '--no-lto', '--no-goma',
+      '--simulator-cpu=arm64', '--no-lto',
       '--prebuilt-impellerc', impellerc_path
   )
-  AutoninjaBuild(api, 'ios_debug_sim_arm64')
+  Build(api, 'ios_debug_sim_arm64')
 
   if api.properties.get('ios_debug', True):
     RunGN(
@@ -1474,10 +1464,10 @@ def BuildIOS(api):
 
   if api.properties.get('ios_release', True):
     RunGN(
-        api, '--ios', '--runtime-mode', 'release', '--no-goma',
+        api, '--ios', '--runtime-mode', 'release',
         '--prebuilt-impellerc', impellerc_path
     )
-    AutoninjaBuild(api, 'ios_release')
+    Build(api, 'ios_release')
 
     # Bitcode has been deprecated, upload the same artifact
     # to ios-release and ios-release-nobitcode buckets.

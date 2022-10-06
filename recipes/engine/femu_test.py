@@ -186,9 +186,13 @@ def CasRoot(api):
         suite['packages'] = [ suite['package'] ]
       suite['package_basenames'] = []
       for path in suite['packages']:
+        # Captures the FAR name (long/path/to/far/file/actual_far.far would output actual_far.far)
         basename = re.match(r'(:?.*/)*([^/]*$)', path).group(2)
         suite['package_basenames'].append(basename)
-        add(checkout.join('out', 'fuchsia_debug_x64', path), basename)
+        if suite['run_with_dart_aot']:
+            add(checkout.join('out', 'fuchsia_profile_x64', path), basename)
+        else:
+          add(checkout.join('out', 'fuchsia_debug_x64', path), basename)
       test_suites.append(suite)
 
   def addTestScript():

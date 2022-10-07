@@ -33,6 +33,10 @@ class DisplayUtilApi(recipe_api.RecipeApi):
     infra_failures = []
     failures = []
     # Create per-build display steps.
+    infra_failure_states = [
+        common_pb2.Status.Value('INFRA_FAILURE'),
+        common_pb2.Status.Value('CANCELED')
+    ]
     with self.m.step.nest(step_name) as presentation:
       for k in builds:
         build = builds[k] if isinstance(k, long) or isinstance(k, int) else k
@@ -42,7 +46,7 @@ class DisplayUtilApi(recipe_api.RecipeApi):
                     ] = self.m.buildbucket.build_url(build_id=build.id)
           if build.status == common_pb2.Status.Value('SUCCESS'):
             display_step.presentation.status = self.m.step.SUCCESS
-          elif build.status == common_pb2.Status.Value('INFRA_FAILURE'):
+          elif build.status in infra_failure_states:
             display_step.presentation.status = self.m.step.EXCEPTION
             infra_failures.append(build)
           elif build.status == common_pb2.Status.Value('FAILURE'):

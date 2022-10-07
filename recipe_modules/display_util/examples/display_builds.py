@@ -62,6 +62,27 @@ def GenTests(api):
       ]))
 
   yield (
+      api.status_check.test(
+          "canceled_buildss", status="infra_failure") +
+      # Exercise all status colors.
+      # Purple failures prioritized over red failures.
+      api.buildbucket.simulated_collect_output([
+          build(
+              build_id=123456789012345678,
+              status="SUCCESS",
+          ),
+          build(
+              build_id=987654321098765432,
+              status="CANCELED",
+              summary_markdown="something failed related to infra",
+          ),
+          build(
+              build_id=199887766554433221,
+              status="SCHEDULED",
+          ),
+      ]))
+
+  yield (
       api.status_check.test("mixed_without_infra_failures", status="failure") +
       # With just red failures, raise red.
       api.buildbucket.simulated_collect_output([

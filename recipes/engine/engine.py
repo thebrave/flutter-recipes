@@ -1342,7 +1342,7 @@ def PackageIOSVariant(
     arm64_out,
     sim_x64_out,
     sim_arm64_out,
-    bucket_names=[],
+    bucket_name,
 ):
   checkout = GetCheckoutPath(api)
   out_dir = checkout.join('out')
@@ -1394,23 +1394,22 @@ def PackageIOSVariant(
   ]
 
   label_root = checkout.join('out', label)
-  for bucket_name in bucket_names:
-    UploadArtifacts(
-        api,
-        bucket_name,
-        file_artifacts,
-        directory_artifacts,
-        pkg_root=label_root
-    )
+  UploadArtifacts(
+      api,
+      bucket_name,
+      file_artifacts,
+      directory_artifacts,
+      pkg_root=label_root
+  )
 
-    if label == 'release':
-      dsym_zip = label_dir.join('Flutter.dSYM.zip')
-      pkg = api.zip.make_package(label_dir, dsym_zip)
-      pkg.add_directory(label_dir.join('Flutter.dSYM'))
-      pkg.zip('Zip Flutter.dSYM')
-      remote_name = '%s/Flutter.dSYM.zip' % bucket_name
-      remote_zip = GetCloudPath(api, remote_name)
-      api.bucket_util.safe_upload(dsym_zip, remote_zip)
+  if label == 'release':
+    dsym_zip = label_dir.join('Flutter.dSYM.zip')
+    pkg = api.zip.make_package(label_dir, dsym_zip)
+    pkg.add_directory(label_dir.join('Flutter.dSYM'))
+    pkg.zip('Zip Flutter.dSYM')
+    remote_name = '%s/Flutter.dSYM.zip' % bucket_name
+    remote_zip = GetCloudPath(api, remote_name)
+    api.bucket_util.safe_upload(dsym_zip, remote_zip)
 
 
 def BuildIOS(api):
@@ -1418,11 +1417,10 @@ def BuildIOS(api):
   RunGN(api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto')
   Build(api, 'ios_debug_sim')
 
-  # Compilation is very expensive in the builds that don't use goma. Therefore,
-  # the imperllerc that was built as part of the goma-enabled build of
-  # ios_debug_sim is used as a prebuilt in the non-goma-enabled builds below
-  # in order to reduce build times. This is not the impellerc that is shipped,
-  # so the exact details of how it is built (e.g. --no-lto) don't matter.
+  # The impellerc that was built as part of ios_debug_sim is used as a
+  # prebuilt to the builds below in order to reduce build times. This is
+  # not the impellerc that is shipped, so the exact details of how it is
+  # built (e.g. --no-lto) don't matter.
   checkout = GetCheckoutPath(api)
   out_dir = checkout.join('out')
   impellerc_path = api.path.join(
@@ -1447,7 +1445,7 @@ def BuildIOS(api):
 
     PackageIOSVariant(
         api, 'debug', 'ios_debug', 'ios_debug_sim',
-        'ios_debug_sim_arm64', ['ios']
+        'ios_debug_sim_arm64', 'ios'
     )
 
   if api.properties.get('ios_profile', True):
@@ -1459,7 +1457,7 @@ def BuildIOS(api):
 
     PackageIOSVariant(
         api, 'profile', 'ios_profile', 'ios_debug_sim',
-        'ios_debug_sim_arm64', ['ios-profile']
+        'ios_debug_sim_arm64', 'ios-profile'
     )
 
   if api.properties.get('ios_release', True):
@@ -1469,11 +1467,9 @@ def BuildIOS(api):
     )
     Build(api, 'ios_release')
 
-    # Bitcode has been deprecated, upload the same artifact
-    # to ios-release and ios-release-nobitcode buckets.
     PackageIOSVariant(
         api, 'release', 'ios_release', 'ios_debug_sim',
-        'ios_debug_sim_arm64', ['ios-release', 'ios-release-nobitcode']
+        'ios_debug_sim_arm64', 'ios-release'
     )
 
 

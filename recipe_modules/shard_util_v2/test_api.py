@@ -8,10 +8,11 @@ from PB.go.chromium.org.luci.buildbucket.proto import (
     builds_service as builds_service_pb2,
 )
 from PB.go.chromium.org.luci.led.job import job as job_pb2
+from RECIPE_MODULES.flutter.shard_util_v2.api import SubbuildResult
 
 
 class ShardUtilTestApi(recipe_test_api.RecipeTestApi):
-
+  
   def try_build_message(
       self, builder, input_props=None, output_props=None, **kwargs
   ):
@@ -32,10 +33,15 @@ class ShardUtilTestApi(recipe_test_api.RecipeTestApi):
     msg.infra.swarming.task_id = "abc123"
     msg.input.properties.update(input_props if input_props else {})
     msg.output.properties.update(output_props if output_props else {})
-    return msg
+    subbuild = SubbuildResult(
+        builder=msg.builder.builder,
+        build_id=msg.id,
+        build_name=builder,
+        build_proto= msg)
+    return subbuild
 
   def child_build_steps(
-      self, builds, launch_step="build", collect_step="build"
+      self, subbuilds, launch_step="build", collect_step="build"
   ):
     """Generates step data to schedule and collect from child builds.
 
@@ -43,9 +49,9 @@ class ShardUtilTestApi(recipe_test_api.RecipeTestApi):
       builds (list(build_pb2.Build)): The builds to schedule and collect from.
     """
     responses = []
-    for build in builds:
+    for subbuild in subbuilds:
       responses.append(
-          dict(schedule_build=dict(id=build.id, builder=build.builder))
+          dict(schedule_build=dict(id=subbuild.build_id, builder=subbuild.build_proto.builder))
       )
     mock_schedule_data = self.m.buildbucket.simulated_schedule_output(
         step_name="%s.schedule" % launch_step,
@@ -54,11 +60,11 @@ class ShardUtilTestApi(recipe_test_api.RecipeTestApi):
 
     mock_collect_data = self.m.buildbucket.simulated_collect_output(
         step_name="%s.collect" % collect_step,
-        builds=builds,
+        builds=[b.build_proto for b in subbuilds],
     )
     return mock_schedule_data + mock_collect_data
 
-  def child_led_steps(self, builds, collect_step="build"):
+  def child_led_steps(self, subbuilds, collect_step="build"):
     """Generates step data to schedule and collect from child builds.
 
     Args:
@@ -67,7 +73,7 @@ class ShardUtilTestApi(recipe_test_api.RecipeTestApi):
     step_data = []
     task_results = []
     i = 0
-    for build in builds:
+    for subbuild in subbuilds:
       i += 1
       suffix = ""
       if i > 1:
@@ -78,23 +84,23 @@ class ShardUtilTestApi(recipe_test_api.RecipeTestApi):
       # led launch mock will take ....infra.swarming.task_id as this
       # build's launched swarming ID.
       jd = job_pb2.Definition()
-      jd.buildbucket.bbagent_args.build.CopyFrom(build)
+      jd.buildbucket.bbagent_args.build.CopyFrom(subbuild.build_proto)
       jd.buildbucket.bbagent_args.build.infra.swarming.task_id = task_id
       step_data.append(
           self.m.led.mock_get_builder(
               jd,
-              build.builder.project,
-              build.builder.bucket,
-              build.builder.builder,
+              subbuild.build_proto.builder.project,
+              subbuild.build_proto.builder.bucket,
+              subbuild.build_proto.builder.builder,
           )
       )
       task_results.append(
-          self.m.swarming.task_result(id=task_id, name=build.builder.builder)
+          self.m.swarming.task_result(id=task_id, name=subbuild.build_name)
       )
       step_data.append(
           self.step_data(
               "%s.read build.proto.json%s" % (collect_step, suffix),
-              self.m.file.read_proto(build),
+              self.m.file.read_proto(subbuild.build_proto),
           )
       )
     ret = self.step_data(

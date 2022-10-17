@@ -90,9 +90,9 @@ def RunSteps(api, properties, env_properties):
   with api.step.nest('collect builds') as presentation:
     build_results = api.shard_util_v2.collect(tasks, presentation)
 
-  api.display_util.display_builds(
+  api.display_util.display_subbuilds(
       step_name='display builds',
-      builds=[b.build_proto for b in build_results.values()],
+      subbuilds=build_results,
       raise_on_failure=True,
   )
 
@@ -102,9 +102,9 @@ def RunSteps(api, properties, env_properties):
   with api.step.nest('collect tests') as presentation:
     test_results = api.shard_util_v2.collect(tasks, presentation)
 
-  api.display_util.display_builds(
+  api.display_util.display_subbuilds(
       step_name='display tests',
-      builds=[b.build_proto for b in test_results.values()],
+      subbuilds=test_results,
       raise_on_failure=True,
   )
 
@@ -242,7 +242,7 @@ def GenTests(api):
           build_number=123,
       ),
       api.shard_util_v2.child_build_steps(
-          builds=[try_subbuild1],
+          subbuilds=[try_subbuild1],
           launch_step="launch builds",
           collect_step="collect builds",
       ),
@@ -262,7 +262,7 @@ def GenTests(api):
           build_number=123,
       ),
       api.shard_util_v2.child_build_steps(
-          builds=[try_subbuild1],
+          subbuilds=[try_subbuild1],
           launch_step="launch builds",
           collect_step="collect builds",
       ),
@@ -279,7 +279,7 @@ def GenTests(api):
           build_number=123,
       ),
       api.shard_util_v2.child_build_steps(
-          builds=[try_subbuild1],
+          subbuilds=[try_subbuild1],
           launch_step="launch builds",
           collect_step="collect builds",
       ),
@@ -321,7 +321,7 @@ def GenTests(api):
           build_number=123,
       ),
       api.shard_util_v2.child_build_steps(
-          builds=[try_subbuild1],
+          subbuilds=[try_subbuild1],
           launch_step="launch builds",
           collect_step="collect builds",
       ),
@@ -342,7 +342,7 @@ def GenTests(api):
           build_number=123,
       ),
       api.shard_util_v2.child_build_steps(
-          builds=[try_subbuild1],
+          subbuilds=[try_subbuild1],
           launch_step="launch builds",
           collect_step="collect builds",
       ),

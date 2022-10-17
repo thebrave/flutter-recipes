@@ -13,6 +13,83 @@ from RECIPE_MODULES.fuchsia.utils import pluralize
 class DisplayUtilApi(recipe_api.RecipeApi):
   """Module to display buildbucket or swarming tasks as steps."""
 
+  def display_subbuilds(self, step_name, subbuilds, raise_on_failure=False):
+    """Display build links and status for each input build.
+
+        Optionally raise on build failure(s).
+
+        Args:
+          step_name (str): Name of build group to display in step name.
+          builds (seq(buildbucket.v2.Build)): buildbucket Build objects. See
+            recipe_engine/buildbucket recipe module for more info.
+          raise_on_failure (bool): Raise InfraFailure or StepFailure on failure.
+
+        Raises:
+          InfraFailure: One or more input builds had infra failure. Takes priority
+            over step failures.
+          StepFailure: One or more of input builds failed.
+        """
+    # List of failed builds
+    infra_failures = []
+    failures = []
+    # Create per-build display steps.
+    infra_failure_states = [
+        common_pb2.Status.Value('INFRA_FAILURE'),
+        common_pb2.Status.Value('CANCELED')
+    ]
+    with self.m.step.nest(step_name) as presentation:
+      for id_name, build in subbuilds.items():
+        with self.m.step.nest(build.build_name) as display_step:
+          step_links = display_step.presentation.links
+          step_links[str(build.build_id)
+                    ] = self.m.buildbucket.build_url(build_id=build.build_id)
+          if build.build_proto.status == common_pb2.Status.Value('SUCCESS'):
+            display_step.presentation.status = self.m.step.SUCCESS
+          elif build.build_proto.status in infra_failure_states:
+            display_step.presentation.status = self.m.step.EXCEPTION
+            infra_failures.append(build)
+          elif build.build_proto.status == common_pb2.Status.Value('FAILURE'):
+            display_step.presentation.status = self.m.step.FAILURE
+            failures.append(build)
+          # For any other status, use warning color.
+          else:
+            display_step.presentation.status = self.m.step.WARNING
+
+      def summary_section(build):
+        url = self.m.buildbucket.build_url(build_id=build.build_id)
+        failure_header = "[%s](%s)" % (build.build_name, url)
+        if build.build_proto.status == common_pb2.INFRA_FAILURE:
+          failure_header += " (infra failure)"
+        summary = build.build_proto.summary_markdown.strip()
+        # Don't include an empty summary.
+        if not summary:
+          return failure_header
+        return failure_header + ":\n\n%s" % summary
+
+      failure_message_parts = []
+      for b in infra_failures + failures:
+        failure_message_parts.append(summary_section(b))
+
+      if raise_on_failure:
+        # If there were any infra failures, raise purple.
+        if infra_failures:
+          presentation.status = self.m.step.EXCEPTION
+          exception_type = self.m.step.InfraFailure
+        # Otherwise if there were any step failures, raise red.
+        elif failures:
+          presentation.status = self.m.step.FAILURE
+          exception_type = self.m.step.StepFailure
+        else:
+          return
+
+        num_failed = len(failures) + len(infra_failures)
+        raise exception_type(
+            "%s failed:\n\n%s" % (
+                pluralize("build",
+                          num_failed), "\n\n".join(failure_message_parts)
+            )
+        )
+
   def display_builds(self, step_name, builds, raise_on_failure=False):
     """Display build links and status for each input build.
 

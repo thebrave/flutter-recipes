@@ -117,7 +117,7 @@ def GenTests(api):
           build_number=123
       ),
       api.shard_util_v2.child_led_steps(
-          builds=[try_subbuild1, try_subbuild2],
+          subbuilds=[try_subbuild1, try_subbuild2],
           collect_step="collect builds",
       )
   )
@@ -131,7 +131,7 @@ def GenTests(api):
       api.buildbucket_util.test("presubmit_bb", tryjob=True, status="failure") +
       api.properties(**presubmit_props_bb) + api.platform.name('linux') +
       api.shard_util_v2.child_build_steps(
-          builds=[try_failure],
+          subbuilds=[try_failure],
           launch_step="launch builds",
           collect_step="collect builds",
       )

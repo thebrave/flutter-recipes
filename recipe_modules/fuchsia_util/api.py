@@ -8,8 +8,8 @@ from recipe_engine import recipe_api
 BUCKET_NAME = 'flutter_infra'
 FUCHSIA_BUCKET_NAME = 'fuchsia'
 FUCHSIA_SDK_CIPD = 'fuchsia/sdk/core/linux-amd64'
-FUCHSIA_IMAGE_NAME = 'generic-x64.tgz'
-FUCHSIA_PACKAGES_ARCHIVE_NAME = 'generic-x64.tar.gz'
+FUCHSIA_IMAGE_NAME = 'qemu-x64.tgz'
+FUCHSIA_PACKAGES_ARCHIVE_NAME = 'qemu-x64.tar.gz'
 FUCHSIA_TEST_SCRIPT_NAME = 'run_fuchsia_tests.sh'
 
 SSH_CONFIG = """

@@ -46,6 +46,11 @@ class OSXSDKApi(recipe_api.RecipeApi):
     self._runtime_versions = None
     self._tool_pkg = 'infra/tools/mac_toolchain/${platform}'
     self._tool_ver = 'latest'
+    self._cleanup_cache = False
+
+  def _clean_cache(self):
+    if self._cleanup_cache or self._runtime_versions:
+      self.m.file.rmtree('Cleaning up Xcode cache', self.m.path['cache'].join('osx_sdk'))
 
   def initialize(self):
     """Initializes xcode, and ios versions.
@@ -55,6 +60,9 @@ class OSXSDKApi(recipe_api.RecipeApi):
     """
     if not self.m.platform.is_mac:
       return
+
+    if 'cleanup_cache' in self._sdk_properties:
+      self._cleanup_cache = self._sdk_properties['cleanup_cache']
 
     if 'toolchain_ver' in self._sdk_properties:
       self._tool_ver = self._sdk_properties['toolchain_ver'].lower()
@@ -157,6 +165,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     try:
       with self.m.context(infra_steps=True):
+        self._clean_cache()
         app = self._ensure_sdk(kind)
         self.m.os_utils.kill_simulators()
         self.m.step('select XCode', ['sudo', 'xcode-select', '--switch', app])
@@ -165,6 +174,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
     finally:
       with self.m.context(infra_steps=True):
         self.m.step('reset XCode', ['sudo', 'xcode-select', '--reset'])
+        self._clean_cache()
 
   def _ensure_sdk(self, kind):
     """Ensures the mac_toolchain tool and OS X SDK packages are installed.

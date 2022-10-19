@@ -1,0 +1,528 @@
+[
+  {
+    "cmd": [
+      "[START_DIR]/recipe_path/recipes.py",
+      "lint",
+      "--allowlist",
+      "allowed_module"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "lint"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/recipe_path/recipes.py",
+      "test",
+      "run"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "test"
+  },
+  {
+    "cmd": [],
+    "name": "fetch flutter commit-queue.cfg"
+  },
+  {
+    "cmd": [
+      "luci-auth",
+      "token",
+      "-lifetime",
+      "3m"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "fetch flutter commit-queue.cfg.get access token for default account",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::url]/resources/pycurl.py",
+      "--url",
+      "https://luci-config.appspot.com/_ah/api/config/v1/config_sets/projects/flutter/config/commit-queue.cfg",
+      "--status-json",
+      "/path/to/tmp/json",
+      "--outfile",
+      "/path/to/tmp/json",
+      "--headers-json",
+      "{\"Authorization\": \"Bearer extra.secret.token.should.not.be.logged\"}"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "fetch flutter commit-queue.cfg.get",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "all tryjobs",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@tryjobs@fuchsia/try/recipes@@@",
+      "@@@STEP_LOG_END@tryjobs@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get_affected_recipes",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@all recipes@flutter@@@",
+      "@@@STEP_LOG_LINE@all recipes@recipes@@@",
+      "@@@STEP_LOG_END@all recipes@@@",
+      "@@@STEP_LOG_LINE@changed files (raw)@recipes/flutter.py@@@",
+      "@@@STEP_LOG_LINE@changed files (raw)@recipes/foo@@@",
+      "@@@STEP_LOG_LINE@changed files (raw)@recipes/non_expected_json_file.json@@@",
+      "@@@STEP_LOG_LINE@changed files (raw)@recipe_modules/foo/examples/full.expected/bar.json@@@",
+      "@@@STEP_LOG_LINE@changed files (raw)@recipe_modules/foo/examples/full.py@@@",
+      "@@@STEP_LOG_LINE@changed files (raw)@recipe_modules/foo/test_api.py@@@",
+      "@@@STEP_LOG_END@changed files (raw)@@@",
+      "@@@STEP_LOG_LINE@changed files (filtered)@recipes/flutter.py@@@",
+      "@@@STEP_LOG_LINE@changed files (filtered)@recipes/foo@@@",
+      "@@@STEP_LOG_LINE@changed files (filtered)@recipes/non_expected_json_file.json@@@",
+      "@@@STEP_LOG_END@changed files (filtered)@@@",
+      "@@@STEP_LOG_LINE@affected recipes@recipes@@@",
+      "@@@STEP_LOG_END@affected recipes@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[START_DIR]/recipe_path/recipes",
+      "--recursive"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get_affected_recipes.ls-recipes",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/recipe_path/recipes/foo@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/recipe_path/recipes/flutter.py@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/recipe_path/recipes/recipes.py@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/recipe_path/recipes/sdk.expected@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "diff-tree",
+      "--no-commit-id",
+      "--name-only",
+      "-r",
+      "-z",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get_affected_recipes.git diff-tree",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@files@[@@@",
+      "@@@STEP_LOG_LINE@files@  \"recipes/flutter.py\", @@@",
+      "@@@STEP_LOG_LINE@files@  \"recipes/foo\", @@@",
+      "@@@STEP_LOG_LINE@files@  \"recipes/non_expected_json_file.json\", @@@",
+      "@@@STEP_LOG_LINE@files@  \"recipe_modules/foo/examples/full.expected/bar.json\", @@@",
+      "@@@STEP_LOG_LINE@files@  \"recipe_modules/foo/examples/full.py\", @@@",
+      "@@@STEP_LOG_LINE@files@  \"recipe_modules/foo/test_api.py\"@@@",
+      "@@@STEP_LOG_LINE@files@]@@@",
+      "@@@STEP_LOG_END@files@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/recipe_path/recipes.py",
+      "analyze",
+      "{\"files\": [\"recipes/flutter.py\", \"recipes/foo\", \"recipes/non_expected_json_file.json\"], \"recipes\": [\"flutter\", \"recipes\"]}",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get_affected_recipes.recipes-analyze",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"invalidRecipes\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"recipes\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"recipes\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get builders"
+  },
+  {
+    "cmd": [
+      "bb",
+      "ls",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-json",
+      "-nopage",
+      "-n",
+      "1000",
+      "-fields",
+      "builder",
+      "-predicate",
+      "{\"createTime\": {\"startTime\": \"2012-05-13T12:53:21Z\"}, \"status\": \"SUCCESS\"}"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.get green tryjobs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get builders.fuchsia/try/recipes",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_SUMMARY_TEXT@SELECTED@@@",
+      "@@@STEP_LOG_LINE@recipe_used@recipes@@@",
+      "@@@STEP_LOG_END@recipe_used@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "ls",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-json",
+      "-nopage",
+      "-n",
+      "1",
+      "-fields",
+      "builder,create_time,created_by,critical,end_time,id,infra,input,number,output,start_time,status,update_time",
+      "-predicate",
+      "{\"builder\": {\"bucket\": \"try\", \"builder\": \"recipes\", \"project\": \"fuchsia\"}, \"status\": \"SUCCESS\"}"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/recipes.buildbucket.search",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@{\"builder\": {\"bucket\": \"try\", \"builder\": \"fuchsia/try/recipes\", \"project\": \"flutter\"}, \"endTime\": \"2012-05-13T12:53:20Z\", \"id\": \"100\", \"input\": {\"gerritChanges\": [{\"host\": \"flutter-review.googlesource.com\", \"project\": \"flutter\"}], \"properties\": {\"recipe\": \"recipes\"}}, \"status\": \"SUCCESS\"}@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@",
+      "@@@STEP_LINK@100@https://cr-buildbucket.appspot.com/build/100@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch builds",
+    "~followup_annotations": [
+      "@@@STEP_LINK@foo.bar-debug@https://ci.chromium.org/b/8922054662172514000@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "batch",
+      "-host",
+      "cr-buildbucket.appspot.com"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "launch builds.schedule",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"ci\", \"builder\": \"foo.bar-debug\", \"project\": \"fuchsia\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"fuchsia.googlesource.com\", \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", \"project\": \"fuchsia\", \"ref\": \"refs/heads/main\"}, \"properties\": {\"$flutter/recipe_testing\": {\"enabled\": true, \"recipe_depth\": 1.0}}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"skip-retry-in-gerrit\", \"value\": \"subbuild\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"scheduleBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"ci\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"foo.bar-debug\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }, @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"8922054662172514000\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@request@{@@@",
+      "@@@STEP_LOG_LINE@request@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"scheduleBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@request@          \"bucket\": \"ci\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"builder\": \"foo.bar-debug\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"project\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@request@        }, @@@",
+      "@@@STEP_LOG_LINE@request@        \"experimental\": \"NO\", @@@",
+      "@@@STEP_LOG_LINE@request@        \"experiments\": {@@@",
+      "@@@STEP_LOG_LINE@request@          \"luci.buildbucket.parent_tracking\": false@@@",
+      "@@@STEP_LOG_LINE@request@        }, @@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", @@@",
+      "@@@STEP_LOG_LINE@request@        \"gitilesCommit\": {@@@",
+      "@@@STEP_LOG_LINE@request@          \"host\": \"fuchsia.googlesource.com\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"project\": \"fuchsia\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@request@        }, @@@",
+      "@@@STEP_LOG_LINE@request@        \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@request@          \"$flutter/recipe_testing\": {@@@",
+      "@@@STEP_LOG_LINE@request@            \"enabled\": true, @@@",
+      "@@@STEP_LOG_LINE@request@            \"recipe_depth\": 1.0@@@",
+      "@@@STEP_LOG_LINE@request@          }@@@",
+      "@@@STEP_LOG_LINE@request@        }, @@@",
+      "@@@STEP_LOG_LINE@request@        \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", @@@",
+      "@@@STEP_LOG_LINE@request@        \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@request@          \"parentRunId\": \"fake-task-id\"@@@",
+      "@@@STEP_LOG_LINE@request@        }, @@@",
+      "@@@STEP_LOG_LINE@request@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@request@          {@@@",
+      "@@@STEP_LOG_LINE@request@            \"key\": \"parent_buildbucket_id\", @@@",
+      "@@@STEP_LOG_LINE@request@            \"value\": \"8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@request@          }, @@@",
+      "@@@STEP_LOG_LINE@request@          {@@@",
+      "@@@STEP_LOG_LINE@request@            \"key\": \"skip-retry-in-gerrit\", @@@",
+      "@@@STEP_LOG_LINE@request@            \"value\": \"subbuild\"@@@",
+      "@@@STEP_LOG_LINE@request@          }, @@@",
+      "@@@STEP_LOG_LINE@request@          {@@@",
+      "@@@STEP_LOG_LINE@request@            \"key\": \"user_agent\", @@@",
+      "@@@STEP_LOG_LINE@request@            \"value\": \"recipe\"@@@",
+      "@@@STEP_LOG_LINE@request@          }@@@",
+      "@@@STEP_LOG_LINE@request@        ]@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    }@@@",
+      "@@@STEP_LOG_LINE@request@  ]@@@",
+      "@@@STEP_LOG_LINE@request@}@@@",
+      "@@@STEP_LOG_END@request@@@",
+      "@@@STEP_LINK@8922054662172514000@https://cr-buildbucket.appspot.com/build/8922054662172514000@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "collect builds"
+  },
+  {
+    "cmd": [],
+    "name": "collect builds.collect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "collect",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-interval",
+      "20s",
+      "8922054662172514000"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "collect builds.collect.wait",
+    "timeout": 86400.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "batch",
+      "-host",
+      "cr-buildbucket.appspot.com"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "collect builds.collect.get",
+    "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,infra.swarming.taskId,input,number,output,startTime,status,summaryMarkdown,updateTime\", \"id\": \"8922054662172514000\"}}]}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"8922054662172514000\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"status\": \"SUCCESS\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@request@{@@@",
+      "@@@STEP_LOG_LINE@request@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,infra.swarming.taskId,input,number,output,startTime,status,summaryMarkdown,updateTime\", @@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"8922054662172514000\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    }@@@",
+      "@@@STEP_LOG_LINE@request@  ]@@@",
+      "@@@STEP_LOG_LINE@request@}@@@",
+      "@@@STEP_LOG_END@request@@@",
+      "@@@STEP_LINK@8922054662172514000@https://cr-buildbucket.appspot.com/build/8922054662172514000@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "collect builds.check builds",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "collect builds.check builds.",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LINK@8922054662172514000@https://cr-buildbucket.appspot.com/build/8922054662172514000@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]

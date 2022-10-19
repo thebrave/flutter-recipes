@@ -1,0 +1,2022 @@
+[
+  {
+    "cmd": [
+      "[START_DIR]/recipe_path/recipes.py",
+      "lint",
+      "--allowlist",
+      "allowed_module"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "lint"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/recipe_path/recipes.py",
+      "test",
+      "run"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "test"
+  },
+  {
+    "cmd": [],
+    "name": "fetch flutter commit-queue.cfg"
+  },
+  {
+    "cmd": [
+      "luci-auth",
+      "token",
+      "-lifetime",
+      "3m"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "fetch flutter commit-queue.cfg.get access token for default account",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::url]/resources/pycurl.py",
+      "--url",
+      "https://luci-config.appspot.com/_ah/api/config/v1/config_sets/projects/flutter/config/commit-queue.cfg",
+      "--status-json",
+      "/path/to/tmp/json",
+      "--outfile",
+      "/path/to/tmp/json",
+      "--headers-json",
+      "{\"Authorization\": \"Bearer extra.secret.token.should.not.be.logged\"}"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "fetch flutter commit-queue.cfg.get",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "all tryjobs",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@tryjobs@fuchsia/try/cobalt-x64-linux@@@",
+      "@@@STEP_LOG_LINE@tryjobs@fuchsia/try/core.arm64-debug@@@",
+      "@@@STEP_LOG_LINE@tryjobs@fuchsia/try/core.x64-debug@@@",
+      "@@@STEP_LOG_END@tryjobs@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get_affected_recipes",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@all recipes@flutter@@@",
+      "@@@STEP_LOG_LINE@all recipes@recipes@@@",
+      "@@@STEP_LOG_END@all recipes@@@",
+      "@@@STEP_LOG_LINE@changed files (raw)@recipes/flutter.py@@@",
+      "@@@STEP_LOG_LINE@changed files (raw)@recipes/foo@@@",
+      "@@@STEP_LOG_LINE@changed files (raw)@recipes/non_expected_json_file.json@@@",
+      "@@@STEP_LOG_LINE@changed files (raw)@recipe_modules/foo/examples/full.expected/bar.json@@@",
+      "@@@STEP_LOG_LINE@changed files (raw)@recipe_modules/foo/examples/full.py@@@",
+      "@@@STEP_LOG_LINE@changed files (raw)@recipe_modules/foo/test_api.py@@@",
+      "@@@STEP_LOG_END@changed files (raw)@@@",
+      "@@@STEP_LOG_LINE@changed files (filtered)@recipes/flutter.py@@@",
+      "@@@STEP_LOG_LINE@changed files (filtered)@recipes/foo@@@",
+      "@@@STEP_LOG_LINE@changed files (filtered)@recipes/non_expected_json_file.json@@@",
+      "@@@STEP_LOG_END@changed files (filtered)@@@",
+      "@@@STEP_LOG_LINE@affected recipes@fuchsia@@@",
+      "@@@STEP_LOG_END@affected recipes@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[START_DIR]/recipe_path/recipes",
+      "--recursive"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get_affected_recipes.ls-recipes",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/recipe_path/recipes/foo@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/recipe_path/recipes/flutter.py@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/recipe_path/recipes/recipes.py@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/recipe_path/recipes/sdk.expected@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "diff-tree",
+      "--no-commit-id",
+      "--name-only",
+      "-r",
+      "-z",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get_affected_recipes.git diff-tree",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@files@[@@@",
+      "@@@STEP_LOG_LINE@files@  \"recipes/flutter.py\", @@@",
+      "@@@STEP_LOG_LINE@files@  \"recipes/foo\", @@@",
+      "@@@STEP_LOG_LINE@files@  \"recipes/non_expected_json_file.json\", @@@",
+      "@@@STEP_LOG_LINE@files@  \"recipe_modules/foo/examples/full.expected/bar.json\", @@@",
+      "@@@STEP_LOG_LINE@files@  \"recipe_modules/foo/examples/full.py\", @@@",
+      "@@@STEP_LOG_LINE@files@  \"recipe_modules/foo/test_api.py\"@@@",
+      "@@@STEP_LOG_LINE@files@]@@@",
+      "@@@STEP_LOG_END@files@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/recipe_path/recipes.py",
+      "analyze",
+      "{\"files\": [\"recipes/flutter.py\", \"recipes/foo\", \"recipes/non_expected_json_file.json\"], \"recipes\": [\"flutter\", \"recipes\"]}",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get_affected_recipes.recipes-analyze",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"invalidRecipes\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"recipes\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get builders",
+    "~followup_annotations": [
+      "@@@STEP_SUMMARY_TEXT@selected 2 builds@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get builders.fuchsia/try/cobalt-x64-linux",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_SUMMARY_TEXT@skipped@@@",
+      "@@@STEP_LOG_LINE@recipe_used@cobalt@@@",
+      "@@@STEP_LOG_END@recipe_used@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "ls",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-json",
+      "-nopage",
+      "-n",
+      "1",
+      "-fields",
+      "builder,create_time,created_by,critical,end_time,id,infra,input,number,output,start_time,status,update_time",
+      "-predicate",
+      "{\"builder\": {\"bucket\": \"try\", \"builder\": \"cobalt-x64-linux\", \"project\": \"fuchsia\"}, \"status\": \"SUCCESS\"}"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/cobalt-x64-linux.buildbucket.search",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@{\"builder\": {\"bucket\": \"try\", \"builder\": \"fuchsia/try/cobalt-x64-linux\", \"project\": \"flutter\"}, \"endTime\": \"2012-05-13T12:53:20Z\", \"id\": \"100\", \"input\": {\"gerritChanges\": [{\"host\": \"flutter-review.googlesource.com\", \"project\": \"flutter\"}], \"properties\": {\"recipe\": \"cobalt\"}}, \"status\": \"SUCCESS\"}@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@",
+      "@@@STEP_LINK@100@https://cr-buildbucket.appspot.com/build/100@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get builders.fuchsia/try/core.arm64-debug",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_SUMMARY_TEXT@SELECTED@@@",
+      "@@@STEP_LOG_LINE@recipe_used@fuchsia@@@",
+      "@@@STEP_LOG_END@recipe_used@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "ls",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-json",
+      "-nopage",
+      "-n",
+      "1",
+      "-fields",
+      "builder,create_time,created_by,critical,end_time,id,infra,input,number,output,start_time,status,update_time",
+      "-predicate",
+      "{\"builder\": {\"bucket\": \"try\", \"builder\": \"core.arm64-debug\", \"project\": \"fuchsia\"}, \"status\": \"SUCCESS\"}"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.buildbucket.search",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@{\"builder\": {\"bucket\": \"try\", \"builder\": \"fuchsia/try/core.arm64-debug\", \"project\": \"flutter\"}, \"endTime\": \"2012-05-13T12:53:20Z\", \"id\": \"200\", \"input\": {\"gerritChanges\": [{\"host\": \"flutter-review.googlesource.com\", \"project\": \"flutter\"}], \"properties\": {\"recipe\": \"fuchsia\"}}, \"status\": \"SUCCESS\"}@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@",
+      "@@@STEP_LINK@200@https://cr-buildbucket.appspot.com/build/200@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "get-builder",
+      "-adjust-priority",
+      "0",
+      "flutter/try:fuchsia/try/core.arm64-debug"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.led get-builder",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"bbagent_args\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"builder\": \"fuchsia/try/core.arm64-debug\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"create_time\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"priority\": 34500,@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"task_id\": \"200\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gitiles_commit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"host\": \"chromium.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"project\": \"flutter\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"recipe\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        }@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    }@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "edit",
+      "-name",
+      "recipes-cq:fuchsia/try/core.arm64-debug"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.led edit",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"try\",\n          \"builder\": \"fuchsia/try/core.arm64-debug\",\n          \"project\": \"flutter\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 34500,\n            \"task_id\": \"200\"\n          }\n        },\n        \"input\": {\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"flutter\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"recipe\": \"fuchsia\"\n          }\n        }\n      }\n    }\n  }\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"bbagent_args\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"builder\": \"fuchsia/try/core.arm64-debug\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"create_time\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"priority\": 34500,@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"task_id\": \"200\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gitiles_commit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"host\": \"chromium.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"project\": \"flutter\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"recipe\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        }@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    },@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"name\": \"recipes-cq:fuchsia/try/core.arm64-debug\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "ls-remote",
+      "--symref",
+      "https://flutter.googlesource.com/flutter",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.git ls-remote --symref HEAD",
+    "timeout": 60.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gitiles",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[fuchsia::gitiles]/resources/tool_manifest.json",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gitiles.read manifest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gitiles\",@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
+      "@@@STEP_LOG_END@tool_manifest.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gitiles.install path/to/gitiles",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/cipd_tool/path/to/gitiles/version%3Apinned-version"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gitiles.install path/to/gitiles.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cipd_tool/path/to/gitiles/version%3Apinned-version",
+      "-ensure-file",
+      "path/to/gitiles version:pinned-version",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gitiles.install path/to/gitiles.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gitiles\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/gitiles/version%3Apinned-version/gitiles",
+      "log",
+      "-json-output",
+      "/path/to/tmp/json",
+      "-limit",
+      "10",
+      "https://flutter.googlesource.com/flutter",
+      "refs/heads/main"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.log flutter",
+    "timeout": 300.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@[@@@",
+      "@@@STEP_LOG_LINE@json.output@  {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"author\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"email\": \"fake_A@fake_0.email.com\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"Fake A\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"time\": \"Mon Jan 01 00:00:00 2015\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }, @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"committer\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"email\": \"fake_A@fake_0.email.com\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"Fake A\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"time\": \"Mon Jan 01 00:00:00 2015\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }, @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"id\": \"3e30158f2a7caccb7a9f6632a60011e7a44e1e5c\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"message\": \"fake A msg 0\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"parents\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"83a7614b3b60951511be50db1b9561daff4bb447\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    ], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"tree\": \"1b6412b24ec3add84836c8fdd1af5ac8e35b61d9\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"tree_diff\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"new_id\": \"8bea05ad53680fce6937543f0d98cd48e295b8ff\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"new_mode\": 33188, @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"new_path\": \"a.py\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"old_id\": \"0000000000000000000000000000000000000000\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"old_mode\": 0, @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"type\": \"add\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@]@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gerrit",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[fuchsia::gerrit]/resources/tool_manifest.json",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gerrit.read manifest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gerrit\",@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
+      "@@@STEP_LOG_END@tool_manifest.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gerrit.install path/to/gerrit",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gerrit.install path/to/gerrit.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version",
+      "-ensure-file",
+      "path/to/gerrit version:pinned-version",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gerrit.install path/to/gerrit.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gerrit\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version/gerrit",
+      "change-detail",
+      "-host",
+      "https://flutter-review.googlesource.com",
+      "-input",
+      "{\"change_id\": \"3e30158f2a7caccb7a9f6632a60011e7a44e1e5c\", \"params\": {\"o\": [\"CURRENT_REVISION\"]}}",
+      "-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.latest change details for flutter",
+    "timeout": 600,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"_number\": 12345, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"current_revision\": \"5555555555555555555555555555555555555555\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"revisions\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"5555555555555555555555555555555555555555\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"_number\": 6@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@json.input@{@@@",
+      "@@@STEP_LOG_LINE@json.input@  \"change_id\": \"3e30158f2a7caccb7a9f6632a60011e7a44e1e5c\", @@@",
+      "@@@STEP_LOG_LINE@json.input@  \"params\": {@@@",
+      "@@@STEP_LOG_LINE@json.input@    \"o\": [@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"CURRENT_REVISION\"@@@",
+      "@@@STEP_LOG_LINE@json.input@    ]@@@",
+      "@@@STEP_LOG_LINE@json.input@  }@@@",
+      "@@@STEP_LOG_LINE@json.input@}@@@",
+      "@@@STEP_LOG_END@json.input@@@",
+      "@@@STEP_LINK@gerrit link@https://flutter-review.googlesource.com/q/3e30158f2a7caccb7a9f6632a60011e7a44e1e5c@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "edit-cr-cl",
+      "https://flutter-review.googlesource.com/c/flutter/+/12345/6"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.led edit-cr-cl",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"try\",\n          \"builder\": \"fuchsia/try/core.arm64-debug\",\n          \"project\": \"flutter\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 34500,\n            \"task_id\": \"200\"\n          }\n        },\n        \"input\": {\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"flutter\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"recipe\": \"fuchsia\"\n          }\n        }\n      }\n    },\n    \"name\": \"recipes-cq:fuchsia/try/core.arm64-debug\"\n  }\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"bbagent_args\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"builder\": \"fuchsia/try/core.arm64-debug\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"create_time\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"priority\": 34500,@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"task_id\": \"200\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gerrit_changes\": [@@@",
+      "@@@STEP_LOG_LINE@proto.output@            {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"change\": \"12345\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"host\": \"flutter-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"patchset\": \"6\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@            }@@@",
+      "@@@STEP_LOG_LINE@proto.output@          ],@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gitiles_commit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"host\": \"chromium.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"project\": \"flutter\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"recipe\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        }@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    },@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"name\": \"recipes-cq:fuchsia/try/core.arm64-debug\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "edit",
+      "-pa",
+      "$flutter/recipe_testing={\"enabled\": true, \"recipe_depth\": 1}"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.led edit (2)",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"try\",\n          \"builder\": \"fuchsia/try/core.arm64-debug\",\n          \"project\": \"flutter\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 34500,\n            \"task_id\": \"200\"\n          }\n        },\n        \"input\": {\n          \"gerrit_changes\": [\n            {\n              \"change\": \"12345\",\n              \"host\": \"flutter-review.googlesource.com\",\n              \"patchset\": \"6\",\n              \"project\": \"flutter\"\n            }\n          ],\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"flutter\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"recipe\": \"fuchsia\"\n          }\n        }\n      }\n    },\n    \"name\": \"recipes-cq:fuchsia/try/core.arm64-debug\"\n  }\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"bbagent_args\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"builder\": \"fuchsia/try/core.arm64-debug\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"create_time\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"priority\": 34500,@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"task_id\": \"200\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gerrit_changes\": [@@@",
+      "@@@STEP_LOG_LINE@proto.output@            {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"change\": \"12345\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"host\": \"flutter-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"patchset\": \"6\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@            }@@@",
+      "@@@STEP_LOG_LINE@proto.output@          ],@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gitiles_commit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"host\": \"chromium.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"project\": \"flutter\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"$flutter/recipe_testing\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"enabled\": true,@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"recipe_depth\": 1.0@@@",
+      "@@@STEP_LOG_LINE@proto.output@            },@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"recipe\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        }@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    },@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"name\": \"recipes-cq:fuchsia/try/core.arm64-debug\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "edit",
+      "-experiment",
+      "luci.use_realms=true"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.led edit (3)",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"try\",\n          \"builder\": \"fuchsia/try/core.arm64-debug\",\n          \"project\": \"flutter\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 34500,\n            \"task_id\": \"200\"\n          }\n        },\n        \"input\": {\n          \"gerrit_changes\": [\n            {\n              \"change\": \"12345\",\n              \"host\": \"flutter-review.googlesource.com\",\n              \"patchset\": \"6\",\n              \"project\": \"flutter\"\n            }\n          ],\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"flutter\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"$flutter/recipe_testing\": {\n              \"enabled\": true,\n              \"recipe_depth\": 1.0\n            },\n            \"recipe\": \"fuchsia\"\n          }\n        }\n      }\n    },\n    \"name\": \"recipes-cq:fuchsia/try/core.arm64-debug\"\n  }\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"bbagent_args\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"builder\": \"fuchsia/try/core.arm64-debug\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"create_time\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"priority\": 34500,@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"task_id\": \"200\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gerrit_changes\": [@@@",
+      "@@@STEP_LOG_LINE@proto.output@            {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"change\": \"12345\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"host\": \"flutter-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"patchset\": \"6\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@            }@@@",
+      "@@@STEP_LOG_LINE@proto.output@          ],@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gitiles_commit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"host\": \"chromium.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"project\": \"flutter\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"$flutter/recipe_testing\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"enabled\": true,@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"recipe_depth\": 1.0@@@",
+      "@@@STEP_LOG_LINE@proto.output@            },@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"recipe\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        }@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    },@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"name\": \"recipes-cq:fuchsia/try/core.arm64-debug\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "edit-recipe-bundle"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.arm64-debug.led edit-recipe-bundle",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"try\",\n          \"builder\": \"fuchsia/try/core.arm64-debug\",\n          \"project\": \"flutter\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 34500,\n            \"task_id\": \"200\"\n          }\n        },\n        \"input\": {\n          \"gerrit_changes\": [\n            {\n              \"change\": \"12345\",\n              \"host\": \"flutter-review.googlesource.com\",\n              \"patchset\": \"6\",\n              \"project\": \"flutter\"\n            }\n          ],\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"flutter\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"$flutter/recipe_testing\": {\n              \"enabled\": true,\n              \"recipe_depth\": 1.0\n            },\n            \"recipe\": \"fuchsia\"\n          }\n        }\n      }\n    },\n    \"name\": \"recipes-cq:fuchsia/try/core.arm64-debug\"\n  }\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"bbagent_args\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"builder\": \"fuchsia/try/core.arm64-debug\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"create_time\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"agent\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"data\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"kitchen-checkout\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"cas\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                      \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                        \"hash\": \"9095eb4fe66a5a67626c5af808e1298598a94bfc48e07c7232161b1128bac0be\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                        \"size_bytes\": \"1337\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@                      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    }@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@                }@@@",
+      "@@@STEP_LOG_LINE@proto.output@              },@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"purposes\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"kitchen-checkout\": \"PURPOSE_EXE_PAYLOAD\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@              }@@@",
+      "@@@STEP_LOG_LINE@proto.output@            }@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"priority\": 34500,@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"task_id\": \"200\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gerrit_changes\": [@@@",
+      "@@@STEP_LOG_LINE@proto.output@            {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"change\": \"12345\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"host\": \"flutter-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"patchset\": \"6\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@            }@@@",
+      "@@@STEP_LOG_LINE@proto.output@          ],@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gitiles_commit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"host\": \"chromium.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"project\": \"flutter\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"$flutter/recipe_testing\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"enabled\": true,@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"recipe_depth\": 1.0@@@",
+      "@@@STEP_LOG_LINE@proto.output@            },@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"recipe\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        }@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    },@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"name\": \"recipes-cq:fuchsia/try/core.arm64-debug\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get builders.fuchsia/try/core.x64-debug",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_SUMMARY_TEXT@SELECTED@@@",
+      "@@@STEP_LOG_LINE@recipe_used@fuchsia@@@",
+      "@@@STEP_LOG_END@recipe_used@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "ls",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-json",
+      "-nopage",
+      "-n",
+      "1",
+      "-fields",
+      "builder,create_time,created_by,critical,end_time,id,infra,input,number,output,start_time,status,update_time",
+      "-predicate",
+      "{\"builder\": {\"bucket\": \"try\", \"builder\": \"core.x64-debug\", \"project\": \"fuchsia\"}, \"status\": \"SUCCESS\"}"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.x64-debug.buildbucket.search",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@{\"builder\": {\"bucket\": \"try\", \"builder\": \"fuchsia/try/core.x64-debug\", \"project\": \"flutter\"}, \"endTime\": \"2012-05-13T12:53:20Z\", \"id\": \"100\", \"input\": {\"gerritChanges\": [{\"host\": \"flutter-review.googlesource.com\", \"project\": \"flutter\"}], \"properties\": {\"recipe\": \"fuchsia\"}}, \"status\": \"SUCCESS\"}@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@",
+      "@@@STEP_LINK@100@https://cr-buildbucket.appspot.com/build/100@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "get-builder",
+      "-adjust-priority",
+      "0",
+      "flutter/try:fuchsia/try/core.x64-debug"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.x64-debug.led get-builder",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"bbagent_args\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"builder\": \"fuchsia/try/core.x64-debug\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"create_time\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"priority\": 34500,@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"task_id\": \"100\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gitiles_commit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"host\": \"chromium.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"project\": \"flutter\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"recipe\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        }@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    }@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "edit",
+      "-name",
+      "recipes-cq:fuchsia/try/core.x64-debug"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.x64-debug.led edit",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"try\",\n          \"builder\": \"fuchsia/try/core.x64-debug\",\n          \"project\": \"flutter\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 34500,\n            \"task_id\": \"100\"\n          }\n        },\n        \"input\": {\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"flutter\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"recipe\": \"fuchsia\"\n          }\n        }\n      }\n    }\n  }\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"bbagent_args\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"builder\": \"fuchsia/try/core.x64-debug\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"create_time\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"priority\": 34500,@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"task_id\": \"100\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gitiles_commit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"host\": \"chromium.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"project\": \"flutter\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"recipe\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        }@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    },@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"name\": \"recipes-cq:fuchsia/try/core.x64-debug\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "edit-cr-cl",
+      "https://flutter-review.googlesource.com/c/flutter/+/12345/6"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.x64-debug.led edit-cr-cl",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"try\",\n          \"builder\": \"fuchsia/try/core.x64-debug\",\n          \"project\": \"flutter\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 34500,\n            \"task_id\": \"100\"\n          }\n        },\n        \"input\": {\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"flutter\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"recipe\": \"fuchsia\"\n          }\n        }\n      }\n    },\n    \"name\": \"recipes-cq:fuchsia/try/core.x64-debug\"\n  }\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"bbagent_args\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"builder\": \"fuchsia/try/core.x64-debug\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"create_time\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"priority\": 34500,@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"task_id\": \"100\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gerrit_changes\": [@@@",
+      "@@@STEP_LOG_LINE@proto.output@            {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"change\": \"12345\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"host\": \"flutter-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"patchset\": \"6\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@            }@@@",
+      "@@@STEP_LOG_LINE@proto.output@          ],@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gitiles_commit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"host\": \"chromium.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"project\": \"flutter\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"recipe\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        }@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    },@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"name\": \"recipes-cq:fuchsia/try/core.x64-debug\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "edit",
+      "-pa",
+      "$flutter/recipe_testing={\"enabled\": true, \"recipe_depth\": 1}"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.x64-debug.led edit (2)",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"try\",\n          \"builder\": \"fuchsia/try/core.x64-debug\",\n          \"project\": \"flutter\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 34500,\n            \"task_id\": \"100\"\n          }\n        },\n        \"input\": {\n          \"gerrit_changes\": [\n            {\n              \"change\": \"12345\",\n              \"host\": \"flutter-review.googlesource.com\",\n              \"patchset\": \"6\",\n              \"project\": \"flutter\"\n            }\n          ],\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"flutter\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"recipe\": \"fuchsia\"\n          }\n        }\n      }\n    },\n    \"name\": \"recipes-cq:fuchsia/try/core.x64-debug\"\n  }\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"bbagent_args\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"builder\": \"fuchsia/try/core.x64-debug\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"create_time\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"priority\": 34500,@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"task_id\": \"100\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gerrit_changes\": [@@@",
+      "@@@STEP_LOG_LINE@proto.output@            {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"change\": \"12345\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"host\": \"flutter-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"patchset\": \"6\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@            }@@@",
+      "@@@STEP_LOG_LINE@proto.output@          ],@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gitiles_commit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"host\": \"chromium.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"project\": \"flutter\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"$flutter/recipe_testing\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"enabled\": true,@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"recipe_depth\": 1.0@@@",
+      "@@@STEP_LOG_LINE@proto.output@            },@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"recipe\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        }@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    },@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"name\": \"recipes-cq:fuchsia/try/core.x64-debug\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "edit",
+      "-experiment",
+      "luci.use_realms=true"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.x64-debug.led edit (3)",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"try\",\n          \"builder\": \"fuchsia/try/core.x64-debug\",\n          \"project\": \"flutter\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 34500,\n            \"task_id\": \"100\"\n          }\n        },\n        \"input\": {\n          \"gerrit_changes\": [\n            {\n              \"change\": \"12345\",\n              \"host\": \"flutter-review.googlesource.com\",\n              \"patchset\": \"6\",\n              \"project\": \"flutter\"\n            }\n          ],\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"flutter\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"$flutter/recipe_testing\": {\n              \"enabled\": true,\n              \"recipe_depth\": 1.0\n            },\n            \"recipe\": \"fuchsia\"\n          }\n        }\n      }\n    },\n    \"name\": \"recipes-cq:fuchsia/try/core.x64-debug\"\n  }\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"bbagent_args\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"builder\": \"fuchsia/try/core.x64-debug\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"create_time\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"priority\": 34500,@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"task_id\": \"100\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gerrit_changes\": [@@@",
+      "@@@STEP_LOG_LINE@proto.output@            {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"change\": \"12345\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"host\": \"flutter-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"patchset\": \"6\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@            }@@@",
+      "@@@STEP_LOG_LINE@proto.output@          ],@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gitiles_commit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"host\": \"chromium.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"project\": \"flutter\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"$flutter/recipe_testing\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"enabled\": true,@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"recipe_depth\": 1.0@@@",
+      "@@@STEP_LOG_LINE@proto.output@            },@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"recipe\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        }@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    },@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"name\": \"recipes-cq:fuchsia/try/core.x64-debug\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "edit-recipe-bundle"
+    ],
+    "cwd": "[START_DIR]/recipe_path",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get builders.fuchsia/try/core.x64-debug.led edit-recipe-bundle",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"try\",\n          \"builder\": \"fuchsia/try/core.x64-debug\",\n          \"project\": \"flutter\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 34500,\n            \"task_id\": \"100\"\n          }\n        },\n        \"input\": {\n          \"gerrit_changes\": [\n            {\n              \"change\": \"12345\",\n              \"host\": \"flutter-review.googlesource.com\",\n              \"patchset\": \"6\",\n              \"project\": \"flutter\"\n            }\n          ],\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"flutter\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"$flutter/recipe_testing\": {\n              \"enabled\": true,\n              \"recipe_depth\": 1.0\n            },\n            \"recipe\": \"fuchsia\"\n          }\n        }\n      }\n    },\n    \"name\": \"recipes-cq:fuchsia/try/core.x64-debug\"\n  }\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"bbagent_args\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@      \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"builder\": \"fuchsia/try/core.x64-debug\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"create_time\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"agent\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"data\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"kitchen-checkout\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"cas\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                      \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                        \"hash\": \"9095eb4fe66a5a67626c5af808e1298598a94bfc48e07c7232161b1128bac0be\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                        \"size_bytes\": \"1337\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@                      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    }@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@                }@@@",
+      "@@@STEP_LOG_LINE@proto.output@              },@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"purposes\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"kitchen-checkout\": \"PURPOSE_EXE_PAYLOAD\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@              }@@@",
+      "@@@STEP_LOG_LINE@proto.output@            }@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"priority\": 34500,@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"task_id\": \"100\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        },@@@",
+      "@@@STEP_LOG_LINE@proto.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gerrit_changes\": [@@@",
+      "@@@STEP_LOG_LINE@proto.output@            {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"change\": \"12345\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"host\": \"flutter-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"patchset\": \"6\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@            }@@@",
+      "@@@STEP_LOG_LINE@proto.output@          ],@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"gitiles_commit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"host\": \"chromium.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"project\": \"flutter\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          },@@@",
+      "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"$flutter/recipe_testing\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"enabled\": true,@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"recipe_depth\": 1.0@@@",
+      "@@@STEP_LOG_LINE@proto.output@            },@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"recipe\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@          }@@@",
+      "@@@STEP_LOG_LINE@proto.output@        }@@@",
+      "@@@STEP_LOG_LINE@proto.output@      }@@@",
+      "@@@STEP_LOG_LINE@proto.output@    },@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"name\": \"recipes-cq:fuchsia/try/core.x64-debug\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect"
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_SUMMARY_TEXT@2 passed@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.fuchsia/try/core.arm64-debug (attempt 0)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://luci-milo.appspot.com/swarming/task/200?server=example.swarmingserver.appspot.com@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "launch",
+      "-modernize"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "launch/collect.0.launch.fuchsia/try/core.arm64-debug (attempt 0).led launch",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"try\",\n          \"builder\": \"fuchsia/try/core.arm64-debug\",\n          \"project\": \"flutter\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"buildbucket\": {\n            \"agent\": {\n              \"input\": {\n                \"data\": {\n                  \"kitchen-checkout\": {\n                    \"cas\": {\n                      \"digest\": {\n                        \"hash\": \"9095eb4fe66a5a67626c5af808e1298598a94bfc48e07c7232161b1128bac0be\",\n                        \"size_bytes\": \"1337\"\n                      }\n                    }\n                  }\n                }\n              },\n              \"purposes\": {\n                \"kitchen-checkout\": \"PURPOSE_EXE_PAYLOAD\"\n              }\n            }\n          },\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 34500,\n            \"task_id\": \"200\"\n          }\n        },\n        \"input\": {\n          \"gerrit_changes\": [\n            {\n              \"change\": \"12345\",\n              \"host\": \"flutter-review.googlesource.com\",\n              \"patchset\": \"6\",\n              \"project\": \"flutter\"\n            }\n          ],\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"flutter\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"$flutter/recipe_testing\": {\n              \"enabled\": true,\n              \"recipe_depth\": 1.0\n            },\n            \"recipe\": \"fuchsia\"\n          }\n        }\n      }\n    },\n    \"name\": \"recipes-cq:fuchsia/try/core.arm64-debug\"\n  }\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"host_name\": \"example.swarmingserver.appspot.com\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"task_id\": \"200\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@Swarming task@https://example.swarmingserver.appspot.com/task?id=200@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.fuchsia/try/core.x64-debug (attempt 0)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://luci-milo.appspot.com/swarming/task/100?server=example.swarmingserver.appspot.com@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "led",
+      "launch",
+      "-modernize"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "launch/collect.0.launch.fuchsia/try/core.x64-debug (attempt 0).led launch",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"try\",\n          \"builder\": \"fuchsia/try/core.x64-debug\",\n          \"project\": \"flutter\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"buildbucket\": {\n            \"agent\": {\n              \"input\": {\n                \"data\": {\n                  \"kitchen-checkout\": {\n                    \"cas\": {\n                      \"digest\": {\n                        \"hash\": \"9095eb4fe66a5a67626c5af808e1298598a94bfc48e07c7232161b1128bac0be\",\n                        \"size_bytes\": \"1337\"\n                      }\n                    }\n                  }\n                }\n              },\n              \"purposes\": {\n                \"kitchen-checkout\": \"PURPOSE_EXE_PAYLOAD\"\n              }\n            }\n          },\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 34500,\n            \"task_id\": \"100\"\n          }\n        },\n        \"input\": {\n          \"gerrit_changes\": [\n            {\n              \"change\": \"12345\",\n              \"host\": \"flutter-review.googlesource.com\",\n              \"patchset\": \"6\",\n              \"project\": \"flutter\"\n            }\n          ],\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"flutter\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"$flutter/recipe_testing\": {\n              \"enabled\": true,\n              \"recipe_depth\": 1.0\n            },\n            \"recipe\": \"fuchsia\"\n          }\n        }\n      }\n    },\n    \"name\": \"recipes-cq:fuchsia/try/core.x64-debug\"\n  }\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"host_name\": \"example.swarmingserver.appspot.com\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"task_id\": \"100\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@Swarming task@https://example.swarmingserver.appspot.com/task?id=100@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.install infra/tools/luci/swarming",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "launch/collect.0.install infra/tools/luci/swarming.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin",
+      "-ensure-file",
+      "infra/tools/luci/swarming/${platform} swarming_module_pin",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "launch/collect.0.install infra/tools/luci/swarming.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-swarming_module_\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/swarming/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "collect",
+      "-server",
+      "https://example.swarmingserver.appspot.com",
+      "-task-summary-json",
+      "/path/to/tmp/json",
+      "-task-output-stdout",
+      "json",
+      "-verbose",
+      "-eager",
+      "100",
+      "200"
+    ],
+    "cost": {
+      "cpu": 100,
+      "disk": 0,
+      "memory": 50,
+      "net": 0
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "launch/collect.0.collect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"100\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"0\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"recipes-cq:fuchsia/try/core.x64-debug\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_id\": 100@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"200\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"0\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"recipes-cq:fuchsia/try/core.arm64-debug\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_id\": 200@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@task stdout+stderr: recipes-cq:fuchsia&#x2f;try&#x2f;core.arm64-debug@hello world!@@@",
+      "@@@STEP_LOG_END@task stdout+stderr: recipes-cq:fuchsia&#x2f;try&#x2f;core.arm64-debug@@@",
+      "@@@STEP_LOG_LINE@task stdout+stderr: recipes-cq:fuchsia&#x2f;try&#x2f;core.x64-debug@hello world!@@@",
+      "@@@STEP_LOG_END@task stdout+stderr: recipes-cq:fuchsia&#x2f;try&#x2f;core.x64-debug@@@",
+      "@@@STEP_LINK@task cas outputs: recipes-cq:fuchsia/try/core.arm64-debug@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@",
+      "@@@STEP_LINK@task cas outputs: recipes-cq:fuchsia/try/core.x64-debug@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.process results",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.process results.recipes-cq:fuchsia/try/core.arm64-debug",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.process results.recipes-cq:fuchsia/try/core.x64-debug",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.passed tasks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LINK@fuchsia/try/core.arm64-debug (attempt 0)@https://luci-milo.appspot.com/swarming/task/200?server=example.swarmingserver.appspot.com@@@",
+      "@@@STEP_LINK@fuchsia/try/core.x64-debug (attempt 0)@https://luci-milo.appspot.com/swarming/task/100?server=example.swarmingserver.appspot.com@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "passes",
+    "~followup_annotations": [
+      "@@@STEP_SUMMARY_TEXT@2 passed@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "passes.fuchsia/try/core.arm64-debug",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@attempt 0 (pass)@https://luci-milo.appspot.com/swarming/task/200?server=example.swarmingserver.appspot.com@@@",
+      "@@@STEP_LINK@vm-123@https://example.swarmingserver.appspot.com/bot?id=vm-123@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "passes.fuchsia/try/core.x64-debug",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@attempt 0 (pass)@https://luci-milo.appspot.com/swarming/task/100?server=example.swarmingserver.appspot.com@@@",
+      "@@@STEP_LINK@vm-123@https://example.swarmingserver.appspot.com/bot?id=vm-123@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "flakes",
+    "~followup_annotations": [
+      "@@@STEP_SUMMARY_TEXT@0 flaked@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "failures",
+    "~followup_annotations": [
+      "@@@STEP_SUMMARY_TEXT@0 failed@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "all tasks passed"
+  },
+  {
+    "name": "$result"
+  }
+]

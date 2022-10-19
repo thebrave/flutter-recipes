@@ -8,16 +8,16 @@ import collections
 
 import attr
 
-from PB.recipe_modules.fuchsia.recipe_testing import options as options_pb2
+from PB.recipe_modules.flutter.recipe_testing import options as options_pb2
 from recipe_engine.recipe_api import Property
 
 DEPS = [
+    'flutter/recipe_testing',
     'fuchsia/commit_queue',
+    'fuchsia/gerrit',
     'fuchsia/git',
     'fuchsia/git_checkout',
-    'fuchsia/recipe_testing',
     'fuchsia/status_check',
-    'fuchsia/gerrit',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/json',

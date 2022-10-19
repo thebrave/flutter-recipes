@@ -1,0 +1,32 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package recipe_modules.flutter.recipe_testing;
+
+message Project {
+  // Name of the project, e.g., "flutter".
+  string name = 1;
+
+  // Include tryjobs with result_visibility COMMENT_LEVEL_RESTRICTED.
+  bool include_restricted = 2;
+
+  // Include tryjobs with result_visibility COMMENT_LEVEL_FULL.
+  bool include_unrestricted = 3;
+
+  // Name of the CQ file. Defaults to "commit-queue.cfg".
+  string cq_config_name = 4;
+
+  // Buckets to exclude from recipe testing.
+  repeated string excluded_buckets = 5;
+}
+
+message Options {
+  // List of projects to use when searching for tryjobs.
+  repeated Project projects = 1;
+
+  // Launch tryjobs through Buildbucket API instead of led.
+  bool use_buildbucket = 2;
+}

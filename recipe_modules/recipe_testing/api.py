@@ -42,11 +42,6 @@ class Build(swarming_retry_api.LedTask):
         self._led_data = self._led_data.then("edit", *args)
 
 
-def led_task_name(builder):
-    """Returns the name to use for the led swarming task for the builder."""
-    return "recipes-cq:%s" % builder
-
-
 class RecipeTestingApi(recipe_api.RecipeApi):
     """API for running tests and processing test results."""
 
@@ -197,21 +192,12 @@ class RecipeTestingApi(recipe_api.RecipeApi):
 
     def _create_led_build(self, orig_build, selftest_cl):
         builder = orig_build.builder
-        builder_lookup_name = "{project}/{bucket}:{builder}".format(
-            project=builder.project,
-            bucket=builder.bucket,
-            builder=builder.builder,
-        )
-        # Using `led get-builder` instead of `led get-build` ensures that we
-        # won't use an outdated version of the builder (e.g. with deprecated
-        # dimensions).
         # By default the priority is increased by 10 (resulting in a "lower"
         # priority), but we want it to stay the same.
         led_data = self.m.led(
-            "get-builder", "-adjust-priority", "0", builder_lookup_name
+            "get-build", "-adjust-priority", "0", orig_build.id
         )
 
-        led_data = led_data.then("edit", "-name", led_task_name(builder.builder))
         build = Build(api=self.m, name=builder.builder, led_data=led_data)
 
         if orig_build.input.properties["recipe"] == "recipes":
@@ -488,7 +474,6 @@ class RecipeTestingApi(recipe_api.RecipeApi):
 
         if not builds:
             return
-
         self.m.swarming_retry.run_and_present_tasks(builds)
 
     def _tryjob_properties(self):

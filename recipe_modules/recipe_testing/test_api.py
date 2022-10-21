@@ -92,17 +92,15 @@ class RecipeTestingTestApi(recipe_test_api.RecipeTestApi):
         if not using_led:
             return result
 
-        # It's unrealistic for the get-builder response to have a task ID set,
+        # It's unrealistic for the get-build response to have a task ID set,
         # but the only way of mocking the task ID returned by `led launch` is
         # to set the task ID on the input to `led launch`, which, for recipe
-        # testing, is the `led get-builder` response.
+        # testing, is the `led get-build` response.
         build.infra.swarming.task_id = str(fake_id)
         job.buildbucket.bbagent_args.build.CopyFrom(build)
-        result += self.m.led.mock_get_builder(
+        result += self.m.led.mock_get_build(
             job,
-            project=project,
-            bucket=bucket,
-            builder=name,
+            fake_id,
         )
 
         if recipe != "recipes" and not cl_cached:

@@ -76,7 +76,8 @@ class AddhocValidationApi(recipe_api.RecipeApi):
               self.m.bucket_util.upload_folder('Upload API Docs', docs_path, 'doc', "api_docs.zip")
             project = self.m.properties.get('firebase_project')
             # Only deploy to firebase directly if this is master or main.
-            if (self.m.properties.get('git_branch') in ['master', 'main']):
+            if ((self.m.properties.get('git_branch') in ['master', 'main']) or
+                (self.m.properties.get('release_ref') == 'refs/heads/stable')):
               self.m.firebase.deploy_docs(
                   env=env,
                   env_prefixes=env_prefixes,

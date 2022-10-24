@@ -186,21 +186,18 @@ class TestUtilsApi(recipe_api.RecipeApi):
         {
           'arch': 'intel',
           'host_type': 'linux',
-          'device_version': 'android-25',
           'device_type': 'Moto G Play'
         }
       Mac/ios:
         {
           'arch': 'm1',
           'host_type': 'mac',
-          'device_version': 'iOS-14.4.2',
           'device_type': 'iPhone 6s'
         }
       Windows/android:
         {
           'arch': 'intel',
           'host_type': 'win',
-          'device_version': 'android-25',
           'device_type': 'Moto G Play'
         }
     """
@@ -228,21 +225,17 @@ class TestUtilsApi(recipe_api.RecipeApi):
             'Find device type', ['ideviceinfo', '--key', 'ProductType']
         )
         device_tags['device_type'] = IDENTIFIER_NAME_MAP[iphone_identifier]
-        device_tags['device_version'] = 'iOS-' + _get_tag(
-            'Find device version', ['ideviceinfo', '--key', 'ProductVersion']
-        )
     elif 'android' in target_tags:
       with self.m.context(env=env, env_prefixes=env_prefixes):
         device_tags['device_type'] = _get_tag(
             'Find device type', ['adb', 'shell', 'getprop', 'ro.product.model']
         )
-        device_tags['device_version'] = 'android-' + _get_tag(
-            'Find device version',
-            ['adb', 'shell', 'getprop', 'ro.build.version.sdk']
-        )
     else:
       device_tags['device_type'] = 'none'
-      device_tags['device_version'] = 'none'
+
+    # Use same `none` as device version to consolidate metric data streams.
+    # Do not use real distinct values: https://github.com/flutter/flutter/issues/112804
+    device_tags['device_version'] = 'none'
 
     device_tags['host_type'] = self.m.platform.name
     device_tags['arch'] = self.m.platform.arch

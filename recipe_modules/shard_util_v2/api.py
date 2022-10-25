@@ -161,7 +161,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       # Override recipe.
       drone_properties['recipe'] = recipe_name
 
-      environment = drone_properties['environment']
+      environment = drone_properties.get('environment')
       bucket = self.m.buildbucket.build.builder.bucket
       environment = '%s ' % environment if environment else ''
       environment = '' if bucket == 'try' else environment

@@ -36,6 +36,7 @@ from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 
 DEPS = [
     'depot_tools/gsutil',
+    'flutter/flutter_bcid',
     'flutter/build_util',
     'flutter/flutter_deps',
     'flutter/os_utils',
@@ -45,6 +46,7 @@ DEPS = [
     'flutter/shard_util_v2',
     'flutter/test_utils',
     'fuchsia/cas_util',
+    'recipe_engine/bcid_reporter',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -57,6 +59,7 @@ DEPS = [
 
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
+ANDROID_ARTIFACTS_BUCKET = 'download.flutter.io'
 
 
 def Build(api, checkout, env, env_prefixes, outputs):
@@ -68,6 +71,7 @@ def Build(api, checkout, env, env_prefixes, outputs):
   deps = api.properties.get('dependencies', [])
   api.flutter_deps.required_deps(env, env_prefixes, deps)
   build = api.properties.get('build')
+  api.flutter_bcid.report_stage('compile')
   api.build_util.run_gn(build.get('gn'), checkout)
   ninja = build.get('ninja')
   ninja_tool[ninja.get('tool', 'ninja')
@@ -121,8 +125,10 @@ def Build(api, checkout, env, env_prefixes, outputs):
       # https://github.com/flutter/flutter/issues/89308
       api.retry.wrap(run_test, step_name=test.get('name'))
 
+    api.flutter_bcid.report_stage('upload')
     for archive_config in archives:
       outputs[archive_config['name']] = Archive(api, checkout, archive_config)
+    api.flutter_bcid.report_stage('upload-complete')
 
 
 def Archive(api, checkout,  archive_config):
@@ -140,7 +146,7 @@ def Archive(api, checkout,  archive_config):
   upload_android_artifacts = False
   for include_path in archive_config.get('include_paths', []):
     full_include_path = api.path.abspath(checkout.join(include_path))
-    if include_path.endswith('download.flutter.io'):
+    if include_path.endswith(ANDROID_ARTIFACTS_BUCKET):
       upload_android_artifacts = True
     if api.path.isdir(full_include_path):
       dir_name = api.path.basename(full_include_path)
@@ -170,6 +176,9 @@ def Archive(api, checkout,  archive_config):
         args=['-r'],
         name=archive_config['name'],
     )
+    api.flutter_bcid.upload_provenance(
+        '%s/*' % archive_dir, 'gs://%s/%s' % (bucket, artifact_path)
+    )
     # Jar and pom files are uploaded to download.flutter.io while all the other artifacts
     # are uploaded to flutter_infra_release. If we override paths artifacts need to be organized
     # as gs://<overriden_bucket>/flutter_infra_release for non android artifacts and
@@ -177,11 +186,15 @@ def Archive(api, checkout,  archive_config):
     if upload_android_artifacts:
       android_artifact_path = artifact_prefix
       api.gsutil.upload(
-          source='%s/download.flutter.io/' % archive_dir,
+          source='%s/%s/' % (archive_dir, ANDROID_ARTIFACTS_BUCKET),
           bucket=bucket,
           dest=android_artifact_path,
           args=['-r'],
           name=archive_config['name'],
+      )
+      api.flutter_bcid.upload_provenance(
+          '%s/download.flutter.io/' % archive_dir,
+          'gs://%s/%s' % (bucket, android_artifact_path)
       )
     return 'gs://%s/%s/%s' % ( bucket, artifact_path, api.path.basename(archive_dir))
   # Archive using CAS by default
@@ -189,6 +202,7 @@ def Archive(api, checkout,  archive_config):
 
 
 def RunSteps(api, properties, env_properties):
+  api.flutter_bcid.report_stage('start')
   checkout = api.path['cache'].join('builder', 'src')
   api.file.rmtree('Clobber build output', checkout.join('out'))
   cache_root = api.path['cache'].join('builder')
@@ -204,6 +218,7 @@ def RunSteps(api, properties, env_properties):
 
   custom_vars = api.properties.get('gclient_custom_vars', {})
   clobber = api.properties.get('clobber', False)
+  api.flutter_bcid.report_stage('fetch')
   if api.buildbucket.gitiles_commit.project == 'monorepo':
     api.repo_util.monorepo_checkout(
         cache_root, env, env_prefixes, clobber=clobber, custom_vars=custom_vars
@@ -252,13 +267,13 @@ def GenTests(api):
           }
       ]
   }
-  yield api.test('basic', api.properties(build=build, goma_jobs="100"))
+  yield api.test('basic', api.properties(build=build, no_goma=True))
   yield api.test(
-      'mac', api.properties(build=build, goma_jobs="100"),
+      'mac', api.properties(build=build, no_goma=True),
       api.platform('mac', 64),
   )
   yield api.test(
-      'monorepo', api.properties(build=build, goma_jobs="100"),
+      'monorepo', api.properties(build=build, no_goma=True),
       api.buildbucket.ci_build(
           project='dart',
           bucket='ci.sandbox',
@@ -270,13 +285,25 @@ def GenTests(api):
   build_custom["gclient_custom_vars"] = {"example_custom_var": True}
   build_custom["tests"] = []
   yield api.test(
-      'basic_custom_vars', api.properties(build=build_custom, goma_jobs="100")
+      'dart-internal-flutter', api.properties(build=build, no_goma=True),
+      api.buildbucket.ci_build(
+          project='dart-internal',
+          bucket='flutter',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main'
+      ),
+  )
+  build_custom = dict(build)
+  build_custom["gclient_custom_vars"] = {"example_custom_var": True}
+  build_custom["tests"] = []
+  yield api.test(
+      'basic_custom_vars', api.properties(build=build_custom)
   )
   # gcs archives
   build_gcs = copy.deepcopy(build)
   build_gcs['archives'][0]['type'] = 'gcs'
   yield api.test(
-      'basic_gcs', api.properties(build=build_gcs, goma_jobs="100"),
+      'basic_gcs', api.properties(build=build_gcs, no_goma=True),
       api.step_data(
           'git rev-parse',
           stdout=api.raw_io
@@ -284,7 +311,7 @@ def GenTests(api):
       )
   )
   yield api.test(
-      'monorepo_gcs', api.properties(build=build_gcs, goma_jobs="100"),
+      'monorepo_gcs', api.properties(build=build_gcs, no_goma=True),
       api.buildbucket.ci_build(
           project='dart',
           bucket='ci.sandbox',

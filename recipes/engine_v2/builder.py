@@ -36,6 +36,7 @@ from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 
 DEPS = [
     'depot_tools/gsutil',
+    'flutter/archives',
     'flutter/flutter_bcid',
     'flutter/build_util',
     'flutter/flutter_deps',
@@ -132,75 +133,13 @@ def Build(api, checkout, env, env_prefixes, outputs):
 
 
 def Archive(api, checkout,  archive_config):
-  archive_dir = api.path.mkdtemp(archive_config['name'])
-  # First remove paths from excluding list.
-  for exclude_path in archive_config.get('exclude_paths', []):
-    full_exclude_path = api.path.abspath(checkout.join(exclude_path))
-    api.file.rmtree('Remove %s' % exclude_path, full_exclude_path)
-  # Mock a directory path to make tests pass.
-  api.path.mock_add_directory(api.path.abspath(checkout.join('out/host_debug_unopt/')))
-  api.path.mock_add_file(api.path.abspath(checkout.join('out/host_debug_unopt/file.zip')))
-
-  # Android artifacts are uploaded to a different bucket. If they exist we need a second
-  # gsutil upload.
-  upload_android_artifacts = False
-  for include_path in archive_config.get('include_paths', []):
-    full_include_path = api.path.abspath(checkout.join(include_path))
-    if include_path.endswith(ANDROID_ARTIFACTS_BUCKET):
-      upload_android_artifacts = True
-    if api.path.isdir(full_include_path):
-      dir_name = api.path.basename(full_include_path)
-      api.file.copytree('Copy %s' % include_path, full_include_path, archive_dir.join(dir_name))
-    else:
-      dir_name = api.path.dirname(full_include_path)
-      full_base_path = api.path.abspath(checkout.join(archive_config.get('base_path','')))
-      rel_path = api.path.relpath(dir_name, full_base_path)
-      rel_path = '' if rel_path == '.' else rel_path
-      base_name = api.path.basename(full_include_path)
-      api.file.ensure_directory('Ensuring %s' % archive_dir.join(rel_path), archive_dir.join(rel_path))
-      api.file.copy('Copy %s' % include_path, full_include_path, archive_dir.join(rel_path, base_name))
-  if archive_config.get('type') == 'gcs' and archive_config.get('include_paths', []):
-    bucket = 'flutter_archives_v2'
-    if api.buildbucket.gitiles_commit.project == 'monorepo':
-      commit = api.repo_util.get_commit(checkout.join('../../monorepo'))
-      artifact_prefix = 'monorepo/'
-    else:
-      commit = api.repo_util.get_commit(checkout.join('flutter'))
-      artifact_prefix = ''
-    artifact_path = '%sflutter_infra_release/flutter/%s/' % (artifact_prefix,
-                                                               commit)
-    api.gsutil.upload(
-        source='%s/*' % archive_dir,
-        bucket=bucket,
-        dest=artifact_path,
-        args=['-r'],
-        name=archive_config['name'],
-    )
-    for local_filepath in api.file.glob_paths('Generate provenance', archive_dir, '*', test_data=('file.txt',)):
-      remote_filepath = 'gs://%s/%s/%s' % (bucket, artifact_path, api.path.basename(str(local_filepath)))
-      api.flutter_bcid.upload_provenance(local_filepath, remote_filepath)
-    # Jar and pom files are uploaded to download.flutter.io while all the other artifacts
-    # are uploaded to flutter_infra_release. If we override paths artifacts need to be organized
-    # as gs://<overriden_bucket>/flutter_infra_release for non android artifacts and
-    # gs://<overriden_bucket>/download.flutter.io for android artifacts.
-    if upload_android_artifacts:
-      android_artifact_path = artifact_prefix
-      api.gsutil.upload(
-          source='%s/%s/' % (archive_dir, ANDROID_ARTIFACTS_BUCKET),
-          bucket=bucket,
-          dest=android_artifact_path,
-          args=['-r'],
-          name=archive_config['name'],
+  paths = api.archives.engine_v2_gcs_paths(checkout, archive_config)
+  for path in paths:
+      api.archives.upload_artifact(path.local, path.remote)
+      api.flutter_bcid.upload_provenance(
+          path.local,
+          path.remote
       )
-      for local_filepath in api.file.glob_paths('Generate provenance', archive_dir,
-        'download.flutter.io/*', test_data=('file.txt',)):
-        remote_filepath = 'gs://%s/%s/%s' % (bucket, artifact_path,
-          api.path.basename(str(local_filepath)))
-        api.flutter_bcid.upload_provenance(local_filepath, remote_filepath)
-    return 'gs://%s/%s/%s' % ( bucket, artifact_path, api.path.basename(archive_dir))
-  # Archive using CAS by default
-  return api.cas_util.upload(archive_dir, step_name='Archive %s' % archive_config['name'])
-
 
 def RunSteps(api, properties, env_properties):
   api.flutter_bcid.report_stage('start')

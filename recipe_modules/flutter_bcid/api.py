@@ -18,6 +18,16 @@ class FlutterBcidApi(recipe_api.RecipeApi):
       self.m.bcid_reporter.report_stage(stage)
 
   def upload_provenance(self, local_artifact_path, remote_artifact_path):
+    """Generate provenance for given artifact.
+
+    This function acts on one specific local file and one specific
+    remote file location. It does not accept glob patterns or
+    directories.
+
+    parmeters:
+      local_artifact_path: (str) path and filename of a specific file.
+      remote_artifact_path: (str) path and filename of a specific file.
+    """
     if self._is_official_build():
       sha256 = self.m.file.file_hash(local_artifact_path)
       self.m.bcid_reporter.report_gcs(

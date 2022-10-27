@@ -176,9 +176,9 @@ def Archive(api, checkout,  archive_config):
         args=['-r'],
         name=archive_config['name'],
     )
-    api.flutter_bcid.upload_provenance(
-        '%s/*' % archive_dir, 'gs://%s/%s' % (bucket, artifact_path)
-    )
+    for local_filepath in api.file.glob_paths('Generate provenance', archive_dir, '*', test_data=('file.txt',)):
+      remote_filepath = 'gs://%s/%s/%s' % (bucket, artifact_path, api.path.basename(str(local_filepath)))
+      api.flutter_bcid.upload_provenance(local_filepath, remote_filepath)
     # Jar and pom files are uploaded to download.flutter.io while all the other artifacts
     # are uploaded to flutter_infra_release. If we override paths artifacts need to be organized
     # as gs://<overriden_bucket>/flutter_infra_release for non android artifacts and
@@ -192,10 +192,11 @@ def Archive(api, checkout,  archive_config):
           args=['-r'],
           name=archive_config['name'],
       )
-      api.flutter_bcid.upload_provenance(
-          '%s/download.flutter.io/' % archive_dir,
-          'gs://%s/%s' % (bucket, android_artifact_path)
-      )
+      for local_filepath in api.file.glob_paths('Generate provenance', archive_dir,
+        'download.flutter.io/*', test_data=('file.txt',)):
+        remote_filepath = 'gs://%s/%s/%s' % (bucket, artifact_path,
+          api.path.basename(str(local_filepath)))
+        api.flutter_bcid.upload_provenance(local_filepath, remote_filepath)
     return 'gs://%s/%s/%s' % ( bucket, artifact_path, api.path.basename(archive_dir))
   # Archive using CAS by default
   return api.cas_util.upload(archive_dir, step_name='Archive %s' % archive_config['name'])

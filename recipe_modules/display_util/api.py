@@ -41,8 +41,7 @@ class DisplayUtilApi(recipe_api.RecipeApi):
       for id_name, build in subbuilds.items():
         with self.m.step.nest(build.build_name) as display_step:
           step_links = display_step.presentation.links
-          step_links[str(build.build_id)
-                    ] = self.m.buildbucket.build_url(build_id=build.build_id)
+          step_links[str(build.build_id)] = build.url
           if build.build_proto.status == common_pb2.Status.Value('SUCCESS'):
             display_step.presentation.status = self.m.step.SUCCESS
           elif build.build_proto.status in infra_failure_states:

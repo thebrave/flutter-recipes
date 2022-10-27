@@ -44,7 +44,9 @@ def RunSteps(api, raise_on_failure):
         builder=build.builder.builder,
         build_id=build.id,
         build_name=build.builder.builder,
-        build_proto= build)
+        build_proto=build,
+        url='https://cr-buildbucket.appspot.com/build/%s' % build.id
+    )
   api.display_util.display_subbuilds(
       step_name="display builds",
       subbuilds=final_builds,

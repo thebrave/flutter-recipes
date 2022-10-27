@@ -313,7 +313,9 @@ class ShardUtilApi(recipe_api.RecipeApi):
           builder=build_proto.builder.builder,
           build_id=task_id,
           build_proto=build_proto,
-          build_name=result.name
+          build_name=result.name,
+          url='https://%s/task?id=%s' % (build_proto.infra.swarming.hostname,
+                                         build_proto.infra.swarming.task_id)
       )
     return builds
 
@@ -384,7 +386,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
           builder=build.builder.builder,
           build_id=build_id,
           build_proto=build,
-          build_name=build_id_to_name[int(build_id)]
+          build_name=build_id_to_name[int(build_id)],
+          url=self.m.buildbucket.build_url(build_id=build_id)
       )
     return builds
 

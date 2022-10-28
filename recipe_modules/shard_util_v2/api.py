@@ -24,6 +24,14 @@ PROPERTIES_TO_REMOVE = [
     'buildername', '$recipe_engine/runtime', 'is_experimental'
 ]
 
+# Environments map to calculate the environment from the bucket.
+ENVIRONMENTS_MAP = {
+    'try': '',
+    'staging': 'Staging ',
+    'flutter': 'Production ',
+    'prod': 'Production '
+}
+
 
 @attr.s
 class SubbuildResult(object):
@@ -160,11 +168,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
 
       # Override recipe.
       drone_properties['recipe'] = recipe_name
-
-      environment = drone_properties.get('environment')
       bucket = self.m.buildbucket.build.builder.bucket
-      environment = '%s ' % environment if environment else ''
-      environment = '' if bucket == 'try' else environment
+      environment = ENVIRONMENTS_MAP[bucket]
       builder_name = build.get(
           'drone_builder_name',
           '%s %sEngine Drone' % (platform_name, environment))

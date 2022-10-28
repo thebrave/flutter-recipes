@@ -95,8 +95,9 @@ class ArchivesApi(recipe_api.RecipeApi):
     bucket, path = self._split_dst_parts(dst)
     dir_part = self.m.path.dirname(path)
     archive_dir = self.m.path.mkdtemp()
-    self.m.file.ensure_directory('Ensure %s' % dir_part, archive_dir.join(dir_part))
-    self.m.file.copy('Copy %s' % dst, src, archive_dir.join(dir_part))
+    local_dst_tree = archive_dir.join(*dir_part.split('/'))
+    self.m.file.ensure_directory('Ensure %s' % dir_part, local_dst_tree)
+    self.m.file.copy('Copy %s' % dst, src, local_dst_tree)
     self.m.gsutil.upload(
         source='%s/*' % archive_dir,
         bucket=bucket,
@@ -119,6 +120,16 @@ class ArchivesApi(recipe_api.RecipeApi):
     """
     results = []
     file_list = self._full_path_list(checkout, archive_config)
+    # Calculate prefix and commit.
+    is_monorepo = self.m.buildbucket.gitiles_commit.project == 'monorepo'
+
+    if is_monorepo:
+      commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))
+      artifact_prefix = 'monorepo/'
+    else:
+      commit = self.m.repo_util.get_commit(checkout.join('flutter'))
+      artifact_prefix = ''
+
     for include_path in file_list:
       is_android_artifact = ANDROID_ARTIFACTS_BUCKET in include_path
       dir_part = self.m.path.dirname(include_path)
@@ -126,14 +137,6 @@ class ArchivesApi(recipe_api.RecipeApi):
       rel_path = self.m.path.relpath(dir_part, full_base_path)
       rel_path = '' if rel_path == '.' else rel_path
       base_name = self.m.path.basename(include_path)
-      is_monorepo = self.m.buildbucket.gitiles_commit.project == 'monorepo'
-
-      if is_monorepo:
-        commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))
-        artifact_prefix = 'monorepo/'
-      else:
-        commit = self.m.repo_util.get_commit(checkout.join('flutter'))
-        artifact_prefix = ''
 
       if is_android_artifact:
         # We are not using a slash in the first parameter becase artifact_prefix
@@ -141,7 +144,7 @@ class ArchivesApi(recipe_api.RecipeApi):
         artifact_path = '%s%s/%s' % (
             artifact_prefix, rel_path, base_name)
       else:
-        artifact_path = '%sflutter_infra_release/flutter%s/%s/%s' % (
+        artifact_path = '%sflutter_infra_release/flutter/%s/%s/%s' % (
             artifact_prefix, commit, rel_path, base_name)
 
       results.append(

@@ -181,13 +181,15 @@ def RunSteps(api, properties, env_properties):
 def GenTests(api):
   build = {
       "archives": [
-          {
-              "name": "host_debug_unopt",
-              "type": "cas",
-              "include_paths": ['out/host_debug_unopt/', 'out/host_debug_unopt/file.zip',
-                                'out/host_debug_unopt/download.flutter.io'],
-              "exclude_paths": ['out/host_debug_unopt/obj', 'out/host_debug_unopt/stripped.exe']
-          }
+                {
+                    "name": "android_jit_release_x86",
+                    "type": "gcs",
+                    "base_path": "out/android_jit_release_x86/zip_archives/",
+                    "include_paths": [
+                        "out/android_jit_release_x86/zip_archives/android-x86-jit-release/artifacts.zip",
+                        "out/android_jit_release_x86/zip_archives/download.flutter.io"
+                    ]
+                }
       ],
       "gn": ["--ios"], "ninja": {"config": "ios_debug", "targets": []},
       "generators": {
@@ -207,7 +209,15 @@ def GenTests(api):
           }
       ]
   }
-  yield api.test('basic', api.properties(build=build, no_goma=True))
+  yield api.test(
+     'basic',
+     api.properties(build=build, no_goma=True),
+     api.step_data(
+         'git rev-parse',
+         stdout=api.raw_io
+         .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+     )
+  )
   yield api.test(
       'mac', api.properties(build=build, no_goma=True),
       api.platform('mac', 64),

@@ -375,9 +375,13 @@
   },
   {
     "cmd": [
-      "git",
-      "rev-parse",
-      "HEAD"
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CACHE]/builder/src/out/host_debug_unopt/obj"
     ],
     "cwd": "[CACHE]/builder/src/flutter",
     "env": {
@@ -399,63 +403,7 @@
       ]
     },
     "infra_step": true,
-    "name": "git rev-parse"
-  },
-  {
-    "cmd": [
-      "git",
-      "rev-parse",
-      "HEAD"
-    ],
-    "cwd": "[CACHE]/builder/src/flutter",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "ENGINE_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": ""
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "name": "git rev-parse (2)"
-  },
-  {
-    "cmd": [
-      "git",
-      "rev-parse",
-      "HEAD"
-    ],
-    "cwd": "[CACHE]/builder/src/flutter",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "ENGINE_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": ""
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "name": "git rev-parse (3)"
+    "name": "Remove out/host_debug_unopt/obj"
   },
   {
     "cmd": [
@@ -464,10 +412,8 @@
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CLEANUP]/tmp_tmp_1/flutter_infra_release/flutter/out"
+      "rmtree",
+      "[CACHE]/builder/src/out/host_debug_unopt/stripped.exe"
     ],
     "cwd": "[CACHE]/builder/src/flutter",
     "env": {
@@ -489,7 +435,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Ensure flutter_infra_release/flutter/out"
+    "name": "Remove out/host_debug_unopt/stripped.exe"
   },
   {
     "cmd": [
@@ -498,9 +444,9 @@
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
-      "copy",
+      "copytree",
       "[CACHE]/builder/src/out/host_debug_unopt",
-      "[CLEANUP]/tmp_tmp_1/flutter_infra_release/flutter/out"
+      "[CLEANUP]/host_debug_unopt_tmp_1/host_debug_unopt"
     ],
     "cwd": "[CACHE]/builder/src/flutter",
     "env": {
@@ -522,45 +468,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Copy gs://flutter_archives_v2/flutter_infra_release/flutter/out/host_debug_unopt"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "-r",
-      "[CLEANUP]/tmp_tmp_1/*",
-      "gs://flutter_archives_v2/"
-    ],
-    "cwd": "[CACHE]/builder/src/flutter",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "ENGINE_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": ""
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "name": "gsutil flutter_infra_release/flutter/out/host_debug_unopt",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_archives_v2/@@@"
-    ]
+    "name": "Copy out/host_debug_unopt/"
   },
   {
     "cmd": [
@@ -572,7 +480,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CLEANUP]/tmp_tmp_2/flutter_infra_release/flutter/out/host_debug_unopt"
+      "[CLEANUP]/host_debug_unopt_tmp_1/out/host_debug_unopt"
     ],
     "cwd": "[CACHE]/builder/src/flutter",
     "env": {
@@ -594,7 +502,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Ensure flutter_infra_release/flutter/out/host_debug_unopt"
+    "name": "Ensuring [CLEANUP]/host_debug_unopt_tmp_1/out/host_debug_unopt"
   },
   {
     "cmd": [
@@ -605,7 +513,7 @@
       "/path/to/tmp/json",
       "copy",
       "[CACHE]/builder/src/out/host_debug_unopt/file.zip",
-      "[CLEANUP]/tmp_tmp_2/flutter_infra_release/flutter/out/host_debug_unopt"
+      "[CLEANUP]/host_debug_unopt_tmp_1/out/host_debug_unopt/file.zip"
     ],
     "cwd": "[CACHE]/builder/src/flutter",
     "env": {
@@ -627,45 +535,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Copy gs://flutter_archives_v2/flutter_infra_release/flutter/out/host_debug_unopt/file.zip"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "-r",
-      "[CLEANUP]/tmp_tmp_2/*",
-      "gs://flutter_archives_v2/"
-    ],
-    "cwd": "[CACHE]/builder/src/flutter",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "ENGINE_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": ""
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "name": "gsutil flutter_infra_release/flutter/out/host_debug_unopt/file.zip",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_archives_v2/@@@"
-    ]
+    "name": "Copy out/host_debug_unopt/file.zip"
   },
   {
     "cmd": [
@@ -677,7 +547,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CLEANUP]/tmp_tmp_3/out/host_debug_unopt"
+      "[CLEANUP]/host_debug_unopt_tmp_1/out/host_debug_unopt"
     ],
     "cwd": "[CACHE]/builder/src/flutter",
     "env": {
@@ -699,7 +569,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Ensure out/host_debug_unopt"
+    "name": "Ensuring [CLEANUP]/host_debug_unopt_tmp_1/out/host_debug_unopt (2)"
   },
   {
     "cmd": [
@@ -710,7 +580,7 @@
       "/path/to/tmp/json",
       "copy",
       "[CACHE]/builder/src/out/host_debug_unopt/download.flutter.io",
-      "[CLEANUP]/tmp_tmp_3/out/host_debug_unopt"
+      "[CLEANUP]/host_debug_unopt_tmp_1/out/host_debug_unopt/download.flutter.io"
     ],
     "cwd": "[CACHE]/builder/src/flutter",
     "env": {
@@ -732,20 +602,20 @@
       ]
     },
     "infra_step": true,
-    "name": "Copy gs://flutter_archives_v2/out/host_debug_unopt/download.flutter.io"
+    "name": "Copy out/host_debug_unopt/download.flutter.io"
   },
   {
     "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "-r",
-      "[CLEANUP]/tmp_tmp_3/*",
-      "gs://flutter_archives_v2/"
+      "[START_DIR]/cipd_tool/infra/tools/luci/cas/git_revision%3Amock_infra_git_revision/cas",
+      "archive",
+      "-cas-instance",
+      "projects/example-cas-server/instances/default_instance",
+      "-dump-digest",
+      "/path/to/tmp/",
+      "-log-level",
+      "debug",
+      "-paths",
+      "[CLEANUP]/host_debug_unopt_tmp_1:."
     ],
     "cwd": "[CACHE]/builder/src/flutter",
     "env": {
@@ -767,16 +637,16 @@
       ]
     },
     "infra_step": true,
-    "name": "gsutil out/host_debug_unopt/download.flutter.io",
+    "name": "Archive host_debug_unopt",
     "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_archives_v2/@@@"
+      "@@@STEP_LINK@CAS UI@https://cas-viewer.appspot.com/projects/example-cas-server/instances/default_instance/blobs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0/tree@@@"
     ]
   },
   {
     "cmd": [],
     "name": "Set output properties",
     "~followup_annotations": [
-      "@@@SET_BUILD_PROPERTY@cas_output_hash@{\"full_build\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", \"host_debug_unopt\": null}@@@"
+      "@@@SET_BUILD_PROPERTY@cas_output_hash@{\"full_build\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", \"host_debug_unopt\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\"}@@@"
     ]
   },
   {

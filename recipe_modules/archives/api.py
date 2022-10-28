@@ -20,6 +20,18 @@ ANDROID_ARTIFACTS_BUCKET = 'download.flutter.io'
 # Used for mock paths
 DIRECTORY = 'DIRECTORY'
 
+# Relative paths used to mock paths for testing.
+MOCK_JAR_PATH = (
+    'io/flutter/x86_debug/'
+    '1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/'
+    'x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar'
+)
+MOCK_POM_PATH = (
+    'io/flutter/x86_debug/'
+    '1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/'
+    'x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
+)
+
 
 class ArchivesApi(recipe_api.RecipeApi):
   """Api to handle archives from engine_v2 recipes."""
@@ -46,20 +58,11 @@ class ArchivesApi(recipe_api.RecipeApi):
       full_include_path = self.m.path.abspath(checkout.join(include_path))
       if self.m.path.isdir(full_include_path):
         test_data = [
-            (
-             'io/flutter/x86_debug/'
-             '1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/'
-             'x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar'),
-            (
-             'io/flutter/x86_debug/'
-             '1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/'
-             'x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'),
 
         ]
-        paths = self.m.file.glob_paths(
+        paths = self.m.file.listdir(
                 'Expand directory', checkout.join(include_path),
-                '**', test_data=test_data
-        )
+                recursive=True, test_data=(MOCK_JAR_PATH, MOCK_POM_PATH))
         paths = [self.m.path.abspath(p) for p in paths]
         results.extend(paths)
       else:

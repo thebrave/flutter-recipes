@@ -50,6 +50,7 @@ MAVEN_BUCKET_NAME = 'download.flutter.io'
 FUCHSIA_ARTIFACTS_BUCKET_NAME = 'fuchsia-artifacts-release'
 FUCHSIA_ARTIFACTS_DEBUG_NAMESPACE = 'debug'
 ICU_DATA_PATH = 'third_party/icu/flutter/icudtl.dat'
+IMPELLERC_SHADER_LIB_PATH = 'flutter/impeller/compiler/shader_lib'
 GIT_REPO = (
     'https://flutter.googlesource.com/mirrors/engine'
 )
@@ -807,7 +808,8 @@ def BuildLinux(api):
       GetCheckoutPath(api).join('out', 'host_release', 'zip_archives'))
   RunTests(api, 'host_release', types='dart,engine,benchmarks')
   UploadArtifacts(
-      api, 'linux-x64', [
+      api, 'linux-x64',
+      file_paths=[
           ICU_DATA_PATH,
           'out/host_debug/flutter_tester',
           'out/host_debug/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
@@ -818,7 +820,10 @@ def BuildLinux(api):
           'out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin',
           'out/host_debug/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
           'out/host_debug/gen/frontend_server.dart.snapshot',
-      ]
+      ],
+      directory_paths=[
+          IMPELLERC_SHADER_LIB_PATH,
+      ],
   )
 
   UploadArtifacts(
@@ -1205,7 +1210,8 @@ def BuildMac(api):
     )
 
     UploadArtifacts(
-        api, 'darwin-x64', [
+        api, 'darwin-x64',
+        file_paths=[
             ICU_DATA_PATH,
             'out/host_debug/flutter_tester',
             'out/host_debug/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
@@ -1218,10 +1224,14 @@ def BuildMac(api):
             'out/host_debug/gen/frontend_server.dart.snapshot',
             # Remove after the tool no longer uses it.
             'out/host_debug/gen_snapshot',
-        ]
+        ],
+        directory_paths=[
+            IMPELLERC_SHADER_LIB_PATH,
+        ],
     )
     UploadArtifacts(
-        api, 'darwin-arm64', [
+        api, 'darwin-arm64',
+        file_paths=[
             ICU_DATA_PATH,
             'out/mac_debug_arm64/flutter_tester',
             'out/mac_debug_arm64/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
@@ -1234,7 +1244,10 @@ def BuildMac(api):
             'out/mac_debug_arm64/gen/frontend_server.dart.snapshot',
             # Remove after the tool no longer uses it.
             'out/mac_debug_arm64/gen_snapshot',
-        ]
+        ],
+        directory_paths=[
+            IMPELLERC_SHADER_LIB_PATH,
+        ],
     )
 
     # Remove after the tool no longer uses it.
@@ -1509,7 +1522,8 @@ def BuildWindows(api):
         GetCheckoutPath(api).join('out', 'host_release', 'zip_archives'))
 
     UploadArtifacts(
-        api, 'windows-x64', [
+        api, 'windows-x64',
+        file_paths=[
             ICU_DATA_PATH,
             'out/host_debug/flutter_tester.exe',
             'out/host_debug/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
@@ -1520,7 +1534,10 @@ def BuildWindows(api):
             'out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin',
             'out/host_debug/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
             'out/host_debug/gen/frontend_server.dart.snapshot',
-        ]
+        ],
+        directory_paths=[
+            IMPELLERC_SHADER_LIB_PATH,
+        ],
     )
 
     UploadArtifacts(

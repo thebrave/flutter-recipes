@@ -1,0 +1,60 @@
+[
+  {
+    "cmd": [],
+    "name": "Dependencies"
+  },
+  {
+    "cmd": [],
+    "name": "Dependencies.Installing Mac codesign CIPD pkg",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CLEANUP]/tmp_tmp_1/codesign",
+      "-ensure-file",
+      "flutter/codesign/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Dependencies.Installing Mac codesign CIPD pkg.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/codesign/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "codesign",
+      "--gcs-download-path",
+      "gs://a/b/c/artifact.zip",
+      "--gcs-upload-path",
+      "gs://a/b/c/artifact.zip"
+    ],
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/codesign"
+      ]
+    },
+    "name": "codesign Apple engine binaries"
+  },
+  {
+    "name": "$result"
+  }
+]

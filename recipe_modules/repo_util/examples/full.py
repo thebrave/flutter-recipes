@@ -82,6 +82,14 @@ def GenTests(api):
       )
   )
   yield api.test(
+      'monorepo_release', api.repo_util.flutter_environment_data(),
+      api.properties(git_branch='beta'),
+      api.buildbucket.ci_build(
+          git_repo='https://dart.googlesource.com/monorepo',
+          git_ref='refs/heads/beta'
+      )
+  )
+  yield api.test(
       'monorepo', api.repo_util.flutter_environment_data(),
       api.buildbucket.ci_build(
           git_repo='https://dart.googlesource.com/monorepo',

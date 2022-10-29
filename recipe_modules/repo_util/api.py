@@ -24,6 +24,7 @@ REPO_BRANCHES = {
     'openpay': 'main',
 }
 
+import copy
 import re
 from recipe_engine import recipe_api
 
@@ -43,6 +44,13 @@ class RepoUtilApi(recipe_api.RecipeApi):
       clobber(bool): A boolean indicating whether the checkout folder should be cleaned.
       custom_vars(dict): A dictionary with custom variable definitions for gclient solution.
     """
+    # Pass a special gclient variable to identify release candidate branch checkouts. This
+    # is required to prevent trying to download experimental dependencies on release candidate
+    # branches.
+    local_custom_vars = copy.deepcopy(custom_vars)
+    if (self.m.properties.get('git_branch', '').startswith('flutter-') or
+        self.m.properties.get('git_branch', '') in ['beta', 'stable']):
+      local_custom_vars['release_candidate'] = True
     git_url = REPOS['engine']
     git_id = self.m.buildbucket.gitiles_commit.id
     git_ref = self.m.buildbucket.gitiles_commit.ref
@@ -77,7 +85,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             soln.url = git_url
             soln.revision = git_id
             soln.managed = False
-            soln.custom_vars = custom_vars
+            soln.custom_vars = local_custom_vars
             src_cfg.parent_got_revision_mapping['parent_got_revision'
                                                ] = 'got_revision'
             src_cfg.repo_path_map[git_url] = (
@@ -119,6 +127,13 @@ class RepoUtilApi(recipe_api.RecipeApi):
       clobber(bool): A boolean indicating whether the checkout folder should be cleaned.
       custom_vars(dict): A dictionary with custom variable definitions for gclient solution.
     """
+    # Pass a special gclient variable to identify release candidate branch checkouts. This
+    # is required to prevent trying to download experimental dependencies on release candidate
+    # branches.
+    local_custom_vars = copy.deepcopy(custom_vars)
+    if (self.m.properties.get('git_branch', '').startswith('flutter-') or
+        self.m.properties.get('git_branch', '') in ['beta', 'stable']):
+      local_custom_vars['release_candidate'] = True
     git_url = REPOS['monorepo']
     git_id = self.m.buildbucket.gitiles_commit.id
     git_ref = self.m.buildbucket.gitiles_commit.ref
@@ -155,7 +170,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             soln.url = git_url
             soln.revision = git_id
             soln.managed = False
-            soln.custom_vars = custom_vars
+            soln.custom_vars = local_custom_vars
             #src_cfg.parent_got_revision_mapping['parent_got_revision'
             #] = 'got_revision'
             src_cfg.repo_path_map[git_url] = ('monorepo', git_ref)

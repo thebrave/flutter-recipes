@@ -13,6 +13,7 @@
 # engine_v2/tester.py.
 
 from contextlib import contextmanager
+from google.protobuf import struct_pb2
 
 from PB.recipes.flutter.engine.engine import InputProperties
 from PB.recipes.flutter.engine.engine import EnvProperties
@@ -20,10 +21,13 @@ from PB.recipes.flutter.engine.engine import EnvProperties
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from PB.go.chromium.org.luci.buildbucket.proto \
   import builds_service as builds_service_pb2
-from google.protobuf import struct_pb2
+
+from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
+
 
 DEPS = [
-    'depot_tools/gsutil',
+    'flutter/archives',
+    'flutter/flutter_bcid',
     'flutter/display_util',
     'flutter/flutter_deps',
     'flutter/repo_util',
@@ -36,6 +40,7 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/raw_io',
     'recipe_engine/step',
 ]
 
@@ -44,6 +49,7 @@ ENV_PROPERTIES = EnvProperties
 
 
 def RunSteps(api, properties, env_properties):
+  api.flutter_bcid.report_stage(BcidStage.START.value)
   config_name = api.properties.get('config_name')
   builds = api.properties.get('builds')
   tests = api.properties.get('tests')
@@ -57,6 +63,7 @@ def RunSteps(api, properties, env_properties):
       project = 'engine'
 
     # Only check out the repository, not dependencies.
+    api.flutter_bcid.report_stage(BcidStage.FETCH.value)
     checkout_path = api.path['start_dir'].join(project)
     api.repo_util.checkout(
         project,
@@ -130,6 +137,7 @@ def RunSteps(api, properties, env_properties):
     api.shard_util_v2.download_full_builds(build_results, out_builds_path)
     with api.step.nest('Global generators') as presentation:
       if 'tasks' in generators:
+        api.flutter_bcid.report_stage(BcidStage.COMPILE.value)
         for generator_task in generators['tasks']:
           # Generators must run from inside flutter folder.
           # If platform is mac we need to run the generator from an xcode context.
@@ -151,6 +159,7 @@ def RunSteps(api, properties, env_properties):
     api.file.listdir('Final List checkout 2', full_engine_checkout.join('src', 'flutter', 'sky'), recursive=True)
   # Global archives
   if archives:
+    api.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
     # Global archives are stored in out folder from full_engine_checkout inside
     # release, debug or profile depending on the runtime mode.
     # So far we are uploading files only.
@@ -163,13 +172,10 @@ def RunSteps(api, properties, env_properties):
       artifact_path = 'flutter_infra_release/flutter/%s/%s' % (
           commit, archive.get('destination')
       )
-      api.gsutil.upload(
-          source=source,
-          bucket=bucket,
-          dest=artifact_path,
-          args=['-r'],
-          name=archive.get('name'),
-      )
+      dst = 'gs://%s/%s' % (bucket, artifact_path)
+      api.archives.upload_artifact(source, dst)
+      api.flutter_bcid.upload_provenance(source, dst)
+    api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
 
 
 def _run_global_generator(api, generator_task, full_engine_checkout, env, env_prefixes):
@@ -246,6 +252,11 @@ def GenTests(api):
           launch_step="launch builds",
           collect_step="collect builds",
       ),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
   )
 
   yield api.test(
@@ -287,6 +298,11 @@ def GenTests(api):
           'Read build config file',
           api.file.read_json({'builds': builds, 'archives': archives})
       ),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
   )
 
   yield api.test(

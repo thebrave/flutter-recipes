@@ -3,7 +3,19 @@
 # found in the LICENSE file.
 
 import re
+from enum import Enum
+
 from recipe_engine import recipe_api
+
+
+class BcidStage(Enum):
+  """Enum representing valid bcis stages."""
+  START='start',
+  FETCH='fetch',
+  COMPILE='compile',
+  UPLOAD='upload',
+  UPLOAD_COMPLETE='upload-complete',
+  TEST='test'
 
 
 class FlutterBcidApi(recipe_api.RecipeApi):

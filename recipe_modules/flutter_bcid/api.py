@@ -10,11 +10,11 @@ from recipe_engine import recipe_api
 
 class BcidStage(Enum):
   """Enum representing valid bcis stages."""
-  START='start',
-  FETCH='fetch',
-  COMPILE='compile',
-  UPLOAD='upload',
-  UPLOAD_COMPLETE='upload-complete',
+  START='start'
+  FETCH='fetch'
+  COMPILE='compile'
+  UPLOAD='upload'
+  UPLOAD_COMPLETE='upload-complete'
   TEST='test'
 
 

@@ -152,6 +152,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
     for build in builds:
       task_name = build.get('name')
       drone_properties = self.m.properties.thaw()
+      drone_properties.update(build.get('properties', []))
       drone_properties['build'] = build
       drone_properties['task_name'] = task_name
       # Delete builds property if it exists.

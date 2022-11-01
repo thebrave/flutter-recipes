@@ -1511,9 +1511,9 @@ def BuildWindows(api):
     Build(api, 'host_debug')
     RunTests(api, 'host_debug', types='engine')
     RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk')
-    Build(api, 'host_profile', 'windows', 'gen_snapshot')
+    Build(api, 'host_profile', 'windows', 'flutter:gen_snapshot')
     RunGN(api, '--runtime-mode', 'release', '--no-lto', '--prebuilt-dart-sdk')
-    Build(api, 'host_release', 'windows', 'gen_snapshot')
+    Build(api, 'host_release', 'windows', 'flutter:gen_snapshot')
     if BuildFontSubset(api):
       Build(api, 'host_release', 'flutter/tools/font-subset')
 
@@ -1576,12 +1576,12 @@ def BuildWindows(api):
     RunGN(api, '--runtime-mode', 'release', '--android')
     RunGN(api, '--runtime-mode', 'release', '--android', '--android-cpu=arm64')
     RunGN(api, '--runtime-mode', 'release', '--android', '--android-cpu=x64')
-    Build(api, 'android_profile', 'gen_snapshot')
-    Build(api, 'android_profile_arm64', 'gen_snapshot')
-    Build(api, 'android_profile_x64', 'gen_snapshot')
-    Build(api, 'android_release', 'gen_snapshot')
-    Build(api, 'android_release_arm64', 'gen_snapshot')
-    Build(api, 'android_release_x64', 'gen_snapshot')
+    Build(api, 'android_profile', 'flutter:gen_snapshot')
+    Build(api, 'android_profile_arm64', 'flutter:gen_snapshot')
+    Build(api, 'android_profile_x64', 'flutter:gen_snapshot')
+    Build(api, 'android_release', 'flutter:gen_snapshot')
+    Build(api, 'android_release_arm64', 'flutter:gen_snapshot')
+    Build(api, 'android_release_x64', 'flutter:gen_snapshot')
     UploadArtifacts(
         api,
         "android-arm-profile", [

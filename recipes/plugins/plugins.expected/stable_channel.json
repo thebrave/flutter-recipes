@@ -252,36 +252,6 @@
   {
     "cmd": [
       "flutter",
-      "config",
-      "--enable-windows-desktop"
-    ],
-    "cwd": "[START_DIR]/flutter",
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "name": "prepare environment.flutter config --enable-windows-desktop",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "flutter",
       "doctor",
       "-v"
     ],
@@ -380,6 +350,10 @@
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"tasks\": [@@@",
       "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"args\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"arg1\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"arg2\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      ], @@@",
       "@@@STEP_LOG_LINE@json.output@      \"name\": \"one\", @@@",
       "@@@STEP_LOG_LINE@json.output@      \"script\": \"myscript\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
@@ -395,7 +369,9 @@
   {
     "cmd": [
       "bash",
-      "[START_DIR]/plugins/myscript"
+      "[START_DIR]/plugins/myscript",
+      "arg1",
+      "arg2"
     ],
     "cwd": "[START_DIR]/plugins",
     "env": {

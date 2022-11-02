@@ -50,22 +50,13 @@ MAVEN_BUCKET_NAME = 'download.flutter.io'
 FUCHSIA_ARTIFACTS_BUCKET_NAME = 'fuchsia-artifacts-release'
 FUCHSIA_ARTIFACTS_DEBUG_NAMESPACE = 'debug'
 ICU_DATA_PATH = 'third_party/icu/flutter/icudtl.dat'
+IMPELLERC_SHADER_LIB_PATH = 'flutter/impeller/compiler/shader_lib'
 GIT_REPO = (
     'https://flutter.googlesource.com/mirrors/engine'
 )
 
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
-
-IMPELLERC_SHADER_LIB_PATH = 'shader_lib'
-
-
-def MoveShaderLib(api):
-  api.file.move(
-      'Move the impellerc shader lib to the current directory in preparation for upload',
-      GetCheckoutPath(api).join('out', 'host_debug',
-                                IMPELLERC_SHADER_LIB_PATH), IMPELLERC_SHADER_LIB_PATH
-  )
 
 
 def BuildFontSubset(api):
@@ -816,9 +807,6 @@ def BuildLinux(api):
       'host_release zips',
       GetCheckoutPath(api).join('out', 'host_release', 'zip_archives'))
   RunTests(api, 'host_release', types='dart,engine,benchmarks')
-
-  MoveShaderLib(api)
-
   UploadArtifacts(
       api, 'linux-x64',
       file_paths=[
@@ -1221,8 +1209,6 @@ def BuildMac(api):
         host_debug_path.join('FlutterEmbedder.framework.zip')
     )
 
-    MoveShaderLib(api)
-
     UploadArtifacts(
         api, 'darwin-x64',
         file_paths=[
@@ -1534,8 +1520,6 @@ def BuildWindows(api):
     api.file.listdir(
         'host_release zips',
         GetCheckoutPath(api).join('out', 'host_release', 'zip_archives'))
-
-    MoveShaderLib(api)
 
     UploadArtifacts(
         api, 'windows-x64',

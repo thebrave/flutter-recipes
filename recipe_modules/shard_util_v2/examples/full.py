@@ -126,6 +126,7 @@ def GenTests(api):
   presubmit_props_bb['git_url'] = 'http://abc'
   presubmit_props_bb['git_ref'] = 'refs/123/master'
   presubmit_props_bb['builds'][0]['drone_builder_name'] = 'custom drone builder'
+  presubmit_props_bb['no_goma'] = 'true'
 
   yield (
       api.buildbucket_util.test("presubmit_bb", tryjob=True, status="failure") +

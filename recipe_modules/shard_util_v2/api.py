@@ -5,7 +5,6 @@
 import attr
 import collections
 
-from google.protobuf import duration_pb2
 from recipe_engine import recipe_api
 from recipe_engine import engine_types
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
@@ -270,8 +269,6 @@ class ShardUtilApi(recipe_api.RecipeApi):
           priority=25,
           exe_cipd_version=self.m.properties.get('exe_cipd_version', 'refs/heads/main')
       )
-      if drone_properties.get("no_goma", False):
-        req.execution_timeout.FromSeconds(req.execution_timeout.ToSeconds() * 2)
       reqs.append(req)
     scheduled_builds = self.m.buildbucket.schedule(reqs, step_name="schedule")
     results = {}

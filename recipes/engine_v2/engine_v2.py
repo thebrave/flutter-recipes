@@ -138,23 +138,11 @@ def RunSteps(api, properties, env_properties):
     with api.step.nest('Global generators') as presentation:
       if 'tasks' in generators:
         api.flutter_bcid.report_stage(BcidStage.COMPILE.value)
-        for generator_task in generators['tasks']:
-          # Generators must run from inside flutter folder.
-          # If platform is mac we need to run the generator from an xcode context.
-          if api.platform.is_mac:
-            with api.osx_sdk('ios'):
-              # Install dependencies from within the ios context use
-              # xcode's ruby version.
-              deps = api.properties.get('dependencies', [])
-              api.flutter_deps.required_deps(env, env_prefixes, deps)
-              with api.context(env=env, cwd=full_engine_checkout):
-                _run_global_generator(api, generator_task, full_engine_checkout, env, env_prefixes)
-          else:
-            # Install dependencies.
-            deps = api.properties.get('dependencies', [])
-            api.flutter_deps.required_deps(env, env_prefixes, deps)
-            with api.context(env=env, cwd=full_engine_checkout):
-              _run_global_generator(api, generator_task, full_engine_checkout, env, env_prefixes)
+        if api.platform.is_mac:
+          with api.osx_sdk('ios'):
+            _run_global_generators(api, generators, full_engine_checkout, env, env_prefixes)
+        else:
+          _run_global_generators(api, generators, full_engine_checkout, env, env_prefixes)
     api.file.listdir('Final List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
     api.file.listdir('Final List checkout 2', full_engine_checkout.join('src', 'flutter', 'sky'), recursive=True)
   # Global archives
@@ -178,16 +166,24 @@ def RunSteps(api, properties, env_properties):
     api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
 
 
-def _run_global_generator(api, generator_task, full_engine_checkout, env, env_prefixes):
-  cmd = [generator_task.get('language')] if generator_task.get('language') else []
-  api.file.listdir('List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
-  script = generator_task.get('script')
-  full_path_script = full_engine_checkout.join('src', script)
-  cmd.append(full_path_script)
-  cmd.extend(generator_task.get('parameters', []))
-  # Run within an engine context to make dart available.
-  with api.context(env=env, env_prefixes=env_prefixes):
-    api.step(generator_task.get('name'), cmd)
+def _run_global_generators(api, generators, full_engine_checkout, env, env_prefixes):
+  # Install dependencies. If this is running from within an xcode context it will use
+  # xcode's ruby.
+  deps = api.properties.get('dependencies', [])
+  api.flutter_deps.required_deps(env, env_prefixes, deps)
+  for generator_task in generators['tasks']:
+    # Generators must run from inside flutter folder.
+    # If platform is mac we need to run the generator from an xcode context.
+    with api.context(env=env, cwd=full_engine_checkout):
+      cmd = [generator_task.get('language')] if generator_task.get('language') else []
+      api.file.listdir('List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
+      script = generator_task.get('script')
+      full_path_script = full_engine_checkout.join('src', script)
+      cmd.append(full_path_script)
+      cmd.extend(generator_task.get('parameters', []))
+      # Run within an engine context to make dart available.
+      with api.context(env=env, env_prefixes=env_prefixes):
+        api.step(generator_task.get('name'), cmd)
 
 
 def GenTests(api):

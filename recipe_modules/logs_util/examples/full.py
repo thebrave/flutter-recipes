@@ -7,6 +7,7 @@ from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 
 DEPS = [
     'flutter/logs_util',
+    'recipe_engine/path',
 ]
 
 
@@ -14,6 +15,9 @@ def RunSteps(api):
   env = {}
   api.logs_util.initialize_logs_collection(env)
   api.logs_util.upload_logs('mytaskname')
+  s = api.path['cleanup'].join('flutter_logs_dir')
+  api.logs_util.upload_test_metrics(s, 'taskname', 'hash')
+  api.logs_util.upload_test_metrics('/path/to/tmp/json', 'taskname2')
 
 
 def GenTests(api):

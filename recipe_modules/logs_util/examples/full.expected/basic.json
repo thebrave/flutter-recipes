@@ -109,6 +109,35 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "store metrics"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "-m",
+      "----",
+      "cp",
+      "-r",
+      "[CLEANUP]/flutter_logs_dir",
+      "gs://flutter_logs/flutter/hash/taskname/00000000-0000-0000-0000-00000000133a"
+    ],
+    "infra_step": true,
+    "name": "store metrics.gsutil upload logs hash",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@archive logs@https://console.cloud.google.com/storage/browser/flutter_logs/flutter/hash/taskname/00000000-0000-0000-0000-00000000133a@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "store metrics (2)"
+  },
+  {
     "name": "$result"
   }
 ]

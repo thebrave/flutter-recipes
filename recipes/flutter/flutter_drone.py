@@ -11,10 +11,12 @@ import re
 DEPS = [
     'flutter/flutter_deps',
     'flutter/os_utils',
+    'flutter/logs_util',
     'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/retry',
     'flutter/test_utils',
+    'flutter/token_util',
     'recipe_engine/context',
     'recipe_engine/path',
     'recipe_engine/properties',
@@ -43,12 +45,17 @@ def RunShard(api, env, env_prefixes, checkout_path):
     deps_timeout_secs = api.properties.get(
         'test_timeout_secs'
     ) or default_timeout_secs
+    env['GCP_PROJECT'] = 'flutter-infra'
     with api.context(env=env, env_prefixes=env_prefixes):
       api.test_utils.run_test(
           'run test.dart for %s shard and subshard %s' %
           (api.properties.get('shard'), api.properties.get('subshard')),
           cmd_list,
           timeout_secs=deps_timeout_secs
+      )
+      api.logs_util.upload_test_metrics(
+          checkout_path.join('test_results.json'),
+          '%s_%s' % (api.properties.get('shard'), api.properties.get('subshard'))
       )
 
 
@@ -81,6 +88,7 @@ def RunSteps(api):
         max_attempts=2,
         infra_step=True
     )
+    env['TOKEN_PATH'] = api.token_util.metric_center_token()
     # Load local engine information if available.
     api.flutter_deps.flutter_engine(env, env_prefixes)
     dep_list = [d['dependency'] for d in deps]

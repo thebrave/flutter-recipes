@@ -163,6 +163,74 @@
   },
   {
     "cmd": [
+      "luci-auth",
+      "token",
+      "-scopes",
+      "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/datastore",
+      "-lifetime",
+      "3m"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REDUCED_TEST_SET": "True",
+      "REVISION": "",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "SHARD": null,
+      "SUBSHARD": null
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "get access token for default account"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "extra.secret.token.should.not.be.logged",
+      "[CLEANUP]/tmp_tmp_1"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REDUCED_TEST_SET": "True",
+      "REVISION": "",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "SHARD": null,
+      "SUBSHARD": null
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "write metric center token"
+  },
+  {
+    "cmd": [
       "vpython3",
       "-u",
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
@@ -369,6 +437,7 @@
     "cwd": "[START_DIR]/flutter",
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GCP_PROJECT": "flutter-infra",
       "GIT_BRANCH": "",
       "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host_debug_unopt",
       "LUCI_BRANCH": "",
@@ -380,7 +449,8 @@
       "REVISION": "",
       "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
       "SHARD": null,
-      "SUBSHARD": null
+      "SUBSHARD": null,
+      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -400,6 +470,10 @@
       "@@@STEP_LOG_LINE@test_stderr@@@@",
       "@@@STEP_LOG_END@test_stderr@@@"
     ]
+  },
+  {
+    "cmd": [],
+    "name": "store metrics"
   },
   {
     "cmd": [],

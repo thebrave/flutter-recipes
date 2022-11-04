@@ -72,3 +72,25 @@ class LogUtilsApi(recipe_api.RecipeApi):
             'flutter_logs', invocation_id, task, uuid, base_name
         )
         presentation.links[base_name] = url
+
+  def upload_test_metrics(self, file_path, task_name, git_hash=None):
+    """Retrieve the file from the provided path and store it in gcs.
+
+    Upload test metrics only on post-submit. These are metrics about unit test execution time,
+    and they will be used to shard tests evenly according to their overall execution time.
+    """
+    with self.m.step.nest('store metrics'):
+      git_hash = self.m.buildbucket.gitiles_commit.id if not git_hash else git_hash
+      if not git_hash or not self.m.path.exists(file_path):
+        return
+      uuid = self.m.uuid.random()
+      self.m.gsutil.upload(
+        bucket='flutter_logs',
+        source=file_path,
+        dest='flutter/%s/%s/%s' % (git_hash, task_name, uuid),
+        link_name='archive logs',
+        args=['-r'],
+        multithreaded=True,
+        name='upload logs %s' % git_hash,
+        unauthenticated_url=True
+      )

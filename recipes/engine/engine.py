@@ -1513,7 +1513,7 @@ def PackageWindowsDesktopVariant(api, label, bucket_name):
       'out/%s/flutter_windows.dll.pdb' % label,
   ]
   if bucket_name.endswith('profile') or bucket_name.endswith('release'):
-    artifacts.append('out/%s/gen_snapshot.exe' % label)
+    artifacts.append('out/%s/gen_snapshot/gen_snapshot.exe' % label)
   UploadArtifacts(
       api, bucket_name, artifacts, archive_name='windows-x64-flutter.zip'
   )
@@ -1601,41 +1601,43 @@ def BuildWindows(api):
     UploadArtifacts(
         api,
         "android-arm-profile", [
-            'out/android_profile/gen_snapshot.exe',
+            'out/android_profile/gen_snapshot/gen_snapshot.exe',
         ],
         archive_name='windows-x64.zip'
     )
     UploadArtifacts(
         api,
         "android-arm64-profile", [
-            'out/android_profile_arm64/gen_snapshot.exe',
+            'out/android_profile_arm64/gen_snapshot/gen_snapshot.exe',
         ],
         archive_name='windows-x64.zip'
     )
     UploadArtifacts(
         api,
         "android-x64-profile", [
-            'out/android_profile_x64/gen_snapshot.exe',
+            'out/android_profile_x64/gen_snapshot/gen_snapshot.exe',
         ],
         archive_name='windows-x64.zip'
     )
     UploadArtifacts(
         api,
         "android-arm-release", [
-            'out/android_release/gen_snapshot.exe',
+            'out/android_release/gen_snapshot/gen_snapshot.exe',
         ],
         archive_name='windows-x64.zip'
     )
     UploadArtifacts(
         api,
         "android-arm64-release", [
-            'out/android_release_arm64/gen_snapshot.exe',
+            'out/android_release_arm64/gen_snapshot/gen_snapshot.exe',
         ],
         archive_name='windows-x64.zip'
     )
     UploadArtifacts(
         api,
-        "android-x64-release", ['out/android_release_x64/gen_snapshot.exe'],
+        "android-x64-release", [
+            'out/android_release_x64/gen_snapshot/gen_snapshot.exe',
+        ],
         archive_name='windows-x64.zip'
     )
 

@@ -63,6 +63,14 @@ def Build(api, config, *targets):
     api.step(name, ninja_args)
 
 
+def AutoninjaBuild(api, config, *targets):
+  checkout = GetCheckoutPath(api)
+  build_dir = checkout.join('out/%s' % config)
+  ninja_args = [api.depot_tools.autoninja_path, '-C', build_dir]
+  ninja_args.extend(targets)
+  api.step('build %s' % ' '.join([config] + list(targets)), ninja_args)
+
+
 def Archive(api, target):
   checkout = GetCheckoutPath(api)
   build_dir = checkout.join('out', target)
@@ -149,7 +157,7 @@ def RunSteps(api, properties, env_properties):
       RunGN(api, *gn_flags)
       Build(api, target_name)
       RunGN(api, '--wasm', '--runtime-mode=release')
-      Build(api, 'wasm_release')
+      AutoninjaBuild(api, 'wasm_release')
       # Archieve the engine. Start the drones. Due to capacity limits we are
       # Only using the drones on the Linux for now.
       # Archive build directory into CAS.

@@ -6,7 +6,6 @@ DEPS = [
     'flutter/repo_util',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
-    'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/properties',
@@ -39,13 +38,10 @@ def RunSteps(api):
   env, env_paths = api.repo_util.engine_environment(flutter_checkout_path)
   env, env_paths = api.repo_util.flutter_environment(flutter_checkout_path)
   api.repo_util.in_release_and_main(flutter_checkout_path)
-  checkout_path = api.path['start_dir']
   if api.buildbucket.gitiles_commit.project == 'monorepo':
-    api.file.ensure_directory('ensure directory', checkout_path)
-    api.repo_util.monorepo_checkout(checkout_path, {}, {})
+    api.repo_util.monorepo_checkout(api.path['start_dir'], {}, {})
   else:
-    api.file.ensure_directory('ensure directory', checkout_path.join('engine'))
-    api.repo_util.engine_checkout(checkout_path.join('engine'), {}, {})
+    api.repo_util.engine_checkout(api.path['start_dir'].join('engine'), {}, {})
   with api.context(env=env, env_prefixes=env_paths):
     api.repo_util.sdk_checkout_path()
 
@@ -58,8 +54,7 @@ def GenTests(api):
               git_branch='beta',
               gn_artifacts='true',
               git_url='https://github.com/flutter/engine',
-              git_ref='refs/pull/1/head',
-              clobber=True,
+              git_ref='refs/pull/1/head'
           ), api.repo_util.flutter_environment_data(),
           api.step_data(
               'Identify branches.git rev-parse',
@@ -88,7 +83,7 @@ def GenTests(api):
   )
   yield api.test(
       'monorepo_release', api.repo_util.flutter_environment_data(),
-      api.properties(git_branch='beta', clobber=True),
+      api.properties(git_branch='beta'),
       api.buildbucket.ci_build(
           git_repo='https://dart.googlesource.com/monorepo',
           git_ref='refs/heads/beta'
@@ -96,7 +91,6 @@ def GenTests(api):
   )
   yield api.test(
       'monorepo', api.repo_util.flutter_environment_data(),
-      api.properties(clobber=True),
       api.buildbucket.ci_build(
           git_repo='https://dart.googlesource.com/monorepo',
           git_ref='refs/heads/main'
@@ -112,7 +106,6 @@ def GenTests(api):
   yield api.test(
       'monorepo_first_bot_update_failed',
       api.repo_util.flutter_environment_data(),
-      api.properties(clobber=True),
       api.buildbucket.ci_build(
           git_repo='https://dart.googlesource.com/monorepo',
           git_ref='refs/heads/main'

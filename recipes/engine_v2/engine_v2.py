@@ -121,8 +121,14 @@ def RunSteps(api, properties, env_properties):
     # Generators and archives require a full engine checkout.
     full_engine_checkout = api.path['cache'].join('builder')
     api.file.ensure_directory('Ensure full engine checkout folder', full_engine_checkout)
+    clobber = api.properties.get('clobber', True)
+    gclient_vars = api.shard_util_v2.unfreeze_dict(api.properties.get('gclient_variables', {}))
     env, env_prefixes = api.repo_util.engine_environment(full_engine_checkout)
-    api.repo_util.engine_checkout(full_engine_checkout, env, env_prefixes)
+
+    api.repo_util.engine_checkout(
+        full_engine_checkout, env, env_prefixes, clobber,
+        custom_vars=gclient_vars
+    )
 
   if generators:
     # Download sub-builds

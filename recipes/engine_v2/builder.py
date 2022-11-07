@@ -156,12 +156,18 @@ def RunSteps(api, properties, env_properties):
   # with [cache]/builder and will adjust it to start using it consistently.
   env['ENGINE_PATH'] = api.path['cache'].join('builder')
 
+  custom_vars = api.properties.get('gclient_custom_vars', {})
+  clobber = api.properties.get('clobber', False)
   api.flutter_bcid.report_stage('fetch')
   if api.buildbucket.gitiles_commit.project == 'monorepo':
-    api.repo_util.monorepo_checkout(cache_root, env, env_prefixes)
+    api.repo_util.monorepo_checkout(
+        cache_root, env, env_prefixes, clobber=clobber, custom_vars=custom_vars
+    )
     checkout = api.path['cache'].join('builder', 'engine', 'src')
   else:
-    api.repo_util.engine_checkout(cache_root, env, env_prefixes)
+    api.repo_util.engine_checkout(
+        cache_root, env, env_prefixes, clobber=clobber, custom_vars=custom_vars
+    )
   outputs = {}
   if api.platform.is_mac:
     with api.osx_sdk('ios'):
@@ -237,29 +243,4 @@ def GenTests(api):
   build_custom["tests"] = []
   yield api.test(
       'basic_custom_vars', api.properties(build=build_custom)
-  )
-  # gcs archives
-  build_gcs = copy.deepcopy(build)
-  build_gcs['archives'][0]['type'] = 'gcs'
-  yield api.test(
-      'basic_gcs', api.properties(build=build_gcs, no_goma=True),
-      api.step_data(
-          'git rev-parse',
-          stdout=api.raw_io
-          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
-      )
-  )
-  yield api.test(
-      'monorepo_gcs', api.properties(build=build_gcs, no_goma=True, clobber=False),
-      api.buildbucket.ci_build(
-          project='dart',
-          bucket='ci.sandbox',
-          git_repo='https://dart.googlesource.com/monorepo',
-          git_ref='refs/heads/main',
-      ),
-      api.step_data(
-          'git rev-parse',
-          stdout=api.raw_io
-          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
-      )
   )

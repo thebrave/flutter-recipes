@@ -220,7 +220,7 @@ def RunSteps(api, properties, env_properties):
 
   # Enable long path support on Windows.
   api.os_utils.enable_long_paths()
-  
+
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
 
   # Delete derived data on mac. This is a noop for other platforms.

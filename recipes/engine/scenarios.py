@@ -109,10 +109,7 @@ def RunSteps(api, properties, env_properties):
   )
   api.android_virtual_device.start(env, env_prefixes)
   api.android_virtual_device.setup(env, env_prefixes)
-
-  api.repo_util.engine_checkout(
-      cache_root, env, env_prefixes, clobber=properties.clobber
-  )
+  api.repo_util.engine_checkout(cache_root, env, env_prefixes)
 
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():

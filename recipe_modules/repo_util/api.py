@@ -262,8 +262,11 @@ class RepoUtilApi(recipe_api.RecipeApi):
 
   def get_commit(self, checkout_path):
     with self.m.context(cwd=checkout_path):
+      step_test_data=lambda: self.m.raw_io.test_api.stream_output_text(
+            '12345abcde12345abcde12345abcde12345abcde\n')
       commit = self.m.git(
-          'rev-parse', 'HEAD', stdout=self.m.raw_io.output_text()
+          'rev-parse', 'HEAD', stdout=self.m.raw_io.output_text(),
+          step_test_data=step_test_data
       ).stdout.strip()
       return commit
 

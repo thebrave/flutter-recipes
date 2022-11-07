@@ -212,11 +212,6 @@ def GenTests(api):
   yield api.test(
      'basic',
      api.properties(build=build, no_goma=True),
-     api.step_data(
-         'git rev-parse',
-         stdout=api.raw_io
-         .output_text('12345abcde12345abcde12345abcde12345abcde\n')
-     )
   )
   yield api.test(
       'mac', api.properties(build=build, no_goma=True),
@@ -248,29 +243,4 @@ def GenTests(api):
   build_custom["tests"] = []
   yield api.test(
       'basic_custom_vars', api.properties(build=build_custom)
-  )
-  # gcs archives
-  build_gcs = copy.deepcopy(build)
-  build_gcs['archives'][0]['type'] = 'gcs'
-  yield api.test(
-      'basic_gcs', api.properties(build=build_gcs, no_goma=True),
-      api.step_data(
-          'git rev-parse',
-          stdout=api.raw_io
-          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
-      )
-  )
-  yield api.test(
-      'monorepo_gcs', api.properties(build=build_gcs, no_goma=True),
-      api.buildbucket.ci_build(
-          project='dart',
-          bucket='ci.sandbox',
-          git_repo='https://dart.googlesource.com/monorepo',
-          git_ref='refs/heads/main'
-      ),
-      api.step_data(
-          'git rev-parse',
-          stdout=api.raw_io
-          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
-      )
   )

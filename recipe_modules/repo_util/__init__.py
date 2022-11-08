@@ -4,6 +4,7 @@ DEPS = [
     'depot_tools/gclient',
     'depot_tools/git',
     'flutter/retry',
+    'flutter/shard_util_v2',
     'fuchsia/utils',
     'recipe_engine/buildbucket',
     'recipe_engine/context',

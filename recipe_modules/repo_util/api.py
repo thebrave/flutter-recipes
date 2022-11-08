@@ -32,22 +32,22 @@ from recipe_engine import recipe_api
 class RepoUtilApi(recipe_api.RecipeApi):
   """Provides utilities to work with flutter repos."""
 
-  def engine_checkout(
-      self, checkout_path, env, env_prefixes, clobber=True, custom_vars={}
-  ):
+  def engine_checkout(self, checkout_path, env, env_prefixes):
     """Checkout code using gclient.
 
     Args:
       checkout_path(Path): The path to checkout source code and dependencies.
       env(dict): A dictionary with the environment variables to set.
       env_prefixes(dict): A dictionary with the paths to be added to environment variables.
-      clobber(bool): A boolean indicating whether the checkout folder should be cleaned.
-      custom_vars(dict): A dictionary with custom variable definitions for gclient solution.
     """
+    # Calculate if we need to clean the source code cache.
+    clobber = self.m.properties.get('clobber', False)
+    # Grab any gclient custom variables passed as properties.
+    local_custom_vars = self.m.shard_util_v2.unfreeze_dict(
+            self.m.properties.get('gclient_variables', {}))
     # Pass a special gclient variable to identify release candidate branch checkouts. This
     # is required to prevent trying to download experimental dependencies on release candidate
     # branches.
-    local_custom_vars = copy.deepcopy(custom_vars)
     if (self.m.properties.get('git_branch', '').startswith('flutter-') or
         self.m.properties.get('git_branch', '') in ['beta', 'stable']):
       local_custom_vars['release_candidate'] = True
@@ -116,8 +116,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     )
 
   def monorepo_checkout(
-      self, checkout_path, env, env_prefixes, clobber=True, custom_vars={}
-  ):
+      self, checkout_path, env, env_prefixes):
     """Checkout code using gclient.
 
     Args:
@@ -127,10 +126,13 @@ class RepoUtilApi(recipe_api.RecipeApi):
       clobber(bool): A boolean indicating whether the checkout folder should be cleaned.
       custom_vars(dict): A dictionary with custom variable definitions for gclient solution.
     """
+    # Calculate if we need to clean the source code cache.
+    clobber = self.m.properties.get('clobber', False)
+
     # Pass a special gclient variable to identify release candidate branch checkouts. This
     # is required to prevent trying to download experimental dependencies on release candidate
     # branches.
-    local_custom_vars = copy.deepcopy(custom_vars)
+    local_custom_vars = self.m.shard_util_v2.unfreeze_dict(self.m.properties.get('gclient_variables', {}))
     if (self.m.properties.get('git_branch', '').startswith('flutter-') or
         self.m.properties.get('git_branch', '') in ['beta', 'stable']):
       local_custom_vars['release_candidate'] = True

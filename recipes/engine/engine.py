@@ -8,7 +8,7 @@ from PB.recipes.flutter.engine.engine import InputProperties
 from PB.recipes.flutter.engine.engine import EnvProperties
 
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
-from google.protobuf import struct_pb2
+from google.protobuf import struct_pb2, json_format
 
 DEPS = [
     'depot_tools/depot_tools',
@@ -1735,13 +1735,7 @@ def RunSteps(api, properties, env_properties):
 
   # Enable long path support on Windows.
   api.os_utils.enable_long_paths()
-
-  clobber = api.properties.get('clobber', True)
-  gclient_vars = api.shard_util_v2.unfreeze_dict(api.properties.get('gclient_variables', {}))
-  api.repo_util.engine_checkout(
-          cache_root, env, env_prefixes, clobber,
-          custom_vars=gclient_vars
-  )
+  api.repo_util.engine_checkout(cache_root, env, env_prefixes)
 
   # Delete derived data on mac. This is a noop for other platforms.
   api.os_utils.clean_derived_data()
@@ -1756,6 +1750,7 @@ def RunSteps(api, properties, env_properties):
                    env_prefixes=env_prefixes), api.depot_tools.on_path():
 
     api.gclient.runhooks()
+    gclient_vars = api.shard_util_v2.unfreeze_dict(api.properties.get('gclient_variables', {}))
 
     try:
       if api.platform.is_linux:

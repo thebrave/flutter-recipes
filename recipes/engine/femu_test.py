@@ -316,11 +316,7 @@ def RunSteps(api, properties, env_properties):
   env = {'GOMA_DIR': api.goma.goma_dir}
   env_prefixes = {'PATH': [dart_bin]}
 
-  gclient_vars = api.shard_util_v2.unfreeze_dict(
-          api.properties.get('gclient_variables', {}))
-  api.repo_util.engine_checkout(
-      cache_root, env, env_prefixes, clobber=properties.clobber,
-      custom_vars=gclient_vars)
+  api.repo_util.engine_checkout(cache_root, env, env_prefixes)
 
   # Various scripts we run assume access to depot_tools on path for `ninja`.
   with api.context(
@@ -350,7 +346,7 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               clobber=False,
-          ),),
+          ), clobber=False,),
       api.step_data(
           'Retrieve list of test suites.parse',
           api.json.output([{
@@ -417,7 +413,7 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               clobber=False,
-          ),),
+          ), clobber=False,),
       api.step_data(
           'Retrieve list of test suites.parse',
           api.json.output([{
@@ -490,7 +486,7 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               clobber=False,
-          ),),
+          ), clobber=False,),
       api.step_data(
           'Retrieve list of test suites.parse',
           api.json.output([{
@@ -556,7 +552,8 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               vdl_version='g3-revision:vdl_fuchsia_xxxxxxxx_RC00',
-          ),),
+              clobber=False,
+          ), clobber=False,),
       api.step_data(
           'Read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
@@ -597,7 +594,7 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               clobber=False,
-          ),),
+          ), clobber=False,),
       api.step_data(
           'Retrieve list of test suites.parse',
           api.json.output([{
@@ -670,7 +667,7 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               clobber=False,
-          ),),
+          ),  clobber=False,),
       api.step_data(
           'Retrieve list of test suites.parse',
           api.json.output([{

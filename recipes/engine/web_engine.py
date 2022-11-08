@@ -132,7 +132,7 @@ def RunSteps(api, properties, env_properties):
   api.os_utils.enable_long_paths()
 
   # Checkout source code and build
-  api.repo_util.engine_checkout(cache_root, env, env_prefixes, custom_vars={'download_emsdk': True})
+  api.repo_util.engine_checkout(cache_root, env, env_prefixes)
 
   # Ensure required deps are installed
   api.flutter_deps.required_deps(
@@ -313,28 +313,61 @@ def GenTests(api):
       'required_driver_version': {'chrome': 84},
       'chrome': {'Linux': '768968', 'Mac': '768985', 'Win': '768975'}
   }
-  yield api.test('linux-post-submit') + api.properties(
-      goma_jobs='200'
-  ) + api.platform('linux', 64) + api.runtime(is_experimental=False)
+
+  yield api.test(
+      'linux-post-submit',
+      api.properties(
+          goma_jobs='200',
+          gclient_variables={'download_emsdk': True}
+      ),
+      api.platform('linux', 64),
+      api.runtime(is_experimental=False)
+  )
+  
   yield api.test(
       'windows-post-submit',
       api.step_data(
           'read browser lock yaml.parse', api.json.output(browser_yaml_file)
-      ), api.properties(goma_jobs='200'), api.platform('win', 64)
-  ) + api.runtime(is_experimental=False)
+      ),
+      api.properties(
+          goma_jobs='200',
+          gclient_variables={'download_emsdk': True}
+      ),
+      api.platform('win', 64),
+       api.runtime(is_experimental=False)
+  )
+
   yield api.test(
       'mac-post-submit-with-xcode',
-      api.properties(goma_jobs='200', **{'$flutter/osx_sdk': {
-          'sdk_version': 'deadbeef', 'toolchain_ver': '123abc'
-      }}), api.platform('mac', 64)
-  ) + api.runtime(is_experimental=False)
+      api.properties(
+          goma_jobs='200',
+          **{'$flutter/osx_sdk': {
+              'sdk_version': 'deadbeef',
+              'toolchain_ver': '123abc'
+             }
+          },
+          gclient_variables={'download_emsdk': True}
+      ),
+      api.platform('mac', 64),
+      api.runtime(is_experimental=False)
+  )
+
   yield api.test(
       'mac-post-submit',
-      api.properties(goma_jobs='200'), api.platform('mac', 64)
-  ) + api.runtime(is_experimental=False)
-  yield api.test('linux-pre-submit') + api.properties(
-      goma_jobs='200',
-      git_url='https://mygitrepo',
-      git_ref='refs/pull/1/head',
-      clobber=True
-  ) + api.platform('linux', 64) + api.runtime(is_experimental=False)
+      api.properties(goma_jobs='200', gclient_variables={'download_emsdk': True}),
+      api.platform('mac', 64),
+      api.runtime(is_experimental=False)
+  )
+
+  yield api.test(
+      'linux-pre-submit',
+      api.properties(
+          goma_jobs='200',
+          git_url='https://mygitrepo',
+          git_ref='refs/pull/1/head',
+          clobber=True,
+          gclient_variables={'download_emsdk': True}
+      ),
+      api.platform('linux', 64),
+      api.runtime(is_experimental=False)
+  )

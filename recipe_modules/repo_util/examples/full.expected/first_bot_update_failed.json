@@ -574,37 +574,6 @@
     "name": "git rev-parse"
   },
   {
-    "cmd": [],
-    "name": "Checkout source code",
-    "~followup_annotations": [
-      "@@@STEP_EXCEPTION@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CACHE]/git"
-    ],
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "Checkout source code.Clobber git cache",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
     "cmd": [
       "vpython3",
       "-u",
@@ -616,18 +585,14 @@
       "0777",
       "[START_DIR]/engine"
     ],
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
     "infra_step": true,
-    "name": "Checkout source code.Ensure checkout cache",
+    "name": "ensure directory"
+  },
+  {
+    "cmd": [],
+    "name": "Checkout source code",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_EXCEPTION@@@"
     ]
   },
   {
@@ -759,7 +724,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Checkout source code.Clobber git cache (2)",
+    "name": "Checkout source code.Clobber git cache",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -788,7 +753,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Checkout source code.Ensure checkout cache (2)",
+    "name": "Checkout source code.Ensure checkout cache",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -796,80 +761,6 @@
   {
     "cmd": [],
     "name": "Checkout source code (2)"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmcontents",
-      "[START_DIR]/engine"
-    ],
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "Checkout source code (2).Clobber cache",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CACHE]/git"
-    ],
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "Checkout source code (2).Clobber git cache",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[START_DIR]/engine"
-    ],
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "Checkout source code (2).Ensure checkout cache",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
   },
   {
     "cmd": [

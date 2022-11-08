@@ -194,10 +194,9 @@ class FlutterDepsApi(recipe_api.RecipeApi):
 
   def go_sdk(self, env, env_prefixes, version):
     """Installs go sdk."""
-    version = version or 'version:1.12.5'
     go_path = self.m.path['cache'].join('go')
     go = self.m.cipd.EnsureFile()
-    go.add_package('infra/go/${platform}', version)
+    go.add_package('infra/3pp/tools/go/${platform}', version)
     self.m.cipd.ensure(go_path, go)
     paths = env_prefixes.get('PATH', [])
     paths.append(go_path.join('bin'))
@@ -211,11 +210,11 @@ class FlutterDepsApi(recipe_api.RecipeApi):
   def dashing(self, env, env_prefixes, version):
     """Installs dashing."""
     version = version or 'git_revision:ed8da90e524f59c69781c8af65638f108d0bbba6'
-    self.go_sdk(env, env_prefixes, 'latest')
+    self.go_sdk(env, env_prefixes, 'version:2@1.19.3')
     with self.m.context(env=env, env_prefixes=env_prefixes):
       self.m.step(
           'Install dashing',
-          ['go', 'get', '-u', 'github.com/technosophos/dashing'],
+          ['go', 'install', 'github.com/technosophos/dashing@latest'],
           infra_step=True,
       )
 

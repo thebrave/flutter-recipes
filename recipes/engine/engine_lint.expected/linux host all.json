@@ -578,6 +578,51 @@
     "name": "gn --android --android-cpu arm64 --no-lto"
   },
   {
+    "cmd": [
+      "python",
+      "[CACHE]/builder/src/flutter/tools/gn",
+      "--goma",
+      "--runtime-mode",
+      "debug",
+      "--prebuilt-dart-sdk",
+      "--no-lto"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gn --runtime-mode debug --prebuilt-dart-sdk --no-lto"
+  },
+  {
     "cmd": [],
     "name": "setup goma"
   },
@@ -1430,7 +1475,9 @@
       "[CACHE]/builder/src/flutter/ci/lint.sh",
       "--variant",
       "android_debug_arm64",
-      "--lint-all"
+      "--lint-all",
+      "--shard-id=0",
+      "--shard-variants=host_debug"
     ],
     "cwd": "[CACHE]/builder/src",
     "env": {
@@ -1466,51 +1513,6 @@
       }
     },
     "name": "test: lint android_debug_arm64"
-  },
-  {
-    "cmd": [
-      "python",
-      "[CACHE]/builder/src/flutter/tools/gn",
-      "--goma",
-      "--runtime-mode",
-      "debug",
-      "--prebuilt-dart-sdk",
-      "--no-lto"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gn --runtime-mode debug --prebuilt-dart-sdk --no-lto"
   },
   {
     "cmd": [],
@@ -1963,7 +1965,9 @@
       "[CACHE]/builder/src/flutter/ci/lint.sh",
       "--variant",
       "host_debug",
-      "--lint-all"
+      "--lint-all",
+      "--shard-id=1",
+      "--shard-variants=android_debug_arm64"
     ],
     "cwd": "[CACHE]/builder/src",
     "env": {

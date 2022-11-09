@@ -49,7 +49,7 @@ def Build(api, config, *targets):
   api.build_util.build(config, checkout, targets)
 
 
-def Lint(api, config):
+def Lint(api, config, shardId=None, shardVariants=""):
   checkout = GetCheckoutPath(api)
   with api.context(cwd=checkout):
     lint_cmd = checkout.join('flutter', 'ci', 'lint.sh')
@@ -58,38 +58,40 @@ def Lint(api, config):
       cmd += ['--lint-all']
     if api.properties.get('lint_head', False):
       cmd += ['--lint-head']
+    if shardId != None:
+      cmd += ['--shard-id=%d' % shardId, '--shard-variants=%s' % shardVariants]
     api.step(api.test_utils.test_step_name('lint %s' % config), cmd)
 
 
 def DoLints(api):
   if api.platform.is_linux:
+    RunGN(api, '--android', '--android-cpu', 'arm64', '--no-lto')
+    RunGN(api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--no-lto')
     if api.properties.get('lint_android', True):
-      RunGN(api, '--android', '--android-cpu', 'arm64', '--no-lto')
       Build(api, 'android_debug_arm64')
-      Lint(api, 'android_debug_arm64')
+      Lint(api, 'android_debug_arm64', shardId=0, shardVariants="host_debug")
 
     if api.properties.get('lint_host', True):
-      RunGN(api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--no-lto')
       # We have to build before linting because source files #include header
       # files that are generated during the build.
       Build(api, 'host_debug')
-      Lint(api, 'host_debug')
+      Lint(api, 'host_debug', shardId=1, shardVariants="android_debug_arm64")
 
   elif api.platform.is_mac:
     with api.osx_sdk('ios'):
+      RunGN(
+          api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto',
+      )
+      RunGN(api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--no-lto')
       if api.properties.get('lint_ios', True):
-        RunGN(
-            api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto',
-        )
         Build(api, 'ios_debug_sim')
-        Lint(api, 'ios_debug_sim')
+        Lint(api, 'ios_debug_sim', shardId=0, shardVariants="host_debug")
 
       if api.properties.get('lint_host', True):
-        RunGN(api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--no-lto')
         # We have to build before linting because source files #include header
         # files that are generated during the build.
         Build(api, 'host_debug')
-        Lint(api, 'host_debug')
+        Lint(api, 'host_debug', shardId=1, shardVariants="ios_debug_sim")
 
 
 def RunSteps(api, properties, env_properties):

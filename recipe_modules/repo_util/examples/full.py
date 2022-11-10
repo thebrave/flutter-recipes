@@ -17,6 +17,7 @@ DEPS = [
 def RunSteps(api):
   flutter_checkout_path = api.path['start_dir'].join('flutter')
   api.repo_util.get_branch(flutter_checkout_path)
+  api.repo_util.is_release_candidate_branch(flutter_checkout_path)
   api.repo_util.checkout(
       'flutter', flutter_checkout_path, ref='refs/heads/master'
   )
@@ -67,15 +68,15 @@ def GenTests(api):
           ),
           api.step_data(
               'Identify branches.git branch',
-              stdout=api.raw_io.output_text('branch1\nbranch2')
+              stdout=api.raw_io.output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
           ),
           api.step_data(
               'Identify branches (2).git branch',
-              stdout=api.raw_io.output_text('branch1\nbranch2')
+              stdout=api.raw_io.output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
           ),
           api.step_data(
               'Identify branches (3).git branch',
-              stdout=api.raw_io.output_text('branch1\nbranch2')
+              stdout=api.raw_io.output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
           )
       )
   )

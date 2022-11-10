@@ -415,3 +415,11 @@ class RepoUtilApi(recipe_api.RecipeApi):
     checkout_path = self.m.context.env.get('SDK_CHECKOUT_PATH')
     assert checkout_path, 'Outside of a flutter_environment?'
     return self.m.path.abs_to_path(checkout_path)
+
+  def is_release_candidate_branch(self, checkout_path):
+    """Returns true if the branch starts with "flutter-"."""
+    commit_branches = self.current_commit_branches(checkout_path)
+    for branch in commit_branches:
+     if branch.startswith('flutter-'):
+         return True
+    return False

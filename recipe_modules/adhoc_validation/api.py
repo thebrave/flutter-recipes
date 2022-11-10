@@ -62,6 +62,13 @@ class AddhocValidationApi(recipe_api.RecipeApi):
               timeout_secs=4500 # 75 minutes
             )
       else:
+        # Override LUCI_BRANCH for docs and release candidate branches. Docs built from
+        # release candidate branches need to be build as stable to ensure they are processed
+        # correctly.
+        checkout_path = self.m.repo_util.sdk_checkout_path()
+        if (validation == 'docs') and self.m.repo_util.is_release_candidate_branch(checkout_path):
+          env['LUCI_BRANCH'] = 'stable'
+
         with self.m.context(env=env, env_prefixes=env_prefixes):
           self.m.test_utils.run_test(
             validation,

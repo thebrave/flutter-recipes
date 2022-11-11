@@ -153,13 +153,13 @@ class ShardUtilApi(recipe_api.RecipeApi):
     for build in builds:
       task_name = build.get('name')
       drone_properties = self.m.properties.thaw()
-      # Do not propagate main build deps.
-      drone_properties.pop('dependencies', None)
       drone_properties.update(build.get('properties', []))
       drone_properties['build'] = build
       drone_properties['task_name'] = task_name
       # Delete builds property if it exists.
       drone_properties.pop('builds', None)
+      # Do not propagate main build deps.
+      drone_properties.pop('dependencies', None)
       # Copy parent bot dimensions.
       drone_dimensions = build.get('drone_dimensions', [])
       task_dimensions = []
@@ -224,8 +224,6 @@ class ShardUtilApi(recipe_api.RecipeApi):
     for build in builds:
       task_name = build.get('name')
       drone_properties = self.m.properties.thaw()
-      # Do not propagate main build deps.
-      drone_properties.pop('dependencies', None)
       drone_properties.update(build.get('properties', []))
       drone_properties['build'] = build
       # Copy parent bot dimensions.
@@ -243,6 +241,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
           '%s %sEngine Drone' % (platform_name, environment))
       # Delete builds property if it exists.
       drone_properties.pop('builds', None)
+      # Do not propagate main build deps.
+      drone_properties.pop('dependencies', None)
       for d in drone_dimensions:
         k, v = d.split('=')
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))

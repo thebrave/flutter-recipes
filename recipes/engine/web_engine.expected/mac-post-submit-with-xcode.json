@@ -1,13 +1,40 @@
 [
   {
     "cmd": [
+      "top",
+      "-l",
+      "3",
+      "-o",
+      "mem"
+    ],
+    "infra_step": true,
+    "name": "OS info"
+  },
+  {
+    "cmd": [
+      "xattr",
+      "/opt/s/w/ir/cipd_bin_packages/python"
+    ],
+    "infra_step": true,
+    "name": "python xattr info"
+  },
+  {
+    "cmd": [
+      "xattr",
+      "/opt/s/w/ir/cipd_bin_packages/git"
+    ],
+    "infra_step": true,
+    "name": "git xattr info"
+  },
+  {
+    "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "rmtree",
-      "[CACHE]\\builder\\src\\out"
+      "[CACHE]/builder/src/out"
     ],
     "infra_step": true,
     "name": "Clobber build output"
@@ -16,13 +43,13 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
       "0777",
-      "[CACHE]\\builder"
+      "[CACHE]/builder"
     ],
     "infra_step": true,
     "name": "Ensure checkout cache"
@@ -33,10 +60,10 @@
   },
   {
     "cmd": [
-      "cipd.bat",
+      "cipd",
       "ensure",
       "-root",
-      "[CACHE]\\goma\\client",
+      "[CACHE]/goma/client",
       "-ensure-file",
       "fuchsia/third_party/goma/client/${platform} integration",
       "-max-threads",
@@ -63,109 +90,40 @@
   },
   {
     "cmd": [],
-    "name": "Install certs"
-  },
-  {
-    "cmd": [
-      "cipd.bat",
-      "ensure",
-      "-root",
-      "[CACHE]\\certs",
-      "-ensure-file",
-      "flutter_internal/certs latest",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "name": "Install certs.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter_internal/certs\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "powershell.exe",
-      "[CACHE]\\certs\\install.ps1"
-    ],
-    "cwd": "[CACHE]\\certs",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "name": "Install Certs"
-  },
-  {
-    "cmd": [],
-    "name": "Enable long path support"
-  },
-  {
-    "cmd": [
-      "powershell.exe",
-      "RECIPE_MODULE[flutter::os_utils]\\resources\\long_paths.ps1"
-    ],
-    "name": "Enable long path support.Run long path support script",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
     "name": "Checkout source code"
   },
   {
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[depot_tools::bot_update]\\resources\\bot_update.py",
+      "RECIPE_MODULE[depot_tools::bot_update]/resources/bot_update.py",
       "--spec-path",
-      "cache_dir = '[CACHE]\\\\git'\nsolutions = [{'custom_vars': {'download_emsdk': True}, 'deps_file': '.DEPS.git', 'managed': False, 'name': 'src/flutter', 'url': 'https://flutter.googlesource.com/mirrors/engine'}]",
+      "cache_dir = '[CACHE]/git'\nsolutions = [{'custom_vars': {'download_emsdk': True}, 'deps_file': '.DEPS.git', 'managed': False, 'name': 'src/flutter', 'url': 'https://flutter.googlesource.com/mirrors/engine'}]",
       "--revision_mapping_file",
       "{\"got_engine_revision\": \"src/flutter\"}",
       "--git-cache-dir",
-      "[CACHE]\\git",
+      "[CACHE]/git",
       "--cleanup-dir",
-      "[CLEANUP]\\bot_update",
+      "[CLEANUP]/bot_update",
       "--output_json",
       "/path/to/tmp/json",
       "--revision",
       "src/flutter@HEAD"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS_COLLECT_METRICS": "0",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
       "GIT_HTTP_LOW_SPEED_TIME": "1800",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -225,21 +183,20 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_REPO[depot_tools]\\gclient.py",
+      "RECIPE_REPO[depot_tools]/gclient.py",
       "runhooks"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -260,21 +217,20 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_REPO[depot_tools]\\gclient.py",
+      "RECIPE_REPO[depot_tools]/gclient.py",
       "runhooks"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -290,25 +246,203 @@
   },
   {
     "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/osx_sdk",
+      "-ensure-file",
+      "infra/tools/mac_toolchain/${platform} 123abc",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-123abc----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/osx_sdk/mac_toolchain",
+      "install",
+      "-kind",
+      "ios",
+      "-xcode-version",
+      "deadbeef",
+      "-output-dir",
+      "[CACHE]/osx_sdk/XCode.app",
+      "-cipd-package-prefix",
+      "flutter_internal/ios/xcode",
+      "-with-runtime=True"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "install xcode"
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "com.apple.CoreSimulator.CoreSimulatorDevice"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "kill dart"
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--switch",
+      "[CACHE]/osx_sdk/XCode.app"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "select XCode"
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "simctl",
+      "list"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "list simulators"
+  },
+  {
+    "cmd": [
       "python",
-      "[CACHE]\\builder\\src\\flutter/tools/gn",
+      "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
       "--unoptimized",
       "--full-dart-sdk",
       "--prebuilt-dart-sdk"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -336,36 +470,34 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[fuchsia::python3]\\resources\\tool_manifest.json",
+      "RECIPE_MODULE[fuchsia::python3]/resources/tool_manifest.json",
       "/path/to/tmp/json"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
-      "GOMA_CACHE_DIR": "[CACHE]\\goma",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -398,37 +530,35 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version"
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
-      "GOMA_CACHE_DIR": "[CACHE]\\goma",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -447,10 +577,10 @@
   },
   {
     "cmd": [
-      "cipd.bat",
+      "cipd",
       "ensure",
       "-root",
-      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version",
       "-ensure-file",
       "path/to/cpython3 version:pinned-version",
       "-max-threads",
@@ -458,29 +588,27 @@
       "-json-output",
       "/path/to/tmp/json"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
-      "GOMA_CACHE_DIR": "[CACHE]\\goma",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -510,33 +638,31 @@
   },
   {
     "cmd": [
-      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
-      "[CACHE]\\goma\\client\\goma_ctl.py",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
-      "GOMA_CACHE_DIR": "[CACHE]\\goma",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -555,26 +681,25 @@
   },
   {
     "cmd": [
-      "RECIPE_REPO[depot_tools]\\ninja.exe",
+      "RECIPE_REPO[depot_tools]/ninja",
       "-j",
       "200",
       "-C",
-      "[CACHE]\\builder\\src\\out/host_debug_unopt"
+      "[CACHE]/builder/src/out/host_debug_unopt"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -593,34 +718,32 @@
   },
   {
     "cmd": [
-      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
-      "[CACHE]\\goma\\client\\goma_ctl.py",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
-      "[CACHE]\\goma\\client\\jsonstatus"
+      "[CACHE]/goma/client/jsonstatus"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
-      "GOMA_CACHE_DIR": "[CACHE]\\goma",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -649,33 +772,31 @@
   },
   {
     "cmd": [
-      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
-      "[CACHE]\\goma\\client\\goma_ctl.py",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
-      "GOMA_CACHE_DIR": "[CACHE]\\goma",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -693,33 +814,31 @@
   },
   {
     "cmd": [
-      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
-      "[CACHE]\\goma\\client\\goma_ctl.py",
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
-      "GOMA_CACHE_DIR": "[CACHE]\\goma",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -739,27 +858,26 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[CLEANUP]\\compiler_proxy.WARNING",
+      "[CLEANUP]/compiler_proxy.WARNING",
       "/path/to/tmp/"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -782,27 +900,26 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[CACHE]\\goma\\client\\goma_stats.json",
+      "[CACHE]/goma/client/goma_stats.json",
       "/path/to/tmp/"
     ],
-    "cwd": "[CACHE]\\builder",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -821,22 +938,51 @@
   },
   {
     "cmd": [
-      "[CACHE]\\builder\\src\\out\\host_debug_unopt\\dart-sdk\\bin\\dart",
-      "pub",
-      "get"
+      "sudo",
+      "xcode-select",
+      "--reset"
     ],
-    "cwd": "[CACHE]\\builder\\src\\flutter\\web_sdk\\web_engine_tester",
+    "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "reset XCode"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/out/host_debug_unopt/dart-sdk/bin/dart",
+      "pub",
+      "get"
+    ],
+    "cwd": "[CACHE]/builder/src/flutter/web_sdk/web_engine_tester",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -851,22 +997,21 @@
   },
   {
     "cmd": [
-      "[CACHE]\\builder\\src\\out\\host_debug_unopt\\dart-sdk\\bin\\dart",
+      "[CACHE]/builder/src/out/host_debug_unopt/dart-sdk/bin/dart",
       "pub",
       "get"
     ],
-    "cwd": "[CACHE]\\builder\\src\\flutter\\lib\\web_ui",
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -881,21 +1026,21 @@
   },
   {
     "cmd": [
-      "[CACHE]\\builder\\src\\flutter\\lib\\web_ui\\dev\\felt_windows.bat",
+      "[CACHE]/builder/src/out/host_debug_unopt/dart-sdk/bin/dart",
+      "dev/felt.dart",
       "check-licenses"
     ],
-    "cwd": "[CACHE]\\builder\\src\\flutter\\lib\\web_ui",
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -909,36 +1054,24 @@
     "name": "felt licenses"
   },
   {
-    "cmd": [],
-    "name": "read browser lock yaml",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@yaml@@@@",
-      "@@@STEP_LOG_END@yaml@@@"
-    ]
-  },
-  {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CACHE]\\builder\\src\\flutter\\lib\\web_ui\\dev\\browser_lock.yaml",
-      "/path/to/tmp/"
+      "[CACHE]/builder/src/out/host_debug_unopt/dart-sdk/bin/dart",
+      "dev/felt.dart",
+      "test",
+      "--require-skia-gold",
+      "--browser=safari"
     ],
-    "cwd": "[CACHE]\\builder\\src",
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -949,139 +1082,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "infra_step": true,
-    "name": "read browser lock yaml.read",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@browser_lock.yaml@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython",
-      "RECIPE_MODULE[flutter::yaml]\\resources\\parse_yaml.py",
-      "--yaml_file",
-      "[CACHE]\\builder\\src\\flutter\\lib\\web_ui\\dev\\browser_lock.yaml",
-      "--json_file",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[CACHE]\\builder\\src",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "read browser lock yaml.parse",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"chrome\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"Linux\": \"768968\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"Mac\": \"768985\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"Win\": \"768975\"@@@",
-      "@@@STEP_LOG_LINE@json.output@  }, @@@",
-      "@@@STEP_LOG_LINE@json.output@  \"required_driver_version\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"chrome\": 84@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd.bat",
-      "ensure",
-      "-root",
-      "[CACHE]\\builder\\src\\flutter\\lib\\web_ui\\.dart_tool\\chrome\\768975",
-      "-ensure-file",
-      "flutter_internal/browsers/chrome/${platform} 768975",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[CACHE]\\builder\\src\\flutter\\lib\\web_ui",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "name": "ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-768975----------\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter_internal/browsers/chrome/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]\\builder\\src\\flutter\\lib\\web_ui\\dev\\felt_windows.bat",
-      "test"
-    ],
-    "cwd": "[CACHE]\\builder\\src\\flutter\\lib\\web_ui",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "name": "test: felt test chrome"
+    "name": "test: Run tests on macOS Safari"
   },
   {
     "cmd": [],
@@ -1089,24 +1090,21 @@
   },
   {
     "cmd": [
-      "taskkill",
-      "/f",
-      "/im",
-      "java.exe",
-      "/t"
+      "killall",
+      "-9",
+      "dart"
     ],
-    "cwd": "[CACHE]\\builder\\src\\flutter\\lib\\web_ui",
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -1117,31 +1115,29 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "Killing Processes.stop gradle daemon",
+    "infra_step": true,
+    "name": "Killing Processes.kill dart",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "taskkill",
-      "/f",
-      "/im",
-      "dart.exe",
-      "/t"
+      "killall",
+      "-9",
+      "flutter"
     ],
-    "cwd": "[CACHE]\\builder\\src\\flutter\\lib\\web_ui",
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -1152,31 +1148,29 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "Killing Processes.stop dart",
+    "infra_step": true,
+    "name": "Killing Processes.kill flutter",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "taskkill",
-      "/f",
-      "/im",
-      "adb.exe",
-      "/t"
+      "killall",
+      "-9",
+      "Chrome"
     ],
-    "cwd": "[CACHE]\\builder\\src\\flutter\\lib\\web_ui",
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -1187,31 +1181,29 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "Killing Processes.stop adb",
+    "infra_step": true,
+    "name": "Killing Processes.kill Chrome",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "taskkill",
-      "/f",
-      "/im",
-      "flutter_tester.exe",
-      "/t"
+      "killall",
+      "-9",
+      "Safari"
     ],
-    "cwd": "[CACHE]\\builder\\src\\flutter\\lib\\web_ui",
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
     "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "CHROME_NO_SANDBOX": "true",
-      "ENGINE_PATH": "[CACHE]\\builder",
+      "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]/goma/client"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -1222,10 +1214,167 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "Killing Processes.stop flutter_tester",
+    "infra_step": true,
+    "name": "Killing Processes.kill Safari",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "java"
+    ],
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "Killing Processes.kill Safari (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "adb"
+    ],
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "Killing Processes.kill Safari (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "top",
+      "-l",
+      "3",
+      "-o",
+      "mem"
+    ],
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "OS info (2)"
+  },
+  {
+    "cmd": [
+      "xattr",
+      "/opt/s/w/ir/cipd_bin_packages/python"
+    ],
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "python xattr info (2)"
+  },
+  {
+    "cmd": [
+      "xattr",
+      "/opt/s/w/ir/cipd_bin_packages/git"
+    ],
+    "cwd": "[CACHE]/builder/src/flutter/lib/web_ui",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_NO_SANDBOX": "true",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "git xattr info (2)"
   },
   {
     "name": "$result"

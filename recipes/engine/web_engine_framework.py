@@ -15,11 +15,11 @@ from PB.recipes.flutter.engine.engine import EnvProperties
 DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/gclient',
-    'flutter/build_util',
     'flutter/display_util',
     'flutter/flutter_deps',
     'flutter/os_utils',
     'flutter/repo_util',
+    'flutter/shard_util',
     'flutter/shard_util_v2',
     'fuchsia/cas_util',
     'fuchsia/goma',
@@ -37,6 +37,22 @@ PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 DRONE_TIMEOUT_SECS = 3600 * 3  # 3 hours.
 
+# Builder names use full platform name instead of short names. We need to
+# map short names to full platform names to be able to identify the drone
+# used to run the subshards.
+PLATFORM_TO_NAME = {'win': 'Windows', 'linux': 'Linux'}
+
+
+def Build(api, config, *targets):
+  checkout = GetCheckoutPath(api)
+  build_dir = checkout.join('out/%s' % config)
+  goma_jobs = api.properties['goma_jobs']
+  ninja_args = [api.depot_tools.ninja_path, '-j', goma_jobs, '-C', build_dir]
+  ninja_args.extend(targets)
+  with api.goma.build_with_goma():
+    name = 'build %s' % ' '.join([config] + list(targets))
+    api.step(name, ninja_args)
+
 
 def Archive(api, target):
   checkout = GetCheckoutPath(api)
@@ -48,6 +64,13 @@ def Archive(api, target):
   cas_source = cas_dir.join('flutter')
   api.file.copytree('Copy source', build_dir, cas_source)
   return api.cas_util.upload(cas_dir, step_name='Archive Flutter Engine Test CAS')
+
+
+def RunGN(api, *args):
+  checkout = GetCheckoutPath(api)
+  gn_cmd = ['python', checkout.join('flutter/tools/gn'), '--goma']
+  gn_cmd.extend(args)
+  api.step('gn %s' % ' '.join(args), gn_cmd)
 
 
 def GetCheckoutPath(api):
@@ -66,8 +89,19 @@ def RunSteps(api, properties, env_properties):
   api.file.rmtree('Clobber build output', checkout.join('out'))
 
   api.file.ensure_directory('Ensure checkout cache', cache_root)
-  env, env_prefixes = api.repo_util.engine_environment(cache_root)
-  env['ENGINE_PATH'] = cache_root
+  api.goma.ensure()
+  dart_bin = checkout.join(
+      'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
+  )
+
+  env = {
+    'GOMA_DIR': api.goma.goma_dir,
+    'ENGINE_PATH': cache_root,
+    'FLUTTER_PREBUILT_DART_SDK': 'True',
+  }
+  env_prefixes = {'PATH': [dart_bin]}
+
+  # Checkout source code and build
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():
@@ -77,8 +111,8 @@ def RunSteps(api, properties, env_properties):
     target_name = 'host_debug_unopt'
     gn_flags = ['--unoptimized', '--full-dart-sdk', '--prebuilt-dart-sdk']
 
-    api.build_util.run_gn(gn_flags, checkout)
-    api.build_util.build(target_name, checkout, [])
+    RunGN(api, *gn_flags)
+    Build(api, target_name)
 
     # Archive build directory into CAS.
     cas_hash = Archive(api, target_name)
@@ -119,21 +153,21 @@ def RunSteps(api, properties, env_properties):
       assert (len(ref) > 0)
     # The SHA of the youngest commit older than the engine in the framework
     # side is kept in `ref`.
-    targets = generate_targets(api, cas_hash, ref.strip(), url, deps)
-    with api.step.nest('launch builds') as presentation:
-       tasks = api.shard_util_v2.schedule(targets, 'flutter/flutter_drone', presentation)
-    with api.step.nest('collect builds') as presentation:
-       build_results = api.shard_util_v2.collect(tasks, presentation)
-    api.display_util.display_subbuilds(
-      step_name='display builds',
-      subbuilds=build_results,
-      raise_on_failure=True,
+    builds = schedule_builds(api, cas_hash, ref.strip(), url, deps)
+
+
+  with api.context(cwd=cache_root, env=env, env_prefixes=env_prefixes):
+    builds = api.shard_util.collect_builds(builds)
+    api.display_util.display_builds(
+        step_name='display builds',
+        builds=builds,
+        raise_on_failure=True,
     )
 
 
-def generate_targets(api, cas_hash, ref, url, deps):
+def schedule_builds(api, cas_hash, ref, url, deps):
   """Schedules one subbuild per subshard."""
-  targets = []
+  reqs = []
 
   shard = api.properties.get('shard')
   for subshard in api.properties.get('subshards'):
@@ -147,8 +181,16 @@ def generate_targets(api, cas_hash, ref, url, deps):
     }
     drone_props['git_url'] = url
     drone_props['git_ref'] = ref
-    targets.append({'name': task_name, 'properties': drone_props})
-  return targets
+    platform_name = PLATFORM_TO_NAME.get(api.platform.name)
+    req = api.buildbucket.schedule_request(
+        swarming_parent_run_id=api.swarming.task_id,
+        builder='%s SDK Drone' % platform_name,
+        properties=drone_props,
+        priority=25,
+        exe_cipd_version=api.properties.get('exe_cipd_version', 'refs/heads/main')
+    )
+    reqs.append(req)
+  return api.buildbucket.schedule(reqs)
 
 
 def GenTests(api):
@@ -167,10 +209,4 @@ def GenTests(api):
           task_name='abc'
       ),
       api.platform('linux', 64),
-      api.buildbucket.try_build(
-          project='flutter',
-          bucket='try',
-          git_repo='https://flutter.googlesource.com/mirrors/engine',
-          git_ref='refs/heads/main'
-      ),
   )

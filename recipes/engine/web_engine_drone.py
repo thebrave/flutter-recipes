@@ -23,11 +23,8 @@ DEPS = [
     'depot_tools/depot_tools',
     'flutter/flutter_deps',
     'flutter/os_utils',
-    'flutter/osx_sdk',
     'flutter/repo_util',
-    'flutter/retry',
     'flutter/web_util',
-    'fuchsia/goma',
     'recipe_engine/cas',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -35,7 +32,6 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
-    'recipe_engine/runtime',
     'recipe_engine/step',
 ]
 
@@ -47,7 +43,7 @@ ENV_PROPERTIES = EnvProperties
 
 def GetCheckoutPath(api):
   """Path to checkout the flutter/engine repo."""
-  return api.path['cleanup'].join('builder', 'src')
+  return api.path['cache'].join('builder', 'src')
 
 
 def RunSteps(api, properties, env_properties):
@@ -56,7 +52,7 @@ def RunSteps(api, properties, env_properties):
   The test shard to run will be determined by `command_args` send as part of
   properties.
   """
-  cache_root = api.path['cleanup'].join('builder')
+  cache_root = api.path['cache'].join('builder')
   checkout = GetCheckoutPath(api)
   platform = api.platform.name.capitalize()
   if properties.clobber:
@@ -64,158 +60,68 @@ def RunSteps(api, properties, env_properties):
   api.file.rmtree('Clobber build output: %s' % platform, checkout.join('out'))
 
   api.file.ensure_directory('Ensure checkout cache', cache_root)
-  api.goma.ensure()
-  env = {}
-  env_prefixes = {}
 
+  # Copy build properties.
+  build = api.properties.get('build')
+  env, env_prefixes = api.repo_util.engine_environment(cache_root)
   # Checkout source code and build
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
 
   # Ensure required deps are installed
   api.flutter_deps.required_deps(
-      env, env_prefixes, api.properties.get('inherited_dependencies', [])
+      env, env_prefixes, build.get('inherited_dependencies', [])
   )
-
-  # Prepare the web dependencies that web tests need.
-  # These can be browsers, web drivers or other repositories.
-  api.web_util.prepare_web_dependencies(checkout)
 
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():
 
-    target_name = 'host_debug_unopt'
-
-    # Load local engine information if available.
-    api.flutter_deps.flutter_engine(env, env_prefixes)
-
     # Download local CanvasKit build.
-    wasm_cas_hash = api.properties.get('wasm_release_cas_hash')
+    wasm_cas_hash = build.get('wasm_release_cas_hash')
     out_dir = checkout.join('out')
     api.cas.download('Download CanvasKit build from CAS', wasm_cas_hash, out_dir)
 
-    android_home = checkout.join('third_party', 'android_tools', 'sdk')
-    env['GOMA_DIR'] = api.goma.goma_dir
-    env['ANDROID_HOME'] = str(android_home)
-    env['CHROME_NO_SANDBOX'] = 'true'
-    env['ENGINE_PATH'] = cache_root
-    # flutter_engine deps adds dart dependency as out/host_debug_unopt/dart-sdk
-    # We are changing it with src/third_party/dart/tools/sdks/dart-sdk
-    dart_bin = checkout.join(
-        'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
-    )
-    paths = env_prefixes.get('PATH', [])
-    paths.insert(0, dart_bin)
-    env_prefixes['PATH'] = paths
+    command_args = build.get('command_args', ['test'])
+    command_name = build.get('command_name', 'test')
 
-    command_args = api.properties.get('command_args', ['test'])
-    command_name = api.properties.get('command_name', 'test')
+    felt_name = 'felt.bat' if api.platform.is_win else 'felt'
     felt_cmd = [
-        checkout.join('out', target_name, 'dart-sdk', 'bin', 'dart'),
-        'dev/felt.dart'
+         checkout.join('flutter', 'lib', 'web_ui', 'dev', felt_name)
     ]
     felt_cmd.extend(command_args)
 
     with api.context(cwd=cache_root, env=env,
                      env_prefixes=env_prefixes), api.depot_tools.on_path():
-      # Update dart packages and run tests.
-      local_engine_path = env.get('LOCAL_ENGINE')
-      local_dart = local_engine_path.join('dart-sdk', 'bin', 'dart')
-      with api.context(
-          cwd=checkout.join('flutter', 'web_sdk', 'web_engine_tester')):
-        api.retry.step(
-            'dart pub get in web_engine_tester', [local_dart, 'pub', 'get'], infra_step=True
-        )
-      with api.context(cwd=checkout.join('flutter', 'lib', 'web_ui')):
-        api.retry.step('pub get in web_ui', [local_dart, 'pub', 'get'], infra_step=True)
-        web_dependencies = api.web_util.get_web_dependencies()
-        if api.platform.is_mac:
-          with api.osx_sdk('ios'):
-            with recipe_api.defer_results():
-              api.step('felt test: %s' % command_name, felt_cmd)
-              # This is to clean up leaked processes.
-              api.os_utils.kill_processes()
-              # Collect memory/cpu/process after task execution.
-              api.os_utils.collect_os_info()
-        else:
-          with recipe_api.defer_results():
-            api.step('felt test: %s' % command_name, felt_cmd)
-            # This is to clean up leaked processes.
-            api.os_utils.kill_processes()
-            # Collect memory/cpu/process after task execution.
-            api.os_utils.collect_os_info()
+      web_dependencies = api.web_util.prepare_web_dependencies(checkout, build.get('web_dependencies'))
+      with recipe_api.defer_results():
+        api.step('felt test: %s' % command_name, felt_cmd)
+        # This is to clean up leaked processes.
+        api.os_utils.kill_processes()
+        # Collect memory/cpu/process after task execution.
+        api.os_utils.collect_os_info()
 
 
 def GenTests(api):
+  build = {
+      'command_args': ['test', '--browser=chrome', '--require-skia-gold'],
+      'command_name': 'chrome-unit-linux',
+      'git_ref': 'refs/heads/master',
+      'inherited_dependencies': [
+          {'dependency': 'goldctl'},
+          {'dependency': 'open_jdk'},
+          {'dependency': 'gradle_cache'}
+      ],
+      'name': 'chrome-unit-linux',
+      'wasm_release_cas_hash': '7a4348cb77de16aac05401c635950c2a75566e3f268fd60e7113b0c70cd4fbcb/87',
+      'web_dependencies': ['chrome']
+  }
   browser_yaml_file = {
       'required_driver_version': {'chrome': 84},
       'chrome': {'Linux': '768968', 'Mac': '768985', 'Win': '768975'}
   }
   yield api.test(
-      'linux-post-submit',
+      'basic',
+      api.properties(build=build, clobber=True),
       api.step_data(
           'read browser lock yaml.parse', api.json.output(browser_yaml_file)
       ),
-      api.step_data(
-          'read browser lock yaml (2).parse',
-          api.json.output(browser_yaml_file)
-      ),
-      api.properties(
-          goma_jobs='200',
-          web_dependencies=['chrome_driver', 'chrome'],
-          command_args=['test', '--browser=chrome'],
-          command_name='chrome-tests',
-          local_engine_cas_hash='abceqwe',
-          wasm_release_cas_hash='deadbeef'
-      ), api.platform('linux', 64)
-  ) + api.runtime(is_experimental=False) + api.platform.name('linux')
-  yield api.test(
-      'linux-firefox-integration',
-      api.properties(
-          goma_jobs='200',
-          web_dependencies=['firefox_driver'],
-          command_args=['test', '--browser=firefox'],
-          command_name='firefox-tests',
-          local_engine_cas_hash='abceqwe',
-          wasm_release_cas_hash='deadbeef'
-      ), api.platform.name('linux'), api.platform('linux', 64)
-  ) + api.runtime(is_experimental=False)
-  yield api.test('windows-post-submit') + api.properties(
-      goma_jobs='200', local_engine_cas_hash='abceqwe',
-      wasm_release_cas_hash='deadbeef'
-  ) + api.platform('win', 32) + api.runtime(is_experimental=False)
-  yield api.test(
-      'mac-post-submit',
-      api.properties(
-          goma_jobs='200',
-          web_dependencies=[],
-          command_args=['test', '--browser=ios-safari', '--require-skia-gold'],
-          command_name='ios-safari-unit-tests',
-          local_engine_cas_hash='abceqwe',
-          wasm_release_cas_hash='deadbeef'
-      ), api.platform('mac', 64)
-  ) + api.runtime(is_experimental=False)
-  yield api.test(
-      'linux-experimental',
-      api.repo_util.flutter_environment_data(),
-      api.properties(
-          goma_jobs='200',
-          git_url='https://mygitrepo',
-          git_ref='refs/pull/1/head',
-          web_dependencies=[],
-          clobber=True,
-          local_engine_cas_hash='abceqwe',
-          wasm_release_cas_hash='deadbeef'
-      ), api.platform('linux', 64)
-  ) + api.runtime(is_experimental=True)
-  yield api.test(
-      'linux-error',
-      api.properties(
-          goma_jobs='200',
-          git_url='https://mygitrepo',
-          git_ref='refs/pull/1/head',
-          web_dependencies=['invalid_dependency'],
-          clobber=True,
-          local_engine_cas_hash='abceqwe',
-          wasm_release_cas_hash='deadbeef'
-      ), api.platform('linux', 64), api.expect_exception('ValueError')
-  ) + api.runtime(is_experimental=True)
+  )

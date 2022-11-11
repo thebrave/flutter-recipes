@@ -73,14 +73,15 @@ class WebUtilsApi(recipe_api.RecipeApi):
   def get_web_dependencies(self):
     return self.m.properties.get('web_dependencies', [])
 
-  def prepare_web_dependencies(self, checkout):
+  def prepare_web_dependencies(self, checkout, properties=None):
     """Install all the required web_dependencies for a given felt test."""
     available_deps = {
         'chrome': self.chrome,
         'chrome_driver': self.chrome_driver,
         'firefox_driver': self.firefox_driver,
     }
-    for dep in self.get_web_dependencies():
+    properties = properties or self.get_web_dependencies()
+    for dep in properties:
       dep_funct = available_deps.get(dep)
       if not dep_funct:
         raise ValueError('Web Dependency %s not available.' % dep)

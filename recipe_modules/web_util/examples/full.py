@@ -30,20 +30,20 @@ def GenTests(api):
       }
   }
   yield api.test(
-      'fail case',
+      'fail_case',
       api.expect_exception('ValueError'),
       api.properties(
           web_dependencies=['invalid_dependency'],), api.platform(
               'linux', 64)) + api.platform.name('linux')
   yield api.test(
-      'chrome driver',
+      'chrome_driver',
       api.step_data('read browser lock yaml.parse',
                     api.json.output(browser_yaml_file)),
       api.properties(
           web_dependencies=['chrome_driver'],), api.platform(
               'linux', 64)) + api.platform.name('linux')
   yield api.test(
-      'firefox driver',
+      'firefox_driver',
       api.properties(
           web_dependencies=['firefox_driver'],), api.platform(
               'linux', 64)) + api.platform.name('linux')

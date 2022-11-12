@@ -9,18 +9,6 @@
       "%MEM"
     ],
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "OS info"
   },
   {
@@ -32,26 +20,10 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "ls",
-      "gs://flutter_devicelab/flutter/prod/2d72510e447ab60a9728aeea2362d8be2cbd7789/def"
+      "gs://flutter_devicelab/flutter//refs/pull/1/head/def"
     ],
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "gsutil list"
-  },
-  {
-    "cmd": [],
-    "name": "launch builds"
   },
   {
     "cmd": [
@@ -61,30 +33,15 @@
       "cr-buildbucket.appspot.com"
     ],
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"prod\", \"builder\": \"Linux Production Engine Drone\", \"project\": \"test\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"git.example.com\", \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", \"project\": \"test/repo\", \"ref\": \"refs/heads/master\"}, \"priority\": 25, \"properties\": {\"artifact\": \"def\", \"build\": {\"drone_dimensions\": [], \"name\": \"abc\", \"properties\": {\"artifact\": \"def\", \"dependencies\": [], \"git_branch\": \"master\", \"parent_builder\": \"Linux abc\", \"tags\": [], \"task_name\": \"abc\"}}, \"git_branch\": \"master\", \"git_ref\": \"refs/pull/1/head\", \"git_url\": \"test/repo\", \"parent_builder\": \"Linux abc\", \"recipe\": \"devicelab/devicelab_test_drone\", \"tags\": [], \"task_name\": \"abc\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "name": "buildbucket.schedule",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"builder\": \"Linux Devicelab Test Drone\"}, \"exe\": {\"cipdVersion\": \"refs/heads/master\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"priority\": 25, \"properties\": {\"artifact\": \"def\", \"dependencies\": [], \"git_branch\": \"master\", \"git_ref\": \"refs/pull/1/head\", \"git_url\": \"test/repo\", \"parent_builder\": \"Linux abc\", \"tags\": [], \"task_name\": \"abc\"}, \"requestId\": \"0-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"0\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
       "@@@STEP_LOG_LINE@json.output@    {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"scheduleBuild\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"prod\", @@@",
-      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"Linux Production Engine Drone\", @@@",
-      "@@@STEP_LOG_LINE@json.output@          \"project\": \"test\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"Linux Devicelab Test Drone\"@@@",
       "@@@STEP_LOG_LINE@json.output@        }, @@@",
       "@@@STEP_LOG_LINE@json.output@        \"id\": \"8922054662172514000\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
@@ -97,55 +54,35 @@
       "@@@STEP_LOG_LINE@request@    {@@@",
       "@@@STEP_LOG_LINE@request@      \"scheduleBuild\": {@@@",
       "@@@STEP_LOG_LINE@request@        \"builder\": {@@@",
-      "@@@STEP_LOG_LINE@request@          \"bucket\": \"prod\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"builder\": \"Linux Production Engine Drone\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"project\": \"test\"@@@",
+      "@@@STEP_LOG_LINE@request@          \"builder\": \"Linux Devicelab Test Drone\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"exe\": {@@@",
-      "@@@STEP_LOG_LINE@request@          \"cipdVersion\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@request@          \"cipdVersion\": \"refs/heads/master\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"experimental\": \"NO\", @@@",
       "@@@STEP_LOG_LINE@request@        \"experiments\": {@@@",
       "@@@STEP_LOG_LINE@request@          \"luci.buildbucket.parent_tracking\": false@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", @@@",
-      "@@@STEP_LOG_LINE@request@        \"gitilesCommit\": {@@@",
-      "@@@STEP_LOG_LINE@request@          \"host\": \"git.example.com\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"project\": \"test/repo\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"ref\": \"refs/heads/master\"@@@",
-      "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"priority\": 25, @@@",
       "@@@STEP_LOG_LINE@request@        \"properties\": {@@@",
       "@@@STEP_LOG_LINE@request@          \"artifact\": \"def\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"build\": {@@@",
-      "@@@STEP_LOG_LINE@request@            \"drone_dimensions\": [], @@@",
-      "@@@STEP_LOG_LINE@request@            \"name\": \"abc\", @@@",
-      "@@@STEP_LOG_LINE@request@            \"properties\": {@@@",
-      "@@@STEP_LOG_LINE@request@              \"artifact\": \"def\", @@@",
-      "@@@STEP_LOG_LINE@request@              \"dependencies\": [], @@@",
-      "@@@STEP_LOG_LINE@request@              \"git_branch\": \"master\", @@@",
-      "@@@STEP_LOG_LINE@request@              \"parent_builder\": \"Linux abc\", @@@",
-      "@@@STEP_LOG_LINE@request@              \"tags\": [], @@@",
-      "@@@STEP_LOG_LINE@request@              \"task_name\": \"abc\"@@@",
-      "@@@STEP_LOG_LINE@request@            }@@@",
-      "@@@STEP_LOG_LINE@request@          }, @@@",
+      "@@@STEP_LOG_LINE@request@          \"dependencies\": [], @@@",
       "@@@STEP_LOG_LINE@request@          \"git_branch\": \"master\", @@@",
       "@@@STEP_LOG_LINE@request@          \"git_ref\": \"refs/pull/1/head\", @@@",
       "@@@STEP_LOG_LINE@request@          \"git_url\": \"test/repo\", @@@",
       "@@@STEP_LOG_LINE@request@          \"parent_builder\": \"Linux abc\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"recipe\": \"devicelab/devicelab_test_drone\", @@@",
       "@@@STEP_LOG_LINE@request@          \"tags\": [], @@@",
       "@@@STEP_LOG_LINE@request@          \"task_name\": \"abc\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
-      "@@@STEP_LOG_LINE@request@        \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", @@@",
+      "@@@STEP_LOG_LINE@request@        \"requestId\": \"0-00000000-0000-0000-0000-000000001337\", @@@",
       "@@@STEP_LOG_LINE@request@        \"swarming\": {@@@",
       "@@@STEP_LOG_LINE@request@          \"parentRunId\": \"fake-task-id\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"tags\": [@@@",
       "@@@STEP_LOG_LINE@request@          {@@@",
       "@@@STEP_LOG_LINE@request@            \"key\": \"parent_buildbucket_id\", @@@",
-      "@@@STEP_LOG_LINE@request@            \"value\": \"8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@request@            \"value\": \"0\"@@@",
       "@@@STEP_LOG_LINE@request@          }, @@@",
       "@@@STEP_LOG_LINE@request@          {@@@",
       "@@@STEP_LOG_LINE@request@            \"key\": \"user_agent\", @@@",
@@ -162,14 +99,14 @@
   },
   {
     "cmd": [],
-    "name": "collect builds"
+    "name": "Task Shards",
+    "~followup_annotations": [
+      "@@@STEP_LINK@@https://cr-buildbucket.appspot.com/build/8922054662172514000@@@"
+    ]
   },
   {
     "cmd": [],
-    "name": "collect builds.collect",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
+    "name": "buildbucket.collect"
   },
   {
     "cmd": [
@@ -178,26 +115,14 @@
       "-host",
       "cr-buildbucket.appspot.com",
       "-interval",
-      "20s",
+      "60s",
       "8922054662172514000"
     ],
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "collect builds.collect.wait",
-    "timeout": 86400,
+    "name": "buildbucket.collect.wait",
+    "timeout": 10800,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -208,22 +133,10 @@
       "cr-buildbucket.appspot.com"
     ],
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "collect builds.collect.get",
-    "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,infra.swarming.taskId,input,number,output,startTime,status,summaryMarkdown,updateTime\", \"id\": \"8922054662172514000\"}}]}",
+    "name": "buildbucket.collect.get",
+    "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,summaryMarkdown,updateTime\", \"id\": \"8922054662172514000\"}}]}",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
       "@@@STEP_LOG_LINE@json.output@    {@@@",
@@ -239,7 +152,7 @@
       "@@@STEP_LOG_LINE@request@  \"requests\": [@@@",
       "@@@STEP_LOG_LINE@request@    {@@@",
       "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
-      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,infra.swarming.taskId,input,number,output,startTime,status,summaryMarkdown,updateTime\", @@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,summaryMarkdown,updateTime\", @@@",
       "@@@STEP_LOG_LINE@request@        \"id\": \"8922054662172514000\"@@@",
       "@@@STEP_LOG_LINE@request@      }@@@",
       "@@@STEP_LOG_LINE@request@    }@@@",
@@ -251,16 +164,13 @@
   },
   {
     "cmd": [],
-    "name": "collect builds.display builds",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
+    "name": "display builds"
   },
   {
     "cmd": [],
-    "name": "collect builds.display builds.abc",
+    "name": "display builds.",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LINK@8922054662172514000@https://cr-buildbucket.appspot.com/build/8922054662172514000@@@"
     ]
   },

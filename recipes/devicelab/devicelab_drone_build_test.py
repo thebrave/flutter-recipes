@@ -14,7 +14,6 @@ DEPS = [
     'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/retry',
-    'flutter/shard_util',
     'flutter/shard_util_v2',
     'flutter/test_utils',
     'flutter/token_util',
@@ -76,50 +75,40 @@ def RunSteps(api):
     build(api, task_name, artifact, artifact_gcs_path)
 
   # Run test step.
-  builds = test(
+  targets = test(
       api, task_name, api.properties.get('dependencies', []), artifact
   )
-  builds = api.shard_util.collect_builds(builds)
-  api.display_util.display_builds(
-      step_name='display builds',
-      builds=builds,
-      raise_on_failure=True,
-  )
+  with api.step.nest('launch builds') as presentation:
+    tasks = api.shard_util_v2.schedule(targets, 'devicelab/devicelab_test_drone', presentation)
+  with api.step.nest('collect builds') as presentation:
+    build_results = api.shard_util_v2.collect(tasks, presentation)
+    api.display_util.display_subbuilds(
+        step_name='display builds',
+        subbuilds=build_results,
+        raise_on_failure=True,
+    )
 
 
 def test(api, task_name, deps, artifact):
   '''Run devicelab test assuming build artifact is available.'''
-  git_branch = api.properties.get('git_branch')
-  bucket = api.buildbucket.build.builder.bucket
-  builder_name = 'Linux_android_staging test_drone' if bucket == 'staging' else 'Linux Devicelab Test Drone'
   reqs = []
   # Updates tuple to buildbucket API supported list.
   tags = [tag for tag in api.properties.get('tags', [])]
   # These are dependencies specified in the yaml file. We want to pass them down
   # to test so they also install these dependencies.
   test_props = {
-      'dependencies': [api.shard_util_v2.unfreeze_dict(dep) for dep in deps],
+      'drone_dependencies': [api.shard_util_v2.unfreeze_dict(dep) for dep in deps],
       'task_name': task_name,
       'parent_builder': api.properties.get('buildername'),
       'artifact': artifact,
       'git_branch': api.properties.get('git_branch'),
-      'tags': tags,
+      'tags': tags
   }
-  if 'git_url' in api.properties and 'git_ref' in api.properties:
-    test_props['git_ref'] = api.properties['git_ref']
-    test_props['git_url'] = api.properties['git_url']
-
-  req = api.buildbucket.schedule_request(
-      swarming_parent_run_id=api.swarming.task_id,
-      builder=builder_name,
-      properties=test_props,
-      priority=25,
-      exe_cipd_version=api.properties.get(
-          'exe_cipd_version', 'refs/heads/%s' % git_branch
-      )
+  reqs.append(
+       {'name': task_name, 'properties': test_props,
+        'drone_dimensions': api.properties.get('drone_dimensions', [])}
   )
-  reqs.append(req)
-  return api.buildbucket.schedule(reqs)
+  return reqs
 
 
 def build(api, task_name, artifact, artifact_gcs_dir):
@@ -229,6 +218,12 @@ def GenTests(api):
           stdout=api.raw_io
           .output_text('gs://flutter_devicelab/flutter/refs/pull/1/head/def')
       ),
+      api.buildbucket.ci_build(
+          project='test',
+          bucket='prod',
+          git_repo='git.example.com/test/repo',
+          git_ref='refs/heads/master',
+      )
   )
   yield api.test(
       "artifact does not exist",
@@ -242,6 +237,7 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',
+          bucket='prod',
           git_repo='git.example.com/test/repo',
       ),
   )
@@ -257,6 +253,7 @@ def GenTests(api):
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',
+          bucket='prod',
           git_repo='git.example.com/test/repo',
           git_ref='refs/heads/master',
       )

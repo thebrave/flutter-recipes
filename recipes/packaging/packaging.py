@@ -3,11 +3,13 @@
 # found in the LICENSE file.
 
 from contextlib import contextmanager
+from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 import re
 
 DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/git',
+    'flutter/flutter_bcid',
     'flutter/flutter_deps',
     'flutter/repo_util',
     'recipe_engine/buildbucket',
@@ -49,6 +51,7 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
   api.step('download dependencies', [flutter_executable, 'update-packages'])
   api.file.rmtree('clean archive work directory', work_dir)
   api.file.ensure_directory('(re)create archive work directory', work_dir)
+  api.flutter_bcid.report_stage(BcidStage.COMPILE.value)
   with Install7za(api):
     with api.context(cwd=api.path['start_dir']):
       step_args = [
@@ -62,7 +65,9 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
       api.step('prepare, create and publish a flutter archive', step_args)
       if api.properties.get('upload_with_cosign') is True:
         flutter_package_absolute_path = GetFlutterPackageAbsolutePath(api, work_dir)
+        api.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
         UploadAndSignFlutterPackage(api, flutter_package_absolute_path, git_hash, branch)
+        api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
 
 
 def GetFlutterPackageAbsolutePath(api, work_dir):
@@ -109,11 +114,15 @@ def UploadAndSignFlutterPackage(api, flutter_path, git_hash, branch):
   api.step('configure docker registry', gcloud_docker_config_args)
   api.step('upload through cosign', cosign_upload_args)
   api.step('sign flutter artifact', cosign_sign_args)
+  api.flutter_bcid.upload_provenance(flutter_path, artifact_registry_url)
 
 
 def RunSteps(api):
+  api.flutter_bcid.report_stage(BcidStage.START.value)
   git_ref = api.properties.get('git_ref') or api.buildbucket.gitiles_commit.ref
   assert git_ref
+
+  api.flutter_bcid.report_stage(BcidStage.FETCH.value)
   checkout_path = api.path['start_dir'].join('flutter')
   git_url = api.properties.get('git_url') or 'https://flutter.googlesource.com/mirrors/flutter'
   # Call this just to obtain release_git_hash so the script knows which commit

@@ -13,7 +13,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -24,7 +24,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Mac Engine Drone\", \"project\": \"proj\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/engine\"}], \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 25, \"properties\": {\"archives\": [{\"destination\": \"bucket/c.txt\", \"name\": \"c.txt\", \"source\": \"/a/b/c.txt\"}], \"build\": {\"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}}, \"environment\": \"Staging\", \"generators\": {\"tasks\": [{\"language\": \"python\", \"name\": \"Debug-FlutterMacOS.framework\", \"parameters\": [\"--variant\", \"host_profile\", \"--type\", \"engine\", \"--engine-capture-core-dump\"], \"script\": \"flutter/sky/tools/create_macos_framework.py\", \"type\": \"local\"}]}, \"recipe\": \"engine_v2/builder\", \"tests\": []}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"prod\", \"builder\": \"Mac Production Engine Drone\", \"project\": \"flutter\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 25, \"properties\": {\"archives\": [{\"destination\": \"bucket/c.txt\", \"name\": \"c.txt\", \"source\": \"/a/b/c.txt\"}], \"build\": {\"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}}, \"generators\": {\"tasks\": [{\"language\": \"python\", \"name\": \"Debug-FlutterMacOS.framework\", \"parameters\": [\"--variant\", \"host_profile\", \"--type\", \"engine\", \"--engine-capture-core-dump\"], \"script\": \"flutter/sky/tools/create_macos_framework.py\", \"type\": \"local\"}]}, \"recipe\": \"engine_v2/builder\", \"tests\": []}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -47,9 +47,9 @@
       "@@@STEP_LOG_LINE@request@    {@@@",
       "@@@STEP_LOG_LINE@request@      \"scheduleBuild\": {@@@",
       "@@@STEP_LOG_LINE@request@        \"builder\": {@@@",
-      "@@@STEP_LOG_LINE@request@          \"bucket\": \"try\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"builder\": \"Mac Engine Drone\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"project\": \"proj\"@@@",
+      "@@@STEP_LOG_LINE@request@          \"bucket\": \"prod\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"builder\": \"Mac Production Engine Drone\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"project\": \"flutter\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"exe\": {@@@",
       "@@@STEP_LOG_LINE@request@          \"cipdVersion\": \"refs/heads/main\"@@@",
@@ -59,14 +59,6 @@
       "@@@STEP_LOG_LINE@request@          \"luci.buildbucket.parent_tracking\": false@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", @@@",
-      "@@@STEP_LOG_LINE@request@        \"gerritChanges\": [@@@",
-      "@@@STEP_LOG_LINE@request@          {@@@",
-      "@@@STEP_LOG_LINE@request@            \"change\": \"123456\", @@@",
-      "@@@STEP_LOG_LINE@request@            \"host\": \"flutter-review.googlesource.com\", @@@",
-      "@@@STEP_LOG_LINE@request@            \"patchset\": \"7\", @@@",
-      "@@@STEP_LOG_LINE@request@            \"project\": \"mirrors/engine\"@@@",
-      "@@@STEP_LOG_LINE@request@          }@@@",
-      "@@@STEP_LOG_LINE@request@        ], @@@",
       "@@@STEP_LOG_LINE@request@        \"gitilesCommit\": {@@@",
       "@@@STEP_LOG_LINE@request@          \"host\": \"flutter.googlesource.com\", @@@",
       "@@@STEP_LOG_LINE@request@          \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", @@@",
@@ -98,7 +90,6 @@
       "@@@STEP_LOG_LINE@request@              \"targets\": []@@@",
       "@@@STEP_LOG_LINE@request@            }@@@",
       "@@@STEP_LOG_LINE@request@          }, @@@",
-      "@@@STEP_LOG_LINE@request@          \"environment\": \"Staging\", @@@",
       "@@@STEP_LOG_LINE@request@          \"generators\": {@@@",
       "@@@STEP_LOG_LINE@request@            \"tasks\": [@@@",
       "@@@STEP_LOG_LINE@request@              {@@@",
@@ -124,10 +115,6 @@
       "@@@STEP_LOG_LINE@request@          \"parentRunId\": \"fake-task-id\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"tags\": [@@@",
-      "@@@STEP_LOG_LINE@request@          {@@@",
-      "@@@STEP_LOG_LINE@request@            \"key\": \"cq_experimental\", @@@",
-      "@@@STEP_LOG_LINE@request@            \"value\": \"false\"@@@",
-      "@@@STEP_LOG_LINE@request@          }, @@@",
       "@@@STEP_LOG_LINE@request@          {@@@",
       "@@@STEP_LOG_LINE@request@            \"key\": \"parent_buildbucket_id\", @@@",
       "@@@STEP_LOG_LINE@request@            \"value\": \"8945511751514863184\"@@@",
@@ -169,7 +156,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -195,7 +182,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -310,7 +297,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -329,91 +316,10 @@
   {
     "cmd": [
       "vpython3",
-      "RECIPE_REPO[depot_tools]/gerrit_client.py",
-      "changes",
-      "--host",
-      "https://flutter-review.googlesource.com",
-      "--json_file",
-      "/path/to/tmp/json",
-      "--limit",
-      "1",
-      "-p",
-      "change=123456",
-      "-o",
-      "ALL_REVISIONS",
-      "-o",
-      "DOWNLOAD_COMMANDS"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "darwin",
-      "PATH": "<PATH>:RECIPE_REPO[depot_tools]",
-      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Checkout source code.gerrit fetch current CL info",
-    "timeout": 60,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@[@@@",
-      "@@@STEP_LOG_LINE@json.output@  {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"branch\": \"main\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"owner\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"name\": \"John Doe\"@@@",
-      "@@@STEP_LOG_LINE@json.output@    }, @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"revisions\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"184ebe53805e102605d11f6b143486d15c23a09c\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"_number\": \"7\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"ref\": \"refs/changes/56/123456/7\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@]@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
       "-u",
       "RECIPE_MODULE[depot_tools::bot_update]/resources/bot_update.py",
       "--spec-path",
       "cache_dir = '[CACHE]/git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': False, 'name': 'src/flutter', 'url': 'https://flutter.googlesource.com/mirrors/engine'}]",
-      "--patch_root",
-      "src/flutter",
       "--revision_mapping_file",
       "{\"got_engine_revision\": \"src/flutter\"}",
       "--git-cache-dir",
@@ -422,12 +328,8 @@
       "[CLEANUP]/bot_update",
       "--output_json",
       "/path/to/tmp/json",
-      "--patch_ref",
-      "https://flutter.googlesource.com/mirrors/engine@refs/heads/main:refs/changes/56/123456/7",
       "--revision",
-      "src/flutter@refs/heads/main",
-      "--refs",
-      "refs/heads/main",
+      "src/flutter@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "--refs",
       "refs/heads/main"
     ],
@@ -435,7 +337,7 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "DEPOT_TOOLS_REPORT_BUILD": "proj/try/try-builder/8945511751514863184",
+      "DEPOT_TOOLS_REPORT_BUILD": "flutter/prod/prod-builder/8945511751514863184",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
       "GIT_BRANCH": "",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
@@ -465,7 +367,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -482,18 +384,18 @@
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"did_run\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@  \"fixed_revisions\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"src/flutter\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"src/flutter\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }, @@@",
       "@@@STEP_LOG_LINE@json.output@  \"manifest\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"src/flutter\": {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"repository\": \"https://fake.org/src/flutter.git\", @@@",
-      "@@@STEP_LOG_LINE@json.output@      \"revision\": \"e1f32bac24d72ebe0a5713009ae850c6320e7c7d\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"revision\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@  }, @@@",
       "@@@STEP_LOG_LINE@json.output@  \"patch_failure\": false, @@@",
       "@@@STEP_LOG_LINE@json.output@  \"patch_root\": \"src/flutter\", @@@",
       "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision\": \"e1f32bac24d72ebe0a5713009ae850c6320e7c7d\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", @@@",
       "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision_cp\": \"refs/heads/main@{#84512}\", @@@",
       "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"9221bca00ddbd888260084def81f09543281b952\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }, @@@",
@@ -503,7 +405,7 @@
       "@@@STEP_LOG_LINE@json.output@      \"src/flutter\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"git_checkout\": {@@@",
       "@@@STEP_LOG_LINE@json.output@          \"repo_url\": \"https://fake.org/src/flutter.git\", @@@",
-      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"e1f32bac24d72ebe0a5713009ae850c6320e7c7d\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"@@@",
       "@@@STEP_LOG_LINE@json.output@        }@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    }, @@@",
@@ -512,7 +414,7 @@
       "@@@STEP_LOG_LINE@json.output@  \"step_text\": \"Some step text\"@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@SET_BUILD_PROPERTY@got_engine_revision@\"e1f32bac24d72ebe0a5713009ae850c6320e7c7d\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_engine_revision@\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"@@@",
       "@@@SET_BUILD_PROPERTY@got_engine_revision_cp@\"refs/heads/main@{#84512}\"@@@",
       "@@@SET_BUILD_PROPERTY@got_revision@\"9221bca00ddbd888260084def81f09543281b952\"@@@"
     ]
@@ -528,7 +430,7 @@
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "DEPOT_TOOLS_REPORT_BUILD": "proj/try/try-builder/8945511751514863184",
+      "DEPOT_TOOLS_REPORT_BUILD": "flutter/prod/prod-builder/8945511751514863184",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
@@ -554,7 +456,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -582,7 +484,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -614,7 +516,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -657,7 +559,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -681,7 +583,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -706,7 +608,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -730,7 +632,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -772,7 +674,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -818,7 +720,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -842,7 +744,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -871,7 +773,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -900,7 +802,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -925,7 +827,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -952,7 +854,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -978,7 +880,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {
@@ -1006,7 +908,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "proj:try"
+        "name": "flutter:prod"
       },
       "resultdb": {
         "current_invocation": {

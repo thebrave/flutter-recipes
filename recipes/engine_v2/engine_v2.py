@@ -228,12 +228,13 @@ def GenTests(api):
           tests=[],
           generators=generators,
           archives=archives,
-          environment='Staging'
       ),
-      api.buildbucket.try_build(
-          project='proj',
-          builder='try-builder',
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='prod-builder',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
           revision='a' * 40,
           build_number=123,
       ),
@@ -300,8 +301,7 @@ def GenTests(api):
       api.properties(
           config_name='overridden_config_name',
           archives=[],
-          generators=[],
-          environment='Staging'
+          generators=[]
       ),
       api.buildbucket.try_build(
           project='proj',
@@ -320,7 +320,7 @@ def GenTests(api):
       api.platform.name('linux'),
       api.properties(builds=builds, environment='Staging'),
       api.buildbucket.try_build(
-          project='proj',
+          project='dart',
           builder='try-builder',
           git_repo='https://dart.googlesource.com/monorepo',
           revision='a' * 40,
@@ -338,12 +338,13 @@ def GenTests(api):
       api.platform.name('linux'),
       api.properties(
           config_name='config_name',
-          builds=builds,
-          environment='Staging'),
-      api.buildbucket.try_build(
-          project='proj',
-          builder='try-builder',
+          builds=builds),
+      api.buildbucket.ci_build(
+          project='dart',
+          bucket='ci.sandbox',
+          builder='monorepo_builder',
           git_repo='https://dart.googlesource.com/monorepo',
+          git_ref='refs/heads/main',
           revision='a' * 40,
           build_number=123,
       ),

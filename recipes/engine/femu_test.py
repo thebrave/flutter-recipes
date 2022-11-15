@@ -177,11 +177,14 @@ def CasRoot(api):
                       test_suites_file, api.json.output()).json.output:
       # Ensure command is well-formed.
       # See https://fuchsia.dev/fuchsia-src/concepts/packages/package_url.
-      match = re.match(r'^(run-test-component|run-test-suite) fuchsia-pkg://[0-9a-z\-_\.]+/(?P<name>[0-9a-z\-_\.]+)#meta/[0-9a-z\-_\.]+(\.cm|\.cmx)( +[0-9a-zA-Z\-_*\.: =]+)?$', suite['test_command'])
+      match = re.match(r'^(run-test-component|run-test-suite|test-run) (?P<test_far_file>fuchsia-pkg://[0-9a-z\-_\.]+/(?P<name>[0-9a-z\-_\.]+)#meta/[0-9a-z\-_\.]+(\.cm|\.cmx))( +[0-9a-zA-Z\-_*\.: =]+)?$', suite['test_command'])
       if not match:
         raise api.step.StepFailure('Invalid test command: %s' % suite['test_command'])
+
       suite['name'] = match.group('name')
       suite['run_with_dart_aot'] = 'run_with_dart_aot' in suite and suite['run_with_dart_aot'] == 'true'
+      suite['test_far_file'] = match.group('test_far_file')
+
       if 'packages' not in suite:
         suite['packages'] = [ suite['package'] ]
       suite['package_basenames'] = []
@@ -243,51 +246,68 @@ def TestFuchsiaFEMU(api):
   checkout = GetCheckoutPath(api)
   debug_build_id_dir = checkout.join('out/fuchsia_debug_x64/.build-id')
   profile_build_id_dir = checkout.join('out/fuchsia_profile_x64/.build-id')
+  ffx = checkout.join('fuchsia/sdk/linux/tools/x64/ffx')
+  fserve = checkout.join('fuchsia/sdk/linux/tools/x64/fserve')
+  fpublish = checkout.join('fuchsia/sdk/linux/tools/x64/fpublish')
 
   with api.context(cwd=root_dir), api.step.nest('FEMU Test'), api.step.defer_results():
     for suite in test_suites:
-      if suite['run_with_dart_aot']:
-        test_cmd = cmd + [
-          '--symbolizer_cmd=./symbolizer --build-id-dir={}'.format(profile_build_id_dir),
-          '--serve_packages=flutter_aot_runner-0.far,%s' % ','.join(suite['package_basenames']),
-          '--test_suite=%s' % suite['name'],
-          '--test_command=%s' % suite['test_command'],
-          '--emulator_log',
-          api.raw_io.output_text(name='emulator_log'),
-          '--syslog',
-          api.raw_io.output_text(name='syslog')
-        ]
-        api.retry.step(
-            api.test_utils.test_step_name(
-                'Run FEMU Test Suite with Dart AOT Runner %s' % suite['name']
-            ),
-            test_cmd,
-            step_test_data=(
-                lambda: api.raw_io.test_api.
-                output_text('failure', name='syslog')
-            )
-        )
+      if 'test-run' in suite['test_command']:
+        with api.context(cwd=root_dir), api.step.nest('run FEMU Test %s' % suite['name']):
+          api.step('get terminal.qemu-x64 product bundle', [ffx, 'product-bundle', 'get', 'terminal.qemu-x64'])
+          deferred_launch_step = api.step('launch x64 emulator with QEMU engine', [ffx, 'emu', 'start', 'terminal.qemu-x64', '--headless', '--log', api.raw_io.output_text(name='emulator_log')])
+          launch_step = deferred_launch_step.get_result()
+          launch_step.presentation.logs['emulator_log'] = launch_step.raw_io.output_texts['emulator_log']
+          api.step('start fserve', [fserve, '-image', 'qemu-x64', '-server-port', '8084'])
+
+          for package in suite['package_basenames']:
+            api.step('publishing {}'.format(package), [fpublish, package])
+
+          api.step('run ffx test', [ffx, 'test', 'run', suite['test_far_file']])
+          api.step('dump ffx log', [ffx, 'log', 'dump'])
       else:
-        test_cmd = cmd + [
-          '--symbolizer_cmd=./symbolizer --build-id-dir={}'.format(debug_build_id_dir),
-          '--serve_packages=flutter_aot_runner-0.far,%s' % ','.join(suite['package_basenames']),
-          '--test_suite=%s' % suite['name'],
-          '--test_command=%s' % suite['test_command'],
-          '--emulator_log',
-          api.raw_io.output_text(name='emulator_log'),
-          '--syslog',
-          api.raw_io.output_text(name='syslog')
-        ]
-        api.retry.step(
-            api.test_utils.test_step_name(
-                'Run FEMU Test Suite %s' % suite['name']
-            ),
-            test_cmd,
-            step_test_data=(
-                lambda: api.raw_io.test_api.
-                output_text('failure', name='syslog')
-            )
-        )
+        if suite['run_with_dart_aot']:
+          test_cmd = cmd + [
+            '--symbolizer_cmd=./symbolizer --build-id-dir={}'.format(profile_build_id_dir),
+            '--serve_packages=flutter_aot_runner-0.far,%s' % ','.join(suite['package_basenames']),
+            '--test_suite=%s' % suite['name'],
+            '--test_command=%s' % suite['test_command'],
+            '--emulator_log',
+            api.raw_io.output_text(name='emulator_log'),
+            '--syslog',
+            api.raw_io.output_text(name='syslog')
+          ]
+          api.retry.step(
+              api.test_utils.test_step_name(
+                  'Run FEMU Test Suite with Dart AOT Runner %s' % suite['name']
+              ),
+              test_cmd,
+              step_test_data=(
+                  lambda: api.raw_io.test_api.
+                  output_text('failure', name='syslog')
+              )
+          )
+        else:
+          test_cmd = cmd + [
+            '--symbolizer_cmd=./symbolizer --build-id-dir={}'.format(debug_build_id_dir),
+            '--serve_packages=flutter_aot_runner-0.far,%s' % ','.join(suite['package_basenames']),
+            '--test_suite=%s' % suite['name'],
+            '--test_command=%s' % suite['test_command'],
+            '--emulator_log',
+            api.raw_io.output_text(name='emulator_log'),
+            '--syslog',
+            api.raw_io.output_text(name='syslog')
+          ]
+          api.retry.step(
+              api.test_utils.test_step_name(
+                  'Run FEMU Test Suite %s' % suite['name']
+              ),
+              test_cmd,
+              step_test_data=(
+                  lambda: api.raw_io.test_api.
+                  output_text('failure', name='syslog')
+              )
+          )
 
 def BuildFuchsia(api):
   """
@@ -695,6 +715,72 @@ def GenTests(api):
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
       api.step_data('FEMU Test.test: Run FEMU Test Suite with Dart AOT Runner dart-jit-runner-integration-test', retcode=1),
+      api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      api.platform('linux', 64),
+      api.path.exists(
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
+          ),
+          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
+          api.path['cache'].join('builder/ssh/id_ed25519'),
+          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
+          api.path['cache'].join('builder/ssh/ssh_host_key'),
+      ),
+  )
+
+  yield api.test(
+      'test-run test_command',
+      api.properties(
+          InputProperties(
+              goma_jobs='1024',
+              build_fuchsia=True,
+              test_fuchsia=True,
+              git_url='https://github.com/flutter/engine',
+              git_ref='refs/pull/1/head',
+              clobber=False,
+          ),),
+      api.step_data(
+          'Retrieve list of test suites.parse',
+          api.json.output([{
+            'test_command': 'test-run fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm',
+            'packages': [
+              'dart-aot-runner-integration-test-0.far',
+              'dart_aot_runner-0.far',
+              'gen/flutter/shell/platform/fuchsia/dart_runner/tests/startup_integration_test/dart_jit_runner/dart_jit_echo_server/dart_jit_echo_server/dart_jit_echo_server.far'
+            ]
+          }])
+      ),
+      api.step_data(
+          'Retrieve list of test suites.read',
+          api.file.read_text('''# This is a comment.
+- test_command: test-run fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm
+  run_with_dart_aot: true
+  packages:
+    - dart-aot-runner-integration-test-0.far
+    - dart_aot_runner-0.far
+    - gen/flutter/shell/platform/fuchsia/dart_runner/tests/startup_integration_test/dart_jit_runner/dart_jit_echo_server/dart_jit_echo_server/dart_jit_echo_server.far''')
+      ),
+      api.step_data(
+          'Read manifest',
+          api.file.read_json({'id': '0.20200101.0.1'}),
+      ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
       api.platform('linux', 64),
       api.path.exists(

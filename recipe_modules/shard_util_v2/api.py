@@ -166,9 +166,9 @@ class ShardUtilApi(recipe_api.RecipeApi):
       platform_name = build.get('platform') or PLATFORM_TO_NAME.get(
           self.m.platform.name
       )
-      for d in drone_dimensions:
-        k, v = d.split('=')
-        task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
+      #for d in drone_dimensions:
+      #  k, v = d.split('=')
+      #  task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
 
       # Override recipe.
       drone_properties['recipe'] = recipe_name

@@ -3,9 +3,11 @@
 # found in the LICENSE file.
 
 from recipe_engine.recipe_api import Property
+from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 
 DEPS = [
     'flutter/devicelab_osx_sdk',
+    'flutter/flutter_bcid',
     'flutter/flutter_deps',
     'flutter/logs_util',
     'flutter/os_utils',
@@ -32,6 +34,7 @@ DEPS = [
 MAX_TIMEOUT_SECS = 30 * 60
 
 def RunSteps(api):
+  api.flutter_bcid.report_stage(BcidStage.START.value)
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
 
@@ -41,6 +44,7 @@ def RunSteps(api):
 
   api.os_utils.print_pub_certs()
 
+  api.flutter_bcid.report_stage(BcidStage.FETCH.value)
   flutter_path = api.path.mkdtemp().join('flutter sdk')
   api.repo_util.checkout(
       'flutter',
@@ -151,8 +155,8 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadResults(
         api, env, env_prefixes, results_path, test_status == 'flaky',
-        git_branch, api.properties.get('buildername'), commit_time, task_name,
-        benchmark_tags, suppress_log=suppress_log
+        git_branch, api.properties.get('buildername'), commit_time,
+        task_name, benchmark_tags, suppress_log=suppress_log
     )
     uploadMetricsToCas(api, results_path)
 

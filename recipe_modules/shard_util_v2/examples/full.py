@@ -20,6 +20,13 @@ DEPS = [
 def RunSteps(api):
   build_configs = api.properties.get('builds', [])
   test_configs = api.properties.get('tests', [])
+  props = api.shard_util_v2.pre_process_properties(
+          {'properties': {
+              '$flutter/osx_sdk': '{"cleanup_cache": true, "sdk_version": "14a5294e"}'
+              }
+           }
+  )
+  assert isinstance(props['properties']['$flutter/osx_sdk'], dict)
   with api.step.nest("launch builds") as presentation:
     reqs = api.shard_util_v2.schedule_builds(build_configs, presentation)
   with api.step.nest("collect builds") as presentation:

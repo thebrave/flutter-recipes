@@ -8,6 +8,7 @@
 # marked with release_build: true, and spawens a subbuild.
 
 
+import json
 from contextlib import contextmanager
 
 from PB.recipes.flutter.engine.engine import InputProperties
@@ -57,6 +58,7 @@ def RunSteps(api, properties, env_properties):
     for target in ci_yaml.json.output['targets']:
       if target.get("properties", {}).get("release_build", False) and (
           target["name"].lower().startswith(api.platform.name)):
+        target = api.shard_util_v2.pre_process_properties(target)
         tasks.update(api.shard_util_v2.schedule(
           [target, ], target["recipe"], presentation))
   with api.step.nest('collect builds') as presentation:
@@ -77,7 +79,10 @@ def GenTests(api):
     status="SUCCESS",
   )
   tasks_dict = {'targets': [
-    {'name': 'linux one', 'recipe': 'engine/something', 'properties': {'release_build': True, }}]}
+    {'name': 'linux one', 'recipe': 'engine/something',
+     'properties': {'release_build': True, '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'}
+    }]
+  }
   yield api.test(
     'basic_linux',
     api.platform.name('linux'),

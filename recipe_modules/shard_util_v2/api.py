@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import attr
+import json
 import collections
 
 from google.protobuf import duration_pb2
@@ -71,6 +72,24 @@ class ShardUtilApi(recipe_api.RecipeApi):
       else:
         result[k] = v
     return result
+
+  def pre_process_properties(self, target):
+   """Converts json properties to dicts or lists.
+
+   Dict or lists in ci_yaml are passed as json string to recipes and they
+   need to be converted back to dict or lists before passing them to subbuilds.
+
+   Args:
+     target: A target dictionary as read from the yaml file.
+   """
+   if target.get('properties'):
+     properties = target.get('properties')
+     new_props = {}
+     for k, v in properties.items():
+       if isinstance(v,str) and (v.startswith('[') or v.startswith('{')):
+         new_props[k] = json.loads(v)
+     target['properties'] = new_props
+   return target
 
   def struct_to_dict(self, struct):
     """Transforms a proto structure to a dictionary.

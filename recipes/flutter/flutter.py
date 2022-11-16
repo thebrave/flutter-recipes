@@ -13,12 +13,9 @@ from google.protobuf import struct_pb2
 
 DEPS = [
     'flutter/adhoc_validation',
-    'flutter/display_util',
     'flutter/flutter_deps',
     'flutter/os_utils',
     'flutter/repo_util',
-    'flutter/shard_util',
-    'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/path',
     'recipe_engine/properties',

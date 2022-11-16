@@ -37,8 +37,11 @@ class BucketUtilApi(recipe_api.RecipeApi):
       zip_name: (str) Name of the zip file in the cloud bucket.
       platform: (str) Directory name to add the zip file to.
       bucket_name: (str) The bucket name. Defaults to flutter_infra.
+
+    Returns:
+      A string with the destination path.
     """
-    self.upload_folder_and_files(
+    return self.upload_folder_and_files(
         dir_label,
         parent_directory,
         folder_name,
@@ -67,6 +70,9 @@ class BucketUtilApi(recipe_api.RecipeApi):
       platform: (str) directory name to add the zip file to.
       file_paths: (list) A list of string with the filenames to upload.
       bucket_name: (str) The bucket name. Defaults to flutter_infra.
+
+    Returns:
+      A string with the destination path.
     """
     with self.m.os_utils.make_temp_directory(dir_label) as temp_dir:
       remote_name = '%s/%s' % (platform, zip_name) if platform else zip_name
@@ -82,7 +88,8 @@ class BucketUtilApi(recipe_api.RecipeApi):
 
       pkg.zip('Zip %s' % folder_name)
       if self.should_upload_packages():
-        self.safe_upload(local_zip, remote_zip, bucket_name=bucket_name)
+        return self.safe_upload(local_zip, remote_zip, bucket_name=bucket_name)
+         
 
   def safe_upload(
       self,
@@ -114,7 +121,7 @@ class BucketUtilApi(recipe_api.RecipeApi):
       add_mock: (bool) Whether to call path.add_mock_file for the local_path.
 
     Returns:
-      The result of the gsutil.upload step. Useful for verifying the exit code.
+      A string with the remote path.
     """
     if add_mock:
       self.m.path.mock_add_file(local_path)
@@ -151,13 +158,14 @@ class BucketUtilApi(recipe_api.RecipeApi):
           return
         raise AssertionError('%s already exists on cloud storage' % cloud_path)
 
-    return self.m.gsutil.upload(
+    self.m.gsutil.upload(
         local_path,
         bucket_name,
         remote_path,
         args=args,
         name='upload "%s"' % remote_path
     )
+    return 'gs://%s/%s' % (bucket_name, remote_path)
 
   def add_files(self, pkg, relative_paths=[]):
     """Adds files to the package.

@@ -423,3 +423,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
      if branch.startswith('flutter-'):
          return True
     return False
+
+  def release_candidate_branch(self, checkout_path):
+    """Returns the first branch that starts with "flutter-"."""
+    commit_branches = self.current_commit_branches(checkout_path)
+    for branch in commit_branches:
+     if branch.startswith('flutter-'):
+         return branch

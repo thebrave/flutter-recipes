@@ -104,16 +104,18 @@ class ShardUtilApi(recipe_api.RecipeApi):
     """
     return collections.OrderedDict((k, v) for k, v in struct.items())
 
-  def schedule_builds(self, builds, presentation):
+  def schedule_builds(self, builds, presentation, branch='main'):
     """Schedule builds using the builds configurations.
 
     Args:
       builds(dict): The build configurations to be passed to BuildBucket or led.
       presentation(StepPresentation): The step object used to add links and/or logs.
+      branch(String): The current branch name.
     Returns:
       A dictionary with a long build_id as key and SubbuildResult as value.
     """
-    return self.schedule(builds, 'engine_v2/builder', presentation)
+    return self.schedule(builds, 'engine_v2/builder', presentation,
+                         branch=branch)
 
   def schedule_tests(self, tests, build_results, presentation):
     """Schedule tests using build_results for dependencies.
@@ -140,13 +142,14 @@ class ShardUtilApi(recipe_api.RecipeApi):
       updated_tests.append(test)
     return self.schedule(updated_tests, 'engine_v2/tester', presentation)
 
-  def schedule(self, builds, recipe_name, presentation):
+  def schedule(self, builds, recipe_name, presentation, branch='main'):
     """Schedules one subbuild per build configuration.
 
     Args:
       builds(dict): The build/test configurations to be passed to BuildBucket or led.
       recipe_name(str): A string with the recipe name to use.
       presentation(StepPresentation): The step object used to add links and/or logs.
+      branch(String): The current branch name.
     Returns:
       A dictionary with a long build_id as key and SubbuildResult as value.
     """
@@ -154,7 +157,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
     if self.m.led.launched_by_led:
       builds = self._schedule_with_led(build_list, recipe_name)
     else:
-      builds = self._schedule_with_bb(build_list, recipe_name)
+      builds = self._schedule_with_bb(build_list, recipe_name, branch=branch)
     return builds
 
   def _schedule_with_led(self, builds, recipe_name):
@@ -185,9 +188,6 @@ class ShardUtilApi(recipe_api.RecipeApi):
       platform_name = build.get('platform') or PLATFORM_TO_NAME.get(
           self.m.platform.name
       )
-      #for d in drone_dimensions:
-      #  k, v = d.split('=')
-      #  task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
 
       # Override recipe.
       drone_properties['recipe'] = recipe_name
@@ -228,12 +228,13 @@ class ShardUtilApi(recipe_api.RecipeApi):
       )
     return results
 
-  def _schedule_with_bb(self, builds, recipe_name):
+  def _schedule_with_bb(self, builds, recipe_name, branch='main'):
     """Schedules builds using builbbucket.
 
     Args:
       builds(dict): The build/test configurations to be passed to BuildBucket or led.
       recipe_name(str): A string with the recipe name to use.
+      branch(String): The current branch name.
     Returns:
       A dictionary with a long build_id as key and SubbuildResult as value.
     """
@@ -285,7 +286,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
           # situation less unlikely.
           # https://github.com/flutter/flutter/issues/59169.
           priority=25,
-          exe_cipd_version=self.m.properties.get('exe_cipd_version', 'refs/heads/main')
+          exe_cipd_version=self.m.properties.get('exe_cipd_version',
+                                                 'refs/heads/%s' % branch)
       )
       # Increase timeout if no_goma, since the runtime is going to
       # be much longer.

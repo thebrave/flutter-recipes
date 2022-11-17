@@ -55,6 +55,7 @@ def RunSteps(api, properties, env_properties):
   tests = api.properties.get('tests')
   generators = api.properties.get('generators')
   archives = api.properties.get('archives')
+  checkout_path = None
   if config_name:
     # Read builds configuration from repository under test.
     if api.buildbucket.gitiles_commit.project == 'monorepo':
@@ -92,8 +93,12 @@ def RunSteps(api, properties, env_properties):
   if archives is None:
     archives = []
 
+  current_branch = 'main'
+  if checkout_path and api.repo_util.is_release_candidate_branch(checkout_path):
+    current_branch = api.repo_util.release_candidate_branch(checkout_path) 
   with api.step.nest('launch builds') as presentation:
-    tasks = api.shard_util_v2.schedule_builds(builds, presentation)
+    tasks = api.shard_util_v2.schedule_builds(builds, presentation,
+                                              branch=current_branch)
   with api.step.nest('collect builds') as presentation:
     build_results = api.shard_util_v2.collect(tasks, presentation)
 
@@ -356,5 +361,9 @@ def GenTests(api):
       api.step_data(
           'Read build config file',
           api.file.read_json({'builds': builds})
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io.output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
       ),
   )

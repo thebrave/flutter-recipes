@@ -18,6 +18,7 @@ def RunSteps(api):
   flutter_checkout_path = api.path['start_dir'].join('flutter')
   api.repo_util.get_branch(flutter_checkout_path)
   api.repo_util.is_release_candidate_branch(flutter_checkout_path)
+  api.repo_util.release_candidate_branch(flutter_checkout_path)
   api.repo_util.checkout(
       'flutter', flutter_checkout_path, ref='refs/heads/master'
   )

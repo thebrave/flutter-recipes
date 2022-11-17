@@ -63,58 +63,15 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
       if not api.runtime.is_experimental:
         step_args.append('--publish')
       api.step('prepare, create and publish a flutter archive', step_args)
-      if api.properties.get('upload_with_cosign') is True:
-        flutter_package_absolute_path = GetFlutterPackageAbsolutePath(api, work_dir)
-        api.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
-        UploadAndSignFlutterPackage(api, flutter_package_absolute_path, git_hash, branch)
-        api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
+
+      # TODO(drewroengoogle): Utilize this path later on when we publish to gcs manually
+      flutter_package_absolute_path = GetFlutterPackageAbsolutePath(api, work_dir)
 
 
 def GetFlutterPackageAbsolutePath(api, work_dir):
   """Gets full flutter package directory if it exists."""
   files = api.file.glob_paths('get flutter archive file name', work_dir, '*flutter*.tar.xz', test_data=['flutter-archive-package.tar.xz'])
   return files[0] if len(files) == 1 else None
-
-
-def UploadAndSignFlutterPackage(api, flutter_path, git_hash, branch):
-  """Uploads flutter package to the artifact registry, then signs it using a KMS key.
-  This is all done using the package cosign.
-  """
-  bucket = api.buildbucket.build.builder.bucket
-  if not api.runtime.is_experimental and bucket == 'prod':
-    base_artifact_registry_url = 'us-docker.pkg.dev/flutter-infra/flutter-artifacts'
-  else:
-    base_artifact_registry_url = 'us-docker.pkg.dev/flutter-infra-staging/flutter-artifacts'
-
-  artifact_registry_url = '%s/%s/%s/%s' % (base_artifact_registry_url, branch, git_hash, api.path.basename(flutter_path))
-
-  gcloud_docker_config_args = [
-      'gcloud',
-      'auth',
-      'configure-docker',
-      'us-docker.pkg.dev'
-  ]
-
-  cosign_upload_args = [
-      'cosign',
-      'upload',
-      'blob',
-      '-f',
-      flutter_path,
-      artifact_registry_url
-  ]
-
-  ## The force parameter bypasses the confirmation prompt from cosign
-  cosign_sign_args = [
-      'cosign',
-      'sign',
-      artifact_registry_url,
-      '--force'
-  ]
-  api.step('configure docker registry', gcloud_docker_config_args)
-  api.step('upload through cosign', cosign_upload_args)
-  api.step('sign flutter artifact', cosign_sign_args)
-  api.flutter_bcid.upload_provenance(flutter_path, artifact_registry_url)
 
 
 def RunSteps(api):
@@ -145,11 +102,6 @@ def RunSteps(api):
     )
   env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
 
-  # TODO(drewroen): Remove this once cosign supports keyless signing without enabling
-  # experimental features.
-  if api.properties.get('upload_with_cosign') is True:
-    env['COSIGN_EXPERIMENTAL'] = 'true'
-
   api.flutter_deps.required_deps(
       env, env_prefixes, api.properties.get('dependencies', [])
   )
@@ -177,16 +129,14 @@ def GenTests(api):
     for should_upload in (True, False):
       for platform in ('mac', 'linux', 'win'):
         for branch in ('master', 'beta', 'stable'):
-          for upload_with_cosign in (True, False):
             for bucket in ('prod', 'staging'):
               git_ref = 'refs/heads/' + branch
               test = api.test(
-                  '%s_%s%s%s%s_%s' % (
+                  '%s_%s%s%s_%s' % (
                       platform,
                       branch,
                       '_experimental' if experimental else '',
                       '_upload' if should_upload else '',
-                      '_cosign' if upload_with_cosign else '',
                       bucket
                   ), api.platform(platform, 64),
                   api.buildbucket.ci_build(
@@ -197,8 +147,7 @@ def GenTests(api):
                       shard='tests',
                       fuchsia_ctl_version='version:0.0.2',
                       upload_packages=should_upload,
-                      gold_tryjob=not should_upload,
-                      upload_with_cosign=upload_with_cosign
+                      gold_tryjob=not should_upload
                   ), api.runtime(is_experimental=experimental),
                   api.repo_util.flutter_environment_data()
               )

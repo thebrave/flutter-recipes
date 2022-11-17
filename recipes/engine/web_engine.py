@@ -169,9 +169,6 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
   properties = copy.deepcopy(drone_props)
   properties['command_name'] = 'firefox-unit-linux'
   properties['name'] = properties['command_name']
-  # We don't need extra dependencies since felt tools handles firefox itself.
-  # TODO(nurhan): Use cipd packages for Firefox. As we are doing for chrome
-  # still respect to the version from browser_lock.yaml.
   properties['web_dependencies'] = []
   # These are the felt commands which will be used.
   properties['command_args'] = ['test', '--browser=firefox']

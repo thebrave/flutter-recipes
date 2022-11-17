@@ -66,6 +66,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'dart_sdk': self.dart_sdk,
         'dashing': self.dashing,
         'firebase': self.firebase,
+        'firefox': self.firefox,
         'gh_cli': self.gh_cli,
         'go_sdk': self.go_sdk,
         'goldctl': self.goldctl,
@@ -179,6 +180,25 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         env['CHROME_EXECUTABLE'] = exec_path
       else:
         env['CHROME_EXECUTABLE'] = chrome_path.join(binary_name)
+
+  def firefox(self, env, env_prefixes, version):
+    """Downloads Firefox from CIPD and updates the environment variables.
+
+    Args:
+      env(dict): Current environment variables.
+      env_prefixes(dict):  Current environment prefixes variables.
+      version(str): The Firefox version to install.
+    """
+    version = version or 'latest'
+    with self.m.step.nest('Firefox dependency'):
+      firefox_path = self.m.path['cache'].join('firefox')
+      pkgs = self.m.cipd.EnsureFile()
+      pkgs.add_package('flutter_internal/browsers/firefox/${platform}', version)
+      self.m.cipd.ensure(firefox_path, pkgs)
+      paths = env_prefixes.get('PATH', [])
+      paths.append(firefox_path.join('firefox'))
+      env_prefixes['PATH'] = paths
+      env['FIREFOX_EXECUTABLE'] = firefox_path.join('firefox', 'firefox')
 
   def gh_cli(self, env, env_prefixes, version):
     """Installs GitHub CLI."""

@@ -27,7 +27,7 @@ def GenTests(api):
           'Linux': '768968',
           'Mac': '768985',
           'Win': '768975'
-      }
+      },
   }
   yield api.test(
       'fail_case',
@@ -41,11 +41,6 @@ def GenTests(api):
                     api.json.output(browser_yaml_file)),
       api.properties(
           web_dependencies=['chrome_driver'],), api.platform(
-              'linux', 64)) + api.platform.name('linux')
-  yield api.test(
-      'firefox_driver',
-      api.properties(
-          web_dependencies=['firefox_driver'],), api.platform(
               'linux', 64)) + api.platform.name('linux')
   yield api.test(
       'chrome',

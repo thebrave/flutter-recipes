@@ -27,10 +27,13 @@ def RunSteps(api):
   api.flutter_deps.chrome_and_driver(env, env_prefixes, 'v3')
   api.assertions.assertTrue(env.get('CHROME_NO_SANDBOX'))
   api.assertions.assertTrue(env.get('CHROME_EXECUTABLE'))
+  api.flutter_deps.firefox(env, env_prefixes, 'v3')
+  api.assertions.assertTrue(env.get('FIREFOX_EXECUTABLE'))
   api.assertions.assertEqual(
       env_prefixes.get('PATH'), [
           api.path['cache'].join('chrome', 'chrome'),
-          api.path['cache'].join('chrome', 'drivers')
+          api.path['cache'].join('chrome', 'drivers'),
+          api.path['cache'].join('firefox', 'firefox')
       ]
   )
   api.flutter_deps.go_sdk(env, env_prefixes, 'v4')

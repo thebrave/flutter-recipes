@@ -9,16 +9,6 @@ from recipe_engine import recipe_api
 class WebUtilsApi(recipe_api.RecipeApi):
   """Utilities to use when running flutter web engine tests."""
 
-  def firefox_driver(self, checkout):
-    """Downloads the latest version of the Firefox web driver from CIPD."""
-    # Download the driver for Firefox.
-    firefox_driver_path = checkout.join('flutter', 'lib', 'web_ui',
-                                        '.dart_tool', 'drivers', 'firefox')
-    pkgdriver = self.m.cipd.EnsureFile()
-    pkgdriver.add_package(
-        'flutter_internal/browser-drivers/firefoxdriver-linux', 'latest')
-    self.m.cipd.ensure(firefox_driver_path, pkgdriver)
-
   def chrome(self, checkout):
     """Downloads Chrome from CIPD.
 
@@ -78,7 +68,6 @@ class WebUtilsApi(recipe_api.RecipeApi):
     available_deps = {
         'chrome': self.chrome,
         'chrome_driver': self.chrome_driver,
-        'firefox_driver': self.firefox_driver,
     }
     properties = properties or self.get_web_dependencies()
     for dep in properties:

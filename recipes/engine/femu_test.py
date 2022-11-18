@@ -37,10 +37,19 @@ DEPS = [
 
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
+FSERVE_PORT = 8084
 
 
 def GetCheckoutPath(api):
   return api.path['cache'].join('builder', 'src')
+
+
+def GetEmulatorArch(api):
+  arch = api.properties.get('emulator_arch', 'x64')
+  if arch not in ['arm64', 'x64']:
+    api.step.StepWarning('invalid architecture: %s - defaulting to x64' % arch)
+    return 'x64'
+  return arch
 
 
 def Build(api, config, *targets):
@@ -62,16 +71,17 @@ def GetFlutterFuchsiaBuildTargets(product, include_test_targets=False):
 
 
 def BuildAndTestFuchsia(api, build_script, git_rev):
+  arch = GetEmulatorArch(api)
   # Prepares build files for debug/JIT Fuchsia
-  RunGN(api, '--fuchsia', '--fuchsia-cpu', 'x64', '--runtime-mode', 'debug',
+  RunGN(api, '--fuchsia', '--fuchsia-cpu', arch, '--runtime-mode', 'debug',
         '--no-lto')
   # Prepares build files for profile/AOT Fuchsia
-  RunGN(api, '--fuchsia', '--fuchsia-cpu', 'x64', '--runtime-mode', 'profile',
+  RunGN(api, '--fuchsia', '--fuchsia-cpu', arch, '--runtime-mode', 'profile',
         '--no-lto')
   # Builds debug/JIT Fuchsia
-  Build(api, 'fuchsia_debug_x64', *GetFlutterFuchsiaBuildTargets(False, True))
+  Build(api, 'fuchsia_debug_%s' % arch, *GetFlutterFuchsiaBuildTargets(False, True))
   # Builds profile/AOT Fuchsia
-  Build(api, 'fuchsia_profile_x64', *GetFlutterFuchsiaBuildTargets(False, True))
+  Build(api, 'fuchsia_profile_%s' % arch, *GetFlutterFuchsiaBuildTargets(False, True))
 
   # Package the build artifacts.
   #
@@ -82,11 +92,11 @@ def BuildAndTestFuchsia(api, build_script, git_rev):
   # TODO(akbiggs): Clean this up if we feel brave.
   fuchsia_debug_package_cmd = [
       'python', build_script, '--engine-version', git_rev, '--skip-build',
-      '--archs', 'x64', '--runtime-mode', 'debug',
+      '--archs', arch, '--runtime-mode', 'debug',
   ]
   fuchsia_profile_package_cmd = [
       'python', build_script, '--engine-version', git_rev, '--skip-build',
-      '--archs', 'x64', '--runtime-mode', 'profile', '--skip-remove-buckets'
+      '--archs', arch, '--runtime-mode', 'profile', '--skip-remove-buckets'
   ]
   api.step('Package Debug/JIT Fuchsia Artifacts', fuchsia_debug_package_cmd)
   api.step('Package Profile/AOT Fuchsia Artifacts', fuchsia_profile_package_cmd)
@@ -168,13 +178,22 @@ def CasRoot(api):
     add(ssh_config, "ssh_config")
 
   def addFlutterTests():
+    arch = GetEmulatorArch(api)
     add(
-        checkout.join('out', 'fuchsia_bucket', 'flutter', 'x64', 'debug', 'aot',
+        checkout.join('out', 'fuchsia_bucket', 'flutter', arch, 'debug', 'aot',
                       'flutter_aot_runner-0.far'), 'flutter_aot_runner-0.far')
     test_suites_file = checkout.join(
       'flutter', 'testing', 'fuchsia', 'test_suites.yaml')
+
     for suite in api.yaml.read('Retrieve list of test suites',
                       test_suites_file, api.json.output()).json.output:
+      # Default behavior is to run all tests on x64 if "emulator_arch" not present
+      # If "emulator_arch" is present, we run based on the emulator_arch specified
+      # x64 - femu_test.py
+      # arm64 - arm_femu_test.py
+      if arch not in suite.get('emulator_arch', ['x64']):
+        continue
+
       # Ensure command is well-formed.
       # See https://fuchsia.dev/fuchsia-src/concepts/packages/package_url.
       match = re.match(r'^(run-test-component|run-test-suite|test-run) (?P<test_far_file>fuchsia-pkg://[0-9a-z\-_\.]+/(?P<name>[0-9a-z\-_\.]+)#meta/[0-9a-z\-_\.]+(\.cm|\.cmx))( +[0-9a-zA-Z\-_*\.: =]+)?$', suite['test_command'])
@@ -193,9 +212,9 @@ def CasRoot(api):
         basename = re.match(r'(:?.*/)*([^/]*$)', path).group(2)
         suite['package_basenames'].append(basename)
         if suite['run_with_dart_aot']:
-            add(checkout.join('out', 'fuchsia_profile_x64', path), basename)
+            add(checkout.join('out', 'fuchsia_profile_%s' % arch, path), basename)
         else:
-          add(checkout.join('out', 'fuchsia_debug_x64', path), basename)
+          add(checkout.join('out', 'fuchsia_debug_%s' % arch, path), basename)
       test_suites.append(suite)
 
   def addTestScript():
@@ -217,6 +236,8 @@ def CasRoot(api):
 def TestFuchsiaFEMU(api):
   """Run flutter tests on FEMU."""
   test_suites, root_dir, cas_hash = CasRoot(api)
+  arch = GetEmulatorArch(api)
+
   cmd = ['./run_vdl_test.sh']
   # These flags will be passed through to VDL
   cmd.append('--emulator_binary_path=aemu/emulator')
@@ -250,21 +271,69 @@ def TestFuchsiaFEMU(api):
   fserve = checkout.join('fuchsia/sdk/linux/tools/x64/fserve')
   fpublish = checkout.join('fuchsia/sdk/linux/tools/x64/fpublish')
 
-  with api.context(cwd=root_dir), api.step.nest('FEMU Test'), api.step.defer_results():
+  with api.context(
+      cwd=root_dir), api.step.nest('FEMU Test'), api.step.defer_results():
     for suite in test_suites:
       if 'test-run' in suite['test_command']:
-        with api.context(cwd=root_dir), api.step.nest('run FEMU Test %s' % suite['name']):
-          api.step('get terminal.qemu-x64 product bundle', [ffx, 'product-bundle', 'get', 'terminal.qemu-x64'])
-          deferred_launch_step = api.step('launch x64 emulator with QEMU engine', [ffx, 'emu', 'start', 'terminal.qemu-x64', '--headless', '--log', api.raw_io.output_text(name='emulator_log')])
-          launch_step = deferred_launch_step.get_result()
-          launch_step.presentation.logs['emulator_log'] = launch_step.raw_io.output_texts['emulator_log']
-          api.step('start fserve', [fserve, '-image', 'qemu-x64', '-server-port', '8084'])
+        with api.step.nest('run FEMU Test %s' % suite['name']):
+          # Retrieve the required product bundle
+          # Contains necessary images, packages, etc to launch the emulator
+          api.step('get terminal.qemu-%s product bundle' % arch,
+                   [ffx, 'product-bundle', 'get',
+                    'terminal.qemu-%s' % arch])
 
+          # Launch the emulator
+          # Route the emulator_log to a temporary, defined path to output later
+          emulator_log_path = api.path.mkstemp('emulator_log')
+          if arch == 'arm64':
+            deferred_launch_step = api.step(
+                'launch arm64 emulator with QEMU engine', [
+                    ffx, 'emu', 'start', 'terminal.qemu-arm64', '--engine',
+                    'qemu', '--headless', '--startup-timeout', '360', '--log',
+                    api.raw_io.output_text(
+                        name='emulator_log', leak_to=emulator_log_path)
+                ],
+                step_test_data=(lambda: api.raw_io.test_api.output_text(
+                    'log', name='emulator_log')))
+          else:
+            deferred_launch_step = api.step(
+                'launch x64 emulator', [
+                    ffx, 'emu', 'start', 'terminal.qemu-x64', '--headless',
+                    '--log',
+                    api.raw_io.output_text(
+                        name='emulator_log', leak_to=emulator_log_path)
+                ],
+                step_test_data=(lambda: api.raw_io.test_api.output_text(
+                    'log', name='emulator_log')))
+
+          # Start a package server, this listens in the background for published files
+          # https://fuchsia.dev/reference/tools/sdk/fserve
+          api.step(
+              'start fserve',
+              [fserve, '-image',
+               'qemu-%s' % arch, '-server-port', FSERVE_PORT])
+
+          # Publishes the required FAR files needed to run the test to the package server
+          # https://fuchsia.dev/reference/tools/sdk/fpublish
           for package in suite['package_basenames']:
             api.step('publishing {}'.format(package), [fpublish, package])
 
-          api.step('run ffx test', [ffx, 'test', 'run', suite['test_far_file']])
-          api.step('dump ffx log', [ffx, 'log', 'dump'])
+          # Run the actual test
+          api.retry.step('run ffx test',
+                         [ffx, 'test', 'run', suite['test_far_file']])
+
+          # Outputs ffx log and emulator_log for debugging
+          deferred_dump_step = api.step('ffx log dump', [ffx, 'log', 'dump'])
+          dump_step = deferred_dump_step.get_result()
+          launch_step = deferred_launch_step.get_result()
+          # TODO(http://fxb/115447): Investigate why emulator_log isn't
+          # outputting full emulator logs
+          dump_step.presentation.logs[
+              'emulator_log'] = launch_step.raw_io.output_texts['emulator_log']
+
+          # Cleans up running processes to prevent clashing with future test runs
+          api.step('kill fserve', [fserve, '-kill'])
+          api.step('stop %s emulator' % arch, [ffx, 'emu', 'stop', '--all'])
       else:
         if suite['run_with_dart_aot']:
           test_cmd = cmd + [
@@ -308,6 +377,7 @@ def TestFuchsiaFEMU(api):
                   output_text('failure', name='syslog')
               )
           )
+
 
 def BuildFuchsia(api):
   """
@@ -746,7 +816,7 @@ def GenTests(api):
   )
 
   yield api.test(
-      'test-run test_command',
+      'test_run_command',
       api.properties(
           InputProperties(
               goma_jobs='1024',
@@ -777,6 +847,211 @@ def GenTests(api):
     - dart_aot_runner-0.far
     - gen/flutter/shell/platform/fuchsia/dart_runner/tests/startup_integration_test/dart_jit_runner/dart_jit_echo_server/dart_jit_echo_server/dart_jit_echo_server.far''')
       ),
+      api.step_data(
+          'Read manifest',
+          api.file.read_json({'id': '0.20200101.0.1'}),
+      ),
+      api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      api.platform('linux', 64),
+      api.path.exists(
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
+          ),
+          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
+          api.path['cache'].join('builder/ssh/id_ed25519'),
+          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
+          api.path['cache'].join('builder/ssh/ssh_host_key'),
+      ),
+  )
+
+  yield api.test(
+      'invalid_emulator_arch',
+      api.properties(
+          InputProperties(
+              goma_jobs='1024',
+              build_fuchsia=True,
+              test_fuchsia=True,
+              git_url='https://github.com/flutter/engine',
+              git_ref='refs/pull/1/head',
+              clobber=False,
+              emulator_arch='x32'
+          ),),
+      api.step_data(
+          'Retrieve list of test suites.parse',
+          api.json.output([{
+              'package':
+                  'v2_test-123.far',
+              'test_command':
+                  'test-run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm'
+          }])),
+      api.step_data(
+          'Retrieve list of test suites.read',
+          api.file.read_text("""# This is a comment.
+- package: v2_test-123.far
+  test_command: test-run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm""")),
+      api.step_data(
+          'Read manifest',
+          api.file.read_json({'id': '0.20200101.0.1'}),
+      ),
+      api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      api.platform('linux', 64),
+      api.path.exists(
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
+          ),
+          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
+          api.path['cache'].join('builder/ssh/id_ed25519'),
+          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
+          api.path['cache'].join('builder/ssh/ssh_host_key'),
+      ),
+  )
+
+  yield api.test(
+    'run_on_test_specified_arch',
+    api.properties(
+        InputProperties(
+            goma_jobs='1024',
+            build_fuchsia=True,
+            test_fuchsia=True,
+            git_url='https://github.com/flutter/engine',
+            git_ref='refs/pull/1/head',
+            clobber=False,
+        ),),
+    api.step_data(
+        'Retrieve list of test suites.parse',
+        api.json.output([{
+          'test_command': 'test-run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm',
+          'packages': [
+            'dart-aot-runner-integration-test-0.far',
+            'dart_aot_runner-0.far',
+          ],
+          'emulator_arch': [
+            'x64',
+            'arm64',
+          ]
+        },{
+          'test_command': 'test-run fuchsia-pkg://fuchsia.com/only-run-on-arm64#meta/only-run-on-arm64',
+          'packages': [
+            'dart_aot_runner-0.far'
+          ],
+          'emulator_arch': [
+            'arm64'
+          ]
+        }])
+    ),
+    api.step_data(
+        'Retrieve list of test suites.read',
+        api.file.read_text('''# This is a comment.
+- test_command: test-run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm
+  run_with_dart_aot: true
+  packages:
+    - dart-aot-runner-integration-test-0.far
+    - dart_aot_runner-0.far
+  emulator_arch:
+    - x64
+    - arm64
+- test_command: test-run fuchsia-pkg://fuchsia.com/only-run-on-arm64#meta/only-run-on-arm64',
+  packages:
+    - dart_aot_runner-0.far'
+  emulator_arch:
+    - arm64''')
+      ),
+      api.step_data(
+          'Read manifest',
+          api.file.read_json({'id': '0.20200101.0.1'}),
+      ),
+      api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      api.platform('linux', 64),
+      api.path.exists(
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
+          ),
+          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
+          api.path['cache'].join('builder/ssh/id_ed25519'),
+          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
+          api.path['cache'].join('builder/ssh/ssh_host_key'),
+      ),
+  )
+
+  yield api.test(
+      'arm64_emulator_arch',
+      api.properties(
+          InputProperties(
+              goma_jobs='1024',
+              build_fuchsia=True,
+              test_fuchsia=True,
+              git_url='https://github.com/flutter/engine',
+              git_ref='refs/pull/1/head',
+              clobber=False,
+              emulator_arch='arm64'
+          ),),
+      api.step_data(
+          'Retrieve list of test suites.parse',
+          api.json.output([{
+              'package':
+                  'v2_test-123.far',
+              'test_command':
+                  'test-run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm',
+              'emulator_arch': ['arm64']
+          }])),
+      api.step_data(
+          'Retrieve list of test suites.read',
+          api.file.read_text("""# This is a comment.
+- package: v2_test-123.far
+  test_command: test-run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm
+  emulator_arch:
+    - arm64""")),
       api.step_data(
           'Read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),

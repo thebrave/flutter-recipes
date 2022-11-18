@@ -2636,12 +2636,19 @@
     "name": "Retrieve list of test suites",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@yaml@# This is a comment.@@@",
-      "@@@STEP_LOG_LINE@yaml@- test_command: test-run fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm@@@",
+      "@@@STEP_LOG_LINE@yaml@- test_command: test-run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm@@@",
       "@@@STEP_LOG_LINE@yaml@  run_with_dart_aot: true@@@",
       "@@@STEP_LOG_LINE@yaml@  packages:@@@",
       "@@@STEP_LOG_LINE@yaml@    - dart-aot-runner-integration-test-0.far@@@",
       "@@@STEP_LOG_LINE@yaml@    - dart_aot_runner-0.far@@@",
-      "@@@STEP_LOG_LINE@yaml@    - gen/flutter/shell/platform/fuchsia/dart_runner/tests/startup_integration_test/dart_jit_runner/dart_jit_echo_server/dart_jit_echo_server/dart_jit_echo_server.far@@@",
+      "@@@STEP_LOG_LINE@yaml@  emulator_arch:@@@",
+      "@@@STEP_LOG_LINE@yaml@    - x64@@@",
+      "@@@STEP_LOG_LINE@yaml@    - arm64@@@",
+      "@@@STEP_LOG_LINE@yaml@- test_command: test-run fuchsia-pkg://fuchsia.com/only-run-on-arm64#meta/only-run-on-arm64',@@@",
+      "@@@STEP_LOG_LINE@yaml@  packages:@@@",
+      "@@@STEP_LOG_LINE@yaml@    - dart_aot_runner-0.far'@@@",
+      "@@@STEP_LOG_LINE@yaml@  emulator_arch:@@@",
+      "@@@STEP_LOG_LINE@yaml@    - arm64@@@",
       "@@@STEP_LOG_END@yaml@@@"
     ]
   },
@@ -2678,12 +2685,19 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@test_suites.yaml@# This is a comment.@@@",
-      "@@@STEP_LOG_LINE@test_suites.yaml@- test_command: test-run fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@- test_command: test-run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm@@@",
       "@@@STEP_LOG_LINE@test_suites.yaml@  run_with_dart_aot: true@@@",
       "@@@STEP_LOG_LINE@test_suites.yaml@  packages:@@@",
       "@@@STEP_LOG_LINE@test_suites.yaml@    - dart-aot-runner-integration-test-0.far@@@",
       "@@@STEP_LOG_LINE@test_suites.yaml@    - dart_aot_runner-0.far@@@",
-      "@@@STEP_LOG_LINE@test_suites.yaml@    - gen/flutter/shell/platform/fuchsia/dart_runner/tests/startup_integration_test/dart_jit_runner/dart_jit_echo_server/dart_jit_echo_server/dart_jit_echo_server.far@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@  emulator_arch:@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@    - x64@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@    - arm64@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@- test_command: test-run fuchsia-pkg://fuchsia.com/only-run-on-arm64#meta/only-run-on-arm64',@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@  packages:@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@    - dart_aot_runner-0.far'@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@  emulator_arch:@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@    - arm64@@@",
       "@@@STEP_LOG_END@test_suites.yaml@@@"
     ]
   },
@@ -2719,12 +2733,24 @@
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@[@@@",
       "@@@STEP_LOG_LINE@json.output@  {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"emulator_arch\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"x64\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"arm64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    ], @@@",
       "@@@STEP_LOG_LINE@json.output@    \"packages\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      \"dart-aot-runner-integration-test-0.far\", @@@",
-      "@@@STEP_LOG_LINE@json.output@      \"dart_aot_runner-0.far\", @@@",
-      "@@@STEP_LOG_LINE@json.output@      \"gen/flutter/shell/platform/fuchsia/dart_runner/tests/startup_integration_test/dart_jit_runner/dart_jit_echo_server/dart_jit_echo_server/dart_jit_echo_server.far\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"dart_aot_runner-0.far\"@@@",
       "@@@STEP_LOG_LINE@json.output@    ], @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"test_command\": \"test-run fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"test_command\": \"test-run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"emulator_arch\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"arm64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    ], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"packages\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"dart_aot_runner-0.far\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    ], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"test_command\": \"test-run fuchsia-pkg://fuchsia.com/only-run-on-arm64#meta/only-run-on-arm64\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@]@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -2736,7 +2762,7 @@
       "-u",
       "RECIPE_MODULE[fuchsia::cas_util]/resources/hardlink.py",
       "--link-json",
-      "{\"RECIPE[flutter::engine/femu_test].resources/run_vdl_test.sh\": [\"[CLEANUP]/vdl_runfiles__tmp_1/run_vdl_test.sh\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_buildargs\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_kernel\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_fvm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files\": [\"[CLEANUP]/vdl_runfiles__tmp_1/amber-files\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/pm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/x64/far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/far\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/x64/fvm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/fvm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/x64/symbolizer\": [\"[CLEANUP]/vdl_runfiles__tmp_1/symbolizer\"], \"[CACHE]/builder/aemu\": [\"[CLEANUP]/vdl_runfiles__tmp_1/aemu\"], \"[CACHE]/builder/device_spec/virtual_device.textproto\": [\"[CLEANUP]/vdl_runfiles__tmp_1/virtual_device.textproto\"], \"[CACHE]/builder/src/out/fuchsia_bucket/flutter/x64/debug/aot/flutter_aot_runner-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/flutter_aot_runner-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/dart-aot-runner-integration-test-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/dart-aot-runner-integration-test-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/dart_aot_runner-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/dart_aot_runner-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/gen/flutter/shell/platform/fuchsia/dart_runner/tests/startup_integration_test/dart_jit_runner/dart_jit_echo_server/dart_jit_echo_server/dart_jit_echo_server.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/dart_jit_echo_server.far\"], \"[CACHE]/builder/ssh/id_ed25519\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519\"], \"[CACHE]/builder/ssh/id_ed25519.pub\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519.pub\"], \"[CACHE]/builder/ssh_config\": [\"[CLEANUP]/vdl_runfiles__tmp_1/ssh_config\"], \"[CACHE]/builder/vdl/device_launcher\": [\"[CLEANUP]/vdl_runfiles__tmp_1/device_launcher\"], \"[CACHE]/builder/zircon-authorized.zbi\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_zircona-ed25519\"]}"
+      "{\"RECIPE[flutter::engine/femu_test].resources/run_vdl_test.sh\": [\"[CLEANUP]/vdl_runfiles__tmp_1/run_vdl_test.sh\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_buildargs\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_kernel\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_fvm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files\": [\"[CLEANUP]/vdl_runfiles__tmp_1/amber-files\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/pm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/x64/far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/far\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/x64/fvm\": [\"[CLEANUP]/vdl_runfiles__tmp_1/fvm\"], \"[CACHE]/builder/0.20200101.0.1/fuchsia_sdk/linux_intel_64/tools/x64/symbolizer\": [\"[CLEANUP]/vdl_runfiles__tmp_1/symbolizer\"], \"[CACHE]/builder/aemu\": [\"[CLEANUP]/vdl_runfiles__tmp_1/aemu\"], \"[CACHE]/builder/device_spec/virtual_device.textproto\": [\"[CLEANUP]/vdl_runfiles__tmp_1/virtual_device.textproto\"], \"[CACHE]/builder/src/out/fuchsia_bucket/flutter/x64/debug/aot/flutter_aot_runner-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/flutter_aot_runner-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/dart-aot-runner-integration-test-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/dart-aot-runner-integration-test-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/dart_aot_runner-0.far\": [\"[CLEANUP]/vdl_runfiles__tmp_1/dart_aot_runner-0.far\"], \"[CACHE]/builder/ssh/id_ed25519\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519\"], \"[CACHE]/builder/ssh/id_ed25519.pub\": [\"[CLEANUP]/vdl_runfiles__tmp_1/id_ed25519.pub\"], \"[CACHE]/builder/ssh_config\": [\"[CLEANUP]/vdl_runfiles__tmp_1/ssh_config\"], \"[CACHE]/builder/vdl/device_launcher\": [\"[CLEANUP]/vdl_runfiles__tmp_1/device_launcher\"], \"[CACHE]/builder/zircon-authorized.zbi\": [\"[CLEANUP]/vdl_runfiles__tmp_1/qemu_zircona-ed25519\"]}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -2921,7 +2947,7 @@
   },
   {
     "cmd": [],
-    "name": "FEMU Test.run FEMU Test dart-jit-runner-integration-test",
+    "name": "FEMU Test.run FEMU Test run-on-both-arch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -2950,7 +2976,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "FEMU Test.run FEMU Test dart-jit-runner-integration-test.get terminal.qemu-x64 product bundle",
+    "name": "FEMU Test.run FEMU Test run-on-both-arch.get terminal.qemu-x64 product bundle",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -2963,7 +2989,7 @@
       "terminal.qemu-x64",
       "--headless",
       "--log",
-      "/path/to/tmp/"
+      "[CLEANUP]/emulator_log_tmp_1"
     ],
     "cwd": "[CLEANUP]/vdl_runfiles__tmp_1",
     "env": {
@@ -2982,11 +3008,9 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "FEMU Test.run FEMU Test dart-jit-runner-integration-test.launch x64 emulator with QEMU engine",
+    "name": "FEMU Test.run FEMU Test run-on-both-arch.launch x64 emulator",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@emulator_log@@@@",
-      "@@@STEP_LOG_END@emulator_log@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -3014,7 +3038,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "FEMU Test.run FEMU Test dart-jit-runner-integration-test.start fserve",
+    "name": "FEMU Test.run FEMU Test run-on-both-arch.start fserve",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -3041,7 +3065,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "FEMU Test.run FEMU Test dart-jit-runner-integration-test.publishing dart-aot-runner-integration-test-0.far",
+    "name": "FEMU Test.run FEMU Test run-on-both-arch.publishing dart-aot-runner-integration-test-0.far",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -3068,34 +3092,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "FEMU Test.run FEMU Test dart-jit-runner-integration-test.publishing dart_aot_runner-0.far",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/fpublish",
-      "dart_jit_echo_server.far"
-    ],
-    "cwd": "[CLEANUP]/vdl_runfiles__tmp_1",
-    "env": {
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "name": "FEMU Test.run FEMU Test dart-jit-runner-integration-test.publishing dart_jit_echo_server.far",
+    "name": "FEMU Test.run FEMU Test run-on-both-arch.publishing dart_aot_runner-0.far",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -3105,7 +3102,7 @@
       "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
       "test",
       "run",
-      "fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm"
+      "fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm"
     ],
     "cwd": "[CLEANUP]/vdl_runfiles__tmp_1",
     "env": {
@@ -3124,7 +3121,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "FEMU Test.run FEMU Test dart-jit-runner-integration-test.run ffx test",
+    "name": "FEMU Test.run FEMU Test run-on-both-arch.run ffx test",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -3152,7 +3149,65 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "FEMU Test.run FEMU Test dart-jit-runner-integration-test.dump ffx log",
+    "name": "FEMU Test.run FEMU Test run-on-both-arch.ffx log dump",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@emulator_log@log@@@",
+      "@@@STEP_LOG_END@emulator_log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/fserve",
+      "-kill"
+    ],
+    "cwd": "[CLEANUP]/vdl_runfiles__tmp_1",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "FEMU Test.run FEMU Test run-on-both-arch.kill fserve",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "emu",
+      "stop",
+      "--all"
+    ],
+    "cwd": "[CLEANUP]/vdl_runfiles__tmp_1",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "FEMU Test.run FEMU Test run-on-both-arch.stop x64 emulator",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]

@@ -542,11 +542,30 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
     """
     with self.m.step.nest('Prepare code signing'):
-      self.m.step(
-          'unlock login keychain',
-          ['unlock_login_keychain.sh'],
-          infra_step=True,
-      )
+      # Unlock keychain for devicelab tasks.
+      if self.m.test_utils.is_devicelab_bot():
+        self.m.step(
+            'unlock login keychain',
+            ['unlock_login_keychain.sh'],
+            infra_step=True,
+        )
+      # Download and copy provisiong profile to default location for Chromium Host only bots.
+      else:
+        version = version or 'latest'
+        mobileprovision_path = self.m.path.mkdtemp().join('mobileprovision')
+        mobileprovision = self.m.cipd.EnsureFile()
+        mobileprovision.add_package('flutter_internal/mac/mobileprovision/${platform}', version)
+        with self.m.step.nest('Installing Mac mobileprovision'):
+          self.m.cipd.ensure(mobileprovision_path, mobileprovision)
+
+        mobileprovision_profile = mobileprovision_path.join('development.mobileprovision')
+        copy_script = self.resource('copy_mobileprovisioning_profile.sh')
+        self.m.step('Set execute permission', ['chmod', '755', copy_script])
+        self.m.step(
+            'copy mobileprovisioning profile',
+            [copy_script, mobileprovision_profile]
+        )
+
       # See go/googler-flutter-signing about how to renew the Apple development
       # certificate and provisioning profile.
       env['FLUTTER_XCODE_CODE_SIGN_STYLE'] = 'Manual'

@@ -12,6 +12,7 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/swarming',
 ]
 
 
@@ -108,6 +109,7 @@ def GenTests(api):
           dependencies=[{"dependency": "xcode"},
                         {'dependency': 'chrome_and_driver'}]
       ),
+      api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
       api.path.exists(
           api.path['cache'].join(
               'osx_sdk/XCode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift'

@@ -24,7 +24,6 @@ DEPS = [
     'flutter/flutter_deps',
     'flutter/os_utils',
     'flutter/repo_util',
-    'flutter/web_util',
     'recipe_engine/cas',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -91,7 +90,6 @@ def RunSteps(api, properties, env_properties):
 
     with api.context(cwd=cache_root, env=env,
                      env_prefixes=env_prefixes), api.depot_tools.on_path():
-      web_dependencies = api.web_util.prepare_web_dependencies(checkout, build.get('web_dependencies'))
       with recipe_api.defer_results():
         api.step('felt test: %s' % command_name, felt_cmd)
         # This is to clean up leaked processes.
@@ -106,6 +104,8 @@ def GenTests(api):
       'command_name': 'chrome-unit-linux',
       'git_ref': 'refs/heads/master',
       'inherited_dependencies': [
+          {'dependency': 'chrome_and_driver'},
+          {'dependency': 'firefox'},
           {'dependency': 'goldctl'},
           {'dependency': 'open_jdk'},
           {'dependency': 'gradle_cache'}
@@ -114,14 +114,7 @@ def GenTests(api):
       'wasm_release_cas_hash': '7a4348cb77de16aac05401c635950c2a75566e3f268fd60e7113b0c70cd4fbcb/87',
       'web_dependencies': ['chrome']
   }
-  browser_yaml_file = {
-      'required_driver_version': {'chrome': 84},
-      'chrome': {'Linux': '768968', 'Mac': '768985', 'Win': '768975'}
-  }
   yield api.test(
       'basic',
       api.properties(build=build, clobber=True),
-      api.step_data(
-          'read browser lock yaml.parse', api.json.output(browser_yaml_file)
-      ),
   )

@@ -251,6 +251,101 @@
   },
   {
     "cmd": [],
+    "name": "Chrome and driver dependency"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/chrome/chrome",
+      "-ensure-file",
+      "flutter_internal/browsers/chrome/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Chrome and driver dependency.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter_internal/browsers/chrome/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/chrome/drivers",
+      "-ensure-file",
+      "flutter_internal/browser-drivers/chrome/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Chrome and driver dependency.ensure_installed (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter_internal/browser-drivers/chrome/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Firefox dependency"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/firefox",
+      "-ensure-file",
+      "flutter_internal/browsers/firefox/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Firefox dependency.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter_internal/browsers/firefox/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
     "name": "Download goldctl"
   },
   {
@@ -329,8 +424,11 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "FIREFOX_EXECUTABLE": "[CACHE]/firefox/firefox",
       "GIT_BRANCH": "",
       "GOLDCTL": "[CACHE]/gold/goldctl",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
@@ -346,6 +444,9 @@
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin"
       ]
     },
@@ -383,8 +484,11 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "FIREFOX_EXECUTABLE": "[CACHE]/firefox/firefox",
       "GIT_BRANCH": "",
       "GOLDCTL": "[CACHE]/gold/goldctl",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
@@ -400,6 +504,9 @@
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin"
       ]
     },
@@ -433,8 +540,11 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "FIREFOX_EXECUTABLE": "[CACHE]/firefox/firefox",
       "GIT_BRANCH": "",
       "GOLDCTL": "[CACHE]/gold/goldctl",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
@@ -450,6 +560,9 @@
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin"
       ]
     },
@@ -492,8 +605,11 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "FIREFOX_EXECUTABLE": "[CACHE]/firefox/firefox",
       "GIT_BRANCH": "",
       "GOLDCTL": "[CACHE]/gold/goldctl",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
@@ -509,6 +625,9 @@
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin"
       ]
     },
@@ -524,191 +643,6 @@
     "name": "Download CanvasKit build from CAS"
   },
   {
-    "cmd": [],
-    "name": "read browser lock yaml",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@yaml@@@@",
-      "@@@STEP_LOG_END@yaml@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CACHE]/builder/src/flutter/lib/web_ui/dev/browser_lock.yaml",
-      "/path/to/tmp/"
-    ],
-    "cwd": "[CACHE]/builder/src",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "GOLDCTL": "[CACHE]/gold/goldctl",
-      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
-      "GRADLE_USER_HOME": "[CACHE]/gradle",
-      "JAVA_HOME": "[CACHE]/java",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": ""
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
-        "[CACHE]/java/bin",
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
-        "[CACHE]/java/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0",
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]",
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "read browser lock yaml.read",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@browser_lock.yaml@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython",
-      "RECIPE_MODULE[flutter::yaml]/resources/parse_yaml.py",
-      "--yaml_file",
-      "[CACHE]/builder/src/flutter/lib/web_ui/dev/browser_lock.yaml",
-      "--json_file",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[CACHE]/builder/src",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "GOLDCTL": "[CACHE]/gold/goldctl",
-      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
-      "GRADLE_USER_HOME": "[CACHE]/gradle",
-      "JAVA_HOME": "[CACHE]/java",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": ""
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
-        "[CACHE]/java/bin",
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
-        "[CACHE]/java/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0",
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]",
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "read browser lock yaml.parse",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"chrome\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"Linux\": \"768968\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"Mac\": \"768985\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"Win\": \"768975\"@@@",
-      "@@@STEP_LOG_LINE@json.output@  }, @@@",
-      "@@@STEP_LOG_LINE@json.output@  \"required_driver_version\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"chrome\": 84@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CACHE]/builder/src/flutter/lib/web_ui/.dart_tool/chrome/768968",
-      "-ensure-file",
-      "flutter_internal/browsers/chrome/${platform} 768968",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "GOLDCTL": "[CACHE]/gold/goldctl",
-      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
-      "GRADLE_USER_HOME": "[CACHE]/gradle",
-      "JAVA_HOME": "[CACHE]/java",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": ""
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
-        "[CACHE]/java/bin",
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
-        "[CACHE]/java/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0",
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]",
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "name": "ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-768968----------\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter_internal/browsers/chrome/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
     "cmd": [
       "[CACHE]/builder/src/flutter/lib/web_ui/dev/felt",
       "test",
@@ -718,8 +652,11 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "FIREFOX_EXECUTABLE": "[CACHE]/firefox/firefox",
       "GIT_BRANCH": "",
       "GOLDCTL": "[CACHE]/gold/goldctl",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
@@ -735,8 +672,14 @@
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin",
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin"
       ]
     },
@@ -764,8 +707,11 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "FIREFOX_EXECUTABLE": "[CACHE]/firefox/firefox",
       "GIT_BRANCH": "",
       "GOLDCTL": "[CACHE]/gold/goldctl",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
@@ -781,8 +727,14 @@
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin",
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin"
       ]
     },
@@ -810,8 +762,11 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "FIREFOX_EXECUTABLE": "[CACHE]/firefox/firefox",
       "GIT_BRANCH": "",
       "GOLDCTL": "[CACHE]/gold/goldctl",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
@@ -827,8 +782,14 @@
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin",
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin"
       ]
     },
@@ -856,8 +817,11 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "FIREFOX_EXECUTABLE": "[CACHE]/firefox/firefox",
       "GIT_BRANCH": "",
       "GOLDCTL": "[CACHE]/gold/goldctl",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
@@ -873,8 +837,14 @@
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin",
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin"
       ]
     },
@@ -902,8 +872,11 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "FIREFOX_EXECUTABLE": "[CACHE]/firefox/firefox",
       "GIT_BRANCH": "",
       "GOLDCTL": "[CACHE]/gold/goldctl",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
@@ -919,8 +892,14 @@
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin",
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin"
       ]
     },
@@ -948,8 +927,11 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "FIREFOX_EXECUTABLE": "[CACHE]/firefox/firefox",
       "GIT_BRANCH": "",
       "GOLDCTL": "[CACHE]/gold/goldctl",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
@@ -965,8 +947,14 @@
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin",
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin"
       ]
     },
@@ -998,8 +986,11 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "FIREFOX_EXECUTABLE": "[CACHE]/firefox/firefox",
       "GIT_BRANCH": "",
       "GOLDCTL": "[CACHE]/gold/goldctl",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
@@ -1015,8 +1006,14 @@
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin",
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
         "[CACHE]/java/bin"
       ]
     },

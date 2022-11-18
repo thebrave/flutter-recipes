@@ -196,9 +196,9 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       pkgs.add_package('flutter_internal/browsers/firefox/${platform}', version)
       self.m.cipd.ensure(firefox_path, pkgs)
       paths = env_prefixes.get('PATH', [])
-      paths.append(firefox_path.join('firefox'))
+      paths.append(firefox_path)
       env_prefixes['PATH'] = paths
-      env['FIREFOX_EXECUTABLE'] = firefox_path.join('firefox', 'firefox')
+      env['FIREFOX_EXECUTABLE'] = firefox_path.join('firefox')
 
   def gh_cli(self, env, env_prefixes, version):
     """Installs GitHub CLI."""

@@ -33,7 +33,7 @@ def RunSteps(api):
       env_prefixes.get('PATH'), [
           api.path['cache'].join('chrome', 'chrome'),
           api.path['cache'].join('chrome', 'drivers'),
-          api.path['cache'].join('firefox', 'firefox')
+          api.path['cache'].join('firefox')
       ]
   )
   api.flutter_deps.go_sdk(env, env_prefixes, 'v4')

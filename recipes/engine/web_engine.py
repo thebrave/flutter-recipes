@@ -22,7 +22,6 @@ DEPS = [
     'flutter/repo_util',
     'flutter/shard_util_v2',
     'flutter/test_utils',
-    'flutter/web_util',
     'fuchsia/cas_util',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
@@ -123,7 +122,6 @@ def RunSteps(api, properties, env_properties):
         )
         CleanUpProcesses(api)
     else:
-      api.web_util.chrome(checkout)
       felt_test = copy.deepcopy(felt_cmd)
       felt_test.append('test')
       api.step(api.test_utils.test_step_name('felt test chrome'), felt_test)
@@ -148,7 +146,6 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
   properties = copy.deepcopy(drone_props)
   properties['command_name'] = 'chrome-unit-linux'
   properties['name'] = properties['command_name']
-  properties['web_dependencies'] = ['chrome']
   # These are the felt commands which will be used.
   properties['command_args'] = ['test', '--browser=chrome', '--require-skia-gold']
   targets.append(properties)
@@ -157,7 +154,6 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
   properties = copy.deepcopy(drone_props)
   properties['command_name'] = 'chrome-unit-linux-canvaskit'
   properties['name'] = properties['command_name']
-  properties['web_dependencies'] = ['chrome']
   # These are the felt commands which will be used.
   properties['command_args'] = [
       'test', '--browser=chrome', '--require-skia-gold',
@@ -169,7 +165,6 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
   properties = copy.deepcopy(drone_props)
   properties['command_name'] = 'firefox-unit-linux'
   properties['name'] = properties['command_name']
-  properties['web_dependencies'] = []
   # These are the felt commands which will be used.
   properties['command_args'] = ['test', '--browser=firefox']
   targets.append(properties)
@@ -177,10 +172,6 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
 
 
 def GenTests(api):
-  browser_yaml_file = {
-      'required_driver_version': {'chrome': 84},
-      'chrome': {'Linux': '768968', 'Mac': '768985', 'Win': '768975'}
-  }
   yield api.test(
      'basic',
      api.properties(clobber=True),
@@ -209,9 +200,6 @@ def GenTests(api):
   )
   yield api.test(
      'windows-post-submit',
-      api.step_data(
-        'read browser lock yaml.parse', api.json.output(browser_yaml_file)
-     ),
      api.properties(
         gclient_variables={'download_emsdk': True}
      ),

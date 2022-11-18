@@ -367,6 +367,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'REVISION':
             self.get_commit(checkout_path)
     }
+    package_sharding = self.m.properties.get('package_sharding', None)
+    if package_sharding:
+      env['PACKAGE_SHARDING'] = package_sharding
     if self.m.properties.get('gn_artifacts', False):
       env['FLUTTER_STORAGE_BASE_URL'
          ] = 'https://storage.googleapis.com/flutter_archives_v2'

@@ -27,6 +27,7 @@ def RunSteps(api):
   }
   results = api.archives.engine_v2_gcs_paths(checkout, config)
   api.archives.upload_artifact(results[0].local, results[0].remote)
+  api.archives.download(results[0].remote, results[0].local)
 
 
 def GenTests(api):

@@ -106,6 +106,18 @@ class ArchivesApi(recipe_api.RecipeApi):
         name=path,
     )
 
+  def download(self, src, dst):
+    """Downloads a file from GCS.
+
+    Args:
+      src: A string with gcs uri to download.
+      dst: A string with the local destination for the file.
+    """
+    bucket, path = self._split_dst_parts(src)
+    self.m.gsutil.download(
+        bucket, path, dst, name="download %s" % src
+    )
+
   def engine_v2_gcs_paths(self, checkout, archive_config, bucket=DEFAULT_BUCKET):
     """Calculates engine v2 GCS paths from an archive config.
 

@@ -72,12 +72,16 @@ def RunSteps(api):
     with api.step.nest('Run package tests'):
       for task in result.json.output['tasks']:
         script_path = packages_checkout_path.join(task['script'])
-        api.step(task['name'], cmd=['bash', script_path])
+        cmd = ['bash', script_path]
+        if 'args' in task:
+          args = task['args']
+          cmd.extend(args)
+        api.step(task['name'], cmd)
 
 
 def GenTests(api):
   flutter_path = api.path['start_dir'].join('flutter')
-  tasks_dict = {'tasks': [{'name': 'one', 'script': 'myscript'}]}
+  tasks_dict = {'tasks': [{'name': 'one', 'script': 'myscript', 'args': ['arg1', 'arg2']}]}
   yield api.test(
       'master_channel', api.repo_util.flutter_environment_data(flutter_path),
       api.properties(

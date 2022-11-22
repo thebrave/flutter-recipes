@@ -5,6 +5,7 @@
 DEPS = [
     'flutter/flutter_deps',
     'flutter/repo_util',
+    'flutter/osx_sdk',
     'flutter/yaml',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -50,11 +51,6 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=flutter_checkout_path):
     with api.step.nest('prepare environment'):
-      api.step(
-          'flutter config --enable-windows-desktop',
-          ['flutter', 'config', '--enable-windows-desktop'],
-          infra_step=True,
-      )
       api.step('flutter doctor', ['flutter', 'doctor', '-v'])
       # Fail fast on dependencies problem.
       timeout_secs = 300
@@ -70,14 +66,26 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=packages_checkout_path):
     with api.step.nest('Run package tests'):
-      for task in result.json.output['tasks']:
-        script_path = packages_checkout_path.join(task['script'])
-        cmd = ['bash', script_path]
-        if 'args' in task:
-          args = task['args']
-          cmd.extend(args)
-        api.step(task['name'], cmd)
+      dep_list = {d['dependency']: d.get('version') for d in deps}
+      if 'xcode' in dep_list:
+        with api.osx_sdk('ios'):
+          api.flutter_deps.gems(
+            env, env_prefixes, flutter_checkout_path.join('dev', 'ci', 'mac')
+          )
+          with api.context(env=env, env_prefixes=env_prefixes):
+            run_test(api, result, packages_checkout_path)
+      else:
+        run_test(api, result, packages_checkout_path)
 
+def run_test(api, result, packages_checkout_path):
+  """Run tests sequentially following the script"""
+  for task in result.json.output['tasks']:
+    script_path = packages_checkout_path.join(task['script'])
+    cmd = ['bash', script_path]
+    if 'args' in task:
+      args = task['args']
+      cmd.extend(args)
+    api.step(task['name'], cmd)
 
 def GenTests(api):
   flutter_path = api.path['start_dir'].join('flutter')
@@ -94,6 +102,15 @@ def GenTests(api):
       'stable_channel', api.repo_util.flutter_environment_data(flutter_path),
       api.properties(
           channel='stable',
+      ),
+      api.step_data('read yaml.parse', api.json.output(tasks_dict))
+  )
+  yield api.test(
+      'mac', api.repo_util.flutter_environment_data(flutter_path),
+      api.properties(
+          channel='master',
+          version_file='flutter_master.version',
+          dependencies=[{'dependency': 'xcode'}],
       ),
       api.step_data('read yaml.parse', api.json.output(tasks_dict))
   )

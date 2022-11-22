@@ -118,6 +118,25 @@
     ]
   },
   {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[START_DIR]/packages/.ci/flutter_master.version",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "checkout source code.read pinned version",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@flutter_master.version@refs/heads/master@@@",
+      "@@@STEP_LOG_END@flutter_master.version@@@"
+    ]
+  },
+  {
     "cmd": [],
     "name": "checkout source code.Checkout flutter/flutter",
     "~followup_annotations": [
@@ -144,7 +163,7 @@
       "git",
       "fetch",
       "origin",
-      "stable",
+      "master",
       "--recurse-submodules",
       "--progress",
       "--tags"
@@ -387,6 +406,8 @@
     },
     "env_prefixes": {
       "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
         "[START_DIR]/flutter/bin",
         "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
       ]

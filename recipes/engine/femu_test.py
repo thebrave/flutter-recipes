@@ -196,7 +196,7 @@ def CasRoot(api):
 
       # Ensure command is well-formed.
       # See https://fuchsia.dev/fuchsia-src/concepts/packages/package_url.
-      match = re.match(r'^(run-test-component|run-test-suite|test-run) (?P<test_far_file>fuchsia-pkg://[0-9a-z\-_\.]+/(?P<name>[0-9a-z\-_\.]+)#meta/[0-9a-z\-_\.]+(\.cm|\.cmx))( +[0-9a-zA-Z\-_*\.: =]+)?$', suite['test_command'])
+      match = re.match(r'^(run-test-component|run-test-suite|test run) (?P<test_far_file>fuchsia-pkg://[0-9a-z\-_\.]+/(?P<name>[0-9a-z\-_\.]+)#meta/[0-9a-z\-_\.]+(\.cm|\.cmx))( +[0-9a-zA-Z\-_*\.: =]+)?$', suite['test_command'])
       if not match:
         raise api.step.StepFailure('Invalid test command: %s' % suite['test_command'])
 
@@ -274,7 +274,7 @@ def TestFuchsiaFEMU(api):
   with api.context(
       cwd=root_dir), api.step.nest('FEMU Test'), api.step.defer_results():
     for suite in test_suites:
-      if 'test-run' in suite['test_command']:
+      if 'test run' in suite['test_command']:
         with api.step.nest('run FEMU Test %s' % suite['name']):
           # Retrieve the required product bundle
           # Contains necessary images, packages, etc to launch the emulator
@@ -319,8 +319,8 @@ def TestFuchsiaFEMU(api):
             api.step('publishing {}'.format(package), [fpublish, package])
 
           # Run the actual test
-          api.retry.step('run ffx test',
-                         [ffx, 'test', 'run', suite['test_far_file']])
+          # Test command is guaranteed to be well-formed
+          api.retry.step('run ffx test', [ffx] + suite['test_command'].split(' '))
 
           # Outputs ffx log and emulator_log for debugging
           deferred_dump_step = api.step('ffx log dump', [ffx, 'log', 'dump'])
@@ -829,7 +829,7 @@ def GenTests(api):
       api.step_data(
           'Retrieve list of test suites.parse',
           api.json.output([{
-            'test_command': 'test-run fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm',
+            'test_command': 'test run fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm',
             'packages': [
               'dart-aot-runner-integration-test-0.far',
               'dart_aot_runner-0.far',
@@ -840,7 +840,7 @@ def GenTests(api):
       api.step_data(
           'Retrieve list of test suites.read',
           api.file.read_text('''# This is a comment.
-- test_command: test-run fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm
+- test_command: test run fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm
   run_with_dart_aot: true
   packages:
     - dart-aot-runner-integration-test-0.far
@@ -899,13 +899,13 @@ def GenTests(api):
               'package':
                   'v2_test-123.far',
               'test_command':
-                  'test-run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm'
+                  'test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm'
           }])),
       api.step_data(
           'Retrieve list of test suites.read',
           api.file.read_text("""# This is a comment.
 - package: v2_test-123.far
-  test_command: test-run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm""")),
+  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm""")),
       api.step_data(
           'Read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
@@ -954,7 +954,7 @@ def GenTests(api):
     api.step_data(
         'Retrieve list of test suites.parse',
         api.json.output([{
-          'test_command': 'test-run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm',
+          'test_command': 'test run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm',
           'packages': [
             'dart-aot-runner-integration-test-0.far',
             'dart_aot_runner-0.far',
@@ -964,7 +964,7 @@ def GenTests(api):
             'arm64',
           ]
         },{
-          'test_command': 'test-run fuchsia-pkg://fuchsia.com/only-run-on-arm64#meta/only-run-on-arm64',
+          'test_command': 'test run fuchsia-pkg://fuchsia.com/only-run-on-arm64#meta/only-run-on-arm64',
           'packages': [
             'dart_aot_runner-0.far'
           ],
@@ -976,7 +976,7 @@ def GenTests(api):
     api.step_data(
         'Retrieve list of test suites.read',
         api.file.read_text('''# This is a comment.
-- test_command: test-run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm
+- test_command: test run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm
   run_with_dart_aot: true
   packages:
     - dart-aot-runner-integration-test-0.far
@@ -984,7 +984,7 @@ def GenTests(api):
   emulator_arch:
     - x64
     - arm64
-- test_command: test-run fuchsia-pkg://fuchsia.com/only-run-on-arm64#meta/only-run-on-arm64',
+- test_command: test run fuchsia-pkg://fuchsia.com/only-run-on-arm64#meta/only-run-on-arm64',
   packages:
     - dart_aot_runner-0.far'
   emulator_arch:
@@ -1042,14 +1042,14 @@ def GenTests(api):
               'package':
                   'v2_test-123.far',
               'test_command':
-                  'test-run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm',
+                  'test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm',
               'emulator_arch': ['arm64']
           }])),
       api.step_data(
           'Retrieve list of test suites.read',
           api.file.read_text("""# This is a comment.
 - package: v2_test-123.far
-  test_command: test-run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm
+  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm
   emulator_arch:
     - arm64""")),
       api.step_data(

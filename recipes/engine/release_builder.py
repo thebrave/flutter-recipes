@@ -21,6 +21,7 @@ DEPS = [
   'flutter/display_util',
   'flutter/repo_util',
   'flutter/shard_util_v2',
+  'flutter/status_reporting',
   'recipe_engine/buildbucket',
   'recipe_engine/json',
   'recipe_engine/path',
@@ -64,6 +65,7 @@ def RunSteps(api, properties, env_properties):
   with api.step.nest('collect builds') as presentation:
     build_results = api.shard_util_v2.collect(tasks, presentation)
 
+  api.status_reporting.publish_builds(build_results)
   api.display_util.display_subbuilds(
     step_name='display builds',
     subbuilds=build_results,

@@ -14,6 +14,8 @@ from contextlib import contextmanager
 from PB.recipes.flutter.engine.engine import InputProperties
 from PB.recipes.flutter.engine.engine import EnvProperties
 
+from RECIPE_MODULES.flutter.repo_util.api import REPOS
+
 from google.protobuf import struct_pb2
 
 DEPS = [
@@ -38,13 +40,15 @@ ENV_PROPERTIES = EnvProperties
 
 
 def RunSteps(api, properties, env_properties):
-  repository = 'engine'
+  repository = api.buildbucket.gitiles_commit.project
   checkout_path = api.path['start_dir'].join(repository)
+  git_ref = api.properties.get('git_ref') or api.buildbucket.gitiles_commit.ref
+  git_url = api.properties.get('git_url') or REPOS[repository]
   api.repo_util.checkout(
     repository,
     checkout_path=checkout_path,
-    url=api.properties.get('git_url'),
-    ref=api.properties.get('git_ref')
+    url=git_url,
+    ref=git_ref
   )
 
   ci_yaml_path = checkout_path.join('.ci.yaml')
@@ -86,7 +90,7 @@ def GenTests(api):
   yield api.test(
     'basic_linux',
     api.platform.name('linux'),
-    api.properties(environment='Staging'),
+    api.properties(environment='Staging', repository='engine'),
     api.buildbucket.try_build(
       project='proj',
       builder='try-builder',

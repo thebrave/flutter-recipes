@@ -3,14 +3,16 @@
 # found in the LICENSE file.
 
 REPOS = {
-    'flutter': 'https://flutter.googlesource.com/mirrors/flutter',
-    'engine': 'https://flutter.googlesource.com/mirrors/engine',
     'cocoon': 'https://flutter.googlesource.com/mirrors/cocoon',
+    'engine': 'https://flutter.googlesource.com/mirrors/engine',
+    'flutter': 'https://flutter.googlesource.com/mirrors/flutter',
     'infra': 'https://flutter.googlesource.com/infra',
+    'mirrors/engine': 'https://flutter.googlesource.com/mirrors/engine',
+    'mirrors/flutter': 'https://flutter.googlesource.com/mirrors/flutter',
     'monorepo': 'https://dart.googlesource.com/monorepo',
+    'openpay': 'https://dash-internal.googlesource.com/openpay',
     'packages': 'https://flutter.googlesource.com/mirrors/packages',
     'plugins': 'https://flutter.googlesource.com/mirrors/plugins',
-    'openpay': 'https://dash-internal.googlesource.com/openpay',
 }
 
 # TODO(keyonghan): deprecate when all repos are migrated to main.

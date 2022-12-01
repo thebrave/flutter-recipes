@@ -1,7 +1,7 @@
 [
   {
     "cmd": [],
-    "name": "Checkout flutter/engine"
+    "name": "Checkout flutter/mirrors/engine"
   },
   {
     "cmd": [
@@ -9,7 +9,7 @@
       "-u",
       "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
       "--path",
-      "[START_DIR]/engine",
+      "[START_DIR]/mirrors/engine",
       "--url",
       "https://flutter.googlesource.com/mirrors/engine"
     ],
@@ -25,7 +25,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/engine.git setup",
+    "name": "Checkout flutter/mirrors/engine.git setup",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -35,11 +35,12 @@
       "git",
       "fetch",
       "origin",
+      "main",
       "--recurse-submodules",
       "--progress",
       "--tags"
     ],
-    "cwd": "[START_DIR]/engine",
+    "cwd": "[START_DIR]/mirrors/engine",
     "env": {
       "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
     },
@@ -56,7 +57,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/engine.git fetch",
+    "name": "Checkout flutter/mirrors/engine.git fetch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -66,9 +67,9 @@
       "git",
       "checkout",
       "-f",
-      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "FETCH_HEAD"
     ],
-    "cwd": "[START_DIR]/engine",
+    "cwd": "[START_DIR]/mirrors/engine",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -82,7 +83,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/engine.git checkout",
+    "name": "Checkout flutter/mirrors/engine.git checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -93,7 +94,7 @@
       "rev-parse",
       "HEAD"
     ],
-    "cwd": "[START_DIR]/engine",
+    "cwd": "[START_DIR]/mirrors/engine",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -107,7 +108,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/engine.read revision",
+    "name": "Checkout flutter/mirrors/engine.read revision",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
@@ -122,7 +123,7 @@
       "-d",
       "-x"
     ],
-    "cwd": "[START_DIR]/engine",
+    "cwd": "[START_DIR]/mirrors/engine",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -136,7 +137,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/engine.git clean",
+    "name": "Checkout flutter/mirrors/engine.git clean",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -147,7 +148,7 @@
       "submodule",
       "sync"
     ],
-    "cwd": "[START_DIR]/engine",
+    "cwd": "[START_DIR]/mirrors/engine",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -161,7 +162,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/engine.submodule sync",
+    "name": "Checkout flutter/mirrors/engine.submodule sync",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -174,7 +175,7 @@
       "--init",
       "--recursive"
     ],
-    "cwd": "[START_DIR]/engine",
+    "cwd": "[START_DIR]/mirrors/engine",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -188,7 +189,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/engine.submodule update",
+    "name": "Checkout flutter/mirrors/engine.submodule update",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -209,7 +210,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[START_DIR]/engine/.ci.yaml",
+      "[START_DIR]/mirrors/engine/.ci.yaml",
       "/path/to/tmp/"
     ],
     "infra_step": true,
@@ -236,7 +237,7 @@
       "vpython",
       "RECIPE_MODULE[flutter::yaml]/resources/parse_yaml.py",
       "--yaml_file",
-      "[START_DIR]/engine/.ci.yaml",
+      "[START_DIR]/mirrors/engine/.ci.yaml",
       "--json_file",
       "/path/to/tmp/json"
     ],

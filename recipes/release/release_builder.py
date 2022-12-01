@@ -11,8 +11,8 @@
 import json
 from contextlib import contextmanager
 
-from PB.recipes.flutter.engine.engine import InputProperties
-from PB.recipes.flutter.engine.engine import EnvProperties
+from PB.recipes.flutter.release.release import InputProperties
+from PB.recipes.flutter.release.release import EnvProperties
 
 from google.protobuf import struct_pb2
 

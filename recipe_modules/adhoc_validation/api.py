@@ -33,7 +33,7 @@ class AddhocValidationApi(recipe_api.RecipeApi):
       secrets(dict): The key is the name of the secret and value is the path to kms.
     """
     if validation not in self.available_validations():
-      msg = validation + ' is not listed in available_validations.'
+      msg = str(validation) + ' is not listed in available_validations.'
       raise AssertionError(msg)
     secrets = secrets or {}
     with self.m.step.nest(name):

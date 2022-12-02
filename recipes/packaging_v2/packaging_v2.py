@@ -67,18 +67,26 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
           '--revision=%s' % git_hash,
           '--branch=%s' % branch
       ]
-      api.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
-      api.step('prepare, create and publish a flutter archive', step_args)
+      api.step('prepare and create a flutter archive', step_args)
 
       flutter_pkg_absolute_path = GetFlutterPackageAbsolutePath(api, work_dir)
       file_name = api.path.basename(flutter_pkg_absolute_path)
-      dest_archive = '%s/%s' % (branch, api.platform.name)
-      if branch not in ('beta', 'stable'):
-        # if branch is not beta or stable, use experimental subpath
-        dest_archive += '/experimental'
-      dest_archive += '/%s' % file_name
-      dest_gs = 'gs://flutter_infra_release/releases/%s' % dest_archive
-      api.archives.upload_artifact(flutter_pkg_absolute_path, dest_gs)
+      dest_archive = '/%s/%s' % (branch, api.platform.name)
+      dest_gs = 'gs://flutter_infra_release/releases%s' % dest_archive
+      api.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
+      if branch in ('beta', 'stable'):
+        # only publish using upload_artifact if is branch is beta or stable
+        # publish both package and metadata which has been updated
+        # by the packaging_script
+        pkg_gs_path = '%s/%s' % (dest_gs, file_name)
+        api.archives.upload_artifact(flutter_pkg_absolute_path, pkg_gs_path)
+        metadata_absolute_path = GetFlutterMetadataAbsolutePath(api, work_dir)
+        metadata_filename = api.path.basename(metadata_absolute_path)
+        metadata_gs_path = "%s/%s" % (dest_gs, metadata_filename)
+        api.archives.upload_artifact(metadata_absolute_path, metadata_gs_path)
+      else:
+        # add experimental subpath if branch is not beta or stable
+        dest_gs += '/%s/%s' % ('experimental', file_name)
       api.flutter_bcid.upload_provenance(flutter_pkg_absolute_path, dest_gs)
       api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
 
@@ -97,6 +105,22 @@ def GetFlutterPackageAbsolutePath(api, work_dir):
                               '*flutter*.%s' % suffix, test_data=['flutter-archive-package.%s' % suffix])
   return files[0] if len(files) == 1 else None
 
+def GetFlutterMetadataAbsolutePath(api, work_dir):
+  """Gets local metadata absolute path.
+
+  Returns:
+    str: Path to the metadata file which contains a platform suffix.
+  """
+  metadata_filename = "releases_"
+  if api.platform.is_linux:
+    metadata_filename += "linux.json"
+  elif api.platform.is_mac:
+    metadata_filename += "macos.json"
+  elif api.platform.is_win:
+    metadata_filename += "windows.json"
+  files = api.file.glob_paths('get flutter archive file name', work_dir,
+                            metadata_filename, test_data=['releases_linux.json'])
+  return files[0] if len(files) == 1 else None
 
 def RunSteps(api):
   api.flutter_bcid.report_stage(BcidStage.START.value)

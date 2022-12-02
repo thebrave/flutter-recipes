@@ -81,6 +81,9 @@ class ShardUtilApi(recipe_api.RecipeApi):
 
    Args:
      target: A target dictionary as read from the yaml file.
+
+   Returns:
+     A copy of the original dictionary with the json properties decoded.
    """
    if target.get('properties'):
      properties = target.get('properties')
@@ -88,6 +91,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
      for k, v in properties.items():
        if isinstance(v,str) and (v.startswith('[') or v.startswith('{')):
          new_props[k] = json.loads(v)
+       else:
+         new_props[k] = v
      target['properties'] = new_props
    return target
 

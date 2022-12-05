@@ -43,15 +43,17 @@ RELEASE_CHANNELS = ('refs/heads/beta', 'refs/heads/stable')
 
 def ShouldRun(api, git_ref, target):
   """Validates if a target should run based on platform, channel and repo."""
+  release_build = target.get('properties', {}).get('release_build', False)
+  for_this_platform = target['name'].lower().startswith(api.platform.name)
   # Postsubmit for engine and flutter repositories.
-  if (target.get('properties', {}).get('release_build', False) and
-      target['name'].lower().startswith(api.platform.name) and
+  if (release_build and for_this_platform and
       (git_ref not in RELEASE_CHANNELS)):
     return True
   # Packaging for the flutter repository.
-  if (target.get('scheduler') == 'release' and
-      target["name"].lower().startswith(api.platform.name) and
-      (git_ref in RELEASE_CHANNELS)):
+  if (target.get('scheduler') == 'release' and for_this_platform
+      # TODO(godofredoc): Uncomment next line after the packaging builds are tested.
+      # and (git_ref in RELEASE_CHANNELS)
+     ):
     return True
   return False
 

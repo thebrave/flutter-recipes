@@ -1,4 +1,5 @@
 DEPS = [
+    'flutter/archives',
     'flutter/flutter_bcid',
     'flutter/bucket_util',
     'flutter/firebase',

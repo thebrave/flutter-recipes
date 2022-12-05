@@ -144,9 +144,11 @@
   },
   {
     "cmd": [
-      "python",
-      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+      "git",
+      "rev-parse",
+      "HEAD"
     ],
+    "cwd": "[START_DIR]/flutter sdk",
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "GIT_BRANCH": "main",
@@ -164,8 +166,8 @@
         "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
-    "name": "Docs.Zip doc",
-    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/flutter sdk/dev/docs/doc\", \"type\": \"dir\"}], \"output\": \"[CLEANUP]/tmp_tmp_1/api_docs.zip\", \"root\": \"[START_DIR]/flutter sdk/dev/docs\"}",
+    "infra_step": true,
+    "name": "Docs.git rev-parse",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -177,8 +179,10 @@
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
-      "rmtree",
-      "[CLEANUP]/tmp_tmp_1"
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CLEANUP]/tmp_tmp_1/flutter/12345abcde12345abcde12345abcde12345abcde"
     ],
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
@@ -198,9 +202,80 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.temp dir for Upload API Docs",
+    "name": "Docs.Ensure flutter/12345abcde12345abcde12345abcde12345abcde",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[START_DIR]/flutter sdk/dev/docs/api_docs.zip",
+      "[CLEANUP]/tmp_tmp_1/flutter/12345abcde12345abcde12345abcde12345abcde"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "main",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "Docs.Copy gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/api_docs.zip",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "-r",
+      "[CLEANUP]/tmp_tmp_1/*",
+      "gs://flutter_infra_release/"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "main",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "Docs.gsutil flutter/12345abcde12345abcde12345abcde12345abcde/api_docs.zip",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_infra_release/@@@"
     ]
   },
   {

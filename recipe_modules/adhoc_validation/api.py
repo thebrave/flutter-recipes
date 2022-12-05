@@ -83,9 +83,11 @@ class AddhocValidationApi(recipe_api.RecipeApi):
             # Do not upload on docs_deploy.
             if not validation == 'docs_deploy':
               self.m.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
-              dst = self.m.bucket_util.upload_folder('Upload API Docs', docs_path,
-                'doc', "api_docs.zip")
-              self.m.flutter_bcid.upload_provenance(docs_path, dst)
+              src = docs_path.join('api_docs.zip')
+              commit = self.m.repo_util.get_commit(checkout_path)
+              dst = 'gs://flutter_infra_release/flutter/%s/api_docs.zip' % commit
+              self.m.archives.upload_artifact(src, dst)
+              self.m.flutter_bcid.upload_provenance(src, dst)
               self.m.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
             project = self.m.properties.get('firebase_project')
             # Only deploy to firebase directly if this is master or main.

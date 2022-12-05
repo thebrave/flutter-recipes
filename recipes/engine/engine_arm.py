@@ -38,10 +38,17 @@ MAVEN_BUCKET_NAME = 'download.flutter.io'
 ICU_DATA_PATH = 'third_party/icu/flutter/icudtl.dat'
 GIT_REPO = (
     'https://flutter.googlesource.com/mirrors/engine')
+IMPELLERC_SHADER_LIB_PATH = 'shader_lib'
 
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
+def MoveShaderLib(api):
+  api.file.move(
+      'Move the impellerc shader lib to the current directory in preparation for upload',
+      GetCheckoutPath(api).join('out', 'linux_debug_arm64',
+                                IMPELLERC_SHADER_LIB_PATH), GetCheckoutPath(api).join(IMPELLERC_SHADER_LIB_PATH)
+  )
 
 def GetCheckoutPath(api):
   return api.path['cache'].join('builder', 'src')
@@ -157,6 +164,8 @@ def BuildLinux(api):
   RunGN(api, '--runtime-mode', 'release', '--target-os=linux',
         '--linux-cpu=arm64', '--prebuilt-dart-sdk')
   Build(api, 'linux_release_arm64')
+
+  MoveShaderLib(api)
 
   UploadArtifacts(api, 'linux-arm64', [
       ICU_DATA_PATH,

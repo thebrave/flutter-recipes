@@ -1949,6 +1949,46 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[CACHE]/builder/src/out/linux_debug_arm64/shader_lib",
+      "[CACHE]/builder/src/shader_lib"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Move the impellerc shader lib to the current directory in preparation for upload"
+  },
+  {
+    "cmd": [
       "python",
       "RECIPE_MODULE[flutter::zip]/resources/zip.py"
     ],

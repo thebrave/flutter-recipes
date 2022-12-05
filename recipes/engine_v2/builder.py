@@ -37,9 +37,10 @@ from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 DEPS = [
     'depot_tools/gsutil',
     'flutter/archives',
-    'flutter/flutter_bcid',
     'flutter/build_util',
+    'flutter/flutter_bcid',
     'flutter/flutter_deps',
+    'flutter/monorepo',
     'flutter/os_utils',
     'flutter/osx_sdk',
     'flutter/repo_util',
@@ -135,11 +136,11 @@ def Build(api, checkout, env, env_prefixes, outputs):
 def Archive(api, checkout,  archive_config):
   paths = api.archives.engine_v2_gcs_paths(checkout, archive_config)
   for path in paths:
-      api.archives.upload_artifact(path.local, path.remote)
-      api.flutter_bcid.upload_provenance(
-          path.local,
-          path.remote
-      )
+    api.archives.upload_artifact(path.local, path.remote)
+    api.flutter_bcid.upload_provenance(
+        path.local,
+        path.remote
+    )
 
 def RunSteps(api, properties, env_properties):
   api.flutter_bcid.report_stage('start')
@@ -157,7 +158,7 @@ def RunSteps(api, properties, env_properties):
   env['ENGINE_PATH'] = api.path['cache'].join('builder')
 
   api.flutter_bcid.report_stage('fetch')
-  if api.buildbucket.gitiles_commit.project == 'monorepo':
+  if api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
     api.repo_util.monorepo_checkout(cache_root, env, env_prefixes)
     checkout = api.path['cache'].join('builder', 'engine', 'src')
   else:
@@ -204,22 +205,43 @@ def GenTests(api):
       ]
   }
   yield api.test(
-     'basic',
-     api.properties(build=build, no_goma=True),
-  )
-  yield api.test(
-      'mac', api.properties(build=build, no_goma=True),
-      api.platform('mac', 64),
-  )
-  yield api.test(
-      'monorepo', api.properties(build=build, no_goma=True),
+      'basic',
+      api.properties(build=build, no_goma=True),
       api.buildbucket.ci_build(
-          project='dart',
-          bucket='ci.sandbox',
-          git_repo='https://dart.googlesource.com/monorepo',
-          git_ref='refs/heads/main'
+          project='flutter',
+          bucket='prod',
+          builder='linux-host',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          revision='abcd' * 10,
+          build_number=123,
       ),
   )
+  yield api.test(
+      'mac',
+      api.properties(build=build, no_goma=True),
+      api.platform('mac', 64),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='mac-host',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          revision='abcd' * 10,
+          build_number=123,
+      ),
+  )
+  yield api.test(
+      'monorepo',
+      api.properties(build=build, no_goma=True),
+      api.monorepo.ci_build(),
+  )
+  yield api.test(
+      'monorepo_tryjob',
+      api.properties(build=build, no_goma=True),
+      api.monorepo.try_build(),
+  )
+
   build_custom = dict(build)
   build_custom["gclient_custom_vars"] = {"example_custom_var": True}
   build_custom["tests"] = []
@@ -229,37 +251,6 @@ def GenTests(api):
           project='dart-internal',
           bucket='flutter',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
-          git_ref='refs/heads/main'
-      ),
-  )
-  build_custom = dict(build)
-  build_custom["gclient_custom_vars"] = {"example_custom_var": True}
-  build_custom["tests"] = []
-  yield api.test(
-      'basic_custom_vars', api.properties(build=build_custom)
-  )
-  # gcs archives
-  build_gcs = copy.deepcopy(build)
-  build_gcs['archives'][0]['type'] = 'gcs'
-  yield api.test(
-      'basic_gcs', api.properties(build=build_gcs, no_goma=True),
-      api.step_data(
-          'git rev-parse',
-          stdout=api.raw_io
-          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
-      )
-  )
-  yield api.test(
-      'monorepo_gcs', api.properties(build=build_gcs, no_goma=True, clobber=False),
-      api.buildbucket.ci_build(
-          project='dart',
-          bucket='ci.sandbox',
-          git_repo='https://dart.googlesource.com/monorepo',
           git_ref='refs/heads/main',
       ),
-      api.step_data(
-          'git rev-parse',
-          stdout=api.raw_io
-          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
-      )
   )

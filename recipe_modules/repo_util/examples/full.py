@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 DEPS = [
+    'flutter/monorepo',
     'flutter/repo_util',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
@@ -42,7 +43,7 @@ def RunSteps(api):
   env, env_paths = api.repo_util.flutter_environment(flutter_checkout_path)
   api.repo_util.in_release_and_main(flutter_checkout_path)
   checkout_path = api.path['start_dir']
-  if api.buildbucket.gitiles_commit.project == 'monorepo':
+  if api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
     api.file.ensure_directory('ensure directory', checkout_path)
     api.repo_util.monorepo_checkout(checkout_path, {}, {})
   else:
@@ -92,18 +93,15 @@ def GenTests(api):
   yield api.test(
       'monorepo_release', api.repo_util.flutter_environment_data(),
       api.properties(git_branch='beta', clobber=True),
-      api.buildbucket.ci_build(
-          git_repo='https://dart.googlesource.com/monorepo',
-          git_ref='refs/heads/beta'
-      )
+      api.monorepo.ci_build(git_ref='refs/heads/beta')
   )
   yield api.test(
       'monorepo', api.repo_util.flutter_environment_data(),
-      api.properties(clobber=True),
-      api.buildbucket.ci_build(
-          git_repo='https://dart.googlesource.com/monorepo',
-          git_ref='refs/heads/main'
-      )
+      api.monorepo.ci_build()
+  )
+  yield api.test(
+      'monorepo_tryjob', api.repo_util.flutter_environment_data(),
+      api.properties(clobber=True), api.monorepo.try_build()
   )
   yield api.test(
       'monorepo_wrong_host', api.repo_util.flutter_environment_data(),
@@ -116,10 +114,7 @@ def GenTests(api):
       'monorepo_first_bot_update_failed',
       api.repo_util.flutter_environment_data(),
       api.properties(clobber=True),
-      api.buildbucket.ci_build(
-          git_repo='https://dart.googlesource.com/monorepo',
-          git_ref='refs/heads/main'
-      ),
+      api.monorepo.ci_build(),
       # Next line force a fail condition for the bot update
       # first execution.
       api.step_data("Checkout source code.bot_update", retcode=1)

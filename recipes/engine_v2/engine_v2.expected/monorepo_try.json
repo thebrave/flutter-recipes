@@ -13,7 +13,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "dart:try"
+        "name": "dart:ci.sandbox"
       },
       "resultdb": {
         "current_invocation": {
@@ -24,7 +24,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Engine Drone\", \"project\": \"dart\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"dart-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"monorepo\"}], \"gitilesCommit\": {\"host\": \"dart.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"monorepo\", \"ref\": \"refs/heads/main\"}, \"priority\": 25, \"properties\": {\"build\": {\"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}}, \"environment\": \"Staging\", \"recipe\": \"engine_v2/builder\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"ci.sandbox\", \"builder\": \"Linux Engine Drone-try\", \"project\": \"dart\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"9425\", \"host\": \"dart-review.googlesource.com\", \"patchset\": \"3\", \"project\": \"sdk\"}], \"priority\": 25, \"properties\": {\"build\": {\"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}}, \"builder_name_suffix\": \"-try\", \"recipe\": \"engine_v2/builder\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -47,8 +47,8 @@
       "@@@STEP_LOG_LINE@request@    {@@@",
       "@@@STEP_LOG_LINE@request@      \"scheduleBuild\": {@@@",
       "@@@STEP_LOG_LINE@request@        \"builder\": {@@@",
-      "@@@STEP_LOG_LINE@request@          \"bucket\": \"try\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"builder\": \"Linux Engine Drone\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"bucket\": \"ci.sandbox\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"builder\": \"Linux Engine Drone-try\", @@@",
       "@@@STEP_LOG_LINE@request@          \"project\": \"dart\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"exe\": {@@@",
@@ -61,18 +61,12 @@
       "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", @@@",
       "@@@STEP_LOG_LINE@request@        \"gerritChanges\": [@@@",
       "@@@STEP_LOG_LINE@request@          {@@@",
-      "@@@STEP_LOG_LINE@request@            \"change\": \"123456\", @@@",
+      "@@@STEP_LOG_LINE@request@            \"change\": \"9425\", @@@",
       "@@@STEP_LOG_LINE@request@            \"host\": \"dart-review.googlesource.com\", @@@",
-      "@@@STEP_LOG_LINE@request@            \"patchset\": \"7\", @@@",
-      "@@@STEP_LOG_LINE@request@            \"project\": \"monorepo\"@@@",
+      "@@@STEP_LOG_LINE@request@            \"patchset\": \"3\", @@@",
+      "@@@STEP_LOG_LINE@request@            \"project\": \"sdk\"@@@",
       "@@@STEP_LOG_LINE@request@          }@@@",
       "@@@STEP_LOG_LINE@request@        ], @@@",
-      "@@@STEP_LOG_LINE@request@        \"gitilesCommit\": {@@@",
-      "@@@STEP_LOG_LINE@request@          \"host\": \"dart.googlesource.com\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"project\": \"monorepo\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"ref\": \"refs/heads/main\"@@@",
-      "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"priority\": 25, @@@",
       "@@@STEP_LOG_LINE@request@        \"properties\": {@@@",
       "@@@STEP_LOG_LINE@request@          \"build\": {@@@",
@@ -91,7 +85,7 @@
       "@@@STEP_LOG_LINE@request@              \"targets\": []@@@",
       "@@@STEP_LOG_LINE@request@            }@@@",
       "@@@STEP_LOG_LINE@request@          }, @@@",
-      "@@@STEP_LOG_LINE@request@          \"environment\": \"Staging\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"builder_name_suffix\": \"-try\", @@@",
       "@@@STEP_LOG_LINE@request@          \"recipe\": \"engine_v2/builder\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", @@@",
@@ -144,7 +138,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "dart:try"
+        "name": "dart:ci.sandbox"
       },
       "resultdb": {
         "current_invocation": {
@@ -170,7 +164,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "dart:try"
+        "name": "dart:ci.sandbox"
       },
       "resultdb": {
         "current_invocation": {

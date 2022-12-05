@@ -21,6 +21,7 @@ REPO_BRANCHES = {
     'engine': 'main',
     'cocoon': 'main',
     'infra': 'main',
+    'monorepo': 'main',
     'packages': 'main',
     'plugins': 'main',
     'openpay': 'main',
@@ -139,14 +140,15 @@ class RepoUtilApi(recipe_api.RecipeApi):
         self.m.properties.get('git_branch', '') in ['beta', 'stable']):
       local_custom_vars['release_candidate'] = True
     git_url = REPOS['monorepo']
-    git_id = self.m.buildbucket.gitiles_commit.id
-    git_ref = self.m.buildbucket.gitiles_commit.ref
-    if (self.m.buildbucket.gitiles_commit.host != 'dart.googlesource.com' or
-        self.m.buildbucket.gitiles_commit.project != 'monorepo'):
+    commit = self.m.buildbucket.gitiles_commit
+    # Commit will have empty fields if this is a try build.
+    git_id = commit.id or 'refs/heads/main'
+    git_ref = commit.ref or 'refs/heads/main'
+    if commit.project and (commit.host != 'dart.googlesource.com' or
+                           commit.project != 'monorepo'):
       raise ValueError(
           'Input reference is not on dart.googlesource.com/monorepo'
       )
-
     # Inner function to clobber the cache
     def _ClobberCache():
       # Ensure depot tools is in the path to prevent problems with vpython not
@@ -425,13 +427,13 @@ class RepoUtilApi(recipe_api.RecipeApi):
     """Returns true if the branch starts with "flutter-"."""
     commit_branches = self.current_commit_branches(checkout_path)
     for branch in commit_branches:
-     if branch.startswith('flutter-'):
-         return True
+      if branch.startswith('flutter-'):
+        return True
     return False
 
   def release_candidate_branch(self, checkout_path):
     """Returns the first branch that starts with "flutter-"."""
     commit_branches = self.current_commit_branches(checkout_path)
     for branch in commit_branches:
-     if branch.startswith('flutter-'):
-         return branch
+      if branch.startswith('flutter-'):
+        return branch

@@ -74,7 +74,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
     return result
 
   def pre_process_properties(self, target):
-   """Converts json properties to dicts or lists.
+    """Converts json properties to dicts or lists.
 
    Dict or lists in ci_yaml are passed as json string to recipes and they
    need to be converted back to dict or lists before passing them to subbuilds.
@@ -85,16 +85,16 @@ class ShardUtilApi(recipe_api.RecipeApi):
    Returns:
      A copy of the original dictionary with the json properties decoded.
    """
-   if target.get('properties'):
-     properties = target.get('properties')
-     new_props = {}
-     for k, v in properties.items():
-       if isinstance(v,str) and (v.startswith('[') or v.startswith('{')):
-         new_props[k] = json.loads(v)
-       else:
-         new_props[k] = v
-     target['properties'] = new_props
-   return target
+    if target.get('properties'):
+      properties = target.get('properties')
+      new_props = {}
+      for k, v in properties.items():
+        if isinstance(v,str) and (v.startswith('[') or v.startswith('{')):
+          new_props[k] = json.loads(v)
+        else:
+          new_props[k] = v
+      target['properties'] = new_props
+    return target
 
   def struct_to_dict(self, struct):
     """Transforms a proto structure to a dictionary.
@@ -201,6 +201,9 @@ class ShardUtilApi(recipe_api.RecipeApi):
       builder_name = build.get(
           'drone_builder_name',
           '%s %sEngine Drone' % (platform_name, environment))
+      suffix = drone_properties.get('builder_name_suffix')
+      if suffix:
+        builder_name = '%s%s' % (builder_name, suffix)
       parent = self.m.buildbucket.build.builder
       led_data = self.m.led(
           "get-builder",
@@ -264,6 +267,9 @@ class ShardUtilApi(recipe_api.RecipeApi):
       builder_name = build.get(
           'drone_builder_name',
           '%s %sEngine Drone' % (platform_name, environment))
+      suffix = drone_properties.get('builder_name_suffix')
+      if suffix:
+        builder_name = '%s%s' % (builder_name, suffix)
       # Delete builds property if it exists.
       drone_properties.pop('builds', None)
       for d in drone_dimensions:
@@ -454,7 +460,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
               'Download for build %s and cas key %s' % (build_id, build_name),
               cas_out_dict['full_build'],
               out_build_paths
-        )
+          )
 
   def archive_full_build(self, build_dir, target):
     """Archives a full build in cas.

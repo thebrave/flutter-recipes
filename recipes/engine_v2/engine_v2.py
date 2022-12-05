@@ -27,9 +27,10 @@ from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 
 DEPS = [
     'flutter/archives',
-    'flutter/flutter_bcid',
     'flutter/display_util',
+    'flutter/flutter_bcid',
     'flutter/flutter_deps',
+    'flutter/monorepo',
     'flutter/repo_util',
     'flutter/osx_sdk',
     'flutter/shard_util_v2',
@@ -58,7 +59,7 @@ def RunSteps(api, properties, env_properties):
   checkout_path = None
   if config_name:
     # Read builds configuration from repository under test.
-    if api.buildbucket.gitiles_commit.project == 'monorepo':
+    if api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
       project = 'monorepo'
     else:
       project = 'engine'
@@ -95,7 +96,7 @@ def RunSteps(api, properties, env_properties):
 
   current_branch = 'main'
   if checkout_path and api.repo_util.is_release_candidate_branch(checkout_path):
-    current_branch = api.repo_util.release_candidate_branch(checkout_path) 
+    current_branch = api.repo_util.release_candidate_branch(checkout_path)
   with api.step.nest('launch builds') as presentation:
     tasks = api.shard_util_v2.schedule_builds(builds, presentation,
                                               branch=current_branch)
@@ -321,16 +322,10 @@ def GenTests(api):
   )
 
   yield api.test(
-      'monorepo_linux',
+      'monorepo_try',
       api.platform.name('linux'),
-      api.properties(builds=builds, environment='Staging'),
-      api.buildbucket.try_build(
-          project='dart',
-          builder='try-builder',
-          git_repo='https://dart.googlesource.com/monorepo',
-          revision='a' * 40,
-          build_number=123,
-      ),
+      api.properties(builds=builds, builder_name_suffix='-try'),
+      api.monorepo.try_build(),
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step="launch builds",
@@ -341,29 +336,19 @@ def GenTests(api):
   yield api.test(
       'monorepo_config_file',
       api.platform.name('linux'),
-      api.properties(
-          config_name='config_name',
-          builds=builds),
-      api.buildbucket.ci_build(
-          project='dart',
-          bucket='ci.sandbox',
-          builder='monorepo_builder',
-          git_repo='https://dart.googlesource.com/monorepo',
-          git_ref='refs/heads/main',
-          revision='a' * 40,
-          build_number=123,
-      ),
+      api.properties(config_name='config_name', builds=builds),
+      api.monorepo.ci_build(),
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step="launch builds",
           collect_step="collect builds",
       ),
       api.step_data(
-          'Read build config file',
-          api.file.read_json({'builds': builds})
+          'Read build config file', api.file.read_json({'builds': builds})
       ),
       api.step_data(
           'Identify branches.git branch',
-          stdout=api.raw_io.output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+          stdout=api.raw_io
+          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
       ),
   )

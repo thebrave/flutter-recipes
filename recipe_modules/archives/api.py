@@ -131,6 +131,11 @@ class ArchivesApi(recipe_api.RecipeApi):
       generated artifacts.
     """
     results = []
+    # Do not archive if the build is a try build or has no input commit
+    if (self.m.buildbucket.build.input.gerrit_changes or
+        not self.m.buildbucket.gitiles_commit.project):
+      return results
+
     file_list = self._full_path_list(checkout, archive_config)
     # Calculate prefix and commit.
     is_monorepo = self.m.buildbucket.gitiles_commit.project == 'monorepo'

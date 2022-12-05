@@ -6,6 +6,7 @@ from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 
 DEPS = [
     'flutter/archives',
+    'flutter/monorepo',
     'recipe_engine/buildbucket',
     'recipe_engine/path',
     'recipe_engine/raw_io',
@@ -26,6 +27,7 @@ def RunSteps(api):
       ]
   }
   results = api.archives.engine_v2_gcs_paths(checkout, config)
+  if not results: return
   api.archives.upload_artifact(results[0].local, results[0].remote)
   api.archives.download(results[0].remote, results[0].local)
 
@@ -33,18 +35,10 @@ def RunSteps(api):
 def GenTests(api):
   yield api.test(
       'basic',
-      api.step_data(
-          'git rev-parse',
-          stdout=api.raw_io
-          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
-      )
-  )
-  yield api.test(
-      'monorepo_gcs',
       api.buildbucket.ci_build(
-          project='dart',
-          bucket='ci.sandbox',
-          git_repo='https://dart.googlesource.com/monorepo',
+          project='flutter',
+          bucket='prod',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
           git_ref='refs/heads/main'
       ),
       api.step_data(
@@ -52,4 +46,16 @@ def GenTests(api):
           stdout=api.raw_io
           .output_text('12345abcde12345abcde12345abcde12345abcde\n')
       )
+  )
+  yield api.test(
+      'monorepo_ci', api.monorepo.ci_build(),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
+  )
+  yield api.test(
+      'monorepo_try',
+      api.monorepo.try_build(),
   )

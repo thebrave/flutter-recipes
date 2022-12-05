@@ -79,6 +79,7 @@ def GenTests(api):
           "scripts": ["out/script.sh"], "parameters": ["test"]
       }],
       'environment': 'Staging',
+      'builder_name_suffix': '-try',
       'dependencies': [{"dependency": "android_sdk"},
                        {"dependency": "chrome_and_driver"}],
       '$recipe_engine/led': {
@@ -107,7 +108,7 @@ def GenTests(api):
           "scripts": ["out/script.sh"], "parameters": ["test"]
       }], 'dependencies': [{"dependency": "android_sdk"},
                            {"dependency": "chrome_and_driver"}],
-      'environment': 'Staging'
+      'environment': 'Staging', 'builder_name_suffix': '-try'
   }
 
   presubmit_props = copy.deepcopy(props)

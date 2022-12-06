@@ -852,14 +852,6 @@ def BuildLinux(api):
   UploadDartSdk(api, archive_name='dart-sdk-linux-x64.zip')
   UploadWebSdk(api, archive_name='flutter-web-sdk-linux-x64.zip')
 
-  # Build impeller vulkan variant while WIP to prevent build regressions
-  # See: https://github.com/flutter/flutter/issues/107357
-  RunGN(
-      api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk',
-      '--enable-impeller-vulkan', '--target-dir', 'host_debug_impeller_vulkan'
-  )
-  Build(api, 'host_debug_impeller_vulkan')
-
   # Rebuild with fontconfig support enabled for the desktop embedding, since it
   # should be on for libflutter_linux_gtk.so, but not libflutter_engine.so.
   RunGN(api, '--runtime-mode', 'debug', '--enable-fontconfig', '--prebuilt-dart-sdk')

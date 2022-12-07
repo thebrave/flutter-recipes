@@ -79,15 +79,16 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
         # publish both package and metadata which has been updated
         # by the packaging_script
         pkg_gs_path = '%s/%s' % (dest_gs, file_name)
-        api.archives.upload_artifact(flutter_pkg_absolute_path, pkg_gs_path)
         metadata_absolute_path = GetFlutterMetadataAbsolutePath(api, work_dir)
         metadata_filename = api.path.basename(metadata_absolute_path)
         metadata_gs_path = "%s/%s" % (dest_gs, metadata_filename)
         api.archives.upload_artifact(metadata_absolute_path, metadata_gs_path)
       else:
         # add experimental subpath if branch is not beta or stable
-        dest_gs += '/%s/%s' % ('experimental', file_name)
-      api.flutter_bcid.upload_provenance(flutter_pkg_absolute_path, dest_gs)
+        pkg_gs_path = '%s/%s/%s' % (dest_gs, 'experimental', file_name)
+        api.archives.upload_artifact(flutter_pkg_absolute_path, pkg_gs_path)
+      api.archives.upload_artifact(flutter_pkg_absolute_path, pkg_gs_path)
+      api.flutter_bcid.upload_provenance(flutter_pkg_absolute_path, pkg_gs_path)
       api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
 
 

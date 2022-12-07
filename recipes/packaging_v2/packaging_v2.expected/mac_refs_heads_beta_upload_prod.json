@@ -724,6 +724,61 @@
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
+      "glob",
+      "[START_DIR]/archive",
+      "releases_macos.json"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get flutter archive file name (2)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@glob@[START_DIR]/archive/releases_linux.json@@@",
+      "@@@STEP_LOG_END@glob@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
       "0777",
@@ -777,7 +832,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[START_DIR]/archive/flutter-archive-package.zip",
+      "[START_DIR]/archive/releases_linux.json",
       "[CLEANUP]/tmp_tmp_1/releases/beta/mac"
     ],
     "env": {
@@ -818,7 +873,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Copy gs://flutter_infra_release/releases/beta/mac/flutter-archive-package.zip"
+    "name": "Copy gs://flutter_infra_release/releases/beta/mac/releases_linux.json"
   },
   {
     "cmd": [
@@ -871,64 +926,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gsutil releases/beta/mac/flutter-archive-package.zip",
+    "name": "gsutil releases/beta/mac/releases_linux.json",
     "~followup_annotations": [
       "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_infra_release/@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "glob",
-      "[START_DIR]/archive",
-      "releases_macos.json"
-    ],
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "get flutter archive file name (2)",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@glob@[START_DIR]/archive/releases_linux.json@@@",
-      "@@@STEP_LOG_END@glob@@@"
     ]
   },
   {
@@ -991,7 +991,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[START_DIR]/archive/releases_linux.json",
+      "[START_DIR]/archive/flutter-archive-package.zip",
       "[CLEANUP]/tmp_tmp_2/releases/beta/mac"
     ],
     "env": {
@@ -1032,7 +1032,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Copy gs://flutter_infra_release/releases/beta/mac/releases_linux.json"
+    "name": "Copy gs://flutter_infra_release/releases/beta/mac/flutter-archive-package.zip"
   },
   {
     "cmd": [
@@ -1085,7 +1085,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gsutil releases/beta/mac/releases_linux.json",
+    "name": "gsutil releases/beta/mac/flutter-archive-package.zip",
     "~followup_annotations": [
       "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_infra_release/@@@"
     ]

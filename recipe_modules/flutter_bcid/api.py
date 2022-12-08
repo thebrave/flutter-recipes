@@ -40,7 +40,11 @@ class FlutterBcidApi(recipe_api.RecipeApi):
       local_artifact_path: (str) path and filename of a specific file.
       remote_artifact_path: (str) path and filename of a specific file.
     """
-    if self._is_official_build():
+    if (self._is_official_build() and 
+      # TODO(jseales): Uncomment next line after windows
+      # can generate provenance succesfully
+      # https://github.com/flutter/flutter/issues/116749
+      not self.m.platform.is_win):
       sha256 = self.m.file.file_hash(local_artifact_path)
       self.m.bcid_reporter.report_gcs(
           sha256,

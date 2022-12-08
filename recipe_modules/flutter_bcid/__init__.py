@@ -7,4 +7,5 @@ DEPS = [
     'recipe_engine/bcid_reporter',
     'recipe_engine/buildbucket',
     'recipe_engine/file',
+    'recipe_engine/platform',
 ]

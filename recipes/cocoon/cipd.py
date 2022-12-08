@@ -5,6 +5,8 @@
 from platform import platform
 from recipe_engine.recipe_api import Property
 
+from RECIPE_MODULES.flutter.repo_util.api import REPOS
+
 DEPS = [
     'flutter/repo_util',
     'flutter/yaml',
@@ -26,9 +28,10 @@ def RunSteps(api):
   cocoon_git_rev = api.repo_util.checkout(
       'cocoon',
       cocoon_dir,
-      ref='refs/heads/main',
+      url=api.properties.get('git_url') or REPOS['cocoon'],
+      ref=api.properties.get('git_ref') or 'refs/heads/main',
   )
-
+  should_upload = api.properties.get('git_ref') == 'refs/heads/main'
   # Get properties from ci.yaml.
   # Assume ci.yaml has the following properties
   #   - name: Mac codesign
@@ -57,7 +60,7 @@ def RunSteps(api):
     cipd_zip_path = project_name + '.zip'
 
     api.cipd.build(project_path.join('build'), cipd_zip_path, cipd_full_name)
-    if api.buildbucket.build.builder.bucket == 'prod':
+    if api.buildbucket.build.builder.bucket == 'prod' and should_upload:
       api.cipd.register(cipd_full_name, cipd_zip_path, refs = ["latest"])
 
 
@@ -79,7 +82,8 @@ def GenTests(api):
       'cipd_win_upload',
       api.properties(
           script='device_doctor\\tool\\build.bat',
-          cipd_name='flutter/device_doctor/windows-amd64'
+          cipd_name='flutter/device_doctor/windows-amd64',
+          git_ref='refs/heads/main',
       ),
       api.platform('win', 64),
       api.buildbucket.ci_build(

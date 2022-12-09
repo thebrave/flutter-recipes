@@ -31,10 +31,6 @@ DEPS = [
   'recipe_engine/step',
 ]
 
-GIT_REPO = \
-  'https://flutter.googlesource.com/mirrors/engine'
-
-
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
@@ -51,7 +47,10 @@ def ShouldRun(api, git_ref, target):
     return True
   # Packaging for the flutter repository.
   if (target.get('scheduler') == 'release' and for_this_platform
-      and (git_ref in RELEASE_CHANNELS)):
+      # TODO(godofredoc): Uncomment the next line after testing is complete.
+      # and (git_ref in RELEASE_CHANNELS)
+      and git_ref.replace('refs/heads/', '') in target.get('enabled_branches', [])
+     ):
     return True
   return False
 
@@ -114,7 +113,8 @@ def GenTests(api):
           'scheduler': 'release',
           'properties': {
               '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'
-          }
+          },
+          'enabled_branches': ['beta', 'main']
       }
     ]
   }
@@ -124,7 +124,7 @@ def GenTests(api):
       api.platform.name('linux'),
       api.properties(environment='Staging', repository='engine'),
       api.buildbucket.try_build(
-        project='proj',
+        project='prod',
         builder='try-builder',
         git_repo='https://flutter.googlesource.com/mirrors/engine',
         revision='a' * 40,

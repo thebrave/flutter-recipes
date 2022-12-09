@@ -229,12 +229,12 @@ class FlutterDepsApi(recipe_api.RecipeApi):
 
   def dashing(self, env, env_prefixes, version):
     """Installs dashing."""
-    version = version or 'git_revision:ed8da90e524f59c69781c8af65638f108d0bbba6'
+    version = version or '0.4.0'
     self.go_sdk(env, env_prefixes, 'version:2@1.19.3')
     with self.m.context(env=env, env_prefixes=env_prefixes):
       self.m.step(
           'Install dashing',
-          ['go', 'install', 'github.com/technosophos/dashing@latest'],
+          ['go', 'install', 'github.com/technosophos/dashing@%s' % version],
           infra_step=True,
       )
 

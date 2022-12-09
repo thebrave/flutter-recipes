@@ -51,9 +51,7 @@ def ShouldRun(api, git_ref, target):
     return True
   # Packaging for the flutter repository.
   if (target.get('scheduler') == 'release' and for_this_platform
-      # TODO(godofredoc): Uncomment next line after the packaging builds are tested.
-      # and (git_ref in RELEASE_CHANNELS)
-     ):
+      and (git_ref in RELEASE_CHANNELS)):
     return True
   return False
 

@@ -207,6 +207,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       parent = self.m.buildbucket.build.builder
       led_data = self.m.led(
           "get-builder",
+          '-real-build',
           "luci.%s.%s:%s" % (parent.project, parent.bucket, builder_name),
       )
       edit_args = []

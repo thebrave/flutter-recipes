@@ -87,7 +87,7 @@ def RunSteps(api, properties, env_properties):
     builds = []
     if api.platform.is_linux:
       api.build_util.run_gn(['--build-canvaskit', '--web', '--runtime-mode=release'], checkout)
-      api.build_util.build_autoninja('wasm_release', checkout, [])
+      api.build_util.build('wasm_release', checkout, [])
       wasm_cas_hash = api.shard_util_v2.archive_full_build(
               checkout.join('out', 'wasm_release'),
               'wasm_release')

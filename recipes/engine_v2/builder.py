@@ -68,7 +68,6 @@ def Build(api, checkout, env, env_prefixes, outputs):
   """Builds a flavor identified as a set of gn and ninja configs."""
   ninja_tool = {
       "ninja": api.build_util.build,
-      "autoninja": api.build_util.build_autoninja,
   }
   deps = api.properties.get('dependencies', [])
   api.flutter_deps.required_deps(env, env_prefixes, deps)

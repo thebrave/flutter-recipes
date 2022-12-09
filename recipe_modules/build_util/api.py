@@ -84,20 +84,8 @@ class BuildUtilApi(recipe_api.RecipeApi):
       checkout_path(Path): A path object with the checkout location.
       targets(list): A list of string with the ninja targets to build.
     """
+    ninja_path = checkout_path.join('flutter', 'third_party', 'ninja', 'ninja')
     if not self.m.properties.get('no_goma', False):
-      self._build_goma(config, checkout_path, targets, self.m.depot_tools.ninja_path)
+      self._build_goma(config, checkout_path, targets, ninja_path)
     else:
-      self._build_no_goma(config, checkout_path, targets, self.m.depot_tools.ninja_path)
-
-  def build_autoninja(self, config, checkout_path, targets):
-    """Builds using autoninja.
-
-    Args:
-      config(str): A string with the configuration to build.
-      checkout_path(Path): A path object with the checkout location.
-      targets(list): A list of string with the ninja targets to build.
-    """
-    if not self.m.properties.get('no_goma', False):
-      self._build_goma(config, checkout_path, targets, self.m.depot_tools.autoninja_path)
-    else:
-      self._build_no_goma(config, checkout_path, targets, self.m.depot_tools.autoninja_path)
+      self._build_no_goma(config, checkout_path, targets, ninja_path)

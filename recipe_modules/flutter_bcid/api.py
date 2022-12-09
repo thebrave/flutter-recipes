@@ -26,7 +26,11 @@ class FlutterBcidApi(recipe_api.RecipeApi):
     return bucket == 'flutter'
 
   def report_stage(self, stage):
-    if self._is_official_build():
+    if (self._is_official_build() and
+        # TODO(jseales): Uncomment next line after windows
+        # can generate provenance succesfully
+        # https://github.com/flutter/flutter/issues/116749
+        not self.m.platform.is_win):
       self.m.bcid_reporter.report_stage(stage)
 
   def upload_provenance(self, local_artifact_path, remote_artifact_path):

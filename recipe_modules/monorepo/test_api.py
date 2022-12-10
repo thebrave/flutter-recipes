@@ -20,11 +20,11 @@ class MonorepoTestApi(recipe_test_api.RecipeTestApi):
     )
 
   def try_build(self):
-    """An example monorepo ci build"""
+    """An example monorepo try build"""
     return self.m.buildbucket.try_build(
         project='dart',
         bucket='ci.sandbox',
-        builder='host-linux',
+        builder='monorepo_builder_try',
         # Used to construct a Gerrit CL, not a Gitiles commit.
         git_repo='https://dart.googlesource.com/sdk',
         change_number=9425,

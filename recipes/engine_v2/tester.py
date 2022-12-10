@@ -7,32 +7,110 @@
 This recipe is used to run tests using prebuilt artifacts.
 """
 
-from contextlib import contextmanager
-
-from google.protobuf import struct_pb2
 from PB.recipes.flutter.engine.engine import InputProperties
 from PB.recipes.flutter.engine.engine import EnvProperties
-from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 
 DEPS = [
+    'flutter/monorepo',
+    'flutter/repo_util',
+    'recipe_engine/buildbucket',
+    'recipe_engine/context',
+    'recipe_engine/file',
+    'recipe_engine/json',
+    'recipe_engine/path',
     'recipe_engine/properties',
+    'recipe_engine/step',
 ]
 
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
+SAMPLE_MONOREPO_COMMITS = {
+    "engine/src/flutter": "57ac2d3d67bde512ed071d0250bfdcb986142ea4",
+    "engine/src/third_party/dart": "355295789e4dee435d6ae2dff3d38dc1d5a9ab9a",
+    "flutter": "523b600efeb7d60b743c1b952201aa969a744791"
+}
 
-def test(api, test_config):
+
+def get_monorepo_framework(api):
+  monorepo = api.path['cache'].join('builder', 'monorepo')
+  api.repo_util.checkout('monorepo', monorepo)
+  commits = api.file.read_json(
+      'get commits from monorepo',
+      monorepo.join('commits.json'),
+      test_data=SAMPLE_MONOREPO_COMMITS,
+      include_log=True
+  )
+  return commits['flutter']
+
+
+def test(api, builder, flutter, artifact_url):
   """Runs an independent test task."""
-  pass
+  test_config = api.properties.get('build')
+  environment = {
+      'FLUTTER_STORAGE_BASE_URL': artifact_url, 'SHARD': test_config['shard']
+  }
+  with api.context(env=environment):
+    api.step(
+        'Run tests',
+        [flutter.join('bin', 'dart'),
+         flutter.join('dev', 'bots', 'test.dart')]
+    )
+
 
 def RunSteps(api, properties, env_properties):
-  # Test configuration is passed as build property. This is to standardize
-  # the use of BuildBucket and Led APIs in the orchestrator recipe which
-  # triggers the subbuilds.
-  test_config = api.properties.get('build')
-  test(api, test_config)
+  builder = api.path['cache'].join('builder')
+  flutter = builder.join('flutter')
+  if api.monorepo.is_monorepo_try_build:
+    return
+  if api.monorepo.is_monorepo_ci_build:
+    framework_ref = get_monorepo_framework(api)
+    artifact_url = 'https://storage.googleapis.com/flutter_archives_v2/monorepo'
+  else:
+    framework_ref = 'refs/heads/master'
+    artifact_url = 'https://storage.googleapis.com/flutter_archives_v2'
+  engine_version = api.buildbucket.gitiles_commit.id
+  api.repo_util.checkout('flutter', flutter, ref=framework_ref)
+  api.file.write_text(
+      'update engine version',
+      flutter.join('bin', 'internal', 'engine.version'), engine_version + '\n'
+  )
+  environment = {'FLUTTER_STORAGE_BASE_URL': artifact_url}
+  with api.context(env=environment):
+    api.step(
+        'Update packages', [flutter.join('bin', 'flutter'), 'update-packages']
+    )
+  test(api, builder, flutter, artifact_url)
 
 
 def GenTests(api):
-  yield api.test('basic_custom_vars')
+  build = {'shard': 'framework_coverage'}
+  yield api.test(
+      'monorepo',
+      api.properties(build=build, no_goma=True),
+      api.monorepo.ci_build(),
+      api.step_data(
+          'get commits from monorepo',
+          api.file.read_json(SAMPLE_MONOREPO_COMMITS)
+      ),
+  )
+
+  yield api.test(
+      'monorepo_tryjob',
+      api.properties(build=build, no_goma=True),
+      api.monorepo.try_build(),
+  )
+
+  yield api.test(
+      'engine',
+      api.properties(build=build, no_goma=True),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='linux-host',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          revision='abcd' * 10,
+          build_number=123,
+      ),
+  )

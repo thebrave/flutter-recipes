@@ -17,14 +17,16 @@ REPOS = {
 
 # TODO(keyonghan): deprecate when all repos are migrated to main.
 REPO_BRANCHES = {
-    'flutter': 'master',
-    'engine': 'main',
     'cocoon': 'main',
+    'engine': 'main',
+    'flutter': 'master',
     'infra': 'main',
+    'mirrors/engine': 'main',
+    'mirrors/flutter': 'main',
     'monorepo': 'main',
+    'openpay': 'main',
     'packages': 'main',
     'plugins': 'main',
-    'openpay': 'main',
 }
 
 import copy

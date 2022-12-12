@@ -45,53 +45,54 @@ def RunSteps(api):
 def GenTests(api):
   try_subbuild1 = api.shard_util_v2.try_build_message(
       build_id=8945511751514863186,
-      builder="ios_debug",
+      builder='ios_debug',
       input_props={'task_name': 'mytask'},
       output_props={
-          "cas_output_hash": {"web_tests": "abc", "ios_debug": "bcd", "full_build": "123"}
+          'cas_output_hash': {'web_tests': 'abc', 'ios_debug': 'bcd', 'full_build': '123'}
       },
-      status="SUCCESS",
+      status='SUCCESS',
   )
   try_subbuild2 = api.shard_util_v2.try_build_message(
       build_id=8945511751514863187,
-      builder="builder-subbuild2",
+      builder='builder-subbuild2',
       output_props={
-          "cas_output_hash": {"web_tests": "abc", "ios_debug": "bcd"}
+          'cas_output_hash': {'web_tests': 'abc', 'ios_debug': 'bcd'}
       },
-      status="SUCCESS",
+      status='SUCCESS',
   )
   try_failure = api.shard_util_v2.try_build_message(
       build_id=8945511751514863187,
-      builder="builder-subbuild2",
+      builder='builder-subbuild2',
       output_props={
-          "cas_output_hash": {"web_tests": "abc", "ios_debug": "bcd"}
+          'cas_output_hash': {'web_tests': 'abc', 'ios_debug': 'bcd'}
       },
-      status="FAILURE",
+      status='FAILURE',
   )
 
   props = {
       'builds': [{
-          "name": "ios_debug", "gn": [], "ninja": ["ios_debug"],
+          'name': 'ios_debug', 'gn': [], 'ninja': ['ios_debug'],
+          'dimensions': {'cpu': 'arm64'},
           'drone_dimensions': ['dimension1=abc']
       }],
       'tests': [{
-          "name": "felt_test", "dependencies": ["ios_debug"],
-          "scripts": ["out/script.sh"], "parameters": ["test"]
+          'name': 'felt_test', 'dependencies': ['ios_debug'],
+          'scripts': ['out/script.sh'], 'parameters': ['test']
       }],
       'environment': 'Staging',
       'builder_name_suffix': '-try',
-      'dependencies': [{"dependency": "android_sdk"},
-                       {"dependency": "chrome_and_driver"}],
+      'dependencies': [{'dependency': 'android_sdk'},
+                       {'dependency': 'chrome_and_driver'}],
       '$recipe_engine/led': {
-          "led_run_id":
-              "flutter/led/abc_google.com/b9861e3db1034eee460599837221ab468e03bc43f9fd05684a08157fd646abfc",
-          "rbe_cas_input": {
-              "cas_instance":
-                  "projects/chromium-swarm/instances/default_instance",
-              "digest": {
-                  "hash":
-                      "146d56311043bb141309968d570e23d05a108d13ce2e20b5aeb40a9b95629b3e",
-                  "size_bytes":
+          'led_run_id':
+              'flutter/led/abc_google.com/b9861e3db1034eee460599837221ab468e03bc43f9fd05684a08157fd646abfc',
+          'rbe_cas_input': {
+              'cas_instance':
+                  'projects/chromium-swarm/instances/default_instance',
+              'digest': {
+                  'hash':
+                      '146d56311043bb141309968d570e23d05a108d13ce2e20b5aeb40a9b95629b3e',
+                  'size_bytes':
                       91
               }
           }
@@ -99,15 +100,16 @@ def GenTests(api):
   }
   props_bb = {
       'task_name': 'mytask', 'builds': [{
-          "name": "ios_debug", "gn": ["--ios"],
-          "ninja": {"config": "ios_debug",
-                    "targets": []}, 'drone_dimensions': ['dimension1=abc'],
-          "generators": [{"name": "generator1", "script": "script1.sh"}]
+          'name': 'ios_debug', 'gn': ['--ios'],
+          'dimensions': {'cpu': 'arm64'},
+          'ninja': {'config': 'ios_debug',
+                    'targets': []}, 'drone_dimensions': ['dimension1=abc'],
+          'generators': [{'name': 'generator1', 'script': 'script1.sh'}]
       }], 'tests': [{
-          "name": "felt_test", "dependencies": ["ios_debug"],
-          "scripts": ["out/script.sh"], "parameters": ["test"]
-      }], 'dependencies': [{"dependency": "android_sdk"},
-                           {"dependency": "chrome_and_driver"}],
+          'name': 'felt_test', 'dependencies': ['ios_debug'],
+          'scripts': ['out/script.sh'], 'parameters': ['test']
+      }], 'dependencies': [{'dependency': 'android_sdk'},
+                           {'dependency': 'chrome_and_driver'}],
       'environment': 'Staging', 'builder_name_suffix': '-try'
   }
 
@@ -128,7 +130,7 @@ def GenTests(api):
       ),
       api.shard_util_v2.child_led_steps(
           subbuilds=[try_subbuild1, try_subbuild2],
-          collect_step="collect builds",
+          collect_step='collect builds',
       )
   )
 
@@ -139,11 +141,11 @@ def GenTests(api):
   presubmit_props_bb['no_goma'] = 'true'
 
   yield (
-      api.buildbucket_util.test("presubmit_bb", tryjob=True, status="failure") +
+      api.buildbucket_util.test('presubmit_bb', tryjob=True, status='failure') +
       api.properties(**presubmit_props_bb) + api.platform.name('linux') +
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_failure],
-          launch_step="launch builds",
-          collect_step="collect builds",
+          launch_step='launch builds',
+          collect_step='collect builds',
       )
   )

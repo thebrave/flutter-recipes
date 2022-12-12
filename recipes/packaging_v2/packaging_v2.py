@@ -56,7 +56,7 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
       git_hash(str): Hash corresponding to git commit.
       branch(str): Name of the flutter branch.
       packaging_script(str): Script that will prepare, create and publish a flutter archive.
-"""
+  """
   flutter_executable = 'flutter' if not api.platform.is_win else 'flutter.bat'
   dart_executable = 'dart' if not api.platform.is_win else 'dart.exe'
   work_dir = api.path['start_dir'].join('archive')

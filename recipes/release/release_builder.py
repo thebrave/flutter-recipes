@@ -56,7 +56,7 @@ def ShouldRun(api, git_ref, target):
 
 
 def RunSteps(api, properties, env_properties):
-  repository = api.buildbucket.gitiles_commit.project
+  repository = api.properties.get('git_repo') or api.buildbucket.gitiles_commit.project
   repository_parts = repository.split('/')
   checkout_path = api.path['start_dir'].join(*repository_parts)
   git_ref = api.properties.get('git_ref') or api.buildbucket.gitiles_commit.ref

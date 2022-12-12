@@ -189,7 +189,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
       drone_properties.pop('builds', None)
       # Copy parent bot dimensions.
       drone_dimensions = build.get('drone_dimensions', [])
-      task_dimensions = []
+      # ci.yaml provided dimensions.
+      ci_yaml_dimensions = build.get('dimensions', {})
       platform_name = build.get('platform') or PLATFORM_TO_NAME.get(
           self.m.platform.name
       )
@@ -206,26 +207,28 @@ class ShardUtilApi(recipe_api.RecipeApi):
         builder_name = '%s%s' % (builder_name, suffix)
       parent = self.m.buildbucket.build.builder
       led_data = self.m.led(
-          "get-builder",
+          'get-builder',
           '-real-build',
-          "luci.%s.%s:%s" % (parent.project, parent.bucket, builder_name),
+          'luci.%s.%s:%s' % (parent.project, parent.bucket, builder_name),
       )
       edit_args = []
       for k, v in sorted(drone_properties.items()):
-        edit_args.extend(["-p", "%s=%s" % (k, self.m.json.dumps(v))])
+        edit_args.extend(['-p', '%s=%s' % (k, self.m.json.dumps(v))])
       # led reduces the priority of tasks by 10 from their values in
       # buildbucket which we do not want.
       # TODO(crbug.com/1138533) Add an option to led to handle this.
       led_data.result.buildbucket.bbagent_args.build.infra.swarming.priority -= 20
-      led_data = led_data.then("edit", *edit_args)
-      led_data = led_data.then("edit", "-name", task_name)
-      led_data = led_data.then("edit", "-r", recipe_name)
+      led_data = led_data.then('edit', *edit_args)
+      led_data = led_data.then('edit', '-name', task_name)
+      led_data = led_data.then('edit', '-r', recipe_name)
       for d in drone_dimensions:
-        led_data = led_data.then("edit", "-d", d)
+        led_data = led_data.then('edit', '-d', d)
+      for k,v in ci_yaml_dimensions.items():
+        led_data = led_data.then('edit', "-d", '%s=%s' % (k,v)) 
       led_data = self.m.led.inject_input_recipes(led_data)
-      launch_res = led_data.then("launch", "-modernize")
+      launch_res = led_data.then('launch', '-modernize')
       task_id = launch_res.launch_result.task_id
-      build_url = "https://ci.chromium.org/swarming/task/%s?server=%s" % (
+      build_url = 'https://ci.chromium.org/swarming/task/%s?server=%s' % (
           task_id,
           launch_res.launch_result.swarming_hostname,
       )
@@ -259,6 +262,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
       drone_properties['build'] = build
       # Copy parent bot dimensions.
       drone_dimensions = build.get('drone_dimensions', [])
+      # ci.yaml provided dimensions.
+      ci_yaml_dimensions = build.get('dimensions', {})
       task_dimensions = []
       platform_name = build.get('platform') or PLATFORM_TO_NAME.get(
           self.m.platform.name
@@ -275,6 +280,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
       drone_properties.pop('builds', None)
       for d in drone_dimensions:
         k, v = d.split('=')
+        task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
+      for k,v in ci_yaml_dimensions.items():
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
       # Override recipe.
       drone_properties['recipe'] = recipe_name

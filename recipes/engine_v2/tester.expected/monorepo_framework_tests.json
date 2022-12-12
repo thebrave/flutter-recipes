@@ -475,14 +475,59 @@
   },
   {
     "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/android",
+      "-ensure-file",
+      "flutter/android/sdk/all/${platform} version:33v6",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:33v6----\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/android/sdk/all/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
       "flutter",
       "update-packages"
     ],
     "cwd": "[CACHE]/builder/flutter",
     "env": {
+      "ANDROID_HOME": "[CACHE]/android/sdk",
+      "ANDROID_NDK_PATH": "[CACHE]/android/ndk",
+      "ANDROID_SDK_ROOT": "[CACHE]/android/sdk",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com/flutter_archives_v2/monorepo",
       "GIT_BRANCH": "",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]/gradle",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -490,8 +535,8 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CACHE]/builder/flutter",
-      "SHARD": "framework_coverage",
-      "SUBSHARD": null
+      "SHARD": "framework_tests",
+      "SUBSHARD": "slow"
     },
     "env_prefixes": {
       "PATH": [
@@ -521,9 +566,14 @@
     ],
     "cwd": "[CACHE]/builder/flutter",
     "env": {
+      "ANDROID_HOME": "[CACHE]/android/sdk",
+      "ANDROID_NDK_PATH": "[CACHE]/android/ndk",
+      "ANDROID_SDK_ROOT": "[CACHE]/android/sdk",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com/flutter_archives_v2/monorepo",
       "GIT_BRANCH": "",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]/gradle",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -531,8 +581,8 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CACHE]/builder/flutter",
-      "SHARD": "framework_coverage",
-      "SUBSHARD": null
+      "SHARD": "framework_tests",
+      "SUBSHARD": "slow"
     },
     "env_prefixes": {
       "PATH": [
@@ -552,7 +602,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Run framework_coverage tests"
+    "name": "Run framework_tests slow tests"
   },
   {
     "name": "$result"

@@ -11,8 +11,10 @@ from PB.recipes.flutter.engine.engine import InputProperties
 from PB.recipes.flutter.engine.engine import EnvProperties
 
 DEPS = [
+    'flutter/flutter_deps',
     'flutter/monorepo',
     'flutter/repo_util',
+    'flutter/retry',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -44,20 +46,6 @@ def get_monorepo_framework(api):
   return commits['flutter']
 
 
-def test(api, builder, flutter, artifact_url):
-  """Runs an independent test task."""
-  test_config = api.properties.get('build')
-  environment = {
-      'FLUTTER_STORAGE_BASE_URL': artifact_url, 'SHARD': test_config['shard']
-  }
-  with api.context(env=environment):
-    api.step(
-        'Run tests',
-        [flutter.join('bin', 'dart'),
-         flutter.join('dev', 'bots', 'test.dart')]
-    )
-
-
 def RunSteps(api, properties, env_properties):
   builder = api.path['cache'].join('builder')
   flutter = builder.join('flutter')
@@ -75,13 +63,34 @@ def RunSteps(api, properties, env_properties):
       'update engine version',
       flutter.join('bin', 'internal', 'engine.version'), engine_version + '\n'
   )
-  environment = {'FLUTTER_STORAGE_BASE_URL': artifact_url}
-  with api.context(env=environment):
-    api.step(
-        'Update packages', [flutter.join('bin', 'flutter'), 'update-packages']
-    )
-  test(api, builder, flutter, artifact_url)
 
+  # TODO(https://github.com/flutter/flutter/issues/116906): Combine this
+  # recipe with the flutter/flutter_drone recipe if possible, to avoid
+  # duplication.
+  env, env_prefixes = api.repo_util.flutter_environment(flutter)
+  test_config = api.properties.get('build')
+  deps = test_config.get('dependencies', [])
+  api.flutter_deps.required_deps(env, env_prefixes, deps)
+  shard = test_config.get('shard')
+  subshard = test_config.get('subshard')
+  env['SHARD'] = shard
+  env['SUBSHARD'] = subshard
+  if subshard:
+    shard_name = '%s %s' % (shard, subshard)
+  else:
+    shard_name = shard
+  env['FLUTTER_STORAGE_BASE_URL'] = artifact_url
+  with api.context(env=env, env_prefixes=env_prefixes, cwd=flutter):
+    api.retry.step(
+        'download dependencies', ['flutter', 'update-packages'],
+        max_attempts=2,
+        infra_step=True
+    )
+    api.step(
+        'Run %s tests' % shard_name,
+        [flutter.join('bin', 'dart'),
+         flutter.join('dev', 'bots', 'test.dart')]
+    )
 
 def GenTests(api):
   build = {'shard': 'framework_coverage'}
@@ -112,5 +121,44 @@ def GenTests(api):
           git_ref='refs/heads/main',
           revision='abcd' * 10,
           build_number=123,
+      ),
+  )
+
+  web_tests_subshard_build = {
+      'shard':
+          'web_tests',
+      'subshard':
+          '3',
+      'dependencies': [{
+          "dependency": "chrome_and_driver", "version": "version:96.2"
+      }],
+  }
+
+  yield api.test(
+      'monorepo_web_tests',
+      api.properties(build=web_tests_subshard_build, no_goma=True),
+      api.monorepo.ci_build(),
+      api.step_data(
+          'get commits from monorepo',
+          api.file.read_json(SAMPLE_MONOREPO_COMMITS)
+      ),
+  )
+
+  framework_tests_subshard_build = {
+      'shard':
+          'framework_tests',
+      'subshard':
+          'slow',
+      'dependencies': [{"dependency": "android_sdk",
+                        "version": "version:33v6"}],
+  }
+
+  yield api.test(
+      'monorepo_framework_tests',
+      api.properties(build=framework_tests_subshard_build, no_goma=True),
+      api.monorepo.ci_build(),
+      api.step_data(
+          'get commits from monorepo',
+          api.file.read_json(SAMPLE_MONOREPO_COMMITS)
       ),
   )

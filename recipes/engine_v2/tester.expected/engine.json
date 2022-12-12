@@ -226,12 +226,12 @@
   },
   {
     "cmd": [
-      "[CACHE]/builder/flutter/bin/flutter",
-      "update-packages"
+      "git",
+      "rev-parse",
+      "HEAD"
     ],
-    "env": {
-      "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com/flutter_archives_v2"
-    },
+    "cwd": "[CACHE]/builder/flutter",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "flutter:prod"
@@ -244,16 +244,74 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Update packages"
+    "name": "git rev-parse"
+  },
+  {
+    "cmd": [
+      "flutter",
+      "update-packages"
+    ],
+    "cwd": "[CACHE]/builder/flutter",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com/flutter_archives_v2",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CACHE]/builder/flutter",
+      "SHARD": "framework_coverage",
+      "SUBSHARD": null
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/flutter/bin",
+        "[CACHE]/builder/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "download dependencies"
   },
   {
     "cmd": [
       "[CACHE]/builder/flutter/bin/dart",
       "[CACHE]/builder/flutter/dev/bots/test.dart"
     ],
+    "cwd": "[CACHE]/builder/flutter",
     "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com/flutter_archives_v2",
-      "SHARD": "framework_coverage"
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CACHE]/builder/flutter",
+      "SHARD": "framework_coverage",
+      "SUBSHARD": null
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/flutter/bin",
+        "[CACHE]/builder/flutter/bin/cache/dart-sdk/bin"
+      ]
     },
     "luci_context": {
       "realm": {
@@ -267,7 +325,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Run tests"
+    "name": "Run framework_coverage tests"
   },
   {
     "name": "$result"

@@ -474,12 +474,100 @@
     "name": "git rev-parse"
   },
   {
+    "cmd": [],
+    "name": "Chrome and driver dependency"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/chrome/chrome",
+      "-ensure-file",
+      "flutter_internal/browsers/chrome/${platform} version:96.2",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Chrome and driver dependency.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:96.2----\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter_internal/browsers/chrome/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/chrome/drivers",
+      "-ensure-file",
+      "flutter_internal/browser-drivers/chrome/${platform} version:96.2",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Chrome and driver dependency.ensure_installed (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:96.2----\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter_internal/browser-drivers/chrome/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
     "cmd": [
       "flutter",
       "update-packages"
     ],
     "cwd": "[CACHE]/builder/flutter",
     "env": {
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com/flutter_archives_v2/monorepo",
       "GIT_BRANCH": "",
@@ -490,13 +578,15 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CACHE]/builder/flutter",
-      "SHARD": "framework_coverage",
-      "SUBSHARD": null
+      "SHARD": "web_tests",
+      "SUBSHARD": "3"
     },
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/flutter/bin",
-        "[CACHE]/builder/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]/builder/flutter/bin/cache/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers"
       ]
     },
     "infra_step": true,
@@ -521,6 +611,8 @@
     ],
     "cwd": "[CACHE]/builder/flutter",
     "env": {
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com/flutter_archives_v2/monorepo",
       "GIT_BRANCH": "",
@@ -531,13 +623,15 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CACHE]/builder/flutter",
-      "SHARD": "framework_coverage",
-      "SUBSHARD": null
+      "SHARD": "web_tests",
+      "SUBSHARD": "3"
     },
     "env_prefixes": {
       "PATH": [
         "[CACHE]/builder/flutter/bin",
-        "[CACHE]/builder/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]/builder/flutter/bin/cache/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers"
       ]
     },
     "luci_context": {
@@ -552,7 +646,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Run framework_coverage tests"
+    "name": "Run web_tests 3 tests"
   },
   {
     "name": "$result"

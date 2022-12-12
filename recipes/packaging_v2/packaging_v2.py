@@ -26,6 +26,12 @@ DEPS = [
 
 PACKAGED_REF_RE = re.compile(r'^refs/heads/(.+)$')
 
+PLATFORMS_MAP = {
+    'win': 'windows',
+    'mac': 'macos',
+    'linux': 'linux'
+}
+
 
 @contextmanager
 def Install7za(api):
@@ -71,7 +77,8 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
 
       flutter_pkg_absolute_path = GetFlutterPackageAbsolutePath(api, work_dir)
       file_name = api.path.basename(flutter_pkg_absolute_path)
-      dest_archive = '/%s/%s' % (branch, api.platform.name)
+      platform_name = PLATFORMS_MAP[api.platform.name]
+      dest_archive = '/%s/%s' % (branch, platform_name)
       dest_gs = 'gs://flutter_infra_release/releases%s' % dest_archive
       api.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
       if branch in ('beta', 'stable'):
@@ -86,7 +93,6 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
       else:
         # add experimental subpath if branch is not beta or stable
         pkg_gs_path = '%s/%s/%s' % (dest_gs, 'experimental', file_name)
-        api.archives.upload_artifact(flutter_pkg_absolute_path, pkg_gs_path)
       api.archives.upload_artifact(flutter_pkg_absolute_path, pkg_gs_path)
       api.flutter_bcid.upload_provenance(flutter_pkg_absolute_path, pkg_gs_path)
       api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)

@@ -69,7 +69,7 @@ def RunSteps(api, properties, env_properties):
   # duplication.
   env, env_prefixes = api.repo_util.flutter_environment(flutter)
   test_config = api.properties.get('build')
-  deps = test_config.get('dependencies', [])
+  deps = test_config.get('test_dependencies', [])
   api.flutter_deps.required_deps(env, env_prefixes, deps)
   shard = test_config.get('shard')
   subshard = test_config.get('subshard')
@@ -129,7 +129,7 @@ def GenTests(api):
           'web_tests',
       'subshard':
           '3',
-      'dependencies': [{
+      'test_dependencies': [{
           "dependency": "chrome_and_driver", "version": "version:96.2"
       }],
   }
@@ -149,7 +149,7 @@ def GenTests(api):
           'framework_tests',
       'subshard':
           'slow',
-      'dependencies': [{"dependency": "android_sdk",
+      'test_dependencies': [{"dependency": "android_sdk",
                         "version": "version:33v6"}],
   }
 

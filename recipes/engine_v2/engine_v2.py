@@ -336,7 +336,7 @@ def GenTests(api):
   yield api.test(
       'monorepo_config_file',
       api.platform.name('linux'),
-      api.properties(config_name='config_name', builds=builds),
+      api.properties(config_name='config_name'),
       api.monorepo.ci_build(),
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_subbuild1],
@@ -345,6 +345,51 @@ def GenTests(api):
       ),
       api.step_data(
           'Read build config file', api.file.read_json({'builds': builds})
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io
+          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+      ),
+  )
+
+  tests = [{
+    "name": "framework_tests libraries",
+    "shard": "framework_tests",
+    "subshard": "libraries",
+    "test_dependencies": [
+      {
+      "dependency": "android_sdk",
+      "version": "version:33v6"
+      }
+    ]
+  }]
+
+  subtest1 = api.shard_util_v2.try_build_message(
+      build_id=8945511751514863187,
+      builder="subtest1",
+      output_props={"test_orchestration_inputs_hash": "abc"},
+      status="SUCCESS",
+  )
+
+  yield api.test(
+      'monorepo_config_file_tests',
+      api.platform.name('linux'),
+      api.properties(config_name='config_name'),
+      api.monorepo.ci_build(),
+      api.shard_util_v2.child_build_steps(
+          subbuilds=[try_subbuild1],
+          launch_step="launch builds",
+          collect_step="collect builds",
+      ),
+      api.shard_util_v2.child_build_steps(
+          subbuilds=[subtest1],
+          launch_step="launch tests",
+          collect_step="collect tests",
+      ),
+      api.step_data(
+          'Read build config file', api.file.read_json({'builds': builds,
+          'tests': tests})
       ),
       api.step_data(
           'Identify branches.git branch',

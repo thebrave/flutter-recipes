@@ -81,7 +81,7 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
       dest_archive = '/%s/%s' % (branch, platform_name)
       dest_gs = 'gs://flutter_infra_release/releases%s' % dest_archive
       api.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
-      if branch in ('beta', 'stable'):
+      if branch in ('beta', 'stable') and api.flutter_bcid.is_official_build():
         # only publish using upload_artifact if is branch is beta or stable
         # publish both package and metadata which has been updated
         # by the packaging_script
@@ -93,8 +93,11 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
       else:
         # add experimental subpath if branch is not beta or stable
         pkg_gs_path = '%s/%s/%s' % (dest_gs, 'experimental', file_name)
-      api.archives.upload_artifact(flutter_pkg_absolute_path, pkg_gs_path)
-      api.flutter_bcid.upload_provenance(flutter_pkg_absolute_path, pkg_gs_path)
+      # Do not upload on presubmit.
+      if ((not api.runtime.is_experimental) and (api.flutter_bcid.is_official_build() or
+          api.flutter_bcid.is_prod_build())):
+        api.archives.upload_artifact(flutter_pkg_absolute_path, pkg_gs_path)
+        api.flutter_bcid.upload_provenance(flutter_pkg_absolute_path, pkg_gs_path)
       api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
 
 
@@ -183,7 +186,7 @@ def GenTests(api):
     for should_upload in (True, False):
       for platform in ('mac', 'linux', 'win'):
         for branch in ('master', 'beta', 'stable', 'flutter-release-test'):
-            for bucket in ('prod', 'staging'):
+            for bucket in ('prod', 'staging', 'flutter'):
               for git_ref in ('refs/heads/' + branch,
                 'invalid' + branch):
                   test = api.test(

@@ -20,13 +20,17 @@ class BcidStage(Enum):
 
 class FlutterBcidApi(recipe_api.RecipeApi):
 
-  def _is_official_build(self):
+  def is_official_build(self):
     bucket = self.m.buildbucket.build.builder.bucket
     # No-op for builders running outside of dart-internal.
     return bucket == 'flutter'
 
+  def is_prod_build(self):
+    bucket = self.m.buildbucket.build.builder.bucket
+    return bucket == 'prod'
+
   def report_stage(self, stage):
-    if (self._is_official_build() and
+    if (self.is_official_build() and
         # TODO(jseales): Uncomment next line after windows
         # can generate provenance succesfully
         # https://github.com/flutter/flutter/issues/116749
@@ -44,7 +48,7 @@ class FlutterBcidApi(recipe_api.RecipeApi):
       local_artifact_path: (str) path and filename of a specific file.
       remote_artifact_path: (str) path and filename of a specific file.
     """
-    if (self._is_official_build() and 
+    if (self.is_official_build() and 
       # TODO(jseales): Uncomment next line after windows
       # can generate provenance succesfully
       # https://github.com/flutter/flutter/issues/116749

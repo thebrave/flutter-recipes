@@ -15,11 +15,23 @@ def RunSteps(api):
       api.path['cache'].join('file.zip'),
       'gs://bucket/final_path/file.txt'
   )
+  api.flutter_bcid.is_official_build()
+  api.flutter_bcid.is_prod_build()
 
 
 def GenTests(api):
   yield api.test(
       'basic',
+      api.buildbucket.ci_build(
+          project='dart-internal',
+          bucket='flutter',
+          git_repo='https://dart.googlesource.com/monorepo',
+          git_ref='refs/heads/main'
+      ),
+  )
+
+  yield api.test(
+      'prod_build',
       api.buildbucket.ci_build(
           project='dart-internal',
           bucket='flutter',

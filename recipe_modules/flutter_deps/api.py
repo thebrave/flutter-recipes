@@ -417,11 +417,8 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env(dict): Current environment variables.
       env_prefixes(dict): Current environment prefixes variables.
     """
-    if version != 'latest':
-        msg = 'codesign version is None.'
-        raise ValueError(msg)
     version = version or 'latest'
-    codesign_path = self.m.path.mkdtemp().join('codesign')
+    codesign_path = self.m.path.mkdtemp()
     codesign = self.m.cipd.EnsureFile()
     codesign.add_package('flutter/codesign/${platform}', version)
     with self.m.step.nest('Installing Mac codesign CIPD pkg'):
@@ -429,6 +426,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     paths = env_prefixes.get('PATH', [])
     paths.append(codesign_path)
     env_prefixes['PATH'] = paths
+    return codesign_path.join('codesign')
 
   def cosign(self, env, env_prefixes, version=None):
     """Installs cosign.

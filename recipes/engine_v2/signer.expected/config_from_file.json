@@ -15,7 +15,7 @@
       "cipd",
       "ensure",
       "-root",
-      "[CLEANUP]/tmp_tmp_1/codesign",
+      "[CLEANUP]/tmp_tmp_1",
       "-ensure-file",
       "flutter/codesign/${platform} latest",
       "-max-threads",
@@ -41,18 +41,280 @@
   },
   {
     "cmd": [
-      "codesign",
-      "--gcs-download-path",
-      "gs://a/b/c/artifact.zip",
-      "--gcs-upload-path",
-      "gs://a/b/c/artifact.zip"
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/codesign_team_id.encrypted",
+      "[CLEANUP]/codesign_team_id.encrypted"
+    ],
+    "infra_step": true,
+    "name": "gsutil download"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/codesign_team_id.encrypted",
+      "-output",
+      "[CLEANUP]/tmp_tmp_2/codesign_team_id.encrypted",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "name": "cloudkms get key"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "ensure_installed (2)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/codesign_app_specific_password.encrypted",
+      "[CLEANUP]/codesign_app_specific_password.encrypted"
+    ],
+    "infra_step": true,
+    "name": "gsutil download (2)"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/codesign_app_specific_password.encrypted",
+      "-output",
+      "[CLEANUP]/tmp_tmp_2/codesign_app_specific_password.encrypted",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "name": "cloudkms get key (2)"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "ensure_installed (3)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/codesign_app_store_id.encrypted",
+      "[CLEANUP]/codesign_app_store_id.encrypted"
+    ],
+    "infra_step": true,
+    "name": "gsutil download (3)"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/codesign_app_store_id.encrypted",
+      "-output",
+      "[CLEANUP]/tmp_tmp_2/codesign_app_store_id.encrypted",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "name": "cloudkms get key (3)"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE[flutter::engine_v2/signer].resources/runner.sh"
     ],
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/tmp_tmp_1/codesign"
+        "[CLEANUP]/tmp_tmp_1"
+      ]
+    },
+    "name": "Set execute permission"
+  },
+  {
+    "cmd": [
+      "bash",
+      "RECIPE[flutter::engine_v2/signer].resources/runner.sh"
+    ],
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1"
+      ]
+    },
+    "name": "unlock keychain"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://a/b/c/artifact.zip",
+      "[CLEANUP]/tmp_tmp_3/unsigned_artifact.zip"
+    ],
+    "infra_step": true,
+    "name": "gsutil download gs://a/b/c/artifact.zip"
+  },
+  {
+    "cmd": [
+      "[CLEANUP]/tmp_tmp_1/codesign",
+      "--codesign-cert-name",
+      "FLUTTER.IO LLC",
+      "--no-dryrun",
+      "--app-specific-password-file-path",
+      "[CLEANUP]/tmp_tmp_2/codesign_app_specific_password.encrypted",
+      "--codesign-appstore-id-file-path",
+      "[CLEANUP]/tmp_tmp_2/codesign_app_store_id.encrypted",
+      "--codesign-team-id-file-path",
+      "[CLEANUP]/tmp_tmp_2/codesign_team_id.encrypted",
+      "--input-zip-file-path",
+      "[CLEANUP]/tmp_tmp_3/unsigned_artifact.zip",
+      "--output-zip-file-path",
+      "[CLEANUP]/tmp_tmp_3/artifact.zip"
+    ],
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1"
       ]
     },
     "name": "codesign Apple engine binaries"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CLEANUP]/tmp_tmp_4/b/c"
+    ],
+    "infra_step": true,
+    "name": "Ensure b/c"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/tmp_tmp_3/artifact.zip",
+      "[CLEANUP]/tmp_tmp_4/b/c"
+    ],
+    "infra_step": true,
+    "name": "Copy gs://a/b/c/artifact.zip"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "-r",
+      "[CLEANUP]/tmp_tmp_4/*",
+      "gs://a/"
+    ],
+    "infra_step": true,
+    "name": "gsutil b/c/artifact.zip",
+    "~followup_annotations": [
+      "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/a/@@@"
+    ]
   },
   {
     "name": "$result"

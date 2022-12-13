@@ -55,8 +55,6 @@ def RunSteps(api):
   api.flutter_deps.flutter_engine(env, env_prefixes)
   api.flutter_deps.firebase(env, env_prefixes)
   api.flutter_deps.cmake(env, env_prefixes)
-  with api.assertions.assertRaises(ValueError):
-    api.flutter_deps.codesign(env, env_prefixes)
   api.flutter_deps.codesign(env, env_prefixes, 'latest')
   api.flutter_deps.cosign(env, env_prefixes)
   api.flutter_deps.ninja(env, env_prefixes)

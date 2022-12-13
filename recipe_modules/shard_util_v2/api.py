@@ -209,7 +209,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       led_data = self.m.led(
           'get-builder',
           '-real-build',
-          'luci.%s.%s:%s' % (parent.project, parent.bucket, builder_name),
+          '%s/%s/%s' % (parent.project, parent.bucket, builder_name),
       )
       edit_args = []
       for k, v in sorted(drone_properties.items()):

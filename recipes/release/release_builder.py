@@ -47,8 +47,7 @@ def ShouldRun(api, git_ref, target):
     return True
   # Packaging for the flutter repository.
   if (target.get('scheduler') == 'release' and for_this_platform
-      # TODO(godofredoc): Uncomment the next line after testing is complete.
-      # and (git_ref in RELEASE_CHANNELS)
+      and (git_ref in RELEASE_CHANNELS)
       and git_ref.replace('refs/heads/', '') in target.get('enabled_branches', [])
      ):
     return True

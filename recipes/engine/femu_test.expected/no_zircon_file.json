@@ -10,7 +10,7 @@
       "[CACHE]/builder/src/out"
     ],
     "infra_step": true,
-    "name": "Clobber build output"
+    "name": "clobber build output"
   },
   {
     "cmd": [
@@ -25,7 +25,7 @@
       "[CACHE]/builder"
     ],
     "infra_step": true,
-    "name": "Ensure checkout cache"
+    "name": "ensure checkout cache"
   },
   {
     "cmd": [],
@@ -992,7 +992,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "Package Debug/JIT Fuchsia Artifacts"
+    "name": "package Debug/JIT Fuchsia Artifacts"
   },
   {
     "cmd": [
@@ -1024,7 +1024,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "Package Profile/AOT Fuchsia Artifacts"
+    "name": "package Profile/AOT Fuchsia Artifacts"
   },
   {
     "cmd": [
@@ -1055,189 +1055,12 @@
       ]
     },
     "infra_step": true,
-    "name": "Read manifest",
+    "name": "read manifest",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@manifest.json@{@@@",
       "@@@STEP_LOG_LINE@manifest.json@  \"id\": \"0.20200101.0.1\"@@@",
       "@@@STEP_LOG_LINE@manifest.json@}@@@",
       "@@@STEP_LOG_END@manifest.json@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "ensure vdl"
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CACHE]/builder/vdl",
-      "-ensure-file",
-      "fuchsia/vdl/${platform} g3-revision:vdl_fuchsia_xxxxxxxx_RC00",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "ensure vdl.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-g3-revision:vdl_\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"fuchsia/vdl/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "ensure aemu"
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CACHE]/builder/aemu",
-      "-ensure-file",
-      "fuchsia/third_party/android/aemu/release/${platform} integration",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "ensure aemu.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-integration-----\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"fuchsia/third_party/android/aemu/release/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CACHE]/builder/device_spec"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "init device spec cache at "
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "\ndevice_spec {\n  horizontal_resolution: 480\n  vertical_resolution: 800\n  vm_heap: 192\n  ram: 4096\n  cache: 32\n  screen_density: 240\n}\n",
-      "[CACHE]/builder/device_spec/virtual_device.textproto"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "generate [CACHE]/builder/device_spec/virtual_device.textproto",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@virtual_device.textproto@@@@",
-      "@@@STEP_LOG_LINE@virtual_device.textproto@device_spec {@@@",
-      "@@@STEP_LOG_LINE@virtual_device.textproto@  horizontal_resolution: 480@@@",
-      "@@@STEP_LOG_LINE@virtual_device.textproto@  vertical_resolution: 800@@@",
-      "@@@STEP_LOG_LINE@virtual_device.textproto@  vm_heap: 192@@@",
-      "@@@STEP_LOG_LINE@virtual_device.textproto@  ram: 4096@@@",
-      "@@@STEP_LOG_LINE@virtual_device.textproto@  cache: 32@@@",
-      "@@@STEP_LOG_LINE@virtual_device.textproto@  screen_density: 240@@@",
-      "@@@STEP_LOG_LINE@virtual_device.textproto@}@@@",
-      "@@@STEP_LOG_END@virtual_device.textproto@@@"
     ]
   },
   {

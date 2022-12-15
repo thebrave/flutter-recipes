@@ -88,7 +88,8 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
         pkg_gs_path = '%s/%s' % (dest_gs, file_name)
         metadata_absolute_path = GetFlutterMetadataAbsolutePath(api, work_dir)
         metadata_filename = api.path.basename(metadata_absolute_path)
-        metadata_gs_path = "%s/%s" % (dest_gs, metadata_filename)
+        metadata_dst = 'gs://flutter_infra_release/releases'
+        metadata_gs_path = "%s/%s" % (metadata_dst, metadata_filename)
         api.archives.upload_artifact(metadata_absolute_path, metadata_gs_path)
       else:
         # add experimental subpath if branch is not beta or stable

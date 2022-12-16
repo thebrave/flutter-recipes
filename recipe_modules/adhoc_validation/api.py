@@ -70,6 +70,7 @@ class AddhocValidationApi(recipe_api.RecipeApi):
         checkout_path = self.m.repo_util.sdk_checkout_path()
         if (validation == 'docs') and self.m.repo_util.is_release_candidate_branch(checkout_path):
           env['LUCI_BRANCH'] = 'stable'
+          env['LUCI_CI'] = True
 
         with self.m.context(env=env, env_prefixes=env_prefixes):
           self.m.test_utils.run_test(

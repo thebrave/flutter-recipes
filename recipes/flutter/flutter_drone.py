@@ -8,10 +8,13 @@
 from contextlib import contextmanager
 import re
 
+from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
+
 DEPS = [
+    'flutter/flutter_bcid',
     'flutter/flutter_deps',
-    'flutter/os_utils',
     'flutter/logs_util',
+    'flutter/os_utils',
     'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/retry',
@@ -60,11 +63,13 @@ def RunShard(api, env, env_prefixes, checkout_path):
 
 
 def RunSteps(api):
+  api.flutter_bcid.report_stage(BcidStage.START.value)
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
   api.os_utils.print_pub_certs()
 
   checkout_path = api.path['start_dir'].join('flutter')
+  api.flutter_bcid.report_stage(BcidStage.FETCH.value)
   api.repo_util.checkout(
       'flutter',
       checkout_path=checkout_path,

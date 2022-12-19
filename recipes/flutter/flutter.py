@@ -9,10 +9,12 @@ from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 from PB.go.chromium.org.luci.buildbucket.proto \
   import builds_service as builds_service_pb2
+from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 from google.protobuf import struct_pb2
 
 DEPS = [
     'flutter/adhoc_validation',
+    'flutter/flutter_bcid',
     'flutter/flutter_deps',
     'flutter/os_utils',
     'flutter/repo_util',
@@ -25,6 +27,7 @@ DEPS = [
 
 def RunSteps(api):
   """Recipe to run flutter sdk tests."""
+  api.flutter_bcid.report_stage(BcidStage.START.value)
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
   api.os_utils.print_pub_certs()
@@ -33,6 +36,7 @@ def RunSteps(api):
   # when don't need to run in shards.
   # include UTF-8 char in path to test for resilience
   checkout_path = api.path['start_dir'].join('Á flutter sdk')
+  api.flutter_bcid.report_stage(BcidStage.FETCH.value)
   with api.step.nest('checkout source code'):
     api.repo_util.checkout(
         'flutter',

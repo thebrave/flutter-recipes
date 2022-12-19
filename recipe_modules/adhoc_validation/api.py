@@ -73,6 +73,7 @@ class AddhocValidationApi(recipe_api.RecipeApi):
           env['LUCI_CI'] = True
 
         with self.m.context(env=env, env_prefixes=env_prefixes):
+          self.m.flutter_bcid.report_stage(BcidStage.COMPILE.value)
           self.m.test_utils.run_test(
             validation,
             [resource_name],

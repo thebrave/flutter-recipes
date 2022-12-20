@@ -64,6 +64,9 @@ class AddhocValidationApi(recipe_api.RecipeApi):
               timeout_secs=4500 # 75 minutes
             )
       else:
+        git_ref = self.m.properties.get('release_ref') or self.m.buildbucket.gitiles_commit.ref
+        # Post-processing of docs require LUCI_BRANCH to be set when running from dart-internal.
+        env['LUCI_BRANCH'] = git_ref.replace('refs/heads/', '')
         # Override LUCI_BRANCH for docs and release candidate branches. Docs built from
         # release candidate branches need to be build as stable to ensure they are processed
         # correctly.
@@ -72,9 +75,6 @@ class AddhocValidationApi(recipe_api.RecipeApi):
           env['LUCI_BRANCH'] = 'stable'
           env['LUCI_CI'] = True
 
-        git_ref = self.m.properties.get('release_ref') or self.m.buildbucket.gitiles_commit.ref
-        # Post-processing of docs require LUCI_BRANCH to be set when running from dart-internal.
-        env['LUCI_BRANCH'] = git_ref.replace('refs/heads/', '')
         with self.m.context(env=env, env_prefixes=env_prefixes):
           self.m.flutter_bcid.report_stage(BcidStage.COMPILE.value)
           self.m.test_utils.run_test(

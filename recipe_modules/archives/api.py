@@ -82,7 +82,7 @@ class ArchivesApi(recipe_api.RecipeApi):
     matches = re.match('gs://(\w+)/(.+)', dst)
     return (matches.group(1), matches.group(2))
 
-  def upload_artifact(self, src, dst):
+  def upload_artifact(self, src, dst, metadata=None):
     """Uploads a local object to a gcs destination.
 
     This method also ensures the directoy structure is recreated in the
@@ -91,6 +91,7 @@ class ArchivesApi(recipe_api.RecipeApi):
     Args:
       src: (str) a string with the object local path.
       dst: (str) a string with the destination path in gcs.
+      metadata: (dict) a dictionary with the header as key and its content as value.
     """
     bucket, path = self._split_dst_parts(dst)
     dir_part = self.m.path.dirname(path)
@@ -104,6 +105,7 @@ class ArchivesApi(recipe_api.RecipeApi):
         dest='',
         args=['-r'],
         name=path,
+        metadata=metadata,
     )
 
   def download(self, src, dst):

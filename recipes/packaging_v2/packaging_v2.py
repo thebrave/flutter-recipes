@@ -90,7 +90,11 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
         metadata_filename = api.path.basename(metadata_absolute_path)
         metadata_dst = 'gs://flutter_infra_release/releases'
         metadata_gs_path = "%s/%s" % (metadata_dst, metadata_filename)
-        api.archives.upload_artifact(metadata_absolute_path, metadata_gs_path)
+        # This metadata file is used by the website, so we don't want a long
+        # latency between publishing a release and it being available on the
+        # site.
+        headers = {'Cache-Control': 'max-age=60'}
+        api.archives.upload_artifact(metadata_absolute_path, metadata_gs_path, metadata=headers)
       else:
         # add experimental subpath if branch is not beta or stable
         pkg_gs_path = '%s/%s/%s' % (dest_gs, 'experimental', file_name)

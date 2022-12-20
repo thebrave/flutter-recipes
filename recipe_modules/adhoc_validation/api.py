@@ -96,6 +96,8 @@ class AddhocValidationApi(recipe_api.RecipeApi):
             git_ref = self.m.properties.get('release_ref') or self.m.buildbucket.gitiles_commit.ref
             if ((self.m.properties.get('git_branch') in ['master', 'main']) or
                 (git_ref == 'refs/heads/stable')):
+              # Post-processing of docs require LUCI_BRANCH to be set.
+              env['LUCI_BRANCH'] = 'stable'
               self.m.firebase.deploy_docs(
                   env=env,
                   env_prefixes=env_prefixes,

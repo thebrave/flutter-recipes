@@ -7,6 +7,18 @@
     ],
     "cwd": "[START_DIR]/flutter sdk",
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "git rev-parse"
   },
   {
@@ -37,6 +49,18 @@
       ]
     },
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "Docs.Set execute permission",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -74,6 +98,18 @@
       ]
     },
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "Docs.Identify branches.git rev-parse",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -106,9 +142,120 @@
       ]
     },
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "Docs.Identify branches.git branch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/reporter",
+      "-ensure-file",
+      "infra/tools/security/provenance_broker/${platform} git_revision:d3cf3b0144447a77fd79c84fe8500dfe993ef602",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "stable",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Docs.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:d3c\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/security/provenance_broker/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/reporter/snoopy_broker",
+      "-report-stage",
+      "-stage",
+      "compile"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "stable",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Docs.snoop: report_stage",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -132,6 +279,18 @@
         "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "Docs.docs",
     "timeout": 4500,
     "~followup_annotations": [
@@ -140,6 +299,47 @@
       "@@@STEP_LOG_END@test_stdout@@@",
       "@@@STEP_LOG_LINE@test_stderr@@@@",
       "@@@STEP_LOG_END@test_stderr@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/reporter/snoopy_broker",
+      "-report-stage",
+      "-stage",
+      "upload"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "stable",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Docs.snoop: report_stage (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -167,6 +367,18 @@
       ]
     },
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "Docs.git rev-parse",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -202,6 +414,18 @@
       ]
     },
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "Docs.Ensure flutter/12345abcde12345abcde12345abcde12345abcde",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -236,6 +460,18 @@
       ]
     },
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "Docs.Copy gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/api_docs.zip",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -272,10 +508,333 @@
       ]
     },
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "Docs.gsutil flutter/12345abcde12345abcde12345abcde12345abcde/api_docs.zip",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_infra_release/@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "file_hash",
+      "[START_DIR]/flutter sdk/dev/docs/api_docs.zip"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "stable",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Docs.Compute file hash",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@Hash calculated: 674a8c5ab46fb792d3c702bfbedb8a430025df0113a72201bc5bb67921306e26@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/reporter/snoopy_broker",
+      "-report-gcs",
+      "-digest",
+      "674a8c5ab46fb792d3c702bfbedb8a430025df0113a72201bc5bb67921306e26",
+      "-gcs-uri",
+      "gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/api_docs.zip"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "stable",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Docs.snoop: report_gcs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/reporter/snoopy_broker",
+      "-report-stage",
+      "-stage",
+      "upload-complete"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "stable",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Docs.snoop: report_stage (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "luci-auth",
+      "token",
+      "-scopes",
+      "https://www.googleapis.com/auth/cloud-platform",
+      "-lifetime",
+      "3m"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "stable",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Docs.get access token for default account",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "extra.secret.token.should.not.be.logged",
+      "[CLEANUP]/tmp_tmp_2"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "stable",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Docs.write token",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Docs.Deploy docs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::firebase]/resources/firebase_deploy.sh"
+    ],
+    "cwd": "[START_DIR]/flutter sdk/dev/docs",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GCP_PROJECT": "myproject",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "stable",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk",
+      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_2"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Docs.Deploy docs.Set execute permission",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::firebase]/resources/firebase_deploy.sh"
+    ],
+    "cwd": "[START_DIR]/flutter sdk/dev/docs",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GCP_PROJECT": "myproject",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "stable",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter sdk",
+      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_2"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter sdk/bin",
+        "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Docs.Deploy docs.Firebase deploy",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {

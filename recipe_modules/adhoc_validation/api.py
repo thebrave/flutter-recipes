@@ -72,6 +72,9 @@ class AddhocValidationApi(recipe_api.RecipeApi):
           env['LUCI_BRANCH'] = 'stable'
           env['LUCI_CI'] = True
 
+        git_ref = self.m.properties.get('release_ref') or self.m.buildbucket.gitiles_commit.ref
+        # Post-processing of docs require LUCI_BRANCH to be set when running from dart-internal.
+        env['LUCI_BRANCH'] = git_ref.replace('refs/heads/', '')
         with self.m.context(env=env, env_prefixes=env_prefixes):
           self.m.flutter_bcid.report_stage(BcidStage.COMPILE.value)
           self.m.test_utils.run_test(
@@ -93,11 +96,8 @@ class AddhocValidationApi(recipe_api.RecipeApi):
               self.m.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
             project = self.m.properties.get('firebase_project')
             # Only deploy to firebase directly if this is master or main.
-            git_ref = self.m.properties.get('release_ref') or self.m.buildbucket.gitiles_commit.ref
             if ((self.m.properties.get('git_branch') in ['master', 'main']) or
                 (git_ref == 'refs/heads/stable')):
-              # Post-processing of docs require LUCI_BRANCH to be set.
-              env['LUCI_BRANCH'] = 'stable'
               self.m.firebase.deploy_docs(
                   env=env,
                   env_prefixes=env_prefixes,

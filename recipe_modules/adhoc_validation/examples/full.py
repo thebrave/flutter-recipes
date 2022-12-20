@@ -60,4 +60,12 @@ def GenTests(api):
           'Docs.Identify branches.git branch',
           stdout=api.raw_io.output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
       ),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='flutter',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          git_ref='refs/heads/stable',
+          revision='abcd' * 10,
+          build_number=123,
+      ),
   )

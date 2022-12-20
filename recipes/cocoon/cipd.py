@@ -31,7 +31,7 @@ def RunSteps(api):
       url=api.properties.get('git_url') or REPOS['cocoon'],
       ref=api.properties.get('git_ref') or 'refs/heads/main',
   )
-  should_upload = api.properties.get('git_ref') == 'refs/heads/main'
+  should_upload = api.buildbucket.gitiles_commit.ref == 'refs/heads/main'
   # Get properties from ci.yaml.
   # Assume ci.yaml has the following properties
   #   - name: Mac codesign

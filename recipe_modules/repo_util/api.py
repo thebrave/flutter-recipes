@@ -228,13 +228,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
       # gitiles_commit.id is more specific than gitiles_commit.ref, which is
       # branch
       # if this a release build, self.m.buildbucket.gitiles_commit.id should have more priority than
-      # ref since it is more specific, and we don't want to default to
-      # refs/heads/<REPO_BRANCHES[name]>
-
-      # Do not override ref for cocoon. Cocoon recipes checkouts multiple repositories and trying to
-      # override will try to use the commit for the repository triggering the build. e.g. Cocoon
-      # recipe checks out cocoon repo, and then checkouts flutter trying to use the cocoon commit.
-      if (ref in ['refs/heads/beta', 'refs/heads/stable']) and (name != 'cocoon'):
+      # ref since it is more specific, and we don't want to default to refs/heads/<REPO_BRANCHES[name]>
+      if ref in ['refs/heads/beta', 'refs/heads/stable']:
         git_ref = (
             self.m.buildbucket.gitiles_commit.id or
             self.m.buildbucket.gitiles_commit.ref or ref

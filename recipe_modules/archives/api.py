@@ -163,8 +163,9 @@ class ArchivesApi(recipe_api.RecipeApi):
         artifact_path = '%s%s/%s' % (
             artifact_prefix, rel_path, base_name)
       else:
-        artifact_path = '%sflutter_infra_release/flutter/%s/%s/%s' % (
-            artifact_prefix, commit, rel_path, base_name)
+        final_rel_path = '%s/' % rel_path if rel_path else ''
+        artifact_path = '%sflutter_infra_release/flutter/%s/%s%s' % (
+            artifact_prefix, commit, final_rel_path, base_name)
 
       results.append(
           ArchivePaths(

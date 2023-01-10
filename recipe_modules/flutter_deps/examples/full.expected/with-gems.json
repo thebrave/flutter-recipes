@@ -839,56 +839,6 @@
   },
   {
     "cmd": [],
-    "name": "Install ruby"
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CACHE]/ruby",
-      "-ensure-file",
-      "flutter/ruby/${platform} v3.1.3",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter\\ sdk"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter\\ sdk/bin",
-        "[START_DIR]/flutter\\ sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "name": "Install ruby.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-v3.1.3----------\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/ruby/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [],
     "name": "Install gems"
   },
   {
@@ -928,6 +878,38 @@
   },
   {
     "cmd": [
+      "gem",
+      "install",
+      "bundler",
+      "--install-dir",
+      "."
+    ],
+    "cwd": "[START_DIR]/gems",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter\\ sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter\\ sdk/bin",
+        "[START_DIR]/flutter\\ sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "Install gems.install bundler",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
       "bundle",
       "config",
       "set",
@@ -945,58 +927,19 @@
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "RUBY_HOME": "[CACHE]/ruby/bin",
       "SDK_CHECKOUT_PATH": "[START_DIR]/flutter\\ sdk"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/dev/ci/mac/bin",
-        "[CACHE]/ruby/bin",
         "[START_DIR]/flutter\\ sdk/bin",
         "[START_DIR]/flutter\\ sdk/bin/cache/dart-sdk/bin",
+        "[START_DIR]/gems/bin",
         "[START_DIR]/flutter\\ sdk/bin",
         "[START_DIR]/flutter\\ sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
-    "name": "Install gems.Set gems path",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "bundle",
-      "config",
-      "build.ffi",
-      "--with-ldflags=\"-L[CACHE]/ruby/opt/gmp/lib\""
-    ],
-    "cwd": "[START_DIR]/dev/ci/mac",
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GEM_HOME": "[START_DIR]/gems",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "RUBY_HOME": "[CACHE]/ruby/bin",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter\\ sdk"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/dev/ci/mac/bin",
-        "[CACHE]/ruby/bin",
-        "[START_DIR]/flutter\\ sdk/bin",
-        "[START_DIR]/flutter\\ sdk/bin/cache/dart-sdk/bin",
-        "[START_DIR]/flutter\\ sdk/bin",
-        "[START_DIR]/flutter\\ sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "name": "Install gems.Set ffi build flags",
+    "name": "Install gems.set gems path",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -1017,49 +960,19 @@
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "RUBY_HOME": "[CACHE]/ruby/bin",
       "SDK_CHECKOUT_PATH": "[START_DIR]/flutter\\ sdk"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/dev/ci/mac/bin",
-        "[CACHE]/ruby/bin",
         "[START_DIR]/flutter\\ sdk/bin",
         "[START_DIR]/flutter\\ sdk/bin/cache/dart-sdk/bin",
+        "[START_DIR]/gems/bin",
         "[START_DIR]/flutter\\ sdk/bin",
         "[START_DIR]/flutter\\ sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
     "name": "Install gems.install gems",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "ruby",
-      "-e",
-      "puts RUBY_PATCHLEVEL"
-    ],
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter\\ sdk"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter\\ sdk/bin",
-        "[START_DIR]/flutter\\ sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "name": "Install gems.Ruby version",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

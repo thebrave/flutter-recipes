@@ -90,7 +90,7 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
-      'with-gems', api.properties(dependencies=[{"dependency": "gems"}]),
+      'with-gems', api.properties(dependencies=[{"dependency": "gems", "version": "v3.1.3"}]),
       api.repo_util.flutter_environment_data(checkout_path),
   )
 

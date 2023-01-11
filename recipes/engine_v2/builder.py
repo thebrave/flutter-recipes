@@ -156,6 +156,8 @@ def RunSteps(api, properties, env_properties):
   # with [cache]/builder and will adjust it to start using it consistently.
   env['ENGINE_PATH'] = api.path['cache'].join('builder')
 
+  # Pass gclient_variables to checkout.
+
   api.flutter_bcid.report_stage('fetch')
   if api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
     api.repo_util.monorepo_checkout(cache_root, env, env_prefixes)
@@ -242,7 +244,7 @@ def GenTests(api):
   )
 
   build_custom = dict(build)
-  build_custom["gclient_custom_vars"] = {"example_custom_var": True}
+  build_custom["gclient_variables"] = {"example_custom_var": True}
   build_custom["tests"] = []
   yield api.test(
       'dart-internal-flutter', api.properties(build=build, no_goma=True),

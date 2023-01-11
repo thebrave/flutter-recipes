@@ -184,6 +184,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       drone_properties.pop('dependencies', None)
       drone_properties.update(build.get('properties', []))
       drone_properties['build'] = build
+      drone_properties['gclient_variables'] = build.get('gclient_variables', {})
       drone_properties['task_name'] = task_name
       # Delete builds property if it exists.
       drone_properties.pop('builds', None)

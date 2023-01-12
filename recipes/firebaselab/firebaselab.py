@@ -52,9 +52,6 @@ def RunSteps(api):
   ]
 
   virtual_devices = [
-      # Virtual devices for API level coverage.
-      '--device',
-      'model=Nexus5,version=19',
       # SDK 20 not available virtually or physically.
       '--device',
       'model=Nexus5,version=21',

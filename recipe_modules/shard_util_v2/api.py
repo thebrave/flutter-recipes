@@ -261,6 +261,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       drone_properties.pop('dependencies', None)
       drone_properties.update(build.get('properties', []))
       drone_properties['build'] = build
+      drone_properties['gclient_variables'] = build.get('gclient_variables', {})
       # Copy parent bot dimensions.
       drone_dimensions = build.get('drone_dimensions', [])
       # ci.yaml provided dimensions.

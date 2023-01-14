@@ -1642,33 +1642,22 @@ def UploadJavadoc(api, variant):
   )
 
 
-@contextmanager
-def InstallGems(api, env, env_prefixes):
-  api.flutter_deps.jazzy(env, env_prefixes)
-
-  # Update PATH to reflect where jazzy was installed by the above command.
-  gem_dir = api.path['start_dir'].join('gems')
-  with api.context(env={"GEM_HOME": gem_dir},
-                   env_prefixes={'PATH': [gem_dir.join('bin')]}):
-    yield
-
-
 def BuildObjcDoc(api, env, env_prefixes):
   """Builds documentation for the Objective-C variant of engine."""
-  with InstallGems(api, env, env_prefixes):
-    checkout = GetCheckoutPath(api)
-    with api.os_utils.make_temp_directory('BuildObjcDoc') as temp_dir:
-      objcdoc_cmd = [checkout.join('flutter/tools/gen_objcdoc.sh'), temp_dir]
-      with api.context(cwd=checkout.join('flutter')):
-        api.step('build obj-c doc', objcdoc_cmd)
-      api.zip.directory(
-          'archive obj-c doc', temp_dir, checkout.join('out/ios-objcdoc.zip')
-      )
+  api.flutter_deps.jazzy(env, env_prefixes)
+  checkout = GetCheckoutPath(api)
+  with api.os_utils.make_temp_directory('BuildObjcDoc') as temp_dir:
+    objcdoc_cmd = [checkout.join('flutter/tools/gen_objcdoc.sh'), temp_dir]
+    with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout.join('flutter')):
+      api.step('build obj-c doc', objcdoc_cmd)
+    api.zip.directory(
+        'archive obj-c doc', temp_dir, checkout.join('out/ios-objcdoc.zip')
+    )
 
-      api.bucket_util.safe_upload(
-          checkout.join('out/ios-objcdoc.zip'),
-          GetCloudPath(api, 'ios-objcdoc.zip')
-      )
+    api.bucket_util.safe_upload(
+        checkout.join('out/ios-objcdoc.zip'),
+        GetCloudPath(api, 'ios-objcdoc.zip')
+    )
 
 
 def RunSteps(api, properties, env_properties):

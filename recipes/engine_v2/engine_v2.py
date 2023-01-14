@@ -174,7 +174,7 @@ def _run_global_generators(api, generators, full_engine_checkout, env, env_prefi
   for generator_task in generators['tasks']:
     # Generators must run from inside flutter folder.
     # If platform is mac we need to run the generator from an xcode context.
-    with api.context(env=env, cwd=full_engine_checkout):
+    with api.context(env=env, env_prefixes=env_prefixes, cwd=full_engine_checkout):
       cmd = [generator_task.get('language')] if generator_task.get('language') else []
       api.file.listdir('List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
       script = generator_task.get('script')

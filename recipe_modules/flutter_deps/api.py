@@ -296,8 +296,9 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       self.m.cipd.ensure(ruby_path, ruby)
       paths = env_prefixes.get('PATH', [])
       paths.insert(0, ruby_path.join('bin'))
-      env['RUBY_HOME'] = ruby_path.join('bin')
+      env['RUBY_HOME'] = ruby_path
       env_prefixes['PATH'] = paths
+      env_prefixes['DYLD_FALLBACK_LIBRARY_PATH'] = [ruby_path.join('dylibs')]
 
   def gems(self, env, env_prefixes, gem_dir, version=None):
     """Installs mac gems.
@@ -326,7 +327,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       with self.m.context(env=env, env_prefixes=env_prefixes, cwd=gemfile_dir):
         self.m.step(
             'Set gems path',
-            ['bundle', 'config', 'set', 'path', gem_destination],
+            ['bundle', 'config', 'set', '--local', 'path', gem_destination],
             infra_step=True,
         )
         opt_path = self.m.path['cache'].join('ruby', 'opt')
@@ -340,7 +341,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         self.m.step('install gems', ['bundler', 'install'], infra_step=True)
       # Find major/minor ruby version
       ruby_version = self.m.step(
-              'Ruby version', ['ruby', '-e', 'puts RUBY_PATCHLEVEL'],
+              'Ruby version', ['ruby', '-e', 'puts RUBY_VERSION'],
               stdout=self.m.raw_io.output_text(), ok_ret='any'
               ).stdout.rstrip()
       parts = ruby_version.split('.')
@@ -583,25 +584,28 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       gemfile_dir(Path): The path to the location of the repository gemfile.
     """
-    # TODO: Use bundler to install jazzy
-    # https://github.com/flutter/flutter/issues/118486
-    version = version or '0.9.5'
-    gem_dir = self.m.path['start_dir'].join('gems')
     with self.m.step.nest('Install jazzy'):
       # TODO: Don't hardcode the version here.
       self._install_ruby(env, env_prefixes, 'v3.3.14')
-      self.m.file.ensure_directory('mkdir gems', gem_dir)
-      with self.m.context(cwd=gem_dir):
-        self.m.step(
-            'install jazzy', [
-                'gem', 'install', 'jazzy:%s' % version,
-            '--install-dir', '.'
-            ]
-        )
-      env['GEM_HOME'] = gem_dir
+      # Find major/minor ruby version
+      with self.m.context(env=env, env_prefixes=env_prefixes):
+        ruby_version = self.m.step(
+            'Ruby version', ['ruby', '-e', 'puts RUBY_VERSION'],
+            stdout=self.m.raw_io.output_text(), ok_ret='any'
+        ).stdout.rstrip()
+      parts = ruby_version.split('.')
+      parts[-1] = '0'
+      ruby_version = '.'.join(parts)
+      version = version or 'v0.14.3'
+      jazzy_path = self.m.path['cache'].join('gems')
+      jazzy = self.m.cipd.EnsureFile()
+      jazzy.add_package("flutter/jazzy/${platform}", version)
+      self.m.cipd.ensure(jazzy_path, jazzy)
+      paths = env_prefixes.get('PATH', [])
+      env['GEM_HOME'] = jazzy_path.join('ruby', ruby_version)
       paths = env_prefixes.get('PATH', [])
       temp_paths = copy.deepcopy(paths)
-      temp_paths.append(gem_dir.join('bin'))
+      temp_paths.append(jazzy_path.join('ruby', ruby_version, 'bin'))
       env_prefixes['PATH'] = temp_paths
 
   def android_virtual_device(self, env, env_prefixes, version=None):

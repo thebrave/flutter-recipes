@@ -785,34 +785,82 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[START_DIR]/gems"
+      "ruby",
+      "-e",
+      "puts RUBY_VERSION"
     ],
-    "infra_step": true,
-    "name": "Install jazzy.mkdir gems",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/android",
+      "ANDROID_NDK_PATH": "[CACHE]/android/ndk-bundle",
+      "ANDROID_SDK_ROOT": "[CACHE]/android",
+      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
+      "CHROME_NO_SANDBOX": "true",
+      "FIREFOX_EXECUTABLE": "[CACHE]/firefox/firefox",
+      "FLUTTER_XCODE_CODE_SIGN_STYLE": "Manual",
+      "FLUTTER_XCODE_DEVELOPMENT_TEAM": "S8QB4VV633",
+      "FLUTTER_XCODE_PROVISIONING_PROFILE_SPECIFIER": "match Development *",
+      "GOPATH": "[CLEANUP]/go_path",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]/gradle",
+      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host_debug_unopt",
+      "RUBY_HOME": "[CACHE]/ruby"
+    },
+    "env_prefixes": {
+      "DYLD_FALLBACK_LIBRARY_PATH": [
+        "[CACHE]/ruby/dylibs"
+      ],
+      "PATH": [
+        "[CACHE]/ruby/bin",
+        "[CACHE]/dart_sdk",
+        "[CLEANUP]/builder/src/out/host_debug_unopt/dart-sdk/bin",
+        "[CACHE]/chrome/chrome",
+        "[CACHE]/chrome/drivers",
+        "[CACHE]/firefox",
+        "[CACHE]/go/bin",
+        "[CLEANUP]/go_path/bin",
+        "[CACHE]/go/bin",
+        "[CLEANUP]/go_path/bin",
+        "[START_DIR]/firebase",
+        "[CACHE]/cmake/bin",
+        "[CLEANUP]/tmp_tmp_1",
+        "[CACHE]/cosign/bin",
+        "[CACHE]/ninja",
+        "[CACHE]/clang/bin",
+        "[CLEANUP]/tmp_tmp_3/curl"
+      ]
+    },
+    "name": "Install jazzy.Ruby version",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "gem",
-      "install",
-      "jazzy:0.9.5",
-      "--install-dir",
-      "."
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/gems",
+      "-ensure-file",
+      "flutter/jazzy/${platform} v0.14.3",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
     ],
-    "cwd": "[START_DIR]/gems",
-    "name": "Install jazzy.install jazzy",
+    "name": "Install jazzy.ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-v0.14.3---------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/jazzy/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
     ]
   },
   {
@@ -861,14 +909,17 @@
       "FLUTTER_XCODE_CODE_SIGN_STYLE": "Manual",
       "FLUTTER_XCODE_DEVELOPMENT_TEAM": "S8QB4VV633",
       "FLUTTER_XCODE_PROVISIONING_PROFILE_SPECIFIER": "match Development *",
-      "GEM_HOME": "[START_DIR]/gems",
+      "GEM_HOME": "[CACHE]/gems/ruby/0",
       "GOPATH": "[CLEANUP]/go_path",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
       "GRADLE_USER_HOME": "[CACHE]/gradle",
       "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host_debug_unopt",
-      "RUBY_HOME": "[CACHE]/ruby/bin"
+      "RUBY_HOME": "[CACHE]/ruby"
     },
     "env_prefixes": {
+      "DYLD_FALLBACK_LIBRARY_PATH": [
+        "[CACHE]/ruby/dylibs"
+      ],
       "PATH": [
         "[CACHE]/ruby/bin",
         "[CACHE]/dart_sdk",
@@ -887,7 +938,7 @@
         "[CACHE]/ninja",
         "[CACHE]/clang/bin",
         "[CLEANUP]/tmp_tmp_3/curl",
-        "[START_DIR]/gems/bin"
+        "[CACHE]/gems/ruby/0/bin"
       ]
     },
     "env_suffixes": {

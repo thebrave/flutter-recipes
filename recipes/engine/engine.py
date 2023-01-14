@@ -1431,7 +1431,7 @@ def PackageIOSVariant(
     api.bucket_util.safe_upload(dsym_zip, remote_zip)
 
 
-def BuildIOS(api):
+def BuildIOS(api, env, env_prefixes):
   # Simulator binary is needed in all runtime modes.
   RunGN(api, '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto')
   Build(api, 'ios_debug_sim')
@@ -1460,7 +1460,7 @@ def BuildIOS(api):
     )
     Build(api, 'ios_debug')
 
-    BuildObjcDoc(api)
+    BuildObjcDoc(api, env, env_prefixes)
 
     PackageIOSVariant(
         api, 'debug', 'ios_debug', 'ios_debug_sim',
@@ -1643,37 +1643,19 @@ def UploadJavadoc(api, variant):
 
 
 @contextmanager
-def InstallGems(api):
+def InstallGems(api, env, env_prefixes):
+  api.flutter_deps.jazzy(env, env_prefixes)
+
+  # Update PATH to reflect where jazzy was installed by the above command.
   gem_dir = api.path['start_dir'].join('gems')
-  api.file.ensure_directory('mkdir gems', gem_dir)
-
-  with api.context(cwd=gem_dir):
-    # jazzy depends on sqlite3, which started serving precompiled gems with version 1.5.0.
-    # The instance of Ruby currently packaged with macOS installs precompiled gems incorrectly.
-    # Specifically, if a gem vends precompiled binaries, it installs the arm64 variant even on x86 machines.
-    # https://github.com/flutter/flutter/issues/111193#issuecomment-1248714857
-    # https://github.com/sparklemotion/nokogiri/issues/2165#issuecomment-754101252
-    # https://rubygems.org/gems/sqlite3/versions
-
-    platform_id = ('x86_64-darwin'
-      if api.platform.arch == 'intel'
-      else 'arm64-darwin')
-
-    api.step(
-        'install jazzy', [
-            'gem', 'install', 'jazzy:' + api.properties['jazzy_version'],
-            '--platform', platform_id,
-            '--install-dir', '.'
-        ]
-    )
   with api.context(env={"GEM_HOME": gem_dir},
                    env_prefixes={'PATH': [gem_dir.join('bin')]}):
     yield
 
 
-def BuildObjcDoc(api):
+def BuildObjcDoc(api, env, env_prefixes):
   """Builds documentation for the Objective-C variant of engine."""
-  with InstallGems(api):
+  with InstallGems(api, env, env_prefixes):
     checkout = GetCheckoutPath(api)
     with api.os_utils.make_temp_directory('BuildObjcDoc') as temp_dir:
       objcdoc_cmd = [checkout.join('flutter/tools/gen_objcdoc.sh'), temp_dir]
@@ -1758,7 +1740,7 @@ def RunSteps(api, properties, env_properties):
         with SetupXcode(api):
           BuildMac(api)
           if api.properties.get('build_ios', True):
-            BuildIOS(api)
+            BuildIOS(api, env, env_prefixes)
           if api.properties.get('build_fuchsia', True):
             BuildFuchsia(api, gclient_vars)
           VerifyExportedSymbols(api)

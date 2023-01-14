@@ -583,27 +583,19 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       gemfile_dir(Path): The path to the location of the repository gemfile.
     """
+    # TODO: Use bundler to install jazzy
+    # https://github.com/flutter/flutter/issues/118486
     version = version or '0.9.5'
     gem_dir = self.m.path['start_dir'].join('gems')
     with self.m.step.nest('Install jazzy'):
+      # TODO: Don't hardcode the version here.
+      self._install_ruby(env, env_prefixes, 'v3.3.14')
       self.m.file.ensure_directory('mkdir gems', gem_dir)
       with self.m.context(cwd=gem_dir):
-        # jazzy depends on sqlite3, which started serving precompiled gems with version 1.5.0.
-        # The instance of Ruby currently packaged with macOS installs precompiled gems incorrectly.
-        # Specifically, if a gem vends precompiled binaries, it installs the arm64 variant even on x86 machines.
-        # https://github.com/flutter/flutter/issues/111193#issuecomment-1248714857
-        # https://github.com/sparklemotion/nokogiri/issues/2165#issuecomment-754101252
-        # https://rubygems.org/gems/sqlite3/versions
-
-        platform_id = ('x86_64-darwin'
-          if self.m.platform.arch == 'intel'
-          else 'arm64-darwin')
-
         self.m.step(
             'install jazzy', [
                 'gem', 'install', 'jazzy:%s' % version,
-                '--platform', platform_id,
-                '--install-dir', '.'
+            '--install-dir', '.'
             ]
         )
       env['GEM_HOME'] = gem_dir

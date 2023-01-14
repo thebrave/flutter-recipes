@@ -748,6 +748,42 @@
     "name": "Install jazzy"
   },
   {
+    "cmd": [],
+    "name": "Install jazzy.Install ruby",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/ruby",
+      "-ensure-file",
+      "flutter/ruby/${platform} v3.3.14",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Install jazzy.Install ruby.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-v3.3.14---------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/ruby/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
     "cmd": [
       "vpython3",
       "-u",
@@ -770,8 +806,6 @@
       "gem",
       "install",
       "jazzy:0.9.5",
-      "--platform",
-      "x86_64-darwin",
       "--install-dir",
       "."
     ],
@@ -831,10 +865,12 @@
       "GOPATH": "[CLEANUP]/go_path",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
       "GRADLE_USER_HOME": "[CACHE]/gradle",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host_debug_unopt"
+      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host_debug_unopt",
+      "RUBY_HOME": "[CACHE]/ruby/bin"
     },
     "env_prefixes": {
       "PATH": [
+        "[CACHE]/ruby/bin",
         "[CACHE]/dart_sdk",
         "[CLEANUP]/builder/src/out/host_debug_unopt/dart-sdk/bin",
         "[CACHE]/chrome/chrome",

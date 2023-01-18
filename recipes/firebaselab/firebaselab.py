@@ -41,8 +41,9 @@ def RunSteps(api):
   physical_devices = [
       # Physical devices - use only highly available devices to avoid timeouts.
       # Pixel 3
-      '--device',
-      'model=blueline,version=28',
+      # Disable temporarily to unblock the rolls https://github.com/flutter/flutter/issues/118708
+      #'--device',
+      #'model=blueline,version=28',
       # Pixel 5
       '--device',
       'model=redfin,version=30',

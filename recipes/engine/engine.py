@@ -14,7 +14,6 @@ DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/gclient',
     'depot_tools/gsutil',
-    'flutter/archives',
     'flutter/bucket_util',
     'flutter/display_util',
     'flutter/flutter_bcid',
@@ -417,12 +416,16 @@ def UploadDartSdk(api, archive_name, target_path='src/out/host_debug'):
 
 
 def UploadWebSdkWithCanvasKit(api):
-  if not api.flutter_bcid.is_prod_build():
-    return
-  commit = api.repo_util.get_commit(GetCheckoutPath(api))
-  src = GetCheckoutPath(api).join('out', 'wasm_release', 'zip_archives', 'flutter-web-sdk.zip')
-  dst = 'gs://flutter_infra_release/flutter/%s/flutter-web-sdk.zip' % commit
-  api.archives.upload_artifact(src, dst)
+  src = GetCheckoutPath(api).join(
+      'out',
+      'wasm_release',
+      'zip_archives',
+      'flutter-web-sdk.zip'
+  )
+  api.bucket_util.safe_upload(
+      src,
+      GetCloudPath(api, 'flutter-web-sdk.zip')
+  )
 
 
 def UploadWebSdk(api, archive_name):

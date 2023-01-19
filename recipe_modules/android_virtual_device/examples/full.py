@@ -9,7 +9,9 @@ DEPS = [
 ]
 
 def RunSteps(api):
-  env = {}
+  env = {
+    'USE_EMULATOR': True
+  }
   env_prefixes = {}
   avd_root = api.path['cache'].join('builder', 'avd')
   api.android_virtual_device.download(
@@ -18,15 +20,14 @@ def RunSteps(api):
       env_prefixes=env_prefixes,
       version='31'
   )
-  api.android_virtual_device.start(
+  api.android_virtual_device.start_if_requested(
       env=env,
       env_prefixes=env_prefixes,
+      version='31',
   )
-  api.android_virtual_device.setup(
-      env=env,
-      env_prefixes=env_prefixes,
+  api.android_virtual_device.stop_if_requested(
+    env=env,
   )
-  api.android_virtual_device.kill()
 
 
 def GenTests(api):

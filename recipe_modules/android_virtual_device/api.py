@@ -43,6 +43,22 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
     env['AVD_ROOT'] = self.avd_root
     env['ADB_PATH'] = self.adb_path
 
+  def start_if_requested(self, env, env_prefixes, version=None):
+    """Starts an android avd emulator if emulation was requested.
+
+    Args:
+      env(dict): Current environment variables.
+      env_prefixes(dict):  Current environment prefixes variables.
+      version(string): The android API version of the emulator as a string.
+    """
+    emulator_commands = []
+    emulator_pid = -1
+    if env['USE_EMULATOR']:
+      emulator_commands = ['--use-emulator']
+      emulator_pid = self.start(env, env_prefixes, version)
+      self.setup(env, env_prefixes)
+    return emulator_commands, emulator_pid
+
   def start(self, env, env_prefixes, version=None):
     """Starts an android avd emulator.
 
@@ -95,6 +111,18 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             infra_step=True,
         )
         self.m.test_utils.run_test('avd_setup.sh', [resource_name, str(self.adb_path)], infra_step=True)
+
+  def stop_if_requested(self, env, emulator_pid=None):
+    """Stops the emulator and cleans up any zombie QEMU processes.
+
+    Args:
+      emulator_pid(string): The PID of the emulator process. An attempt to
+      collect the pid will be made if the emulator_pid passed in is None.
+    """
+    if emulator_pid is None:
+      emulator_pid = env['EMULATOR_PID']
+    if env['USE_EMULATOR']:
+      self.kill(emulator_pid)
 
   def kill(self, emulator_pid=None):
     """Kills the emulator and cleans up any zombie QEMU processes.

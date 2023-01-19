@@ -6,6 +6,7 @@ from recipe_engine.recipe_api import Property
 from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 
 DEPS = [
+    'flutter/android_virtual_device',
     'flutter/devicelab_osx_sdk',
     'flutter/flutter_bcid',
     'flutter/flutter_deps',
@@ -92,6 +93,9 @@ def RunSteps(api):
   device_tags = api.test_utils.collect_benchmark_tags(env, env_prefixes, target_tags)
   benchmark_tags = api.json.dumps(device_tags)
 
+  # Check to see if an emulator has been requested.
+  env['USE_EMULATOR'] = api.properties.get('use_emulator')
+
   devicelab_path = flutter_path.join('dev', 'devicelab')
   git_branch = api.properties.get('git_branch')
   # Create tmp file to store results in
@@ -109,6 +113,7 @@ def RunSteps(api):
     # git_branch is set only when the build was triggered on post-submit.
     runner_params.extend(['--git-branch', git_branch])
   test_status = ''
+
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     api.retry.step(
         'flutter doctor',
@@ -132,6 +137,12 @@ def RunSteps(api):
           )
     else:
       with api.context(env=env, env_prefixes=env_prefixes):
+        # Start an emulator if it is requested, it must be started before the doctor to avoid issues.
+        emulator_commands, emulator_pid = api.android_virtual_device.start_if_requested(
+            env,
+            env_prefixes,
+            dep_list.get('android_virtual_device', None))
+
         api.retry.step(
             'flutter doctor',
             ['flutter', 'doctor', '--verbose'],
@@ -140,6 +151,9 @@ def RunSteps(api):
         )
         test_runner_command = ['dart', 'bin/test_runner.dart', 'test']
         test_runner_command.extend(runner_params)
+        # Send emulator flags if desired otherwise this appends nothing.
+        test_runner_command.extend(emulator_commands)
+
         try:
           test_status = api.test_utils.run_test(
               'run %s' % task_name,
@@ -150,6 +164,9 @@ def RunSteps(api):
         finally:
           if not suppress_log:
             debug_after_failure(api, task_name)
+          # Stop the emulator if it was requested
+          api.android_virtual_device.stop_if_requested(env, emulator_pid)
+
         if test_status == 'flaky':
           api.test_utils.flaky_step('run %s' % task_name)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
@@ -320,7 +337,16 @@ def GenTests(api):
   )
   yield api.test(
       "basic",
-      api.properties(buildername='Linux abc', task_name='abc', git_branch='master', openpay=True),
+      api.properties(
+        buildername='Linux abc',
+        task_name='abc',
+        git_branch='master',
+        openpay=True,
+        dependencies=[{
+          "dependency": "android_virtual_device",
+          "version": "31"
+        }],
+      ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
           'run abc',
@@ -332,6 +358,32 @@ def GenTests(api):
           git_repo='git.example.com/test/repo',
       ),
       api.runtime(is_experimental=True),
+  )
+  yield api.test(
+    "emulator-test",
+    api.properties(
+      buildername='Linux abc',
+      task_name='abc',
+      git_branch='master',
+      use_emulator="true",
+      dependencies=[{
+        "dependency": "android_virtual_device",
+        "version": "31"
+      }],
+    ),
+    api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+    api.step_data(
+        'run abc',
+        stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
+        retcode=0
+    ),
+    api.step_data(
+        'start avd.Start Android emulator (API level 31)',
+        stdout=api.raw_io.output_text(
+            'android_31_google_apis_x86|emulator-5554 started (pid: 17687)'
+        )
+    ),
+    api.runtime(is_experimental=True)
   )
   yield api.test(
       "xcode-devicelab",
@@ -377,8 +429,14 @@ def GenTests(api):
   yield api.test(
       "post-submit",
       api.properties(
-          buildername='Windows abc', task_name='abc', upload_metrics=True,
+          buildername='Windows abc',
+          task_name='abc',
+          upload_metrics=True,
           git_branch='master',
+          dependencies=[{
+            "dependency": "android_virtual_device",
+            "version": "31"
+          }],
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -412,6 +470,10 @@ def GenTests(api):
           task_name='abc',
           upload_metrics_to_cas=True,
           git_branch='master',
+          dependencies=[{
+            "dependency": "android_virtual_device",
+            "version": "31"
+          }],
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           git_ref='refs/heads/master',
@@ -426,7 +488,11 @@ def GenTests(api):
           upload_metrics_to_cas=True,
           upload_metrics=True,
           git_branch='master',
-          openpay=True
+          openpay=True,
+          dependencies=[{
+            "dependency": "android_virtual_device",
+            "version": "31"
+          }],
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           git_ref='refs/heads/master',
@@ -441,6 +507,10 @@ def GenTests(api):
           local_engine_cas_hash='isolatehashlocalengine/22',
           local_engine='host-release',
           git_branch='master',
+          dependencies=[{
+            "dependency": "android_virtual_device",
+            "version": "31"
+          }],
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',

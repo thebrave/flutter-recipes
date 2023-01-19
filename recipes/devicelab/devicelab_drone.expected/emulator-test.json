@@ -9,18 +9,6 @@
       "%MEM"
     ],
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "OS info"
   },
   {
@@ -37,18 +25,6 @@
       "--url",
       "https://flutter.googlesource.com/mirrors/flutter"
     ],
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Checkout flutter/flutter.git setup",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -59,6 +35,7 @@
       "git",
       "fetch",
       "origin",
+      "master",
       "--recurse-submodules",
       "--progress",
       "--tags"
@@ -68,18 +45,6 @@
       "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
     },
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Checkout flutter/flutter.git fetch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -90,22 +55,10 @@
       "git",
       "checkout",
       "-f",
-      "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+      "FETCH_HEAD"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk",
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Checkout flutter/flutter.git checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -119,18 +72,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk",
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Checkout flutter/flutter.read revision",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -148,18 +89,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk",
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Checkout flutter/flutter.git clean",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -173,18 +102,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk",
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Checkout flutter/flutter.submodule sync",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -200,18 +117,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk",
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Checkout flutter/flutter.submodule update",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -226,18 +131,6 @@
       "1"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "git commit time",
     "timeout": 600.0
   },
@@ -249,18 +142,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk",
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "git rev-parse"
   },
   {
@@ -280,18 +161,6 @@
       "[CLEANUP]/flutter_logs_dir"
     ],
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Initialize logs.Ensure [CLEANUP]/flutter_logs_dir",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -309,18 +178,6 @@
       "[CLEANUP]/flutter_logs_dir/noop.txt"
     ],
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Initialize logs.Write noop file",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -329,145 +186,6 @@
   {
     "cmd": [],
     "name": "Dependencies"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "RECIPE_MODULE[recipe_engine::cas]/resources/infra.sha1",
-      "/path/to/tmp/"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Dependencies.read infra revision",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@infra.sha1@git_revision:mock_infra_git_revision@@@",
-      "@@@STEP_LOG_END@infra.sha1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Dependencies.install infra/tools/luci/cas",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[START_DIR]/cipd_tool/infra/tools/luci/cas/git_revision%3Amock_infra_git_revision"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Dependencies.install infra/tools/luci/cas.ensure package directory",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[START_DIR]/cipd_tool/infra/tools/luci/cas/git_revision%3Amock_infra_git_revision",
-      "-ensure-file",
-      "infra/tools/luci/cas/${platform} git_revision:mock_infra_git_revision",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Dependencies.install infra/tools/luci/cas.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:moc\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cas/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/infra/tools/luci/cas/git_revision%3Amock_infra_git_revision/cas",
-      "download",
-      "-cas-instance",
-      "projects/example-cas-server/instances/default_instance",
-      "-digest",
-      "isolatehashlocalengine/22",
-      "-dir",
-      "[CLEANUP]/builder/src/out"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Dependencies.Download engine from CAS",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
   },
   {
     "cmd": [],
@@ -489,18 +207,6 @@
       "[CACHE]/avd"
     ],
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Dependencies.download avd package.Ensure avd cache",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -525,7 +231,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -536,7 +241,6 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
@@ -548,18 +252,6 @@
       "PATH": [
         "RECIPE_REPO[depot_tools]"
       ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
     },
     "name": "Dependencies.download avd package.ensure_installed",
     "~followup_annotations": [
@@ -590,7 +282,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -598,27 +289,14 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
     },
     "name": "flutter doctor",
     "timeout": 300
@@ -637,7 +315,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -645,30 +322,225 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "dart pub get"
+  },
+  {
+    "cmd": [],
+    "name": "start avd"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/avd/src/tools/android/avd/avd.py",
+      "install",
+      "--avd-config",
+      "[CACHE]/avd/src/tools/android/avd/proto/generic_android31.textpb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd.Install Android emulator (API level 31)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/avd/src/tools/android/avd/avd.py",
+      "start",
+      "--no-read-only",
+      "--wipe-data",
+      "--writable-system",
+      "--debug-tags",
+      "all",
+      "--avd-config",
+      "[CACHE]/avd/src/tools/android/avd/proto/generic_android31.textpb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd.Start Android emulator (API level 31)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@android_31_google_apis_x86|emulator-5554 started (pid: 17687)@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "avd setup"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/avd_setup.sh"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "EMULATOR_PID": "17687",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "infra_step": true,
+    "name": "avd setup.Set execute permission",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/avd_setup.sh",
+      "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "EMULATOR_PID": "17687",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "infra_step": true,
+    "name": "avd setup.avd_setup.sh",
+    "timeout": 3600,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@test_stdout@@@@",
+      "@@@STEP_LOG_END@test_stdout@@@",
+      "@@@STEP_LOG_LINE@test_stderr@@@@",
+      "@@@STEP_LOG_END@test_stderr@@@"
+    ]
   },
   {
     "cmd": [
@@ -684,7 +556,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -692,31 +563,17 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
     },
     "name": "flutter doctor (2)",
     "timeout": 300
@@ -732,10 +589,9 @@
       "[CLEANUP]/results_tmp_1/results",
       "--luci-builder",
       "Linux abc",
-      "--local-engine",
-      "[CLEANUP]/builder/src/out/host-release",
       "--git-branch",
-      "master"
+      "master",
+      "--use-emulator"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -745,7 +601,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -753,36 +608,24 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "run abc",
     "timeout": 1800,
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@test_stdout@@@@",
+      "@@@STEP_LOG_LINE@test_stdout@#flaky@@@",
+      "@@@STEP_LOG_LINE@test_stdout@this is a flaky@@@",
+      "@@@STEP_LOG_LINE@test_stdout@flaky: true@@@",
       "@@@STEP_LOG_END@test_stdout@@@",
       "@@@STEP_LOG_LINE@test_stderr@@@@",
       "@@@STEP_LOG_END@test_stderr@@@"
@@ -804,7 +647,7 @@
       "cp",
       "-r",
       "[CLEANUP]/flutter_logs_dir",
-      "gs://flutter_logs/flutter/2d72510e447ab60a9728aeea2362d8be2cbd7789/abc/00000000-0000-0000-0000-000000001337"
+      "gs://flutter_logs/flutter/00000000-0000-0000-0000-000000001337/abc/00000000-0000-0000-0000-000000001337"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -814,7 +657,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -822,37 +664,23 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "process logs.gsutil upload logs 2d72510e447ab60a9728aeea2362d8be2cbd7789",
+    "name": "process logs.gsutil upload logs 00000000-0000-0000-0000-000000001337",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@archive logs@https://console.cloud.google.com/storage/browser/flutter_logs/flutter/2d72510e447ab60a9728aeea2362d8be2cbd7789/abc/00000000-0000-0000-0000-000000001337@@@"
+      "@@@STEP_LINK@archive logs@https://console.cloud.google.com/storage/browser/flutter_logs/flutter/00000000-0000-0000-0000-000000001337/abc/00000000-0000-0000-0000-000000001337@@@"
     ]
   },
   {
@@ -874,7 +702,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -882,33 +709,19 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "process logs.logs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -920,7 +733,7 @@
     "cmd": [],
     "name": "log links",
     "~followup_annotations": [
-      "@@@STEP_LINK@myfile.txt@https://storage.googleapis.com/flutter_logs/flutter/2d72510e447ab60a9728aeea2362d8be2cbd7789/abc/00000000-0000-0000-0000-000000001337/myfile.txt@@@"
+      "@@@STEP_LINK@myfile.txt@https://storage.googleapis.com/flutter_logs/flutter/00000000-0000-0000-0000-000000001337/abc/00000000-0000-0000-0000-000000001337/myfile.txt@@@"
     ]
   },
   {
@@ -942,7 +755,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -950,33 +762,19 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "log links.List logs path",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -1001,7 +799,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -1009,33 +806,19 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Killing Processes.kill chrome",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -1054,7 +837,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -1062,33 +844,19 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Killing Processes.kill dart",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -1107,7 +875,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -1115,33 +882,19 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Killing Processes.kill flutter",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -1160,7 +913,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -1168,33 +920,19 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Killing Processes.kill java",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -1213,7 +951,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -1221,33 +958,19 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "Killing Processes.kill adb",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -1270,7 +993,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -1278,47 +1000,30 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "OS info (2)"
   },
   {
     "cmd": [],
-    "name": "Upload metrics"
+    "name": "kill and cleanup avd"
   },
   {
     "cmd": [
-      "luci-auth",
-      "token",
-      "-scopes",
-      "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/datastore",
-      "-lifetime",
-      "3m"
+      "kill",
+      "-9",
+      "17687"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -1328,7 +1033,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -1336,262 +1040,95 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Upload metrics.get access token for default account",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "extra.secret.token.should.not.be.logged",
-      "[CLEANUP]/tmp_tmp_2"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Upload metrics.write metric center token",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "luci-auth",
-      "token",
-      "-lifetime",
-      "3m"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Upload metrics.get access token for default account (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "extra.secret.token.should.not.be.logged",
-      "[CLEANUP]/tmp_tmp_3"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": null
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Upload metrics.write cocoon token",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "dart",
-      "bin/test_runner.dart",
-      "upload-metrics",
-      "--test-flaky",
-      "False",
-      "--builder-bucket",
-      "ci",
-      "--git-branch",
-      "master",
-      "--luci-builder",
-      "Linux abc",
-      "--test-status",
-      "Succeeded",
-      "--service-account-token-file",
-      "[CLEANUP]/tmp_tmp_3"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GCP_PROJECT": "flutter-infra",
-      "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_2",
-      "USE_EMULATOR": null
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "name": "kill and cleanup avd.Kill emulator cleanup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ps",
+      "-axww"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "name": "kill and cleanup avd.list processes",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "echo",
+      "test run is flaky"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
       ]
     },
     "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Upload metrics.upload results",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
+    "name": "step is flaky: run abc"
   },
   {
     "name": "$result"

@@ -161,6 +161,17 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
   ]
   targets.append(properties)
 
+  # For running Chrome Unit tests compiled to wasm:
+  properties = copy.deepcopy(drone_props)
+  properties['command_name'] = 'chrome-unit-linux-wasm'
+  properties['name'] = properties['command_name']
+  # These are the felt commands which will be used.
+  properties['command_args'] = [
+      'test', '--browser=chrome', '--require-skia-gold',
+      '--wasm'
+  ]
+  targets.append(properties)
+
   # For running Firefox Unit tests:
   properties = copy.deepcopy(drone_props)
   properties['command_name'] = 'firefox-unit-linux'

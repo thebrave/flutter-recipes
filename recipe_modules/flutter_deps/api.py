@@ -127,12 +127,25 @@ class FlutterDepsApi(recipe_api.RecipeApi):
   def goldctl(self, env, env_prefixes, version):
     """Downloads goldctl from CIPD and updates the environment variables.
 
+    To roll to a new version of goldctl visit this page:
+
+    https://chrome-infra-packages.appspot.com/p/skia/tools/goldctl
+
+    Select linux-amd64 and click on a package marked "latest". In the "Tags"
+    section find the freshest tag prefixed with `git_revision`. Copy the value
+    of the tag including "git_revision:" and the SHA following it, for example:
+
+    git_revision:somelongshacontainingnumbersandletters12
+
+    Then replace the default value of `version` variable in this function with
+    it.
+
     Args:
       env(dict): Current environment variables.
       env_prefixes(dict):  Current environment prefixes variables.
       version(str): The goldctl version to install.
     """
-    version = version or 'git_revision:d38e22e2bde5edd79b4137583097e6ef59dee329'
+    version = version or 'git_revision:693440007b584af29f4e6a5c0f08c2d17634cc77'
     with self.m.step.nest('Download goldctl'):
       goldctl_cache_dir = self.m.path['cache'].join('gold')
       self.m.cipd.ensure(

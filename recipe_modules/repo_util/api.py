@@ -209,7 +209,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         max_attempts=4
     )
 
-  def checkout(self, name, checkout_path, url=None, ref=None):
+  def checkout(self, name, checkout_path, url=None, ref=None, override_sha=False):
     """Checks out a repo and returns sha1 of checked out revision.
 
     The supported repository names and their urls are defined in the global
@@ -220,6 +220,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
       checkout_path (Path): directory to clone into.
       url (str): optional url overwrite of the remote repo.
       ref (str): optional ref overwrite to fetch and check out.
+      override_sha (bool): flag to override the commit sha and used the passed in ref.
     """
     if name not in REPOS:
       raise ValueError('Unsupported repo: %s' % name)
@@ -230,10 +231,15 @@ class RepoUtilApi(recipe_api.RecipeApi):
       # if this a release build, self.m.buildbucket.gitiles_commit.id should have more priority than
       # ref since it is more specific, and we don't want to default to refs/heads/<REPO_BRANCHES[name]>
       if ref in ['refs/heads/beta', 'refs/heads/stable']:
-        git_ref = (
-            self.m.buildbucket.gitiles_commit.id or
-            self.m.buildbucket.gitiles_commit.ref or ref
-        )
+        # When we currently perform a checkout of cocoon and flutter we get the cocoon sha from the
+        # build. We checkout that version of cocoon and then when we go to checkout flutter we end
+        # up using that sha so then the flutter checkout fails since that commit in cocoon is not in
+        # the flutter repo. This just allows us to override that and use the original ref which for
+        # the coming change is just the tot master branch.
+        git_ref = ref if override_sha else (
+              self.m.buildbucket.gitiles_commit.id or
+              self.m.buildbucket.gitiles_commit.ref or ref
+          )
       else:
         git_ref = (
             ref or self.m.buildbucket.gitiles_commit.id or

@@ -560,10 +560,11 @@ class AndroidAotVariant:
   def GetNinjaTargets(self):
     return ['default', '%s/gen_snapshot' % self.clang_dir]
 
-  def GetOutputFiles(self, runtime_mode):
+  def GetOutputFiles(self, api, runtime_mode):
     analyze_snapshot = []
     if self.android_cpu == "x64" or self.android_cpu == "arm64":
-      analyze_snapshot = [self.GetAnalyzeSnapshotPath()]
+      if api.platform.is_linux:
+        analyze_snapshot = [self.GetAnalyzeSnapshotPath()]
     return ([
         self.GetFlutterJarPath(),
         self.GetGenSnapshotPath(),
@@ -636,7 +637,7 @@ def BuildLinuxAndroidAOT(api, swarming_task_id):
               'gn_args': aot_variant.GetGNArgs(runtime_mode),
               'dir': build_out_dir,
               'targets': aot_variant.GetNinjaTargets(),
-              'output_files': aot_variant.GetOutputFiles(runtime_mode),
+              'output_files': aot_variant.GetOutputFiles(api, runtime_mode),
           }],
       }
 

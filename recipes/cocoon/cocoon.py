@@ -36,6 +36,7 @@ def RunSteps(api):
       flutter_path,
       ref=flutter_git_ref,
       url='https://github.com/flutter/flutter',
+      override_sha=True
   )
 
   # Read yaml file

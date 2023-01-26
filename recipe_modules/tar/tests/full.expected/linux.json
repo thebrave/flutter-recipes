@@ -1,0 +1,180 @@
+[
+  {
+    "cmd": [
+      "touch",
+      "[CLEANUP]/tar-example_tmp_1/a"
+    ],
+    "name": "touch a"
+  },
+  {
+    "cmd": [
+      "touch",
+      "[CLEANUP]/tar-example_tmp_1/b"
+    ],
+    "name": "touch b"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CLEANUP]/tar-example_tmp_1/sub/dir"
+    ],
+    "infra_step": true,
+    "name": "mkdirs"
+  },
+  {
+    "cmd": [
+      "touch",
+      "[CLEANUP]/tar-example_tmp_1/sub/dir/c"
+    ],
+    "name": "touch c"
+  },
+  {
+    "cmd": [],
+    "name": "ensure bsdtar"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[flutter::tar]/resources/tool_manifest.json",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "ensure bsdtar.read manifest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/bsdtar\",@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
+      "@@@STEP_LOG_END@tool_manifest.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure bsdtar.install path/to/bsdtar",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/cipd_tool/path/to/bsdtar/version%3Apinned-version"
+    ],
+    "infra_step": true,
+    "name": "ensure bsdtar.install path/to/bsdtar.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cipd_tool/path/to/bsdtar/version%3Apinned-version",
+      "-ensure-file",
+      "path/to/bsdtar version:pinned-version",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "ensure bsdtar.install path/to/bsdtar.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/bsdtar\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/bsdtar/version%3Apinned-version/bsdtar",
+      "--create",
+      "-f",
+      "[CLEANUP]/tar-example_tmp_1/more.tar.gz",
+      "--gzip",
+      "-C",
+      "[CLEANUP]/tar-example_tmp_1",
+      "a",
+      "b",
+      "-C",
+      "[CLEANUP]/tar-example_tmp_1/sub",
+      "dir/c"
+    ],
+    "name": "taring more"
+  },
+  {
+    "cmd": [
+      "echo",
+      "[CLEANUP]/tar-example_tmp_1/more.tar.gz"
+    ],
+    "name": "report"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/bsdtar/version%3Apinned-version/bsdtar",
+      "--extract",
+      "--verbose",
+      "-f",
+      "[CLEANUP]/tar-example_tmp_1/output.tar",
+      "-C",
+      "[CLEANUP]/tar-example_tmp_1/output",
+      "--strip-components",
+      "1"
+    ],
+    "name": "untaring"
+  },
+  {
+    "cmd": [
+      "find"
+    ],
+    "cwd": "[CLEANUP]/tar-example_tmp_1/output",
+    "name": "listing"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CLEANUP]/tar-example_tmp_1"
+    ],
+    "infra_step": true,
+    "name": "rmtree [CLEANUP]/tar-example_tmp_1"
+  },
+  {
+    "name": "$result"
+  }
+]

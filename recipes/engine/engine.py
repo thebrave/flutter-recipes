@@ -1642,9 +1642,6 @@ def BuildWindows(api):
         platform='windows-x64'
     )
 
-    # Legacy; remove once Flutter tooling is updated to use the -debug location.
-    PackageWindowsDesktopVariant(api, 'host_debug', 'windows-x64')
-
     UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64-debug',
                    artifact_name='windows-arm64-flutter.zip')
     UploadArtifact(api, config='host_profile_arm64', platform='windows-arm64-profile',

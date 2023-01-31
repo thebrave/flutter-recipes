@@ -56,7 +56,11 @@ def zip_with_subprocess(root, output, entries):
       args=['zip', '-1', '--recurse-paths', '--symlinks', '-@', output],
       stdin=subprocess.PIPE,
       cwd=root)
-  proc.communicate('\n'.join(items_to_zip))
+  items_to_zip_bytes = []
+  for item in items_to_zip:
+    items_to_zip_bytes.append(item if isinstance(item, bytes) else bytes(item, 'UTF-8')) 
+  
+  proc.communicate(b'\n'.join(items_to_zip_bytes))
   return proc.returncode
 
 

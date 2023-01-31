@@ -52,9 +52,9 @@ def Build(api, config, *targets):
 def RunTests(api, out_dir, android_out_dir=None, ios_out_dir=None, types='all', suppress_sanitizers=False):
   script_path = GetCheckoutPath(api).join('flutter', 'testing', 'run_tests.py')
   # TODO(godofredoc): use .vpython from engine when file are available.
-  venv_path = api.depot_tools.root.join('.vpython')
+  venv_path = api.depot_tools.root.join('.vpython3')
   args = [
-      'vpython',
+      'vpython3',
       '-vpython-spec',
       venv_path,
       script_path,

@@ -1,10 +1,10 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 
 # [VPYTHON:BEGIN]
-# python_version: "2.7"
+# python_version: "3.8"
 # wheel <
 #   name: "infra/python/wheels/pyyaml/${platform}_${py_python}_${py_abi}"
-#   version: "version:3.12"
+#   version: "version:5.4.1.chromium.1"
 # >
 # [VPYTHON:END]
 

@@ -47,7 +47,7 @@ def Build(api, config, disable_goma, *targets):
 
 def RunGN(api, *args):
   checkout = api.path['cache'].join('builder', 'src')
-  gn_cmd = ['python', checkout.join('flutter/tools/gn')]
+  gn_cmd = ['python3', checkout.join('flutter/tools/gn')]
   gn_cmd.extend(args)
   api.step('gn %s' % ' '.join(args), gn_cmd)
 

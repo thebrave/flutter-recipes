@@ -81,7 +81,7 @@ def Build(api, config, *targets):
 
 def RunGN(api, *args):
   checkout = GetCheckoutPath(api)
-  gn_cmd = ['python', checkout.join('flutter/tools/gn'), '--goma']
+  gn_cmd = ['python3', checkout.join('flutter/tools/gn'), '--goma']
   gn_cmd.extend(args)
   api.step('gn %s' % ' '.join(args), gn_cmd)
 

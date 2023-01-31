@@ -12,10 +12,10 @@ class YamlApi(recipe_api.RecipeApi):
     """Reads a yaml file.
 
     It currently shells out to a script which converts the yaml to json,
-    this way it can use vpython to import pyyaml. To achieve the same
+    this way it can use vpython3 to import pyyaml. To achieve the same
     from the recipe we need to specify pyyaml at the root file. Please
     change this behavior to be inline if it becomes easier to specify
-    vpython packages dependencies in a recipe module.
+    vpython3 packages dependencies in a recipe module.
 
     Args:
       step_name: (str) the name of the step for reading the yaml.
@@ -30,7 +30,7 @@ class YamlApi(recipe_api.RecipeApi):
       return self.m.step(
           'parse',
           [
-              'vpython', self.resource('parse_yaml.py'),
+              'vpython3', self.resource('parse_yaml.py'),
               '--yaml_file', file_path,
               '--json_file', self.m.json.output()
           ],

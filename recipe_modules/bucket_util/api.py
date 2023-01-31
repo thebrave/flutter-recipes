@@ -144,7 +144,7 @@ class BucketUtilApi(recipe_api.RecipeApi):
       result = self.m.step(
           'Ensure %s does not already exist on cloud storage' % remote_path,
           [
-              'python',
+              'python3',
               self.m.depot_tools.gsutil_py_path,
               'stat',
               cloud_path,

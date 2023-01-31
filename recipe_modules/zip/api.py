@@ -64,7 +64,7 @@ class ZipApi(recipe_api.RecipeApi):
     }
     self.m.step(
       step_name,
-      [ 'python', self.resource('unzip.py') ],
+      [ 'python3', self.resource('unzip.py') ],
       stdin=self.m.json.input(script_input)
     )
 
@@ -122,7 +122,7 @@ class ZipPackage(object):
     }
     step_result = self._api.step(
         step_name,
-        [ 'python', self._api.zip.resource('zip.py') ],
+        [ 'python3', self._api.zip.resource('zip.py') ],
         stdin=self._api.json.input(script_input))
     self._api.path.mock_add_paths(self._output)
     return step_result

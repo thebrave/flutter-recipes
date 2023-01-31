@@ -141,9 +141,9 @@ def Build(api, config, *targets):
 def RunTests(api, out_dir, android_out_dir=None, types='all'):
   script_path = GetCheckoutPath(api).join('flutter', 'testing', 'run_tests.py')
   # TODO(godofredoc): use .vpython from engine when file are available.
-  venv_path = api.depot_tools.root.join('.vpython')
+  venv_path = api.depot_tools.root.join('.vpython3')
   args = [
-      'vpython', '-vpython-spec', venv_path,
+      'vpython3', '-vpython-spec', venv_path,
       script_path,
       '--variant', out_dir,
       '--type', types,
@@ -243,7 +243,7 @@ def BuildAndPackageFuchsia(api, build_script, git_rev):
   # TODO(akbiggs): Clean this up if we feel brave.
   if api.platform.is_linux:
     fuchsia_package_cmd = [
-        'python', build_script, '--engine-version', git_rev, '--skip-build',
+        'python3', build_script, '--engine-version', git_rev, '--skip-build',
         '--archs', 'x64', '--runtime-mode', 'debug',
     ]
     api.step('Package Fuchsia Artifacts', fuchsia_package_cmd)
@@ -257,7 +257,7 @@ def BuildAndPackageFuchsia(api, build_script, git_rev):
 
 def RunGN(api, *args):
   checkout = GetCheckoutPath(api)
-  gn_cmd = ['python', checkout.join('flutter/tools/gn'), '--goma']
+  gn_cmd = ['python3', checkout.join('flutter/tools/gn'), '--goma']
   if api.properties.get('no_lto', False) and '--no-lto' not in args:
     args += ('--no-lto',)
   gn_cmd.extend(args)
@@ -589,7 +589,7 @@ def BuildLinuxAndroidAOTArm64Profile(api, swarming_task_id, aot_variant):
 
   with api.context(env=env, cwd=checkout):
     args = [
-        'python', './flutter/ci/firebase_testlab.py',
+        'python3', './flutter/ci/firebase_testlab.py',
         '--variant', build_output_dir,
         '--build-id', swarming_task_id,
     ]
@@ -961,7 +961,7 @@ def UploadFuchsiaDebugSymbolsToCIPD(api, arch, symbol_dirs, upload):
   with api.os_utils.make_temp_directory('FuchsiaDebugSymbols_%s' % arch
                                        ) as temp_dir:
     debug_symbols_cmd = [
-        'python', dbg_symbols_script, '--engine-version', git_rev
+        'python3', dbg_symbols_script, '--engine-version', git_rev
     ]
     if upload:
       debug_symbols_cmd += ['--upload']
@@ -1076,7 +1076,7 @@ def BuildFuchsia(api, gclient_vars):
       )
 
   fuchsia_package_cmd = [
-      'python',
+      'python3',
       build_script,
       '--engine-version',
       git_rev,

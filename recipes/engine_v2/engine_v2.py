@@ -202,7 +202,7 @@ def GenTests(api):
           "tasks":
               [
                   {
-                    "language": "python",
+                    "language": "python3",
                     "name": "Debug-FlutterMacOS.framework",
                     "parameters": [
                         "--variant",

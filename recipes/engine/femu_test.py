@@ -91,11 +91,11 @@ def BuildAndTestFuchsia(api, build_script, git_rev):
   #
   # TODO(akbiggs): Clean this up if we feel brave.
   fuchsia_debug_package_cmd = [
-      'python', build_script, '--engine-version', git_rev, '--skip-build',
+      'python3', build_script, '--engine-version', git_rev, '--skip-build',
       '--archs', arch, '--runtime-mode', 'debug',
   ]
   fuchsia_profile_package_cmd = [
-      'python', build_script, '--engine-version', git_rev, '--skip-build',
+      'python3', build_script, '--engine-version', git_rev, '--skip-build',
       '--archs', arch, '--runtime-mode', 'profile', '--skip-remove-buckets'
   ]
   api.step('package Debug/JIT Fuchsia Artifacts', fuchsia_debug_package_cmd)
@@ -105,7 +105,7 @@ def BuildAndTestFuchsia(api, build_script, git_rev):
 
 def RunGN(api, *args):
   checkout = GetCheckoutPath(api)
-  gn_cmd = ['python', checkout.join('flutter/tools/gn'), '--goma']
+  gn_cmd = ['python3', checkout.join('flutter/tools/gn'), '--goma']
   gn_cmd.extend(args)
   api.step('gn %s' % ' '.join(args), gn_cmd)
 

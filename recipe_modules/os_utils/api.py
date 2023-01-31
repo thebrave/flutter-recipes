@@ -90,8 +90,8 @@ class OsUtilsApi(recipe_api.RecipeApi):
       # These are temporary steps to collect xattr info for triage purpose.
       # See issue: https://github.com/flutter/flutter/issues/68322#issuecomment-740264251
       self.m.step(
-          'python xattr info',
-          cmd=['xattr', '/opt/s/w/ir/cipd_bin_packages/python'],
+          'python3 xattr info',
+          cmd=['xattr', '/opt/s/w/ir/cipd_bin_packages/python3'],
           ok_ret='any',
           infra_step=True,
       )

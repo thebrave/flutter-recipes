@@ -27,7 +27,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
       checkout_path(Path): A path object with the checkout location.
     """
     self._initialize()
-    gn_cmd = ['python', checkout_path.join('flutter/tools/gn')]
+    gn_cmd = ['python3', checkout_path.join('flutter/tools/gn')]
     if not self.m.properties.get('no_goma', False):
       gn_cmd.append('--goma')
     if self.m.properties.get('no_lto', False) and '--no-lto' not in gn_args:

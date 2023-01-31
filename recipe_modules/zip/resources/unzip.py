@@ -52,7 +52,7 @@ def unzip_with_python(zip_file, output):
   """
   with zipfile.ZipFile(zip_file) as zip_file_obj:
     for name in zip_file_obj.namelist():
-      print 'Extracting %s' % name
+      print('Extracting %s' % name)
       zip_file_obj.extract(name, output)
   return 0
 
@@ -72,7 +72,7 @@ def main():
   assert os.path.isabs(output), output
   assert not os.path.exists(output), output
 
-  print 'Unzipping %s...' % zip_file
+  print('Unzipping %s...' % zip_file)
   exit_code = -1
   try:
     os.makedirs(output)

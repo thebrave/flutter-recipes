@@ -24,7 +24,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"prod\", \"builder\": \"Mac Production Engine Drone\", \"project\": \"flutter\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 25, \"properties\": {\"archives\": [{\"destination\": \"bucket/c.txt\", \"name\": \"c.txt\", \"source\": \"/a/b/c.txt\"}], \"build\": {\"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}}, \"gclient_variables\": {}, \"generators\": {\"tasks\": [{\"language\": \"python\", \"name\": \"Debug-FlutterMacOS.framework\", \"parameters\": [\"--variant\", \"host_profile\", \"--type\", \"engine\", \"--engine-capture-core-dump\"], \"script\": \"flutter/sky/tools/create_macos_framework.py\", \"type\": \"local\"}]}, \"recipe\": \"engine_v2/builder\", \"tests\": []}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"prod\", \"builder\": \"Mac Production Engine Drone\", \"project\": \"flutter\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 25, \"properties\": {\"archives\": [{\"destination\": \"bucket/c.txt\", \"name\": \"c.txt\", \"source\": \"/a/b/c.txt\"}], \"build\": {\"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}}, \"gclient_variables\": {}, \"generators\": {\"tasks\": [{\"language\": \"python3\", \"name\": \"Debug-FlutterMacOS.framework\", \"parameters\": [\"--variant\", \"host_profile\", \"--type\", \"engine\", \"--engine-capture-core-dump\"], \"script\": \"flutter/sky/tools/create_macos_framework.py\", \"type\": \"local\"}]}, \"recipe\": \"engine_v2/builder\", \"tests\": []}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -94,7 +94,7 @@
       "@@@STEP_LOG_LINE@request@          \"generators\": {@@@",
       "@@@STEP_LOG_LINE@request@            \"tasks\": [@@@",
       "@@@STEP_LOG_LINE@request@              {@@@",
-      "@@@STEP_LOG_LINE@request@                \"language\": \"python\", @@@",
+      "@@@STEP_LOG_LINE@request@                \"language\": \"python3\", @@@",
       "@@@STEP_LOG_LINE@request@                \"name\": \"Debug-FlutterMacOS.framework\", @@@",
       "@@@STEP_LOG_LINE@request@                \"parameters\": [@@@",
       "@@@STEP_LOG_LINE@request@                  \"--variant\", @@@",
@@ -698,7 +698,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "[CACHE]/builder/src/flutter/sky/tools/create_macos_framework.py",
       "--variant",
       "host_profile",

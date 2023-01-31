@@ -229,6 +229,8 @@ def TestFuchsiaFEMU(api):
   fserve = checkout.join('fuchsia/sdk/linux/tools/x64/fserve')
   fpublish = checkout.join('fuchsia/sdk/linux/tools/x64/fpublish')
 
+  api.step('disable ffx analytics', [ffx, 'config', 'analytics', 'disable'])
+
   # Retrieve the required product bundle
   # Contains necessary images, packages, etc to launch the emulator
   api.step('get terminal.qemu-%s product bundle' % arch,
@@ -244,7 +246,7 @@ def TestFuchsiaFEMU(api):
         if arch == 'arm64':
           launch_step = api.step(
               'launch arm64 emulator with QEMU engine', [
-                  ffx, 'emu', 'start', 'terminal.qemu-arm64', '--engine',
+                  ffx, '-v', 'emu', 'start', 'terminal.qemu-arm64', '--engine',
                   'qemu', '--headless', '--startup-timeout', '360', '--log',
                   api.raw_io.output_text(
                       name='emulator_log', leak_to=emulator_log_path)
@@ -254,7 +256,7 @@ def TestFuchsiaFEMU(api):
         else:
           launch_step = api.step(
               'launch x64 emulator', [
-                  ffx, 'emu', 'start', 'terminal.qemu-x64', '--headless',
+                  ffx, '-v', 'emu', 'start', 'terminal.qemu-x64', '--headless',
                   '--log',
                   api.raw_io.output_text(
                       name='emulator_log', leak_to=emulator_log_path)
@@ -292,7 +294,7 @@ def TestFuchsiaFEMU(api):
 
         # Cleans up running processes to prevent clashing with future test runs
         api.step('kill fserve', [fserve, '-kill'])
-        api.step('stop %s emulator' % arch, [ffx, 'emu', 'stop', '--all'])
+        api.step('stop %s emulator' % arch, [ffx, '-v', 'emu', 'stop', '--all'])
 
 
 def BuildFuchsia(api):

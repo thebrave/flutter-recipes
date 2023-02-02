@@ -153,7 +153,7 @@ def PackageLinuxDesktopVariant(api, label, bucket_name):
 
 
 def BuildLinux(api):
-  RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--target-os=linux',
+  RunGN(api, '--runtime-mode', 'debug', '--target-os=linux',
         '--linux-cpu=arm64', '--prebuilt-dart-sdk')
   Build(api, 'linux_debug_arm64')
 

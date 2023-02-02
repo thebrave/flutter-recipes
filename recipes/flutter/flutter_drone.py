@@ -37,11 +37,9 @@ def RunShard(api, env, env_prefixes, checkout_path):
         'dart', '--enable-asserts',
         checkout_path.join('dev', 'bots', 'test.dart')
     ]
-    if env.get('LOCAL_ENGINE'):
-      cmd_list.extend(['--local-engine', env.get('LOCAL_ENGINE')])
-      local_engine_path = api.path.abs_to_path(str(env.get('LOCAL_ENGINE')))
-      dart_bin = local_engine_path.join('dart-sdk', 'bin')
-      env_prefixes = {'PATH': ['%s' % str(dart_bin)]}
+    if env.get('LOCAL_WEB_SDK'):
+      cmd_list.extend(['--local-web-sdk', env.get('LOCAL_WEB_SDK')])
+
     # Default timeout for tasks in either devicelab or hostonly.
     default_timeout_secs = DEVICELAB_TIMEOUT_SECS if api.test_utils.is_devicelab_bot(
     ) else HOSTONLY_TIMEOUT_SECS
@@ -143,7 +141,7 @@ def GenTests(api):
     yield api.test(
         'web_engine%s' % ( '_reduced' if should_run_reduced else ''), api.repo_util.flutter_environment_data(),
         api.properties(
-        local_engine_cas_hash='abceqwe',
+        local_web_sdk_cas_hash='abceqwe',
         reduced_test_set=should_run_reduced
         )
     )

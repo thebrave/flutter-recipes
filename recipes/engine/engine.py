@@ -433,7 +433,7 @@ def UploadDartSdk(api, archive_name, target_path='src/out/host_debug'):
   )
 
 
-def UploadWebSdkWithCanvasKit(api):
+def UploadWebSdk(api):
   src = GetCheckoutPath(api).join(
       'out',
       'wasm_release',
@@ -443,12 +443,6 @@ def UploadWebSdkWithCanvasKit(api):
   api.bucket_util.safe_upload(
       src,
       GetCloudPath(api, 'flutter-web-sdk.zip')
-  )
-
-
-def UploadWebSdk(api, archive_name):
-  api.bucket_util.upload_folder(
-      'Upload Web SDK', 'src/out/host_debug', 'flutter_web_sdk', archive_name
   )
 
 
@@ -830,7 +824,7 @@ def PackageLinuxDesktopVariant(api, label, bucket_name):
 
 
 def BuildLinux(api):
-  RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--prebuilt-dart-sdk', '--build-embedder-examples')
+  RunGN(api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--build-embedder-examples')
   RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk')
   RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk', '--build-embedder-examples')
   RunGN(api, '--runtime-mode', 'release', '--prebuilt-dart-sdk', '--build-embedder-examples')
@@ -885,8 +879,7 @@ def BuildLinux(api):
   UploadFontSubset(api, 'linux-x64')
   UploadFlutterPatchedSdk(api)
   UploadDartSdk(api, archive_name='dart-sdk-linux-x64.zip')
-  UploadWebSdk(api, archive_name='flutter-web-sdk-linux-x64.zip')
-  UploadWebSdkWithCanvasKit(api)
+  UploadWebSdk(api)
 
   # Rebuild with fontconfig support enabled for the desktop embedding, since it
   # should be on for libflutter_linux_gtk.so, but not libflutter_engine.so.
@@ -1193,8 +1186,8 @@ def BuildMac(api):
         api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk'
     )
     RunGN(
-        api, '--runtime-mode', 'debug', '--no-lto', '--full-dart-sdk',
-        '--prebuilt-dart-sdk', '--build-embedder-examples'
+        api, '--runtime-mode', 'debug', '--no-lto', '--prebuilt-dart-sdk',
+        '--build-embedder-examples'
     )
     RunGN(
         api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk',
@@ -1206,7 +1199,7 @@ def BuildMac(api):
     )
     RunGN(
         api, '--mac', '--mac-cpu', 'arm64', '--runtime-mode', 'debug',
-        '--no-lto', '--full-dart-sdk', '--prebuilt-dart-sdk'
+        '--no-lto', '--prebuilt-dart-sdk'
     )
     RunGN(
         api, '--mac', '--mac-cpu', 'arm64', '--runtime-mode', 'profile',
@@ -1330,7 +1323,6 @@ def BuildMac(api):
         archive_name='dart-sdk-darwin-arm64.zip',
         target_path='src/out/mac_debug_arm64'
     )
-    UploadWebSdk(api, archive_name='flutter-web-sdk-darwin-x64.zip')
 
   if api.properties.get('build_android_aot', True):
     RunGN(api, '--runtime-mode', 'profile', '--android')
@@ -1549,8 +1541,12 @@ def PackageWindowsDesktopVariant(api, label, bucket_name):
 
 def BuildWindows(api):
   if api.properties.get('build_host', True):
-    RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk', '--no-lto', '--prebuilt-dart-sdk')
-    Build(api, 'host_debug')
+    RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--prebuilt-dart-sdk')
+    Build(api, 'host_debug', 'flutter:unittests', 'flutter/build/archives:artifacts',
+          'flutter/build/archives:embedder', 'flutter/tools/font-subset',
+          'flutter/build/archives:dart_sdk_archive',
+          'flutter/shell/platform/windows/client_wrapper:client_wrapper_archive',
+          'flutter/build/archives:windows_flutter')
     RunTests(api, 'host_debug', types='engine')
     RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk')
     Build(api, 'host_profile', 'windows', 'flutter:gen_snapshot')
@@ -1559,13 +1555,13 @@ def BuildWindows(api):
     if BuildFontSubset(api):
       Build(api, 'host_release', 'flutter/tools/font-subset')
 
-    RunGN(api, '--runtime-mode', 'debug', '--full-dart-sdk',
-          '--no-lto', '--prebuilt-dart-sdk', '--windows-cpu', 'arm64')
+    RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--prebuilt-dart-sdk',
+          '--windows-cpu', 'arm64')
     Build(api, 'host_debug_arm64', 'flutter/build/archives:artifacts',
           'flutter/build/archives:embedder', 'flutter/tools/font-subset',
           'flutter/build/archives:dart_sdk_archive',
           'flutter/shell/platform/windows/client_wrapper:client_wrapper_archive',
-          'flutter/build/archives:windows_flutter', 'flutter/web_sdk')
+          'flutter/build/archives:windows_flutter')
     RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk',
           '--windows-cpu', 'arm64')
     Build(api, 'host_profile_arm64', 'windows', 'gen_snapshot',
@@ -1664,7 +1660,6 @@ def BuildWindows(api):
         archive_name='dart-sdk-windows-arm64.zip',
         target_path='src/out/host_debug_arm64'
     )
-    UploadWebSdk(api, archive_name='flutter-web-sdk-windows-x64.zip')
 
   if api.properties.get('build_android_aot', True):
     RunGN(api, '--runtime-mode', 'profile', '--android')

@@ -42,12 +42,12 @@ def Archive(api, target):
   checkout = GetCheckoutPath(api)
   build_dir = checkout.join('out', target)
   cas_dir = api.path.mkdtemp('cas-directory')
-  cas_engine = cas_dir.join(target)
-  api.file.copytree('Copy host_debug_unopt', build_dir, cas_engine)
+  cas_out = cas_dir.join('out', target)
+  api.file.copytree('Copy wasm_release', build_dir, cas_out)
   source_dir = checkout.join('flutter')
   cas_source = cas_dir.join('flutter')
-  api.file.copytree('Copy source', build_dir, cas_source)
-  return api.cas_util.upload(cas_dir, step_name='Archive Flutter Engine Test CAS')
+  api.file.copytree('Copy source', source_dir, cas_source)
+  return api.cas_util.upload(cas_dir, step_name='Archive Flutter Web SDK CAS')
 
 
 def GetCheckoutPath(api):
@@ -74,8 +74,8 @@ def RunSteps(api, properties, env_properties):
 
     api.gclient.runhooks()
 
-    target_name = 'host_debug_unopt'
-    gn_flags = ['--unoptimized', '--full-dart-sdk', '--prebuilt-dart-sdk']
+    target_name = 'wasm_release'
+    gn_flags = ['--web', '--runtime-mode=release', '--build-canvaskit']
 
     api.build_util.run_gn(gn_flags, checkout)
     api.build_util.build(target_name, checkout, [])
@@ -143,7 +143,7 @@ def generate_targets(api, cas_hash, ref, url, deps):
         'shard': shard,
         'dependencies': [api.shard_util_v2.unfreeze_dict(dep) for dep in deps],
         'task_name': task_name,
-        'local_engine_cas_hash': cas_hash,
+        'local_web_sdk_cas_hash': cas_hash,
     }
     drone_props['git_url'] = url
     drone_props['git_ref'] = ref

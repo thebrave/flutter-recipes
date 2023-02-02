@@ -43,7 +43,7 @@ def RunSteps(api, properties, env_properties):
 
   # Build engine host unopt.
   with api.step.nest('Build host_debug_unopt'):
-    api.build_util.run_gn(['--unoptimized', '--full-dart-sdk', '--prebuilt-dart-sdk'], checkout)
+    api.build_util.run_gn(['--unoptimized', '--prebuilt-dart-sdk'], checkout)
     api.build_util.build('host_debug_unopt', checkout, [])
 
   # Checkout framework and analyze.

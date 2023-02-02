@@ -371,7 +371,7 @@
       "-digest",
       "abceqwe",
       "-dir",
-      "[CLEANUP]/builder/src/out"
+      "[CLEANUP]/builder/src"
     ],
     "cwd": "[START_DIR]/flutter",
     "env": {
@@ -395,7 +395,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Download engine from CAS"
+    "name": "Download web sdk from CAS"
   },
   {
     "cmd": [
@@ -431,15 +431,15 @@
       "dart",
       "--enable-asserts",
       "[START_DIR]/flutter/dev/bots/test.dart",
-      "--local-engine",
-      "[CLEANUP]/builder/src/out/host_debug_unopt"
+      "--local-web-sdk",
+      "[CLEANUP]/builder/src/out/wasm_release"
     ],
     "cwd": "[START_DIR]/flutter",
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "GCP_PROJECT": "flutter-infra",
       "GIT_BRANCH": "",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host_debug_unopt",
+      "LOCAL_WEB_SDK": "[CLEANUP]/builder/src/out/wasm_release",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -454,8 +454,10 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CLEANUP]/builder/src/out/host_debug_unopt/dart-sdk/bin",
-        "[CLEANUP]/builder/src/out/host_debug_unopt/dart-sdk/bin",
+        "[CLEANUP]/builder/src/flutter/prebuilts/${platform}/dart-sdk/bin",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/builder/src/flutter/prebuilts/${platform}/dart-sdk/bin",
         "[START_DIR]/flutter/bin",
         "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
         "[START_DIR]/flutter/bin",

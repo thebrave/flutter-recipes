@@ -17,6 +17,11 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     If the `local_engine` property is present, it will override the
     default build configuration name, "host_debug_unopt"
 
+    Similarly, if the drone is started to run the tests against a local web
+    sdk, it will contain a `local_web_sdk_cas_hash` property.
+    If the `local_web_sdk` property is present, it will override the default
+    build configuration name, "wasm_release"
+
     These files will be located in the build folder, whose name comes
     from the build configuration.
     Args:
@@ -41,6 +46,21 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       paths.insert(0, dart_bin)
       env_prefixes['PATH'] = paths
       env['LOCAL_ENGINE'] = local_engine
+
+    web_sdk_cas_hash = self.m.properties.get('local_web_sdk_cas_hash')
+    local_web_sdk = self.m.properties.get('local_web_sdk')
+    if web_sdk_cas_hash:
+      checkout_src = self.m.path['cleanup'].join('builder', 'src')
+      self.m.cas.download(
+          'Download web sdk from CAS', web_sdk_cas_hash, checkout_src
+      )
+      local_web_sdk = checkout_src.join(
+          'out', local_web_sdk or 'wasm_release')
+      dart_bin = checkout_src.join('flutter', 'prebuilts', '${platform}', 'dart-sdk', 'bin')
+      paths = env_prefixes.get('PATH', [])
+      paths.insert(0, dart_bin)
+      env_prefixes['PATH'] = paths
+      env['LOCAL_WEB_SDK'] = local_web_sdk
 
   def required_deps(self, env, env_prefixes, deps):
     """Install all the required dependencies for a given builder.

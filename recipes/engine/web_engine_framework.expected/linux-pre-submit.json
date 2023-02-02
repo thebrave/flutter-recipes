@@ -586,9 +586,9 @@
       "python3",
       "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
-      "--unoptimized",
-      "--full-dart-sdk",
-      "--prebuilt-dart-sdk"
+      "--web",
+      "--runtime-mode=release",
+      "--build-canvaskit"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -630,7 +630,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --unoptimized --full-dart-sdk --prebuilt-dart-sdk"
+    "name": "gn --web --runtime-mode=release --build-canvaskit"
   },
   {
     "cmd": [],
@@ -938,7 +938,7 @@
       "-j",
       "200",
       "-C",
-      "[CACHE]/builder/src/out/host_debug_unopt"
+      "[CACHE]/builder/src/out/wasm_release"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -984,7 +984,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build host_debug_unopt"
+    "name": "build wasm_release"
   },
   {
     "cmd": [],
@@ -1586,8 +1586,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "copytree",
-      "[CACHE]/builder/src/out/host_debug_unopt",
-      "[CLEANUP]/cas-directory_tmp_1/host_debug_unopt"
+      "[CACHE]/builder/src/out/wasm_release",
+      "[CLEANUP]/cas-directory_tmp_1/out/wasm_release"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1629,7 +1629,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Copy host_debug_unopt"
+    "name": "Copy wasm_release"
   },
   {
     "cmd": [
@@ -1639,7 +1639,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "copytree",
-      "[CACHE]/builder/src/out/host_debug_unopt",
+      "[CACHE]/builder/src/flutter",
       "[CLEANUP]/cas-directory_tmp_1/flutter"
     ],
     "cwd": "[CACHE]/builder",
@@ -1924,7 +1924,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Archive Flutter Engine Test CAS",
+    "name": "Archive Flutter Web SDK CAS",
     "~followup_annotations": [
       "@@@STEP_LINK@CAS UI@https://cas-viewer.appspot.com/projects/example-cas-server/instances/default_instance/blobs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0/tree@@@"
     ]
@@ -2666,7 +2666,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Engine Drone\", \"project\": \"flutter\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/engine\"}], \"priority\": 25, \"properties\": {\"build\": {\"name\": \"web_tests-0\", \"properties\": {\"dependencies\": [{\"dependency\": \"chrome_and_driver\", \"version\": \"version:96.2\"}], \"git_ref\": \"b6efc758213fdfffee1234465\", \"git_url\": \"https://github.com/flutter/flutter\", \"local_engine_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", \"shard\": \"web_tests\", \"subshard\": \"0\", \"task_name\": \"web_tests-0\"}}, \"clobber\": true, \"dependencies\": [{\"dependency\": \"chrome_and_driver\", \"version\": \"version:96.2\"}], \"gclient_variables\": {}, \"git_branch\": \"main\", \"git_ref\": \"b6efc758213fdfffee1234465\", \"git_url\": \"https://github.com/flutter/flutter\", \"goma_jobs\": \"200\", \"local_engine_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", \"recipe\": \"flutter/flutter_drone\", \"shard\": \"web_tests\", \"subshard\": \"0\", \"subshards\": [\"0\", \"1_last\"], \"task_name\": \"web_tests-0\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}, {\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Engine Drone\", \"project\": \"flutter\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/engine\"}], \"priority\": 25, \"properties\": {\"build\": {\"name\": \"web_tests-1_last\", \"properties\": {\"dependencies\": [{\"dependency\": \"chrome_and_driver\", \"version\": \"version:96.2\"}], \"git_ref\": \"b6efc758213fdfffee1234465\", \"git_url\": \"https://github.com/flutter/flutter\", \"local_engine_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", \"shard\": \"web_tests\", \"subshard\": \"1_last\", \"task_name\": \"web_tests-1_last\"}}, \"clobber\": true, \"dependencies\": [{\"dependency\": \"chrome_and_driver\", \"version\": \"version:96.2\"}], \"gclient_variables\": {}, \"git_branch\": \"main\", \"git_ref\": \"b6efc758213fdfffee1234465\", \"git_url\": \"https://github.com/flutter/flutter\", \"goma_jobs\": \"200\", \"local_engine_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", \"recipe\": \"flutter/flutter_drone\", \"shard\": \"web_tests\", \"subshard\": \"1_last\", \"subshards\": [\"0\", \"1_last\"], \"task_name\": \"web_tests-1_last\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-00000000133a\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Engine Drone\", \"project\": \"flutter\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/engine\"}], \"priority\": 25, \"properties\": {\"build\": {\"name\": \"web_tests-0\", \"properties\": {\"dependencies\": [{\"dependency\": \"chrome_and_driver\", \"version\": \"version:96.2\"}], \"git_ref\": \"b6efc758213fdfffee1234465\", \"git_url\": \"https://github.com/flutter/flutter\", \"local_web_sdk_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", \"shard\": \"web_tests\", \"subshard\": \"0\", \"task_name\": \"web_tests-0\"}}, \"clobber\": true, \"dependencies\": [{\"dependency\": \"chrome_and_driver\", \"version\": \"version:96.2\"}], \"gclient_variables\": {}, \"git_branch\": \"main\", \"git_ref\": \"b6efc758213fdfffee1234465\", \"git_url\": \"https://github.com/flutter/flutter\", \"goma_jobs\": \"200\", \"local_web_sdk_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", \"recipe\": \"flutter/flutter_drone\", \"shard\": \"web_tests\", \"subshard\": \"0\", \"subshards\": [\"0\", \"1_last\"], \"task_name\": \"web_tests-0\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}, {\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Engine Drone\", \"project\": \"flutter\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/engine\"}], \"priority\": 25, \"properties\": {\"build\": {\"name\": \"web_tests-1_last\", \"properties\": {\"dependencies\": [{\"dependency\": \"chrome_and_driver\", \"version\": \"version:96.2\"}], \"git_ref\": \"b6efc758213fdfffee1234465\", \"git_url\": \"https://github.com/flutter/flutter\", \"local_web_sdk_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", \"shard\": \"web_tests\", \"subshard\": \"1_last\", \"task_name\": \"web_tests-1_last\"}}, \"clobber\": true, \"dependencies\": [{\"dependency\": \"chrome_and_driver\", \"version\": \"version:96.2\"}], \"gclient_variables\": {}, \"git_branch\": \"main\", \"git_ref\": \"b6efc758213fdfffee1234465\", \"git_url\": \"https://github.com/flutter/flutter\", \"goma_jobs\": \"200\", \"local_web_sdk_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", \"recipe\": \"flutter/flutter_drone\", \"shard\": \"web_tests\", \"subshard\": \"1_last\", \"subshards\": [\"0\", \"1_last\"], \"task_name\": \"web_tests-1_last\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-00000000133a\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -2732,7 +2732,7 @@
       "@@@STEP_LOG_LINE@request@              ], @@@",
       "@@@STEP_LOG_LINE@request@              \"git_ref\": \"b6efc758213fdfffee1234465\", @@@",
       "@@@STEP_LOG_LINE@request@              \"git_url\": \"https://github.com/flutter/flutter\", @@@",
-      "@@@STEP_LOG_LINE@request@              \"local_engine_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", @@@",
+      "@@@STEP_LOG_LINE@request@              \"local_web_sdk_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", @@@",
       "@@@STEP_LOG_LINE@request@              \"shard\": \"web_tests\", @@@",
       "@@@STEP_LOG_LINE@request@              \"subshard\": \"0\", @@@",
       "@@@STEP_LOG_LINE@request@              \"task_name\": \"web_tests-0\"@@@",
@@ -2750,7 +2750,7 @@
       "@@@STEP_LOG_LINE@request@          \"git_ref\": \"b6efc758213fdfffee1234465\", @@@",
       "@@@STEP_LOG_LINE@request@          \"git_url\": \"https://github.com/flutter/flutter\", @@@",
       "@@@STEP_LOG_LINE@request@          \"goma_jobs\": \"200\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"local_engine_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"local_web_sdk_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", @@@",
       "@@@STEP_LOG_LINE@request@          \"recipe\": \"flutter/flutter_drone\", @@@",
       "@@@STEP_LOG_LINE@request@          \"shard\": \"web_tests\", @@@",
       "@@@STEP_LOG_LINE@request@          \"subshard\": \"0\", @@@",
@@ -2816,7 +2816,7 @@
       "@@@STEP_LOG_LINE@request@              ], @@@",
       "@@@STEP_LOG_LINE@request@              \"git_ref\": \"b6efc758213fdfffee1234465\", @@@",
       "@@@STEP_LOG_LINE@request@              \"git_url\": \"https://github.com/flutter/flutter\", @@@",
-      "@@@STEP_LOG_LINE@request@              \"local_engine_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", @@@",
+      "@@@STEP_LOG_LINE@request@              \"local_web_sdk_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", @@@",
       "@@@STEP_LOG_LINE@request@              \"shard\": \"web_tests\", @@@",
       "@@@STEP_LOG_LINE@request@              \"subshard\": \"1_last\", @@@",
       "@@@STEP_LOG_LINE@request@              \"task_name\": \"web_tests-1_last\"@@@",
@@ -2834,7 +2834,7 @@
       "@@@STEP_LOG_LINE@request@          \"git_ref\": \"b6efc758213fdfffee1234465\", @@@",
       "@@@STEP_LOG_LINE@request@          \"git_url\": \"https://github.com/flutter/flutter\", @@@",
       "@@@STEP_LOG_LINE@request@          \"goma_jobs\": \"200\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"local_engine_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"local_web_sdk_cas_hash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\", @@@",
       "@@@STEP_LOG_LINE@request@          \"recipe\": \"flutter/flutter_drone\", @@@",
       "@@@STEP_LOG_LINE@request@          \"shard\": \"web_tests\", @@@",
       "@@@STEP_LOG_LINE@request@          \"subshard\": \"1_last\", @@@",

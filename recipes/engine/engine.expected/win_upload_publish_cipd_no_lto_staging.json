@@ -1561,7 +1561,8 @@
       "-C",
       "[CACHE]\\builder\\src\\out/host_profile",
       "windows",
-      "flutter:gen_snapshot"
+      "flutter:gen_snapshot",
+      "flutter/build/archives:windows_flutter"
     ],
     "cwd": "[CACHE]\\builder",
     "env": {
@@ -1601,7 +1602,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build host_profile windows flutter:gen_snapshot"
+    "name": "build host_profile windows flutter:gen_snapshot flutter/build/archives:windows_flutter"
   },
   {
     "cmd": [],
@@ -2067,7 +2068,8 @@
       "-C",
       "[CACHE]\\builder\\src\\out/host_release",
       "windows",
-      "flutter:gen_snapshot"
+      "flutter:gen_snapshot",
+      "flutter/build/archives:windows_flutter"
     ],
     "cwd": "[CACHE]\\builder",
     "env": {
@@ -2107,7 +2109,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build host_release windows flutter:gen_snapshot"
+    "name": "build host_release windows flutter:gen_snapshot flutter/build/archives:windows_flutter"
   },
   {
     "cmd": [],
@@ -4085,1416 +4087,6 @@
       }
     },
     "name": "Move the impellerc shader lib to the current directory in preparation for upload"
-  },
-  {
-    "cmd": [
-      "python3",
-      "RECIPE_MODULE[flutter::zip]\\resources\\zip.py"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Zip windows-x64 artifacts.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"icudtl.dat\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\third_party/icu/flutter/icudtl.dat\", \"type\": \"file\"}, {\"archive_name\": \"flutter_tester.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_tester.exe\", \"type\": \"file\"}, {\"archive_name\": \"LICENSE.impellerc.md\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/gen/flutter/impeller/compiler/LICENSE.impellerc.md\", \"type\": \"file\"}, {\"archive_name\": \"LICENSE.path_ops.md\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/gen/flutter/tools/path_ops/LICENSE.path_ops.md\", \"type\": \"file\"}, {\"archive_name\": \"impellerc.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/impellerc.exe\", \"type\": \"file\"}, {\"archive_name\": \"path_ops.dll\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/path_ops.dll\", \"type\": \"file\"}, {\"archive_name\": \"libtessellator.dll\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/libtessellator.dll\", \"type\": \"file\"}, {\"archive_name\": \"isolate_snapshot.bin\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin\", \"type\": \"file\"}, {\"archive_name\": \"vm_isolate_snapshot.bin\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin\", \"type\": \"file\"}, {\"archive_name\": \"frontend_server.dart.snapshot\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/gen/frontend_server.dart.snapshot\", \"type\": \"file\"}, {\"path\": \"[CACHE]\\\\builder\\\\src\\\\shader_lib\", \"type\": \"dir\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_1\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]\\gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]\\tmp_tmp_1\\artifacts.zip",
-      "gs://flutter_infra_release/flutter/abcd1234/windows-x64/artifacts.zip"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload \"flutter/abcd1234/windows-x64/artifacts.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/windows-x64/artifacts.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CLEANUP]\\tmp_tmp_1"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "temp dir for windows-x64 UploadArtifacts artifacts.zip"
-  },
-  {
-    "cmd": [
-      "python3",
-      "RECIPE_MODULE[flutter::zip]\\resources\\zip.py"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Zip windows-x64 windows-x64-embedder.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"flutter_embedder.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_embedder.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_engine.dll\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_engine.dll\", \"type\": \"file\"}, {\"archive_name\": \"flutter_engine.dll.exp\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_engine.dll.exp\", \"type\": \"file\"}, {\"archive_name\": \"flutter_engine.dll.lib\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_engine.dll.lib\", \"type\": \"file\"}, {\"archive_name\": \"flutter_engine.dll.pdb\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_engine.dll.pdb\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_2\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]\\gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]\\tmp_tmp_2\\artifacts.zip",
-      "gs://flutter_infra_release/flutter/abcd1234/windows-x64/windows-x64-embedder.zip"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload \"flutter/abcd1234/windows-x64/windows-x64-embedder.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/windows-x64/windows-x64-embedder.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CLEANUP]\\tmp_tmp_2"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "temp dir for windows-x64 UploadArtifacts windows-x64-embedder.zip"
-  },
-  {
-    "cmd": [
-      "python3",
-      "RECIPE_MODULE[flutter::zip]\\resources\\zip.py"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Zip windows-arm64 artifacts.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"icudtl.dat\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\third_party/icu/flutter/icudtl.dat\", \"type\": \"file\"}, {\"archive_name\": \"flutter_tester.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug_arm64/flutter_tester.exe\", \"type\": \"file\"}, {\"archive_name\": \"LICENSE.impellerc.md\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug_arm64/gen/flutter/impeller/compiler/LICENSE.impellerc.md\", \"type\": \"file\"}, {\"archive_name\": \"LICENSE.path_ops.md\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug_arm64/gen/flutter/tools/path_ops/LICENSE.path_ops.md\", \"type\": \"file\"}, {\"archive_name\": \"impellerc.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug_arm64/impellerc.exe\", \"type\": \"file\"}, {\"archive_name\": \"path_ops.dll\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug_arm64/path_ops.dll\", \"type\": \"file\"}, {\"archive_name\": \"libtessellator.dll\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug_arm64/libtessellator.dll\", \"type\": \"file\"}, {\"archive_name\": \"isolate_snapshot.bin\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug_arm64/gen/flutter/lib/snapshot/isolate_snapshot.bin\", \"type\": \"file\"}, {\"archive_name\": \"vm_isolate_snapshot.bin\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug_arm64/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin\", \"type\": \"file\"}, {\"archive_name\": \"frontend_server.dart.snapshot\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug_arm64/gen/frontend_server.dart.snapshot\", \"type\": \"file\"}, {\"path\": \"[CACHE]\\\\builder\\\\src\\\\shader_lib\", \"type\": \"dir\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_3\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]\\gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]\\tmp_tmp_3\\artifacts.zip",
-      "gs://flutter_infra_release/flutter/abcd1234/windows-arm64/artifacts.zip"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload \"flutter/abcd1234/windows-arm64/artifacts.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/windows-arm64/artifacts.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CLEANUP]\\tmp_tmp_3"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "temp dir for windows-arm64 UploadArtifacts artifacts.zip"
-  },
-  {
-    "cmd": [
-      "python3",
-      "RECIPE_MODULE[flutter::zip]\\resources\\zip.py"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Zip windows-x64-debug windows-x64-flutter.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"flutter_export.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_export.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_windows.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_messenger.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_messenger.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_plugin_registrar.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_plugin_registrar.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_texture_registrar.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_texture_registrar.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.dll\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_windows.dll\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.dll.exp\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_windows.dll.exp\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.dll.lib\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_windows.dll.lib\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.dll.pdb\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_debug/flutter_windows.dll.pdb\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_4\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]\\gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]\\tmp_tmp_4\\artifacts.zip",
-      "gs://flutter_infra_release/flutter/abcd1234/windows-x64-debug/windows-x64-flutter.zip"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload \"flutter/abcd1234/windows-x64-debug/windows-x64-flutter.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/windows-x64-debug/windows-x64-flutter.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CLEANUP]\\tmp_tmp_4"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "temp dir for windows-x64-debug UploadArtifacts windows-x64-flutter.zip"
-  },
-  {
-    "cmd": [
-      "python3",
-      "RECIPE_MODULE[flutter::zip]\\resources\\zip.py"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Zip windows-x64-profile windows-x64-flutter.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"flutter_export.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_profile/flutter_export.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_profile/flutter_windows.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_messenger.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_profile/flutter_messenger.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_plugin_registrar.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_profile/flutter_plugin_registrar.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_texture_registrar.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_profile/flutter_texture_registrar.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.dll\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_profile/flutter_windows.dll\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.dll.exp\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_profile/flutter_windows.dll.exp\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.dll.lib\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_profile/flutter_windows.dll.lib\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.dll.pdb\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_profile/flutter_windows.dll.pdb\", \"type\": \"file\"}, {\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_profile/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_5\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]\\gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]\\tmp_tmp_5\\artifacts.zip",
-      "gs://flutter_infra_release/flutter/abcd1234/windows-x64-profile/windows-x64-flutter.zip"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload \"flutter/abcd1234/windows-x64-profile/windows-x64-flutter.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/windows-x64-profile/windows-x64-flutter.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CLEANUP]\\tmp_tmp_5"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "temp dir for windows-x64-profile UploadArtifacts windows-x64-flutter.zip"
-  },
-  {
-    "cmd": [
-      "python3",
-      "RECIPE_MODULE[flutter::zip]\\resources\\zip.py"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Zip windows-x64-release windows-x64-flutter.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"flutter_export.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_release/flutter_export.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_release/flutter_windows.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_messenger.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_release/flutter_messenger.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_plugin_registrar.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_release/flutter_plugin_registrar.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_texture_registrar.h\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_release/flutter_texture_registrar.h\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.dll\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_release/flutter_windows.dll\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.dll.exp\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_release/flutter_windows.dll.exp\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.dll.lib\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_release/flutter_windows.dll.lib\", \"type\": \"file\"}, {\"archive_name\": \"flutter_windows.dll.pdb\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_release/flutter_windows.dll.pdb\", \"type\": \"file\"}, {\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/host_release/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_6\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]\\gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]\\tmp_tmp_6\\artifacts.zip",
-      "gs://flutter_infra_release/flutter/abcd1234/windows-x64-release/windows-x64-flutter.zip"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload \"flutter/abcd1234/windows-x64-release/windows-x64-flutter.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/windows-x64-release/windows-x64-flutter.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CLEANUP]\\tmp_tmp_6"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "temp dir for windows-x64-release UploadArtifacts windows-x64-flutter.zip"
-  },
-  {
-    "cmd": [
-      "python3",
-      "RECIPE_MODULE[flutter::zip]\\resources\\zip.py"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Zip cpp_client_wrapper",
-    "stdin": "{\"entries\": [{\"path\": \"[CACHE]\\\\builder\\\\src/out/host_debug\\\\cpp_client_wrapper\", \"type\": \"dir\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_7\\\\flutter-cpp-client-wrapper.zip\", \"root\": \"[CACHE]\\\\builder\\\\src/out/host_debug\"}"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]\\gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]\\tmp_tmp_7\\flutter-cpp-client-wrapper.zip",
-      "gs://flutter_infra_release/flutter/abcd1234/windows-x64/flutter-cpp-client-wrapper.zip"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload \"flutter/abcd1234/windows-x64/flutter-cpp-client-wrapper.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/windows-x64/flutter-cpp-client-wrapper.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CLEANUP]\\tmp_tmp_7"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "temp dir for Upload windows-x64 Flutter library C++ wrapper"
-  },
-  {
-    "cmd": [
-      "python3",
-      "RECIPE_MODULE[flutter::zip]\\resources\\zip.py"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Zip cpp_client_wrapper (2)",
-    "stdin": "{\"entries\": [{\"path\": \"[CACHE]\\\\builder\\\\src/out/host_debug_arm64\\\\cpp_client_wrapper\", \"type\": \"dir\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_8\\\\flutter-cpp-client-wrapper.zip\", \"root\": \"[CACHE]\\\\builder\\\\src/out/host_debug_arm64\"}"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]\\gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]\\tmp_tmp_8\\flutter-cpp-client-wrapper.zip",
-      "gs://flutter_infra_release/flutter/abcd1234/windows-arm64/flutter-cpp-client-wrapper.zip"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload \"flutter/abcd1234/windows-arm64/flutter-cpp-client-wrapper.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/windows-arm64/flutter-cpp-client-wrapper.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CLEANUP]\\tmp_tmp_8"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "temp dir for Upload windows-arm64 Flutter library C++ wrapper"
-  },
-  {
-    "cmd": [
-      "python3",
-      "RECIPE_MODULE[flutter::zip]\\resources\\zip.py"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Zip dart-sdk",
-    "stdin": "{\"entries\": [{\"path\": \"[CACHE]\\\\builder\\\\src/out/host_debug\\\\dart-sdk\", \"type\": \"dir\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_9\\\\dart-sdk-windows-x64.zip\", \"root\": \"[CACHE]\\\\builder\\\\src/out/host_debug\"}"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]\\gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]\\tmp_tmp_9\\dart-sdk-windows-x64.zip",
-      "gs://flutter_infra_release/flutter/abcd1234/dart-sdk-windows-x64.zip"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload \"flutter/abcd1234/dart-sdk-windows-x64.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/dart-sdk-windows-x64.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CLEANUP]\\tmp_tmp_9"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "temp dir for Upload Dart SDK"
-  },
-  {
-    "cmd": [
-      "python3",
-      "RECIPE_MODULE[flutter::zip]\\resources\\zip.py"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Zip dart-sdk (2)",
-    "stdin": "{\"entries\": [{\"path\": \"[CACHE]\\\\builder\\\\src/out/host_debug_arm64\\\\dart-sdk\", \"type\": \"dir\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_10\\\\dart-sdk-windows-arm64.zip\", \"root\": \"[CACHE]\\\\builder\\\\src/out/host_debug_arm64\"}"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]\\gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]\\tmp_tmp_10\\dart-sdk-windows-arm64.zip",
-      "gs://flutter_infra_release/flutter/abcd1234/dart-sdk-windows-arm64.zip"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload \"flutter/abcd1234/dart-sdk-windows-arm64.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/dart-sdk-windows-arm64.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CLEANUP]\\tmp_tmp_10"
-    ],
-    "cwd": "[CACHE]\\builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\certs",
-        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:staging"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "temp dir for Upload Dart SDK (2)"
   },
   {
     "cmd": [
@@ -8570,7 +7162,7 @@
       }
     },
     "name": "Zip android-arm-profile windows-x64.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/android_profile/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_11\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
+    "stdin": "{\"entries\": [{\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/android_profile/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_1\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
   },
   {
     "cmd": [
@@ -8581,7 +7173,7 @@
       "RECIPE_REPO[depot_tools]\\gsutil.py",
       "----",
       "cp",
-      "[CLEANUP]\\tmp_tmp_11\\artifacts.zip",
+      "[CLEANUP]\\tmp_tmp_1\\artifacts.zip",
       "gs://flutter_infra_release/flutter/abcd1234/android-arm-profile/windows-x64.zip"
     ],
     "cwd": "[CACHE]\\builder",
@@ -8632,7 +7224,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "rmtree",
-      "[CLEANUP]\\tmp_tmp_11"
+      "[CLEANUP]\\tmp_tmp_1"
     ],
     "cwd": "[CACHE]\\builder",
     "env": {
@@ -8711,7 +7303,7 @@
       }
     },
     "name": "Zip android-arm64-profile windows-x64.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/android_profile_arm64/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_12\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
+    "stdin": "{\"entries\": [{\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/android_profile_arm64/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_2\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
   },
   {
     "cmd": [
@@ -8722,7 +7314,7 @@
       "RECIPE_REPO[depot_tools]\\gsutil.py",
       "----",
       "cp",
-      "[CLEANUP]\\tmp_tmp_12\\artifacts.zip",
+      "[CLEANUP]\\tmp_tmp_2\\artifacts.zip",
       "gs://flutter_infra_release/flutter/abcd1234/android-arm64-profile/windows-x64.zip"
     ],
     "cwd": "[CACHE]\\builder",
@@ -8773,7 +7365,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "rmtree",
-      "[CLEANUP]\\tmp_tmp_12"
+      "[CLEANUP]\\tmp_tmp_2"
     ],
     "cwd": "[CACHE]\\builder",
     "env": {
@@ -8852,7 +7444,7 @@
       }
     },
     "name": "Zip android-x64-profile windows-x64.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/android_profile_x64/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_13\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
+    "stdin": "{\"entries\": [{\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/android_profile_x64/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_3\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
   },
   {
     "cmd": [
@@ -8863,7 +7455,7 @@
       "RECIPE_REPO[depot_tools]\\gsutil.py",
       "----",
       "cp",
-      "[CLEANUP]\\tmp_tmp_13\\artifacts.zip",
+      "[CLEANUP]\\tmp_tmp_3\\artifacts.zip",
       "gs://flutter_infra_release/flutter/abcd1234/android-x64-profile/windows-x64.zip"
     ],
     "cwd": "[CACHE]\\builder",
@@ -8914,7 +7506,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "rmtree",
-      "[CLEANUP]\\tmp_tmp_13"
+      "[CLEANUP]\\tmp_tmp_3"
     ],
     "cwd": "[CACHE]\\builder",
     "env": {
@@ -8993,7 +7585,7 @@
       }
     },
     "name": "Zip android-arm-release windows-x64.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/android_release/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_14\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
+    "stdin": "{\"entries\": [{\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/android_release/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_4\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
   },
   {
     "cmd": [
@@ -9004,7 +7596,7 @@
       "RECIPE_REPO[depot_tools]\\gsutil.py",
       "----",
       "cp",
-      "[CLEANUP]\\tmp_tmp_14\\artifacts.zip",
+      "[CLEANUP]\\tmp_tmp_4\\artifacts.zip",
       "gs://flutter_infra_release/flutter/abcd1234/android-arm-release/windows-x64.zip"
     ],
     "cwd": "[CACHE]\\builder",
@@ -9055,7 +7647,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "rmtree",
-      "[CLEANUP]\\tmp_tmp_14"
+      "[CLEANUP]\\tmp_tmp_4"
     ],
     "cwd": "[CACHE]\\builder",
     "env": {
@@ -9134,7 +7726,7 @@
       }
     },
     "name": "Zip android-arm64-release windows-x64.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/android_release_arm64/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_15\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
+    "stdin": "{\"entries\": [{\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/android_release_arm64/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_5\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
   },
   {
     "cmd": [
@@ -9145,7 +7737,7 @@
       "RECIPE_REPO[depot_tools]\\gsutil.py",
       "----",
       "cp",
-      "[CLEANUP]\\tmp_tmp_15\\artifacts.zip",
+      "[CLEANUP]\\tmp_tmp_5\\artifacts.zip",
       "gs://flutter_infra_release/flutter/abcd1234/android-arm64-release/windows-x64.zip"
     ],
     "cwd": "[CACHE]\\builder",
@@ -9196,7 +7788,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "rmtree",
-      "[CLEANUP]\\tmp_tmp_15"
+      "[CLEANUP]\\tmp_tmp_5"
     ],
     "cwd": "[CACHE]\\builder",
     "env": {
@@ -9275,7 +7867,7 @@
       }
     },
     "name": "Zip android-x64-release windows-x64.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/android_release_x64/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_16\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
+    "stdin": "{\"entries\": [{\"archive_name\": \"gen_snapshot.exe\", \"path\": \"[CACHE]\\\\builder\\\\src\\\\out/android_release_x64/gen_snapshot/gen_snapshot.exe\", \"type\": \"file\"}], \"output\": \"[CLEANUP]\\\\tmp_tmp_6\\\\artifacts.zip\", \"root\": \"[CACHE]\\\\builder\\\\src\"}"
   },
   {
     "cmd": [
@@ -9286,7 +7878,7 @@
       "RECIPE_REPO[depot_tools]\\gsutil.py",
       "----",
       "cp",
-      "[CLEANUP]\\tmp_tmp_16\\artifacts.zip",
+      "[CLEANUP]\\tmp_tmp_6\\artifacts.zip",
       "gs://flutter_infra_release/flutter/abcd1234/android-x64-release/windows-x64.zip"
     ],
     "cwd": "[CACHE]\\builder",
@@ -9337,7 +7929,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "rmtree",
-      "[CLEANUP]\\tmp_tmp_16"
+      "[CLEANUP]\\tmp_tmp_6"
     ],
     "cwd": "[CACHE]\\builder",
     "env": {
@@ -9392,7 +7984,7 @@
       "cp",
       "-r",
       "[CLEANUP]\\flutter_logs_dir",
-      "gs://flutter_logs/flutter/abcd1234/engine/00000000-0000-0000-0000-000000001343"
+      "gs://flutter_logs/flutter/abcd1234/engine/00000000-0000-0000-0000-000000001337"
     ],
     "cwd": "[CACHE]\\builder",
     "env": {
@@ -9432,7 +8024,7 @@
     "name": "process logs.gsutil upload logs abcd1234",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@archive logs@https://console.cloud.google.com/storage/browser/flutter_logs/flutter/abcd1234/engine/00000000-0000-0000-0000-000000001343@@@"
+      "@@@STEP_LINK@archive logs@https://console.cloud.google.com/storage/browser/flutter_logs/flutter/abcd1234/engine/00000000-0000-0000-0000-000000001337@@@"
     ]
   },
   {
@@ -9492,7 +8084,7 @@
     "cmd": [],
     "name": "log links",
     "~followup_annotations": [
-      "@@@STEP_LINK@myfile.txt@https://storage.googleapis.com/flutter_logs/flutter/abcd1234/engine/00000000-0000-0000-0000-000000001343/myfile.txt@@@"
+      "@@@STEP_LINK@myfile.txt@https://storage.googleapis.com/flutter_logs/flutter/abcd1234/engine/00000000-0000-0000-0000-000000001337/myfile.txt@@@"
     ]
   },
   {

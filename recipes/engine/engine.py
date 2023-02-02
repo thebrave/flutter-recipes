@@ -1542,11 +1542,7 @@ def PackageWindowsDesktopVariant(api, label, bucket_name):
 def BuildWindows(api):
   if api.properties.get('build_host', True):
     RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--prebuilt-dart-sdk')
-    Build(api, 'host_debug', 'flutter:unittests', 'flutter/build/archives:artifacts',
-          'flutter/build/archives:embedder', 'flutter/tools/font-subset',
-          'flutter/build/archives:dart_sdk_archive',
-          'flutter/shell/platform/windows/client_wrapper:client_wrapper_archive',
-          'flutter/build/archives:windows_flutter')
+    Build(api, 'host_debug')
     RunTests(api, 'host_debug', types='engine')
     RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk')
     Build(api, 'host_profile', 'windows', 'flutter:gen_snapshot')

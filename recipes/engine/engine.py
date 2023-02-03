@@ -100,10 +100,9 @@ def UploadArtifact(api, config, platform, artifact_name):
   assert api.path.exists(path), '%s does not exist' % str(path)
   if not api.flutter_bcid.is_prod_build():
     return
-  dst = '%s/%s' % (platform, artifact_name) if platform else artifact_name
   api.bucket_util.safe_upload(
       path,
-      GetCloudPath(api, dst)
+      GetCloudPath(api, '%s/%s' % (platform, artifact_name))
   )
 
 
@@ -1521,21 +1520,34 @@ def BuildIOS(api, env, env_prefixes):
     )
 
 
+def PackageWindowsDesktopVariant(api, label, bucket_name):
+  artifacts = [
+      'out/%s/flutter_export.h' % label,
+      'out/%s/flutter_windows.h' % label,
+      'out/%s/flutter_messenger.h' % label,
+      'out/%s/flutter_plugin_registrar.h' % label,
+      'out/%s/flutter_texture_registrar.h' % label,
+      'out/%s/flutter_windows.dll' % label,
+      'out/%s/flutter_windows.dll.exp' % label,
+      'out/%s/flutter_windows.dll.lib' % label,
+      'out/%s/flutter_windows.dll.pdb' % label,
+  ]
+  if bucket_name.endswith('profile') or bucket_name.endswith('release'):
+    artifacts.append('out/%s/gen_snapshot/gen_snapshot.exe' % label)
+  UploadArtifacts(
+      api, bucket_name, artifacts, archive_name='windows-x64-flutter.zip'
+  )
+
+
 def BuildWindows(api):
   if api.properties.get('build_host', True):
     RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--prebuilt-dart-sdk')
-    Build(api, 'host_debug', 'flutter:unittests', 'flutter/build/archives:artifacts',
-          'flutter/build/archives:embedder', 'flutter/tools/font-subset',
-          'flutter/build/archives:dart_sdk_archive',
-          'flutter/shell/platform/windows/client_wrapper:client_wrapper_archive',
-          'flutter/build/archives:windows_flutter')
+    Build(api, 'host_debug')
     RunTests(api, 'host_debug', types='engine')
     RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk')
-    Build(api, 'host_profile', 'windows', 'flutter:gen_snapshot',
-          'flutter/build/archives:windows_flutter')
+    Build(api, 'host_profile', 'windows', 'flutter:gen_snapshot')
     RunGN(api, '--runtime-mode', 'release', '--no-lto', '--prebuilt-dart-sdk')
-    Build(api, 'host_release', 'windows', 'flutter:gen_snapshot',
-          'flutter/build/archives:windows_flutter')
+    Build(api, 'host_release', 'windows', 'flutter:gen_snapshot')
     if BuildFontSubset(api):
       Build(api, 'host_release', 'flutter/tools/font-subset')
 
@@ -1561,51 +1573,89 @@ def BuildWindows(api):
 
     MoveShaderLib(api)
 
-    # Host_debug artifacts
+    UploadArtifacts(
+        api, 'windows-x64',
+        file_paths=[
+            ICU_DATA_PATH,
+            'out/host_debug/flutter_tester.exe',
+            'out/host_debug/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
+            'out/host_debug/gen/flutter/tools/path_ops/LICENSE.path_ops.md',
+            'out/host_debug/impellerc.exe',
+            'out/host_debug/path_ops.dll',
+            'out/host_debug/libtessellator.dll',
+            'out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin',
+            'out/host_debug/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
+            'out/host_debug/gen/frontend_server.dart.snapshot',
+        ],
+        directory_paths=[
+            IMPELLERC_SHADER_LIB_PATH,
+        ],
+    )
 
-    UploadArtifact(api, config='host_debug', platform='windows-x64',
-                   artifact_name='artifacts.zip')
-    UploadArtifact(api, config='host_debug', platform='windows-x64',
-                   artifact_name='windows-x64-embedder.zip')
-    UploadArtifact(api, config='host_debug', platform='windows-x64-debug',
-                   artifact_name='windows-x64-flutter.zip')
-    UploadArtifact(api, config='host_debug', platform='windows-x64',
-                   artifact_name='flutter-cpp-client-wrapper.zip')
-    UploadArtifact(api, config='host_debug', platform='windows-x64',
-                   artifact_name='font-subset.zip')
-    UploadArtifact(api, config='host_debug', platform='',
-                   artifact_name='dart-sdk-windows-x64.zip')
+    UploadArtifacts(
+        api,
+        'windows-x64', [
+            'out/host_debug/flutter_embedder.h',
+            'out/host_debug/flutter_engine.dll',
+            'out/host_debug/flutter_engine.dll.exp',
+            'out/host_debug/flutter_engine.dll.lib',
+            'out/host_debug/flutter_engine.dll.pdb',
+        ],
+        archive_name='windows-x64-embedder.zip'
+    )
 
-    # Host_profile
-    UploadArtifact(api, config='host_profile', platform='windows-x64-profile',
-                   artifact_name='windows-x64-flutter.zip')
+    UploadArtifacts(
+        api, 'windows-arm64',
+        file_paths=[
+            ICU_DATA_PATH,
+            'out/host_debug_arm64/flutter_tester.exe',
+            'out/host_debug_arm64/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
+            'out/host_debug_arm64/gen/flutter/tools/path_ops/LICENSE.path_ops.md',
+            'out/host_debug_arm64/impellerc.exe',
+            'out/host_debug_arm64/path_ops.dll',
+            'out/host_debug_arm64/libtessellator.dll',
+            'out/host_debug_arm64/gen/flutter/lib/snapshot/isolate_snapshot.bin',
+            'out/host_debug_arm64/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
+            'out/host_debug_arm64/gen/frontend_server.dart.snapshot',
+        ],
+        directory_paths=[
+            IMPELLERC_SHADER_LIB_PATH,
+        ],
+    )
 
-    # Host_release
-    UploadArtifact(api, config='host_release', platform='windows-x64-release',
-                   artifact_name='windows-x64-flutter.zip')
+    PackageWindowsDesktopVariant(api, 'host_debug', 'windows-x64-debug')
+    PackageWindowsDesktopVariant(api, 'host_profile', 'windows-x64-profile')
+    PackageWindowsDesktopVariant(api, 'host_release', 'windows-x64-release')
+    api.bucket_util.upload_folder(
+        'Upload windows-x64 Flutter library C++ wrapper',
+        'src/out/host_debug',
+        'cpp_client_wrapper',
+        'flutter-cpp-client-wrapper.zip',
+        platform='windows-x64'
+    )
 
-
-    # Host_debug_arm64
-    UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',
-                   artifact_name='artifacts.zip')
-    UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',
-                   artifact_name='windows-arm64-embedder.zip')
     UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64-debug',
                    artifact_name='windows-arm64-flutter.zip')
-    UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',
-                   artifact_name='flutter-cpp-client-wrapper.zip')
-    UploadArtifact(api, config='host_debug_arm64', platform='',
-                   artifact_name='dart-sdk-windows-arm64.zip')
-    UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',
-                   artifact_name='font-subset.zip')
-
-    # Host_profile_arm64
     UploadArtifact(api, config='host_profile_arm64', platform='windows-arm64-profile',
                    artifact_name='windows-arm64-flutter.zip')
-
-    # Host_release_arm64
     UploadArtifact(api, config='host_release_arm64', platform='windows-arm64-release',
                    artifact_name='windows-arm64-flutter.zip')
+    api.bucket_util.upload_folder(
+        'Upload windows-arm64 Flutter library C++ wrapper',
+        'src/out/host_debug_arm64',
+        'cpp_client_wrapper',
+        'flutter-cpp-client-wrapper.zip',
+        platform='windows-arm64'
+    )
+
+    UploadFontSubset(api, 'windows-x64')
+
+    UploadDartSdk(api, archive_name='dart-sdk-windows-x64.zip')
+    UploadDartSdk(
+        api,
+        archive_name='dart-sdk-windows-arm64.zip',
+        target_path='src/out/host_debug_arm64'
+    )
 
   if api.properties.get('build_android_aot', True):
     RunGN(api, '--runtime-mode', 'profile', '--android')

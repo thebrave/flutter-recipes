@@ -100,9 +100,10 @@ def UploadArtifact(api, config, platform, artifact_name):
   assert api.path.exists(path), '%s does not exist' % str(path)
   if not api.flutter_bcid.is_prod_build():
     return
+  dst = '%s/%s' % (platform, artifact_name) if platform else artifact_name
   api.bucket_util.safe_upload(
       path,
-      GetCloudPath(api, '%s/%s' % (platform, artifact_name))
+      GetCloudPath(api, '%s/%s' % (platform, dst))
   )
 
 
@@ -1634,28 +1635,31 @@ def BuildWindows(api):
         platform='windows-x64'
     )
 
+    # host_debug_arm64.
+    UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',
+                   artifact_name='artifacts.zip')
+    UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',
+                   artifact_name='windows-arm64-embedder.zip')
     UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64-debug',
                    artifact_name='windows-arm64-flutter.zip')
+    UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',
+                   artifact_name='flutter-cpp-client-wrapper.zip')
+    UploadArtifact(api, config='host_debug_arm64', platform='',
+                   artifact_name='dart-sdk-windows-arm64.zip')
+    UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',
+                   artifact_name='font-subset.zip')
+
+    # host_profile_arm64.
     UploadArtifact(api, config='host_profile_arm64', platform='windows-arm64-profile',
                    artifact_name='windows-arm64-flutter.zip')
+
+    # host_release_arm64.
     UploadArtifact(api, config='host_release_arm64', platform='windows-arm64-release',
                    artifact_name='windows-arm64-flutter.zip')
-    api.bucket_util.upload_folder(
-        'Upload windows-arm64 Flutter library C++ wrapper',
-        'src/out/host_debug_arm64',
-        'cpp_client_wrapper',
-        'flutter-cpp-client-wrapper.zip',
-        platform='windows-arm64'
-    )
 
     UploadFontSubset(api, 'windows-x64')
 
     UploadDartSdk(api, archive_name='dart-sdk-windows-x64.zip')
-    UploadDartSdk(
-        api,
-        archive_name='dart-sdk-windows-arm64.zip',
-        target_path='src/out/host_debug_arm64'
-    )
 
   if api.properties.get('build_android_aot', True):
     RunGN(api, '--runtime-mode', 'profile', '--android')

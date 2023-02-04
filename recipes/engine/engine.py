@@ -103,7 +103,7 @@ def UploadArtifact(api, config, platform, artifact_name):
   dst = '%s/%s' % (platform, artifact_name) if platform else artifact_name
   api.bucket_util.safe_upload(
       path,
-      GetCloudPath(api, '%s/%s' % (platform, dst))
+      GetCloudPath(api, dst)
   )
 
 
@@ -1603,25 +1603,6 @@ def BuildWindows(api):
             'out/host_debug/flutter_engine.dll.pdb',
         ],
         archive_name='windows-x64-embedder.zip'
-    )
-
-    UploadArtifacts(
-        api, 'windows-arm64',
-        file_paths=[
-            ICU_DATA_PATH,
-            'out/host_debug_arm64/flutter_tester.exe',
-            'out/host_debug_arm64/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
-            'out/host_debug_arm64/gen/flutter/tools/path_ops/LICENSE.path_ops.md',
-            'out/host_debug_arm64/impellerc.exe',
-            'out/host_debug_arm64/path_ops.dll',
-            'out/host_debug_arm64/libtessellator.dll',
-            'out/host_debug_arm64/gen/flutter/lib/snapshot/isolate_snapshot.bin',
-            'out/host_debug_arm64/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
-            'out/host_debug_arm64/gen/frontend_server.dart.snapshot',
-        ],
-        directory_paths=[
-            IMPELLERC_SHADER_LIB_PATH,
-        ],
     )
 
     PackageWindowsDesktopVariant(api, 'host_debug', 'windows-x64-debug')

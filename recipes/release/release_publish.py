@@ -5,10 +5,16 @@
 import re
 
 DEPS = [
+    'flutter/flutter_deps',
+    'flutter/kms',
     'flutter/repo_util',
+    'fuchsia/git',
+    'recipe_engine/context',
+    'recipe_engine/file',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/raw_io',
     'recipe_engine/runtime',
     'recipe_engine/step',
 ]
@@ -30,6 +36,9 @@ release process.
 
 It is expected that a valid release branch, tag, and release_channel are passed
 to the recipe.
+
+The recipe will tag and push to github unless triggered 
+from an experimental run.
 """
 def RunSteps(api):
   branch = api.properties.get('branch')
@@ -38,7 +47,7 @@ def RunSteps(api):
   assert branch and tag and release_channel
 
   checkout_path = api.path['start_dir'].join('flutter')
-  git_url = api.properties.get('git_url') or 'https://flutter.googlesource.com/mirrors/flutter'
+  git_url = 'https://github.com/flutter/flutter'
 
   # Validate the given tag is correctly formatted for either stable or latest
   assert isValidTag(tag)
@@ -55,18 +64,32 @@ def RunSteps(api):
         ref="refs/heads/%s" % branch,
     )
 
-  with api.step.nest('tag release'):
-    step_args = ['git tag', tag, release_git_hash]
-    api.step('Add tag to release hash', step_args)
+  env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
+  api.flutter_deps.required_deps(
+      env,
+      env_prefixes,
+      api.properties.get('dependencies', []),
+  )
 
-  # Guard tag from being pushed on experimental runs
-  if not api.runtime.is_experimental:
-    with api.step.nest('push tags to upstream'):
-      step_args = ['git push origin', tag]
-      api.step('Push tag to origin', step_args)
+  # install gh cli
+  api.flutter_deps.gh_cli(env, env_prefixes, 'latest')
 
-    with api.step.nest('publish version'):
-      api.step('Push release to refs/heads/%s' % release_channel, step_args)
+  with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
+    token_decrypted = api.path['cleanup'].join('token.txt')
+    api.kms.get_secret('flutter-release-github-token.encrypted', token_decrypted)
+
+    token_txt = api.file.read_text('Read token', token_decrypted, include_log=False)
+    api.step(
+        'authenticating using gh cli',
+        ['gh', 'auth', 'login', '--hostname', 'github.com', '--git-protocol',
+         'https','--with-token'],
+        stdin=api.raw_io.input_text(data=token_txt))
+
+    api.git('tag release', 'tag', tag, release_git_hash)
+
+    # Guard tag from being pushed on experimental runs
+    if not api.runtime.is_experimental:
+      api.git('push release to refs/heads/%s' % release_channel, 'push', 'origin', tag)
 
 
 def GenTests(api):

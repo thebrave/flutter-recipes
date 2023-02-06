@@ -10,11 +10,11 @@ from contextlib import contextmanager
 import re
 
 DEPS = [
+    'depot_tools/gsutil',
     'flutter/flutter_deps',
     'flutter/repo_util',
     'flutter/retry',
     'fuchsia/gcloud',
-    'fuchsia/gsutil',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',

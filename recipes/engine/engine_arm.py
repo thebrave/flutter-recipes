@@ -54,13 +54,6 @@ def GetCheckoutPath(api):
   return api.path['cache'].join('builder', 'src')
 
 
-def GetGitHash(api):
-  with api.context(cwd=GetCheckoutPath(api)):
-    return api.step(
-        "Retrieve git hash", ["git", "rev-parse", "HEAD"],
-        stdout=api.raw_io.output_text()).stdout.strip()
-
-
 def GetCloudPath(api, path):
   git_hash = api.buildbucket.gitiles_commit.id
   if api.runtime.is_experimental:
@@ -85,28 +78,6 @@ def RunGN(api, *args):
   gn_cmd = ['python3', checkout.join('flutter/tools/gn'), '--goma']
   gn_cmd.extend(args)
   api.step('gn %s' % ' '.join(args), gn_cmd)
-
-
-def NotifyPubsub(api,
-                 buildername,
-                 bucket,
-                 topic='projects/flutter-dashboard/topics/luci-builds-prod'):
-  """Sends a pubsub message to the topic specified with buildername and githash, identifying
-  the completed build.
-
-  Args:
-    api: luci api object.
-    buildername(str): The name of builder.
-    bucket(str): The name of the bucket.
-    topic(str): (optional) gcloud topic to publish message to.
-  """
-  githash = GetGitHash(api)
-  cmd = [
-      'pubsub', 'topics', 'publish', topic,
-      '--message={"buildername" : "%s", "bucket" : "%s", "githash" : "%s"}' %
-      (buildername, bucket, githash)
-  ]
-  api.gcloud(*cmd)
 
 
 def UploadArtifacts(api,
@@ -249,14 +220,6 @@ def RunSteps(api, properties, env_properties):
     if api.platform.is_win:
       raise api.step.StepFailure('Windows Arm host builds not supported yet.')
 
-  # Notifies of build completion
-  # TODO(crbug.com/843720): replace this when user defined notifications is implemented.
-  try:
-    NotifyPubsub(api, api.buildbucket.builder_name,
-                 api.buildbucket.build.builder.bucket)
-  except (api.step.StepFailure) as e:
-    pass
-
   # This is to clean up leaked processes.
   api.os_utils.kill_processes()
   # Collect memory/cpu/process after task execution.
@@ -358,27 +321,3 @@ def GenTests(api):
               android_sdk_license='android_sdk_hash',
               android_sdk_preview_license='android_sdk_preview_hash')),
   )
-
-  yield api.test(
-      'gcloud_pubsub_failure',
-      api.buildbucket.ci_build(
-          builder='Linux Host Engine',
-          git_repo='https://github.com/flutter/engine',
-          project='flutter'),
-      # Next line force a fail condition for the bot update
-      # first execution.
-      api.step_data('gcloud pubsub', retcode=1),
-      api.runtime(is_experimental=True),
-      api.properties(
-          InputProperties(
-              clobber=False,
-              git_url='https://github.com/flutter/engine',
-              goma_jobs='200',
-              git_ref='refs/pull/1/head',
-              fuchsia_ctl_version='version:0.0.2',
-              build_host=True,
-              build_fuchsia=True,
-              build_android_aot=True,
-              build_android_debug=True,
-              android_sdk_license='android_sdk_hash',
-              android_sdk_preview_license='android_sdk_preview_hash')))

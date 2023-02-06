@@ -32,15 +32,16 @@ PROPERTIES = InputProperties
 def Build(api, config, disable_goma, *targets):
   checkout = api.path['cache'].join('builder', 'src')
   build_dir = checkout.join('out/%s' % config)
+  ninja_path = checkout.join('flutter', 'third_party', 'ninja', 'ninja')
 
   if not disable_goma:
-    ninja_args = [api.depot_tools.autoninja_path, '-C', build_dir]
+    ninja_args = [ninja_path, '-C', build_dir]
     ninja_args.extend(targets)
     with api.goma.build_with_goma():
       name='build %s' % ' '.join([config] + list(targets))
       api.step(name, ninja_args)
   else:
-    ninja_args = [api.depot_tools.autoninja_path, '-C', build_dir]
+    ninja_args = [ninja_path, '-C', build_dir]
     ninja_args.extend(targets)
     api.step('build %s' % ' '.join([config] + list(targets)), ninja_args)
 

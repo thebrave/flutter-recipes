@@ -132,7 +132,8 @@ def Build(api, config, *targets):
   checkout = GetCheckoutPath(api)
   build_dir = checkout.join('out/%s' % config)
   goma_jobs = api.properties['goma_jobs']
-  ninja_args = [api.depot_tools.ninja_path, '-j', goma_jobs, '-C', build_dir]
+  ninja_path = checkout.join('flutter', 'third_party', 'ninja', 'ninja')
+  ninja_args = [ninja_path, '-j', goma_jobs, '-C', build_dir]
   ninja_args.extend(targets)
   with api.goma.build_with_goma(), api.depot_tools.on_path():
     name = 'build %s' % ' '.join([config] + list(targets))

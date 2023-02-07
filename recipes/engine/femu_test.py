@@ -267,6 +267,7 @@ def TestFuchsiaFEMU(api):
 
         # Output information for current emulator
         # Contains version, product information, etc.
+        api.step('list all targets in the collection', [ffx, 'target', 'list'])
         api.step('retrieve femu information', [ffx, 'target', 'show']);
 
         # Start a package server, this listens in the background for published files
@@ -295,6 +296,7 @@ def TestFuchsiaFEMU(api):
 
         # Cleans up running processes to prevent clashing with future test runs
         api.step('kill fserve', [fserve, '-kill'])
+        api.step('list emulators', [ffx, 'emu', 'list'])
         api.step('stop %s emulator' % arch, [ffx, '-v', 'emu', 'stop', '--all'])
 
 

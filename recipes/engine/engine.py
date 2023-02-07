@@ -1510,11 +1510,7 @@ def PackageWindowsDesktopVariant(api, label, bucket_name):
 def BuildWindows(api):
   if api.properties.get('build_host', True):
     RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--prebuilt-dart-sdk')
-    Build(api, 'host_debug', 'flutter:unittests', 'flutter/build/archives:artifacts',
-          'flutter/build/archives:embedder', 'flutter/tools/font-subset',
-          'flutter/build/archives:dart_sdk_archive',
-          'flutter/shell/platform/windows/client_wrapper:client_wrapper_archive',
-          'flutter/build/archives:windows_flutter')
+    Build(api, 'host_debug')
     RunTests(api, 'host_debug', types='engine')
     RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk')
     Build(api, 'host_profile', 'windows', 'flutter:gen_snapshot')
@@ -1576,13 +1572,16 @@ def BuildWindows(api):
         archive_name='windows-x64-embedder.zip'
     )
 
-    # host_debug
-    UploadArtifact(api, config='host_debug', platform='windows-x64',
-                   artifact_name='flutter-cpp-client-wrapper.zip')
-
     PackageWindowsDesktopVariant(api, 'host_debug', 'windows-x64-debug')
     PackageWindowsDesktopVariant(api, 'host_profile', 'windows-x64-profile')
     PackageWindowsDesktopVariant(api, 'host_release', 'windows-x64-release')
+    api.bucket_util.upload_folder(
+        'Upload windows-x64 Flutter library C++ wrapper',
+        'src/out/host_debug',
+        'cpp_client_wrapper',
+        'flutter-cpp-client-wrapper.zip',
+        platform='windows-x64'
+    )
 
     # host_debug_arm64.
     UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',

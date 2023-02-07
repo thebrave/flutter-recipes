@@ -118,7 +118,7 @@ def BuildLinuxAndroid(api, swarming_task_id):
   )
 
 
-def BuildLinux(api):
+def BuildLinux(api, env, env_prefixes):
   RunGN(
       api,
       '--runtime-mode',
@@ -127,7 +127,9 @@ def BuildLinux(api):
       '--prebuilt-dart-sdk',
       '--asan',
       '--lsan',
-      '--dart-debug'
+      '--dart-debug',
+      '--malioc-path',
+      api.path.join(env['ARM_TOOLS'], 'mali_offline_compiler', 'malioc')
   )
   Build(api, 'host_debug_unopt')
   RunTests(api, 'host_debug_unopt', types='dart,engine', suppress_sanitizers=True)
@@ -235,8 +237,9 @@ def RunSteps(api, properties, env_properties):
     try:
       # Checks before building the engine. Only run on Linux.
       if api.platform.is_linux:
+        api.flutter_deps.arm_tools(env, env_prefixes)
         FormatAndDartTest(api)
-        BuildLinux(api)
+        BuildLinux(api, env, env_prefixes)
         AnalyzeDartUI(api)
         TestObservatory(api)
         LintAndroidHost(api)

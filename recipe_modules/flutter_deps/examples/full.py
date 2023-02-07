@@ -21,6 +21,8 @@ def RunSteps(api):
   env_prefixes = {}
   api.flutter_deps.open_jdk(env, env_prefixes, 'v1')
   api.assertions.assertTrue(env.get('JAVA_HOME'))
+  api.flutter_deps.arm_tools(env, env_prefixes, 'v1')
+  api.assertions.assertTrue(env.get('ARM_TOOLS'))
   api.flutter_deps.goldctl(env, env_prefixes, 'v2')
   api.assertions.assertTrue(env.get('GOLDCTL'))
   env_prefixes = {}

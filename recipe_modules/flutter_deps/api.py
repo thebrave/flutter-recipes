@@ -76,6 +76,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'android_sdk': self.android_sdk,
         'android_virtual_device': self.android_virtual_device,
         'apple_signing': self.apple_signing,
+        'arm_tools': self.arm_tools,
         'certs': self.certs,
         'chrome_and_driver': self.chrome_and_driver,
         'clang': self.clang,
@@ -143,6 +144,28 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       path = env_prefixes.get('PATH', [])
       path.append(java_home.join('bin'))
       env_prefixes['PATH'] = path
+
+  def arm_tools(self, env, env_prefixes, version=None):
+    """Downloads Arm Tools CIPD package and updates environment variables.
+
+    Args:
+      env(dict): Current environment variables.
+      env_prefixes(dict):  Current environment prefixes variables.
+      version(str): The Arm Tools version to install.
+    """
+    version = version or 'last_updated:2023-02-03T15:32:01-0800'
+    with self.m.step.nest('Arm Tools dependency'):
+      arm_tools_cache_dir = self.m.path['cache'].join('arm-tools')
+      self.m.cipd.ensure(
+        self.m.path['cache'],
+        self.m.cipd.EnsureFile().add_package(
+            'flutter_internal/tools/arm-tools', version
+        )
+      )
+      self.m.file.listdir('arm-tools contents', arm_tools_cache_dir)
+      self.m.file.listdir('arm-tools malioc contents',
+        arm_tools_cache_dir.join('mali_offline_compiler'))
+      env['ARM_TOOLS'] = arm_tools_cache_dir
 
   def goldctl(self, env, env_prefixes, version):
     """Downloads goldctl from CIPD and updates the environment variables.

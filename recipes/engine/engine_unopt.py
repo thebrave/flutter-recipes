@@ -118,25 +118,6 @@ def BuildLinuxAndroid(api, swarming_task_id):
   )
 
 
-def RunMaliocDiff(api, out_dir):
-  script_path = GetCheckoutPath(api).join(
-      'flutter', 'impeller', 'tools', 'malioc_diff.py'
-  )
-  # TODO(godofredoc): use .vpython from engine when file are available.
-  venv_path = api.depot_tools.root.join('.vpython3')
-  args = [
-      'vpython3',
-      '-vpython-spec',
-      venv_path,
-      script_path,
-      '--before',
-      GetCheckoutPath(api).join('flutter', 'impeller', 'tools', 'malioc.json'),
-      '--after',
-      GetCheckoutPath(api).join('out', out_dir, 'gen', 'malioc')
-  ]
-  api.step('malioc diff', args)
-
-
 def BuildLinux(api, env, env_prefixes):
   RunGN(
       api,
@@ -152,7 +133,6 @@ def BuildLinux(api, env, env_prefixes):
   )
   Build(api, 'host_debug_unopt')
   RunTests(api, 'host_debug_unopt', types='dart,engine', suppress_sanitizers=True)
-  RunMaliocDiff(api, 'host_debug_unopt')
 
 
 def TestObservatory(api):

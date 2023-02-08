@@ -230,7 +230,12 @@ def TestFuchsiaFEMU(api):
   fserve = checkout.join('fuchsia/sdk/linux/tools/x64/fserve')
   fpublish = checkout.join('fuchsia/sdk/linux/tools/x64/fpublish')
 
+  # Disable ffx analytics so this does not count as a real user
   api.step('disable ffx analytics', [ffx, 'config', 'analytics', 'disable'])
+  # TODO(fxb/121613). Workaround for the issue of previously running
+  # emulator.
+  api.step('list emulators', [ffx, 'emu', 'list'])
+  api.step('stop all emulator instances', [ffx, 'emu', 'stop', '--all'])
 
   # Retrieve the required product bundle
   # Contains necessary images, packages, etc to launch the emulator
@@ -284,6 +289,9 @@ def TestFuchsiaFEMU(api):
 
         # Run the actual test
         # Test command is guaranteed to be well-formed
+        # TODO(http://fxb/121613): Emulator instances are not cleaned up
+        # when tests fail. Added a clean up step before tests start to
+        # stop all running emulators.
         with api.step.defer_results():
           api.retry.step('run ffx test', [ffx] + suite['test_command'].split(' '))
 
@@ -296,7 +304,6 @@ def TestFuchsiaFEMU(api):
 
         # Cleans up running processes to prevent clashing with future test runs
         api.step('kill fserve', [fserve, '-kill'])
-        api.step('list emulators', [ffx, 'emu', 'list'])
         api.step('stop %s emulator' % arch, [ffx, '-v', 'emu', 'stop', '--all'])
 
 

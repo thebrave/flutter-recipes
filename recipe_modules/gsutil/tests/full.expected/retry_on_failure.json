@@ -1,0 +1,471 @@
+[
+  {
+    "cmd": [],
+    "name": "ensure gsutil"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[flutter::gsutil]\\resources\\tool_manifest.json",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure gsutil.read manifest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gsutil\",@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
+      "@@@STEP_LOG_END@tool_manifest.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure gsutil.install path/to/gsutil",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]\\cipd_tool\\path\\to\\gsutil\\version%3Apinned-version"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure gsutil.install path/to/gsutil.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "ensure",
+      "-root",
+      "[START_DIR]\\cipd_tool\\path\\to\\gsutil\\version%3Apinned-version",
+      "-ensure-file",
+      "path/to/gsutil version:pinned-version",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure gsutil.install path/to/gsutil.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gsutil\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure cpython3"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[fuchsia::python3]\\resources\\tool_manifest.json",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure cpython3.read manifest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/cpython3\",@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
+      "@@@STEP_LOG_END@tool_manifest.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure cpython3.install path/to/cpython3",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure cpython3.install path/to/cpython3.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "ensure",
+      "-root",
+      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version",
+      "-ensure-file",
+      "path/to/cpython3 version:pinned-version",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure cpython3.install path/to/cpython3.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/cpython3\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
+      "[START_DIR]\\cipd_tool\\path\\to\\gsutil\\version%3Apinned-version\\gsutil",
+      "-h",
+      "Cache-Control:no-cache",
+      "-h",
+      "Custom-Time:2012-05-14T12:53:21.500000Z",
+      "-h",
+      "x-goog-meta-Remove-Me",
+      "-h",
+      "x-goog-meta-Test-Field:value",
+      "-h",
+      "x-custom-field:custom-value",
+      "-o",
+      "GSUtil:parallel_composite_upload_threshold=50M",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "cp",
+      "-n",
+      "example",
+      "gs://[CLEANUP]\\file/builds/8945511751514863184/path/to/file"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "upload path/to/file to [CLEANUP]\\file",
+    "~followup_annotations": [
+      "@@@STEP_LINK@path/to/file@https://storage.googleapis.com/[CLEANUP]\\file/builds/8945511751514863184/path/to/file@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
+      "[START_DIR]\\cipd_tool\\path\\to\\gsutil\\version%3Apinned-version\\gsutil",
+      "-h",
+      "Custom-Time:2012-05-14T12:53:23.000000Z",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "-m",
+      "rsync",
+      "-r",
+      "-u",
+      "-j",
+      "html",
+      "[CLEANUP]\\dir",
+      "gs://example/builds/8945511751514863184/rsync_subpath"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "upload rsync_subpath to example",
+    "~followup_annotations": [
+      "@@@STEP_LINK@rsync_subpath@https://console.cloud.google.com/storage/browser/example/builds/8945511751514863184/rsync_subpath@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
+      "[START_DIR]\\cipd_tool\\path\\to\\gsutil\\version%3Apinned-version\\gsutil",
+      "-h",
+      "Custom-Time:2012-05-14T12:53:24.500000Z",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "-m",
+      "cp",
+      "-r",
+      "-n",
+      "-j",
+      "html",
+      "[CLEANUP]\\dir",
+      "gs://example/builds/8945511751514863184/cp_subpath"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "upload cp_subpath to example",
+    "~followup_annotations": [
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
+      "[START_DIR]\\cipd_tool\\path\\to\\gsutil\\version%3Apinned-version\\gsutil",
+      "-h",
+      "Custom-Time:2012-05-14T12:53:24.500000Z",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "-m",
+      "cp",
+      "-r",
+      "-n",
+      "-j",
+      "html",
+      "[CLEANUP]\\dir",
+      "gs://example/builds/8945511751514863184/cp_subpath"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "upload cp_subpath to example (2)",
+    "~followup_annotations": [
+      "@@@STEP_LINK@cp_subpath@https://storage.cloud.google.com/example/builds/8945511751514863184/cp_subpath@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
+      "[START_DIR]\\cipd_tool\\path\\to\\gsutil\\version%3Apinned-version\\gsutil",
+      "-h",
+      "Custom-Time:2012-05-14T12:53:26.000000Z",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "cp",
+      "-r",
+      "[CLEANUP]\\dir",
+      "gs://example/dir"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil cp",
+    "~followup_annotations": [
+      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/example/dir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
+      "[START_DIR]\\cipd_tool\\path\\to\\gsutil\\version%3Apinned-version\\gsutil",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "cp",
+      "-r",
+      "gs://example/foo",
+      "gs://example/bar"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil cp (2)",
+    "~followup_annotations": [
+      "@@@STEP_LINK@gsutil.copy@https://storage.cloud.google.com/example/bar@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
+      "[START_DIR]\\cipd_tool\\path\\to\\gsutil\\version%3Apinned-version\\gsutil",
+      "-o",
+      "GSUtil:software_update_check_period=0",
+      "cp",
+      "-r",
+      "gs://example/foo",
+      "tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil cp (3)"
+  },
+  {
+    "name": "$result"
+  }
+]

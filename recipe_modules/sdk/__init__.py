@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 DEPS = [
-    'fuchsia/gsutil',
+    'flutter/gsutil',
     'flutter/tar',
     'recipe_engine/buildbucket',
     'recipe_engine/context',

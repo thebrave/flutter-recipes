@@ -94,3 +94,12 @@ class LogUtilsApi(recipe_api.RecipeApi):
         name='upload logs %s' % git_hash,
         unauthenticated_url=True
       )
+
+  def show_logs_stdout(self, file_path):
+    """Outputs to sdout the connect of file_path
+
+    :param file_path: str
+    :return: 
+    """
+    if self.m.path.exists(file_path):
+      self.m.file.read_text('Read log file', file_path)

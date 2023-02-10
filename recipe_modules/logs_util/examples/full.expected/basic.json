@@ -138,6 +138,41 @@
     "name": "store metrics (2)"
   },
   {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "{\"a\": \"b\"}",
+      "[CLEANUP]/flutter_logs_dir/errors.log"
+    ],
+    "infra_step": true,
+    "name": "write file",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@errors.log@{\"a\": \"b\"}@@@",
+      "@@@STEP_LOG_END@errors.log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/flutter_logs_dir/errors.log",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "Read log file",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@errors.log@@@"
+    ]
+  },
+  {
     "name": "$result"
   }
 ]

@@ -55,7 +55,7 @@ def RunShard(api, env, env_prefixes, checkout_path):
           cmd_list,
           timeout_secs=deps_timeout_secs
       )
-      api.logs_util.show_logs_stdout(checkout_path.join('errors.log'))
+      api.logs_util.show_logs_stdout(checkout_path.join('error.log'))
       api.logs_util.upload_test_metrics(
           checkout_path.join('test_results.json'),
           '%s_%s' % (api.properties.get('shard'), api.properties.get('subshard'))

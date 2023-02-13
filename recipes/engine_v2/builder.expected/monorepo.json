@@ -562,10 +562,20 @@
     "name": "generator1"
   },
   {
+    "cmd": [],
+    "name": "Initialize logs"
+  },
+  {
     "cmd": [
-      "[CACHE]/builder/engine/src/myscript.sh",
-      "param1",
-      "param2"
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CLEANUP]/flutter_logs_dir"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
@@ -586,6 +596,100 @@
         "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Initialize logs.Ensure [CLEANUP]/flutter_logs_dir",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "",
+      "[CLEANUP]/flutter_logs_dir/noop.txt"
+    ],
+    "cwd": "[CACHE]/builder/engine/src/flutter",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Initialize logs.Write noop file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/engine/src/myscript.sh",
+      "param1",
+      "param2"
+    ],
+    "cwd": "[CACHE]/builder/engine/src/flutter",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
     "luci_context": {
       "realm": {
         "name": "dart:ci.sandbox"
@@ -599,6 +703,169 @@
       }
     },
     "name": "test: mytest"
+  },
+  {
+    "cmd": [],
+    "name": "process logs"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "-m",
+      "----",
+      "cp",
+      "-r",
+      "[CLEANUP]/flutter_logs_dir",
+      "gs://flutter_logs/flutter/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/mytest/00000000-0000-0000-0000-000000001337"
+    ],
+    "cwd": "[CACHE]/builder/engine/src/flutter",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "process logs.gsutil upload logs aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@archive logs@https://console.cloud.google.com/storage/browser/flutter_logs/flutter/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/mytest/00000000-0000-0000-0000-000000001337@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "glob",
+      "[CLEANUP]/flutter_logs_dir",
+      "*"
+    ],
+    "cwd": "[CACHE]/builder/engine/src/flutter",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "process logs.logs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@glob@[CLEANUP]/flutter_logs_dir/a.txt@@@",
+      "@@@STEP_LOG_END@glob@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "log links",
+    "~followup_annotations": [
+      "@@@STEP_LINK@myfile.txt@https://storage.googleapis.com/flutter_logs/flutter/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/mytest/00000000-0000-0000-0000-000000001337/myfile.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CLEANUP]/flutter_logs_dir",
+      "--recursive"
+    ],
+    "cwd": "[CACHE]/builder/engine/src/flutter",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "log links.List logs path",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@listdir@[CLEANUP]/flutter_logs_dir/myfile.txt@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
   },
   {
     "cmd": [

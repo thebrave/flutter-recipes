@@ -40,6 +40,7 @@ DEPS = [
     'flutter/build_util',
     'flutter/flutter_bcid',
     'flutter/flutter_deps',
+    'flutter/logs_util',
     'flutter/monorepo',
     'flutter/os_utils',
     'flutter/osx_sdk',
@@ -124,7 +125,14 @@ def Build(api, checkout, env, env_prefixes, outputs):
       # Rerun test step 3 times by default if failing.
       # TODO(keyonghan): notify tree gardener for test failures/flakes:
       # https://github.com/flutter/flutter/issues/89308
-      api.retry.wrap(run_test, step_name=test.get('name'))
+      api.logs_util.initialize_logs_collection(env)
+      try:
+        # Run within another context to make the logs env variable available to
+        # test scripts.
+        with api.context(env=env, env_prefixes=env_prefixes):
+          api.retry.wrap(run_test, step_name=test.get('name'))
+      finally:
+        api.logs_util.upload_logs(test.get('name'))
 
     api.flutter_bcid.report_stage('upload')
     for archive_config in archives:

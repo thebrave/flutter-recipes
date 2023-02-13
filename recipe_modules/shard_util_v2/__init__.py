@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 DEPS = [
+    'flutter/retry',
     'fuchsia/cas_util',
     'recipe_engine/buildbucket',
     'recipe_engine/cas',

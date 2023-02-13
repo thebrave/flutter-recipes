@@ -73,17 +73,19 @@ class RetryApi(recipe_api.RecipeApi):
         sleep (int or float): The initial time to sleep between attempts.
         backoff_factor (int or float): The factor by which the sleep time
             will be multiplied after each attempt.
+    Returns:
+      The result of executing func.
     """
     for attempt in range(max_attempts):
       try:
-        func()
+        result = func()
         # Append an extra step to reflect test flakiness, so that we can easily
         # collect flaky test statistics. This can also be used to trigger
         # notification when a flake happens.
         # This is mainly used for Engine builders for now.
         if attempt > 0 and step_name is not None and 'test:' in step_name:
           self.m.test_utils.flaky_step(step_name)
-        return
+        return result
       except self.m.step.StepFailure:
         step = self.m.step.active_result
         retriable_failure = retriable_codes == 'any' or \
@@ -110,11 +112,13 @@ class RetryApi(recipe_api.RecipeApi):
           sleep (int or float): The initial time to sleep between attempts.
           backoff_factor (int or float): The factor by which the sleep time
               will be multiplied after each attempt.
+      Returns:
+        The result of executing func.
       """
       for attempt in range(max_attempts):
         try:
-          func()
-          return
+          result = func()
+          return result
         except self.m.step.StepFailure:
           if attempt == max_attempts - 1:
             raise

@@ -485,4 +485,15 @@ class ShardUtilApi(recipe_api.RecipeApi):
     cas_dir = self.m.path.mkdtemp('out-cas-directory')
     cas_engine = cas_dir.join(target)
     self.m.file.copytree('Copy host_debug_unopt', build_dir, cas_engine)
-    return self.m.cas_util.upload(cas_dir, step_name='Archive full build for %s' % target)
+
+    def _upload():
+      return self.m.cas_util.upload(cas_dir, step_name='Archive full build for %s' % target)
+
+    # Windows CAS upload is flaky, hashes are calculated before files are fully synced to disk.
+    return self.m.retry.basic_wrap(
+        _upload,
+        step_name='Archive full build',
+        sleep=10.0,
+        backoff_factor=5,
+        max_attempts=3
+    )

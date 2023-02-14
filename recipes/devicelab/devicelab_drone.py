@@ -149,7 +149,8 @@ def RunSteps(api):
             max_attempts=3,
             timeout=300,
         )
-        test_runner_command = ['dart', 'bin/test_runner.dart', 'test']
+        test_runner_command = ['xvfb-run'] if api.properties.get('xvfb') else []
+        test_runner_command.extend(['dart', 'bin/test_runner.dart', 'test'])
         test_runner_command.extend(runner_params)
         # Send emulator flags if desired otherwise this appends nothing.
         test_runner_command.extend(emulator_commands)
@@ -470,6 +471,24 @@ def GenTests(api):
           task_name='abc',
           upload_metrics_to_cas=True,
           git_branch='master',
+          dependencies=[{
+            "dependency": "android_virtual_device",
+            "version": "31"
+          }],
+      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.buildbucket.ci_build(
+          git_ref='refs/heads/master',
+          bucket='staging',
+      )
+  )
+  yield api.test(
+      "linux-xvfb",
+      api.properties(
+          buildername='Linux xvfb',
+          task_name='abc',
+          upload_metrics_to_cas=True,
+          git_branch='master',
+          xvfb=1,
           dependencies=[{
             "dependency": "android_virtual_device",
             "version": "31"

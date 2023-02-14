@@ -92,7 +92,7 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
     api.step('flutter doctor', ['flutter', 'doctor', '-v'])
     api.step(
-        'download dependencies', ['flutter', 'update-packages'],
+        'download dependencies', ['flutter', 'update-packages', '-v'],
         infra_step=True,
     )
 

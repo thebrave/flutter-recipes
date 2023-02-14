@@ -85,7 +85,7 @@ def RunSteps(api, properties, env_properties):
       )
       api.step(
           'download dependencies',
-          ['flutter', 'update-packages'],
+          ['flutter', 'update-packages', '-v'],
           infra_step=True,
       )
       api.cipd.ensure(

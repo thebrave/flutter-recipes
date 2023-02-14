@@ -71,7 +71,7 @@ def RunSteps(api, properties, env_properties):
       )
       api.step(
           'download dependencies',
-          ['flutter', 'update-packages'],
+          ['flutter', 'update-packages', '-v'],
           infra_step=True,
       )
   views_test_dir = checkout_path.join('dev', 'integration_tests', 'android_views')

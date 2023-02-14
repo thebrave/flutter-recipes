@@ -82,7 +82,7 @@ def RunSteps(api, properties, env_properties):
   env['FLUTTER_STORAGE_BASE_URL'] = artifact_url
   with api.context(env=env, env_prefixes=env_prefixes, cwd=flutter):
     api.retry.step(
-        'download dependencies', ['flutter', 'update-packages'],
+        'download dependencies', ['flutter', 'update-packages', '-v'],
         max_attempts=2,
         infra_step=True
     )

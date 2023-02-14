@@ -38,7 +38,7 @@ def RunSteps(api):
       )
       api.step(
           'download dependencies',
-          ['flutter', 'update-packages'],
+          ['flutter', 'update-packages', '-v'],
           infra_step=True,
       )
 

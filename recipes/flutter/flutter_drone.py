@@ -89,7 +89,7 @@ def RunSteps(api):
     # Dependencies timeout.
     deps_timeout_secs = 300
     api.retry.step(
-        'download dependencies', ['flutter', 'update-packages'],
+        'download dependencies', ['flutter', 'update-packages', '-v'],
         max_attempts=2,
         infra_step=True
     )

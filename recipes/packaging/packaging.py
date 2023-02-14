@@ -48,7 +48,7 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
   dart_executable = 'dart' if not api.platform.is_win else 'dart.exe'
   work_dir = api.path['start_dir'].join('archive')
   api.step('flutter doctor', [flutter_executable, 'doctor'])
-  api.step('download dependencies', [flutter_executable, 'update-packages'])
+  api.step('download dependencies', [flutter_executable, 'update-packages', '-v'])
   api.file.rmtree('clean archive work directory', work_dir)
   api.file.ensure_directory('(re)create archive work directory', work_dir)
   api.flutter_bcid.report_stage(BcidStage.COMPILE.value)

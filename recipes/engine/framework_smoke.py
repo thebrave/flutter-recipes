@@ -66,7 +66,7 @@ def RunSteps(api, properties, env_properties):
       )
       api.step(
           'Update packages', [
-              'bin/flutter', 'update-packages',
+              'bin/flutter', 'update-packages', '-v',
               '--local-engine=%s' % str(build_dir)
           ]
       )

@@ -55,7 +55,7 @@ def RunSteps(api):
       # Fail fast on dependencies problem.
       timeout_secs = 300
       api.step(
-          'download dependencies', ['flutter', 'update-packages'],
+          'download dependencies', ['flutter', 'update-packages', '-v'],
           infra_step=True,
           timeout=timeout_secs
       )

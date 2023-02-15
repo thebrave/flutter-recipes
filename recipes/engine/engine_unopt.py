@@ -106,18 +106,6 @@ def LintAndroidHost(api):
       api.step('dart bin/main.dart', ['dart', 'bin/main.dart'])
 
 
-def BuildLinuxAndroid(api, swarming_task_id):
-  # Build Android Unopt and run tests
-  RunGN(api, '--android', '--unoptimized')
-  Build(api, 'android_debug_unopt', 'flutter/shell/platform/android:robolectric_tests')
-  RunTests(
-      api,
-      'android_debug_unopt',
-      android_out_dir='android_debug_unopt',
-      types='java'
-  )
-
-
 def RunMaliocDiff(api, out_dir):
   script_path = GetCheckoutPath(api).join(
       'flutter', 'impeller', 'tools', 'malioc_diff.py'
@@ -137,7 +125,29 @@ def RunMaliocDiff(api, out_dir):
   api.step('malioc diff', args)
 
 
-def BuildLinux(api, env, env_prefixes):
+def BuildLinuxAndroid(api, env, swarming_task_id):
+  # Build Android Unopt and run tests
+  RunGN(
+      api,
+      '--android',
+      '--unoptimized',
+      '--malioc-path',
+      api.path.join(env['ARM_TOOLS'], 'mali_offline_compiler', 'malioc')
+  )
+  Build(api, 'android_debug_unopt',
+    'flutter/shell/platform/android:robolectric_tests',
+    'flutter/impeller',
+  )
+  RunTests(
+      api,
+      'android_debug_unopt',
+      android_out_dir='android_debug_unopt',
+      types='java'
+  )
+  RunMaliocDiff(api, 'android_debug_unopt')
+
+
+def BuildLinux(api):
   RunGN(
       api,
       '--runtime-mode',
@@ -146,13 +156,10 @@ def BuildLinux(api, env, env_prefixes):
       '--prebuilt-dart-sdk',
       '--asan',
       '--lsan',
-      '--dart-debug',
-      '--malioc-path',
-      api.path.join(env['ARM_TOOLS'], 'mali_offline_compiler', 'malioc')
+      '--dart-debug'
   )
   Build(api, 'host_debug_unopt')
   RunTests(api, 'host_debug_unopt', types='dart,engine', suppress_sanitizers=True)
-  RunMaliocDiff(api, 'host_debug_unopt')
 
 
 def TestObservatory(api):
@@ -242,7 +249,7 @@ def RunSteps(api, properties, env_properties):
 
   # Enable long path support on Windows.
   api.os_utils.enable_long_paths()
-  
+
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
 
   # Delete derived data on mac. This is a noop for other platforms.
@@ -259,11 +266,11 @@ def RunSteps(api, properties, env_properties):
       if api.platform.is_linux:
         api.flutter_deps.arm_tools(env, env_prefixes)
         FormatAndDartTest(api)
-        BuildLinux(api, env, env_prefixes)
+        BuildLinux(api)
         AnalyzeDartUI(api)
         TestObservatory(api)
         LintAndroidHost(api)
-        BuildLinuxAndroid(api, env_properties.SWARMING_TASK_ID)
+        BuildLinuxAndroid(api, env, env_properties.SWARMING_TASK_ID)
 
       if api.platform.is_mac:
         with SetupXcode(api):

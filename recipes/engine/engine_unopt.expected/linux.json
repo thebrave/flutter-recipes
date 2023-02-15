@@ -664,8 +664,6 @@
       "--asan",
       "--lsan",
       "--dart-debug",
-      "--malioc-path",
-      "[CACHE]/arm-tools/mali_offline_compiler/malioc",
       "--no-lto"
     ],
     "cwd": "[CACHE]/builder",
@@ -701,7 +699,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --runtime-mode debug --unoptimized --prebuilt-dart-sdk --asan --lsan --dart-debug --malioc-path [CACHE]/arm-tools/mali_offline_compiler/malioc --no-lto"
+    "name": "gn --runtime-mode debug --unoptimized --prebuilt-dart-sdk --asan --lsan --dart-debug --no-lto"
   },
   {
     "cmd": [],
@@ -1601,52 +1599,6 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-vpython-spec",
-      "RECIPE_REPO[depot_tools]/.vpython3",
-      "[CACHE]/builder/src/flutter/impeller/tools/malioc_diff.py",
-      "--before",
-      "[CACHE]/builder/src/flutter/impeller/tools/malioc.json",
-      "--after",
-      "[CACHE]/builder/src/out/host_debug_unopt/gen/malioc"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "malioc diff"
-  },
-  {
-    "cmd": [
       "python3",
       "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
@@ -2272,6 +2224,8 @@
       "--goma",
       "--android",
       "--unoptimized",
+      "--malioc-path",
+      "[CACHE]/arm-tools/mali_offline_compiler/malioc",
       "--no-lto"
     ],
     "cwd": "[CACHE]/builder",
@@ -2307,7 +2261,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --android --unoptimized --no-lto"
+    "name": "gn --android --unoptimized --malioc-path [CACHE]/arm-tools/mali_offline_compiler/malioc --no-lto"
   },
   {
     "cmd": [],
@@ -2375,7 +2329,8 @@
       "1024",
       "-C",
       "[CACHE]/builder/src/out/android_debug_unopt",
-      "flutter/shell/platform/android:robolectric_tests"
+      "flutter/shell/platform/android:robolectric_tests",
+      "flutter/impeller"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -2414,7 +2369,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build android_debug_unopt flutter/shell/platform/android:robolectric_tests"
+    "name": "build android_debug_unopt flutter/shell/platform/android:robolectric_tests flutter/impeller"
   },
   {
     "cmd": [],
@@ -2804,6 +2759,52 @@
       }
     },
     "name": "test: Host Tests for android_debug_unopt"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-vpython-spec",
+      "RECIPE_REPO[depot_tools]/.vpython3",
+      "[CACHE]/builder/src/flutter/impeller/tools/malioc_diff.py",
+      "--before",
+      "[CACHE]/builder/src/flutter/impeller/tools/malioc.json",
+      "--after",
+      "[CACHE]/builder/src/out/android_debug_unopt/gen/malioc"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "malioc diff"
   },
   {
     "cmd": [],

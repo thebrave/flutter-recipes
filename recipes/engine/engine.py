@@ -1502,8 +1502,6 @@ def BuildWindows(api):
     Build(api, 'host_profile', 'windows', 'flutter:gen_snapshot', 'flutter/build/archives:windows_flutter')
     RunGN(api, '--runtime-mode', 'release', '--no-lto', '--prebuilt-dart-sdk')
     Build(api, 'host_release', 'windows', 'flutter:gen_snapshot', 'flutter/build/archives:windows_flutter')
-    #if BuildFontSubset(api):
-    #  Build(api, 'host_release', 'flutter/tools/font-subset')
 
     RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--prebuilt-dart-sdk',
           '--windows-cpu', 'arm64')
@@ -1574,57 +1572,29 @@ def BuildWindows(api):
     RunGN(api, '--runtime-mode', 'profile', '--android')
     RunGN(api, '--runtime-mode', 'profile', '--android', '--android-cpu=arm64')
     RunGN(api, '--runtime-mode', 'profile', '--android', '--android-cpu=x64')
+
     RunGN(api, '--runtime-mode', 'release', '--android')
     RunGN(api, '--runtime-mode', 'release', '--android', '--android-cpu=arm64')
     RunGN(api, '--runtime-mode', 'release', '--android', '--android-cpu=x64')
-    Build(api, 'android_profile', 'flutter:gen_snapshot')
-    Build(api, 'android_profile_arm64', 'flutter:gen_snapshot')
-    Build(api, 'android_profile_x64', 'flutter:gen_snapshot')
-    Build(api, 'android_release', 'flutter:gen_snapshot')
-    Build(api, 'android_release_arm64', 'flutter:gen_snapshot')
-    Build(api, 'android_release_x64', 'flutter:gen_snapshot')
-    UploadArtifacts(
-        api,
-        "android-arm-profile", [
-            'out/android_profile/gen_snapshot/gen_snapshot.exe',
-        ],
-        archive_name='windows-x64.zip'
-    )
-    UploadArtifacts(
-        api,
-        "android-arm64-profile", [
-            'out/android_profile_arm64/gen_snapshot/gen_snapshot.exe',
-        ],
-        archive_name='windows-x64.zip'
-    )
-    UploadArtifacts(
-        api,
-        "android-x64-profile", [
-            'out/android_profile_x64/gen_snapshot/gen_snapshot.exe',
-        ],
-        archive_name='windows-x64.zip'
-    )
-    UploadArtifacts(
-        api,
-        "android-arm-release", [
-            'out/android_release/gen_snapshot/gen_snapshot.exe',
-        ],
-        archive_name='windows-x64.zip'
-    )
-    UploadArtifacts(
-        api,
-        "android-arm64-release", [
-            'out/android_release_arm64/gen_snapshot/gen_snapshot.exe',
-        ],
-        archive_name='windows-x64.zip'
-    )
-    UploadArtifacts(
-        api,
-        "android-x64-release", [
-            'out/android_release_x64/gen_snapshot/gen_snapshot.exe',
-        ],
-        archive_name='windows-x64.zip'
-    )
+
+    Build(api, 'android_profile', 'flutter/build/archives:archive_win_gen_snapshot')
+    Build(api, 'android_profile_arm64', 'flutter/build/archives:archive_win_gen_snapshot')
+    Build(api, 'android_profile_x64', 'flutter/build/archives:archive_win_gen_snapshot')
+    Build(api, 'android_release', 'flutter/build/archives:archive_win_gen_snapshot')
+    Build(api, 'android_release_arm64', 'flutter/build/archives:archive_win_gen_snapshot')
+    Build(api, 'android_release_x64', 'flutter/build/archives:archive_win_gen_snapshot')
+    UploadArtifact(api, config='android_profile', platform='android-arm-profile',
+                   artifact_name='windows-x64.zip')
+    UploadArtifact(api, config='android_profile_arm64', platform='android-arm64-profile',
+                   artifact_name='windows-x64.zip')
+    UploadArtifact(api, config='android_profile_x64', platform='android-x64-profile',
+                   artifact_name='windows-x64.zip')
+    UploadArtifact(api, config='android_release', platform='android-arm-release',
+                   artifact_name='windows-x64.zip')
+    UploadArtifact(api, config='android_release_arm64', platform='android-arm64-release',
+                   artifact_name='windows-x64.zip')
+    UploadArtifact(api, config='android_release_x64', platform='android-x64-release',
+                   artifact_name='windows-x64.zip')
 
 
 def UploadJavadoc(api, variant):

@@ -58,6 +58,7 @@ class RecipeTestingTestApi(recipe_test_api.RecipeTestApi):
         # used for both buildbucket build id and swarming task id.
         fake_id=100,
         using_led=True,
+        exe_cipd_version=None
     ):
         # This time is taken from the time recipe_engine module. I see no way
         # of getting it programmatically.
@@ -73,6 +74,9 @@ class RecipeTestingTestApi(recipe_test_api.RecipeTestApi):
         cl = orig_build.input.gerrit_changes.add()
         cl.host = "flutter-review.googlesource.com"
         cl.project = project
+
+        if exe_cipd_version:
+            orig_build.input.properties["exe_cipd_version"] = exe_cipd_version
 
         result = self.m.buildbucket.simulated_search_results(
             [orig_build], "get builders.{}.buildbucket.search".format(name)

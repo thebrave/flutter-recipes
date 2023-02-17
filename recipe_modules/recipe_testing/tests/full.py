@@ -13,6 +13,7 @@ DEPS = [
     "fuchsia/commit_queue",
     "flutter/recipe_testing",
     "fuchsia/swarming_retry",
+    "recipe_engine/json",
     "recipe_engine/path",
     "recipe_engine/properties",
 ]
@@ -153,7 +154,11 @@ def GenTests(api):  # pylint: disable=invalid-name
         + api.commit_queue.test_data(project)
         + test.affected_recipes_data(["fuchsia"])
         + test.build_data(
-            "fuchsia/try/cobalt-x64-linux", "cobalt", skip=True, using_led=False
+            "fuchsia/try/cobalt-x64-linux",
+            "cobalt",
+            skip=True,
+            using_led=False,
+            exe_cipd_version="refs/heads/main"
         )
         + test.build_data(
             "fuchsia/try/core.x64-debug",
@@ -161,12 +166,14 @@ def GenTests(api):  # pylint: disable=invalid-name
             cl_cached=True,
             fake_id=100,
             using_led=False,
+            exe_cipd_version="refs/heads/main"
         )
         + test.build_data(
             "fuchsia/try/core.arm64-debug",
             "fuchsia",
             fake_id=200,
             using_led=False,
+            exe_cipd_version="refs/heads/main"
         )
         + test.existing_green_tryjobs(["fuchsia/try/core.arm64-release"])
         # This line only affects coverage. It's sufficiently tested in other
@@ -174,6 +181,13 @@ def GenTests(api):  # pylint: disable=invalid-name
         + api.recipe_testing.options(
             use_buildbucket=True,
             projects=(api.recipe_testing.project(),),
+        )
+        + api.step_data(
+            "gerrit get cl info 12345",
+            api.json.output({})
+        )
+        + api.properties(
+            buildset='patch/gerrit/flutter-review.googlesource.com/12345/1'
         )
     )
 

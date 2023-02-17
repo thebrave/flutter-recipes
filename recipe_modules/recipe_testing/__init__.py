@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 DEPS = [
+    "flutter/gerrit_util",
     "fuchsia/buildbucket_util",
     "fuchsia/commit_queue",
     "fuchsia/gerrit",

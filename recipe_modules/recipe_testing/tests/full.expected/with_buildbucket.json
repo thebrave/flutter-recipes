@@ -239,6 +239,42 @@
     ]
   },
   {
+    "cmd": [
+      "vpython3",
+      "RECIPE_REPO[depot_tools]/gerrit_client.py",
+      "rawapi",
+      "--host",
+      "https://flutter-review.googlesource.com",
+      "--path",
+      "/changes/12345",
+      "--json_file",
+      "/path/to/tmp/json",
+      "--accept_status",
+      "200"
+    ],
+    "env": {
+      "PATH": "<PATH>:RECIPE_REPO[depot_tools]"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "fuchsia:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gerrit get cl info 12345",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
     "cmd": [],
     "name": "get builders"
   },
@@ -297,7 +333,7 @@
       "-json",
       "-nopage",
       "-n",
-      "1",
+      "25",
       "-fields",
       "builder,create_time,created_by,critical,end_time,id,infra,input,number,output,start_time,status,update_time",
       "-predicate",
@@ -319,7 +355,7 @@
     "name": "get builders.fuchsia/try/cobalt-x64-linux.buildbucket.search",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@{\"builder\": {\"bucket\": \"try\", \"builder\": \"fuchsia/try/cobalt-x64-linux\", \"project\": \"flutter\"}, \"endTime\": \"2012-05-13T12:53:20Z\", \"id\": \"100\", \"input\": {\"gerritChanges\": [{\"host\": \"flutter-review.googlesource.com\", \"project\": \"flutter\"}], \"properties\": {\"recipe\": \"cobalt\"}}, \"status\": \"SUCCESS\"}@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@{\"builder\": {\"bucket\": \"try\", \"builder\": \"fuchsia/try/cobalt-x64-linux\", \"project\": \"flutter\"}, \"endTime\": \"2012-05-13T12:53:20Z\", \"id\": \"100\", \"input\": {\"gerritChanges\": [{\"host\": \"flutter-review.googlesource.com\", \"project\": \"flutter\"}], \"properties\": {\"exe_cipd_version\": \"refs/heads/main\", \"recipe\": \"cobalt\"}}, \"status\": \"SUCCESS\"}@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@",
       "@@@STEP_LINK@100@https://cr-buildbucket.appspot.com/build/100@@@"
     ]
@@ -343,7 +379,7 @@
       "-json",
       "-nopage",
       "-n",
-      "1",
+      "25",
       "-fields",
       "builder,create_time,created_by,critical,end_time,id,infra,input,number,output,start_time,status,update_time",
       "-predicate",
@@ -365,7 +401,7 @@
     "name": "get builders.fuchsia/try/core.arm64-debug.buildbucket.search",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@{\"builder\": {\"bucket\": \"try\", \"builder\": \"fuchsia/try/core.arm64-debug\", \"project\": \"flutter\"}, \"endTime\": \"2012-05-13T12:53:20Z\", \"id\": \"200\", \"input\": {\"gerritChanges\": [{\"host\": \"flutter-review.googlesource.com\", \"project\": \"flutter\"}], \"properties\": {\"recipe\": \"fuchsia\"}}, \"status\": \"SUCCESS\"}@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@{\"builder\": {\"bucket\": \"try\", \"builder\": \"fuchsia/try/core.arm64-debug\", \"project\": \"flutter\"}, \"endTime\": \"2012-05-13T12:53:20Z\", \"id\": \"200\", \"input\": {\"gerritChanges\": [{\"host\": \"flutter-review.googlesource.com\", \"project\": \"flutter\"}], \"properties\": {\"exe_cipd_version\": \"refs/heads/main\", \"recipe\": \"fuchsia\"}}, \"status\": \"SUCCESS\"}@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@",
       "@@@STEP_LINK@200@https://cr-buildbucket.appspot.com/build/200@@@"
     ]
@@ -389,7 +425,7 @@
       "-json",
       "-nopage",
       "-n",
-      "1",
+      "25",
       "-fields",
       "builder,create_time,created_by,critical,end_time,id,infra,input,number,output,start_time,status,update_time",
       "-predicate",
@@ -411,7 +447,7 @@
     "name": "get builders.fuchsia/try/core.x64-debug.buildbucket.search",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@{\"builder\": {\"bucket\": \"try\", \"builder\": \"fuchsia/try/core.x64-debug\", \"project\": \"flutter\"}, \"endTime\": \"2012-05-13T12:53:20Z\", \"id\": \"100\", \"input\": {\"gerritChanges\": [{\"host\": \"flutter-review.googlesource.com\", \"project\": \"flutter\"}], \"properties\": {\"recipe\": \"fuchsia\"}}, \"status\": \"SUCCESS\"}@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@{\"builder\": {\"bucket\": \"try\", \"builder\": \"fuchsia/try/core.x64-debug\", \"project\": \"flutter\"}, \"endTime\": \"2012-05-13T12:53:20Z\", \"id\": \"100\", \"input\": {\"gerritChanges\": [{\"host\": \"flutter-review.googlesource.com\", \"project\": \"flutter\"}], \"properties\": {\"exe_cipd_version\": \"refs/heads/main\", \"recipe\": \"fuchsia\"}}, \"status\": \"SUCCESS\"}@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@",
       "@@@STEP_LINK@100@https://cr-buildbucket.appspot.com/build/100@@@"
     ]

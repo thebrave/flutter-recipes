@@ -19,6 +19,14 @@ from PB.recipe_modules.flutter.recipe_testing import properties as properties_pb
 from recipe_engine import recipe_api
 from RECIPE_MODULES.fuchsia.swarming_retry import api as swarming_retry_api
 
+# The maximum amount of builds to go back through in buildbucket to find
+# a run that matches the current branch
+MAX_BUILD_RESULTS = 25
+
+# The default branch for a build if there is no branch set in a build found
+# from searching buildbucket
+DEFAULT_BRANCH = 'main'
+
 
 class Build(swarming_retry_api.LedTask):
     # This warning is spurious because LedTask defines _led_data.
@@ -168,23 +176,51 @@ class RecipeTestingApi(recipe_api.RecipeApi):
             # in recipes CQ.
             return {r for r in affected_recipes if not r.startswith("contrib/")}
 
-    def _get_last_green_build(self, builder):
+    def _get_last_green_build(self, builder, cl_branch='main'):
         """Returns the build proto for a builder's most recent successful build.
 
         If no build younger than `self.max_build_age_seconds` is found, returns
-        None.
+        None. Also ensures that was returned build was run on the same branch
+        the current recipe is running on.
 
         Args:
           builder: builder protobuf object
         """
-        project, bucket, builder = builder.split("/")
-        # "infra" is not returned by default, so we have to specify it.
-        build = self.m.buildbucket_util.last_build(
-            project, bucket, builder, status=common_pb2.SUCCESS
-        )
-        if not build:
+        project, bucket, builder = builder.split('/')
+        predicate = builds_service_pb2.BuildPredicate()
+        predicate.builder.project = project
+        predicate.builder.bucket = bucket
+        predicate.builder.builder = builder
+        predicate.status = common_pb2.SUCCESS
+
+        builds = self.m.buildbucket.search(predicate, limit=MAX_BUILD_RESULTS)
+
+        def built_on_branch(build, branch):
+            """Return True if build was built on the provided branch."""
+            current_branch = \
+                'refs/heads/%s' % (branch or DEFAULT_BRANCH)
+            build_properties = \
+                build.input.properties
+            if 'exe_cipd_version' in build_properties.keys():
+                build_branch = build_properties['exe_cipd_version']
+            else:
+                build_branch = 'refs/heads/%s' % DEFAULT_BRANCH
+            # Some recipes do not specify the branch, so in the case where the
+            # branch is None, ensure a match can still be found.
+            return build_branch in [current_branch, None]
+
+        builds_with_current_branch = \
+            list(filter(
+                lambda build: built_on_branch(build, cl_branch), builds
+            ))
+
+        builds_with_current_branch.sort(
+            reverse=True, key=lambda build: build.start_time.seconds)
+
+        if not builds_with_current_branch:
             return None
 
+        build = builds_with_current_branch[0]
         age_seconds = self.m.time.time() - build.end_time.seconds
         if age_seconds > self.max_build_age_seconds:
             return None
@@ -366,10 +402,21 @@ class RecipeTestingApi(recipe_api.RecipeApi):
         if not affected_recipes:
             return
 
+        cl_branch = self._get_current_merging_branch()
+
         if config.use_buildbucket:
-            self._run_buildbucket_tests(selftest_builder, builders, affected_recipes)
+            self._run_buildbucket_tests(
+                selftest_builder,
+                builders,
+                affected_recipes,
+                cl_branch)
         else:
-            self._run_led_tests(recipes_path, selftest_cl, builders, affected_recipes)
+            self._run_led_tests(
+                recipes_path,
+                selftest_cl,
+                builders,
+                affected_recipes,
+                cl_branch)
 
     def _is_build_affected(self, orig_build, affected_recipes, presentation):
         if not orig_build:
@@ -406,7 +453,12 @@ class RecipeTestingApi(recipe_api.RecipeApi):
         )
         return {self.m.buildbucket_util.full_builder_name(b.builder) for b in builds}
 
-    def _run_buildbucket_tests(self, selftest_builder, builders, affected_recipes):
+    def _run_buildbucket_tests(
+            self,
+            selftest_builder,
+            builders,
+            affected_recipes,
+            cl_branch):
         affected_builders = []
         recipes_is_affected = False
 
@@ -415,7 +467,7 @@ class RecipeTestingApi(recipe_api.RecipeApi):
             builders = [b for b in builders if b not in green_tryjobs]
             for builder in builders:
                 with self.m.step.nest(builder) as presentation:
-                    orig_build = self._get_last_green_build(builder)
+                    orig_build = self._get_last_green_build(builder, cl_branch)
                     if self._is_build_affected(
                         orig_build, affected_recipes, presentation
                     ):
@@ -455,14 +507,20 @@ class RecipeTestingApi(recipe_api.RecipeApi):
                 raise_on_failure=True,
             )
 
-    def _run_led_tests(self, recipes_path, selftest_cl, builders, affected_recipes):
+    def _run_led_tests(
+            self,
+            recipes_path,
+            selftest_cl,
+            builders,
+            affected_recipes,
+            cl_branch):
         builds = []
         with self.m.step.nest("get builders") as nest, self.m.context(
             cwd=recipes_path, infra_steps=True
         ):
             for builder in builders:
                 with self.m.step.nest(builder) as presentation:
-                    orig_build = self._get_last_green_build(builder)
+                    orig_build = self._get_last_green_build(builder, cl_branch)
                     if self._is_build_affected(
                         orig_build, affected_recipes, presentation
                     ):
@@ -490,3 +548,23 @@ class RecipeTestingApi(recipe_api.RecipeApi):
                 props, preserving_proto_field_name=True
             )
         }
+
+    def _get_current_merging_branch(self):
+        """Returns the branch that the current CL is being merged into.
+
+        If the buildset is not available in the recipe, then DEFAULT_BRANCH is
+        used.
+        """
+        tags = self.m.buildbucket.build.tags
+        buildset_tag = list(
+            filter(lambda tag: tag.key=='buildset', tags)
+        )
+        buildset_property = self.m.properties.get('buildset')
+        if not buildset_tag and not buildset_property:
+            return DEFAULT_BRANCH
+        else:
+            buildset = buildset_tag[0].value if buildset_tag else buildset_property
+            host, cl_number = buildset.split('/')[2:4]
+            cl_information = \
+                self.m.gerrit_util.get_gerrit_cl_details(host, cl_number)
+            return cl_information.get('branch')

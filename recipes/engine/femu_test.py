@@ -230,6 +230,14 @@ def TestFuchsiaFEMU(api):
   fserve = checkout.join('fuchsia/sdk/linux/tools/x64/fserve')
   fpublish = checkout.join('fuchsia/sdk/linux/tools/x64/fpublish')
 
+  # Conditionally enable ffx's CSO flag
+  if api.properties.get('enable_cso', False):
+    api.step('enable CSO in ffx', [ffx, 'config', 'set', 'overnet.cso', 'enabled'])
+  else:
+    api.step('disable CSO in ffx', [ffx, 'config', 'set', 'overnet.cso', 'disabled'])
+  # Pick up new config change
+  api.step('restart ffx daemon', [ffx, 'daemon', 'stop'])
+
   # Disable ffx analytics so this does not count as a real user
   api.step('disable ffx analytics', [ffx, 'config', 'analytics', 'disable'])
   # TODO(fxb/121613). Workaround for the issue of previously running
@@ -945,3 +953,71 @@ def GenTests(api):
           api.path['cache'].join('builder/ssh/ssh_host_key'),
       ),
   )
+
+  yield api.test(
+      'start_femu_with_cso',
+      api.properties(
+          InputProperties(
+              goma_jobs='1024',
+              build_fuchsia=True,
+              test_fuchsia=True,
+              git_url='https://github.com/flutter/engine',
+              git_ref='refs/pull/1/head',
+              clobber=False,
+              enable_cso=True,
+          ), clobber=False,),
+      api.step_data(
+          'retrieve list of test suites.parse',
+          api.json.output([{
+            'package': 'v2_test-123.far',
+            'test_command': 'test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b'
+          }, {
+            'package': 'v1_test_component-321.far',
+            'test_command': 'test run fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b'
+          }])
+      ),
+      api.step_data(
+          'retrieve list of test suites.read',
+          api.file.read_text('''# This is a comment.
+- package: v2_test-123.far
+  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b
+
+# Legacy cfv1 test
+- package: v1_test_component-321.far
+  test_command: test run fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b''')
+      ),
+      api.step_data(
+          'read manifest',
+          api.file.read_json({'id': '0.20200101.0.1'}),
+      ),
+      api.step_data('run FEMU test on x64.run v2_test.launch x64 emulator', retcode=1),
+      api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      api.platform('linux', 64),
+      api.path.exists(
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
+          ),
+          api.path['cache'].join(
+              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
+          ),
+          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
+          api.path['cache'].join('builder/ssh/id_ed25519'),
+          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
+          api.path['cache'].join('builder/ssh/ssh_host_key'),
+      ),
+  )
+

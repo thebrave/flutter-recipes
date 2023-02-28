@@ -65,33 +65,8 @@ ENV_PROPERTIES = EnvProperties
 ANDROID_ARTIFACTS_BUCKET = 'download.flutter.io'
 
 
-# Relative paths used to mock paths for testing.
-MOCK_JAR_PATH = (
-    'io/flutter/x86_debug/'
-    '1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/'
-    'x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar'
-)
-MOCK_POM_PATH = (
-    'io/flutter/x86_debug/'
-    '1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/'
-    'x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
-)
-
-# Used for mock paths
-DIRECTORY = 'DIRECTORY'
-
-
 def Build(api, checkout, env, env_prefixes, outputs):
   """Builds a flavor identified as a set of gn and ninja configs."""
-
-  # Mock data for tests. This is required for the archive api to expand the directory to full path
-  # of files.
-  api.path.mock_add_paths(
-      api.path['cache'].join(
-          'builder/src/out/android_jit_release_x86/zip_archives/download.flutter.io'),
-      DIRECTORY
-  )
-
   ninja_tool = {
       "ninja": api.build_util.build,
   }
@@ -211,7 +186,6 @@ def GenTests(api):
                 {
                     "name": "android_jit_release_x86",
                     "type": "gcs",
-                    "realm": "production",
                     "base_path": "out/android_jit_release_x86/zip_archives/",
                     "include_paths": [
                         "out/android_jit_release_x86/zip_archives/android-x86-jit-release/artifacts.zip",

@@ -15,8 +15,11 @@ class ArchivePaths(object):
   remote = attr.ib(type=str)
 
 
-DEFAULT_BUCKET = 'flutter_archives_v2'
 ANDROID_ARTIFACTS_BUCKET = 'download.flutter.io'
+
+# Monorepo constant.
+MONOREPO = 'monorepo'
+
 # Used for mock paths
 DIRECTORY = 'DIRECTORY'
 
@@ -31,6 +34,33 @@ MOCK_POM_PATH = (
     '1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/'
     'x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
 )
+
+
+# Bucket + initial prefix for artifact destination.
+LUCI_TO_GCS_PREFIX = {
+    'flutter': 'flutter_infra_release/',
+    MONOREPO: 'flutter_archives_v2/monorepo/flutter_infra_release/',
+    'prod': 'flutter_infra_release/',
+    'staging': 'flutter_archives_v2/flutter_infra_release/',
+    'try': 'flutter_archives_v2/flutter_infra_release/'
+}
+
+# Bucket + initial prefix for artifact destination.
+LUCI_TO_ANDROID_GCS_PREFIX = {
+    'flutter': '',
+    MONOREPO: 'flutter_archives_v2/monorepo/',
+    'prod': '',
+    'staging': 'flutter_archives_v2/',
+    'try': 'flutter_archives_v2/'
+}
+
+# Subpath for realms. A realm is used to separate file destinations
+# within the same configuration. E.g. production environment with
+# an experimental realm and production environment with a production realm.
+REALM_TO_PATH = {
+    'production': '',
+    'experimental': 'experimental'
+}
 
 
 class ArchivesApi(recipe_api.RecipeApi):
@@ -79,7 +109,8 @@ class ArchivesApi(recipe_api.RecipeApi):
       A tuple with the bucket as the first item and the path to the
       object as the second parameter.
     """
-    matches = re.match('gs://(\w+)/(.+)', dst)
+
+    matches = re.match('gs://([\w.]+)/(.+)', dst)
     return (matches.group(1), matches.group(2))
 
   def upload_artifact(self, src, dst, metadata=None):
@@ -120,34 +151,39 @@ class ArchivesApi(recipe_api.RecipeApi):
         bucket, path, dst, name="download %s" % src
     )
 
-  def engine_v2_gcs_paths(self, checkout, archive_config, bucket=DEFAULT_BUCKET):
+  def engine_v2_gcs_paths(self, checkout, archive_config):
     """Calculates engine v2 GCS paths from an archive config.
 
     Args:
       checkout: (Path) the engine repository checkout folder.
       archive_config: (dict) the archive configuration for a recipes v2 build.
-      bucket: (str) the bucket used to calculate the object destination.
 
     Returns:
       A list of ArchivePaths with expected local and remote locations for the
       generated artifacts.
     """
     results = []
+    # Artifacts bucket is calculated using the LUCI bucket but we also use the realm to upload
+    # artifacts to the same bucket but different path when the build configurations use an experimental
+    # realm. Defaults to experimental.
+    artifact_realm = REALM_TO_PATH.get(archive_config.get('realm', ''), 'experimental')
     # Do not archive if the build is a try build or has no input commit
     if (self.m.buildbucket.build.input.gerrit_changes or
         not self.m.buildbucket.gitiles_commit.project):
       return results
 
-    file_list = self._full_path_list(checkout, archive_config)
     # Calculate prefix and commit.
-    is_monorepo = self.m.buildbucket.gitiles_commit.project == 'monorepo'
+    is_monorepo = self.m.buildbucket.gitiles_commit.project == MONOREPO
+    bucket = MONOREPO if is_monorepo else self.m.buildbucket.build.builder.bucket
+
+    bucket_and_prefix = LUCI_TO_GCS_PREFIX.get(bucket)
+
+    file_list = self._full_path_list(checkout, archive_config)
 
     if is_monorepo:
       commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))
-      artifact_prefix = 'monorepo/'
     else:
       commit = self.m.repo_util.get_commit(checkout.join('flutter'))
-      artifact_prefix = ''
 
     for include_path in file_list:
       is_android_artifact = ANDROID_ARTIFACTS_BUCKET in include_path
@@ -160,17 +196,22 @@ class ArchivesApi(recipe_api.RecipeApi):
       if is_android_artifact:
         # We are not using a slash in the first parameter becase artifact_prefix
         # already includes the slash.
-        artifact_path = '%s%s/%s' % (
-            artifact_prefix, rel_path, base_name)
+        artifact_path = '%s/%s' % (rel_path, base_name)
+        # Replace ANDROID_ARTIFACTS_BUCKET to include the realm.
+        old_location = '/'.join([ANDROID_ARTIFACTS_BUCKET, 'io', 'flutter'])
+        new_location = '/'.join(filter(
+            bool,
+            [ANDROID_ARTIFACTS_BUCKET, 'io', 'flutter', artifact_realm])
+        )
+        artifact_path = artifact_path.replace(old_location, new_location)
+        bucket_and_prefix = LUCI_TO_ANDROID_GCS_PREFIX.get(bucket)
       else:
-        final_rel_path = '%s/' % rel_path if rel_path else ''
-        artifact_path = '%sflutter_infra_release/flutter/%s/%s%s' % (
-            artifact_prefix, commit, final_rel_path, base_name)
+        artifact_path = '/'.join(filter(bool, ['flutter', artifact_realm, commit, rel_path, base_name]))
 
       results.append(
           ArchivePaths(
               include_path,
-              'gs://%s/%s' % (bucket, artifact_path)
+              'gs://%s%s' % (bucket_and_prefix, artifact_path)
           )
       )
     return results

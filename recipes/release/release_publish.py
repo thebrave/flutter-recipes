@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import re
+from recipe_engine import post_process
 
 DEPS = [
     'flutter/flutter_deps',
@@ -87,9 +88,20 @@ def RunSteps(api):
 
     api.git('tag release', 'tag', tag, release_git_hash)
 
-    # Guard tag from being pushed on experimental runs
-    if not api.runtime.is_experimental:
-      api.git('push release to refs/heads/%s' % release_channel, 'push', 'origin', tag)
+    # output tag for debug clarity, testing
+    api.git('find commit',
+      'rev-list',
+      '-n',
+      '1',
+      f'origin/{branch}',
+      stdout=api.raw_io.output_text(add_output_log=True)).stdout.rstrip()
+
+    push_args = ['push']
+    if api.runtime.is_experimental:
+      # guard tag from being pushed on experimental runs
+      push_args.append('--dry-run')
+    push_args += ['origin', tag]
+    api.git('push tag', *push_args)
 
 
 def GenTests(api):
@@ -97,14 +109,22 @@ def GenTests(api):
       for release_channel in ('stable', 'beta'):
         test = api.test(
             '%s%s%s' % (
-                'flutter-1.2-candidate.3',
+                'flutter-2.8-candidate.9',
                 tag,
                 release_channel
             ), api.platform('mac', 64),
             api.properties(
-                branch='flutter-1.2-candidate.3',
+                branch='flutter-2.8-candidate.9',
                 tag=tag,
                 release_channel=release_channel
-            ), api.repo_util.flutter_environment_data()
+            ), api.repo_util.flutter_environment_data(),
+            api.runtime(is_experimental=True),
+                  api.step_data('find commit', stdout=api.raw_io.output_text(
+              '82735b8904e82fd8b273cb1ae16cccd77ccf4248\n')),
+            api.post_process(post_process.MustRun,
+              'authenticating using gh cli'),
+            api.post_process(post_process.MustRun, 'tag release'),
+            api.post_process(post_process.MustRun, 'push tag'),
+            api.post_process(post_process.StatusSuccess),
         )
         yield test

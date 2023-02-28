@@ -30,7 +30,7 @@
       "git",
       "fetch",
       "origin",
-      "flutter-1.2-candidate.3",
+      "flutter-2.8-candidate.9",
       "--recurse-submodules",
       "--progress",
       "--tags"
@@ -343,7 +343,7 @@
     "cmd": [
       "git",
       "tag",
-      "1.2.3-4.5.pre",
+      "1.2.3",
       "deadbeef"
     ],
     "cwd": "[START_DIR]/flutter",
@@ -371,9 +371,10 @@
   {
     "cmd": [
       "git",
-      "push",
-      "origin",
-      "1.2.3-4.5.pre"
+      "rev-list",
+      "-n",
+      "1",
+      "origin/flutter-2.8-candidate.9"
     ],
     "cwd": "[START_DIR]/flutter",
     "env": {
@@ -394,7 +395,41 @@
         "[CACHE]/gh-cli/bin"
       ]
     },
-    "name": "push release to refs/heads/stable",
+    "name": "find commit",
+    "timeout": 600.0,
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@raw_io.output_text@82735b8904e82fd8b273cb1ae16cccd77ccf4248@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "push",
+      "--dry-run",
+      "origin",
+      "1.2.3"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[CACHE]/gh-cli/bin"
+      ]
+    },
+    "name": "push tag",
     "timeout": 600.0
   },
   {

@@ -4,8 +4,9 @@
 
 DEPS = [
     'flutter/flutter_deps',
-    'flutter/repo_util',
+    'flutter/logs_util',
     'flutter/osx_sdk',
+    'flutter/repo_util',
     'flutter/yaml',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -73,11 +74,11 @@ def RunSteps(api):
             env, env_prefixes, flutter_checkout_path.join('dev', 'ci', 'mac')
           )
           with api.context(env=env, env_prefixes=env_prefixes):
-            run_test(api, result, packages_checkout_path)
+            run_test(api, result, packages_checkout_path, env)
       else:
-        run_test(api, result, packages_checkout_path)
+        run_test(api, result, packages_checkout_path, env)
 
-def run_test(api, result, packages_checkout_path):
+def run_test(api, result, packages_checkout_path, env):
   """Run tests sequentially following the script"""
   for task in result.json.output['tasks']:
     script_path = packages_checkout_path.join(task['script'])
@@ -85,7 +86,12 @@ def run_test(api, result, packages_checkout_path):
     if 'args' in task:
       args = task['args']
       cmd.extend(args)
-    api.step(task['name'], cmd)
+    api.logs_util.initialize_logs_collection(env)
+    try:
+      with api.context(env=env):
+        api.step(task['name'], cmd)
+    finally:
+      api.logs_util.upload_logs(task['name'])
 
 def GenTests(api):
   flutter_path = api.path['start_dir'].join('flutter')

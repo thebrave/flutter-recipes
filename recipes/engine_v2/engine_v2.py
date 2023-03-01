@@ -143,16 +143,26 @@ def RunSteps(api, properties, env_properties):
             _run_global_generators(api, generators, full_engine_checkout, env, env_prefixes)
         else:
           _run_global_generators(api, generators, full_engine_checkout, env, env_prefixes)
+    api.file.listdir('Final List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
+    api.file.listdir('Final List checkout 2', full_engine_checkout.join('src', 'flutter', 'sky'), recursive=True)
   # Global archives
   if archives:
     api.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
     # Global archives are stored in out folder from full_engine_checkout inside
     # release, debug or profile depending on the runtime mode.
     # So far we are uploading files only.
-    files_to_archive = api.archives.global_generator_paths(full_engine_checkout, archives)
-    for archive in files_to_archive:
-      api.archives.upload_artifact(archive.local, archive.remote)
-      api.flutter_bcid.upload_provenance(archive.local, archive.remote)
+    bucket = 'flutter_archives_v2'
+    for archive in archives:
+      source = full_engine_checkout.join('src', archive.get('source'))
+      commit = api.repo_util.get_commit(
+          full_engine_checkout.join('src', 'flutter')
+      )
+      artifact_path = 'flutter_infra_release/flutter/%s/%s' % (
+          commit, archive.get('destination')
+      )
+      dst = 'gs://%s/%s' % (bucket, artifact_path)
+      api.archives.upload_artifact(source, dst)
+      api.flutter_bcid.upload_provenance(source, dst)
     api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
 
 
@@ -285,6 +295,11 @@ def GenTests(api):
           'Read build config file',
           api.file.read_json({'builds': builds, 'archives': archives})
       ),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
   )
 
   yield api.test(

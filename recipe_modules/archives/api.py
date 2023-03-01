@@ -38,20 +38,20 @@ MOCK_POM_PATH = (
 
 # Bucket + initial prefix for artifact destination.
 LUCI_TO_GCS_PREFIX = {
-    'flutter': 'flutter_infra_release/',
-    MONOREPO: 'flutter_archives_v2/monorepo/flutter_infra_release/',
-    'prod': 'flutter_infra_release/',
-    'staging': 'flutter_archives_v2/flutter_infra_release/',
-    'try': 'flutter_archives_v2/flutter_infra_release/'
+    'flutter': 'flutter_infra_release',
+    MONOREPO: 'flutter_archives_v2/monorepo/flutter_infra_release',
+    'prod': 'flutter_infra_release',
+    'staging': 'flutter_archives_v2/flutter_infra_release',
+    'try': 'flutter_archives_v2/flutter_infra_release'
 }
 
 # Bucket + initial prefix for artifact destination.
 LUCI_TO_ANDROID_GCS_PREFIX = {
     'flutter': '',
-    MONOREPO: 'flutter_archives_v2/monorepo/',
+    MONOREPO: 'flutter_archives_v2/monorepo',
     'prod': '',
-    'staging': 'flutter_archives_v2/',
-    'try': 'flutter_archives_v2/'
+    'staging': 'flutter_archives_v2',
+    'try': 'flutter_archives_v2'
 }
 
 # Subpath for realms. A realm is used to separate file destinations
@@ -129,13 +129,13 @@ class ArchivesApi(recipe_api.RecipeApi):
     archive_dir = self.m.path.mkdtemp()
     local_dst_tree = archive_dir.join(*dir_part.split('/'))
     self.m.file.ensure_directory('Ensure %s' % dir_part, local_dst_tree)
-    self.m.file.copy('Copy %s' % dst, src, local_dst_tree)
+    self.m.file.copy('Copy %s to tmp location' % src, src, local_dst_tree)
     self.m.gsutil.upload(
+        name='Upload %s to gs://%s' % ('%s/*' % archive_dir, bucket),
         source='%s/*' % archive_dir,
         bucket=bucket,
         dest='',
         args=['-r'],
-        name=path,
         metadata=metadata,
     )
 
@@ -201,14 +201,50 @@ class ArchivesApi(recipe_api.RecipeApi):
         )
         artifact_path = artifact_path.replace(old_location, new_location)
         bucket_and_prefix = LUCI_TO_ANDROID_GCS_PREFIX.get(bucket)
+        artifact_path = '/'.join(filter(bool, [bucket_and_prefix, artifact_path]))
       else:
         bucket_and_prefix = LUCI_TO_GCS_PREFIX.get(bucket)
-        artifact_path = '/'.join(filter(bool, ['flutter', artifact_realm, commit, rel_path, base_name]))
+        artifact_path = '/'.join(filter(bool, [bucket_and_prefix, 'flutter', artifact_realm, commit, rel_path, base_name]))
 
       results.append(
           ArchivePaths(
               include_path,
-              'gs://%s%s' % (bucket_and_prefix, artifact_path)
+              'gs://%s' % artifact_path
           )
       )
+    return results
+
+  def global_generator_paths(self, checkout, archives):
+    """Calculates the global generator paths for an archive config.
+
+    Args:
+      checkout: (Path) the engine repository checkout folder.
+      archives: (list) list of dictionaries source and destination path
+        of files relative to the gclient checkout.
+
+    Returns:
+      A list of ArchivePaths with expected local and remote locations for the
+      generated artifacts.
+    """
+    results = []
+
+    # Do not archive if the build is a try build or has no input commit
+    if (self.m.buildbucket.build.input.gerrit_changes or
+        not self.m.buildbucket.gitiles_commit.project):
+      return results
+
+    # Calculate prefix and commit.
+    is_monorepo = self.m.buildbucket.gitiles_commit.project == MONOREPO
+    bucket = MONOREPO if is_monorepo else self.m.buildbucket.build.builder.bucket
+    if is_monorepo:
+      commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))
+    else:
+      commit = self.m.repo_util.get_commit(checkout.join('flutter'))
+    bucket_and_prefix = LUCI_TO_GCS_PREFIX.get(bucket)
+
+    for archive in archives:
+      source = checkout.join('src', archive.get('source'))
+      artifact_path = '/'.join(filter(bool, [bucket_and_prefix, 'flutter', commit, archive.get('destination')]))
+      dst = 'gs://%s' % artifact_path
+      results.append(ArchivePaths(self.m.path.abspath(source), dst))
     return results

@@ -1,0 +1,169 @@
+[
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[START_DIR]/out/android_profile/zip_archives/download.flutter.io",
+      "--recursive"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Expand directory",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git rev-parse"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CLEANUP]/tmp_tmp_1/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Ensure flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[START_DIR]/out/android_profile/zip_archives/android-arm-profile/artifacts.zip",
+      "[CLEANUP]/tmp_tmp_1/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Copy gs://flutter_archives_v2/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile/artifacts.zip"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "-r",
+      "[CLEANUP]/tmp_tmp_1/*",
+      "gs://flutter_archives_v2/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile/artifacts.zip",
+    "~followup_annotations": [
+      "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_archives_v2/@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_archives_v2/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile/artifacts.zip",
+      "[START_DIR]/out/android_profile/zip_archives/android-arm-profile/artifacts.zip"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil download gs://flutter_archives_v2/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile/artifacts.zip"
+  },
+  {
+    "name": "$result"
+  }
+]

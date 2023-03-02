@@ -36,29 +36,29 @@ def RunSteps(api):
   expected_results = [
       ArchivePaths(
           local=str(api.path['start_dir'].join('src/out/debug/artifacts.zip')),
-          remote='gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/ios/artifacts.zip'
+          remote='gs://flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios/artifacts.zip'
       ),
       ArchivePaths(
           local=str(api.path['start_dir'].join('src/out/release-nobitcode/Flutter.dSYM.zip')),
-          remote='gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/ios-release-nobitcode/Flutter.dSYM.zip'
+          remote='gs://flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release-nobitcode/Flutter.dSYM.zip'
       ),
       ArchivePaths(
           local=str(api.path['start_dir'].join('src/out/release/Flutter.dSYM.zip')),
-          remote='gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/ios-release/Flutter.dSYM.zip'
+          remote='gs://flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release/Flutter.dSYM.zip'
       )
   ]
   expected_monorepo_results = [
       ArchivePaths(
           local=str(api.path['start_dir'].join('src/out/debug/artifacts.zip')),
-          remote='gs://flutter_archives_v2/monorepo/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/ios/artifacts.zip'
+          remote='gs://flutter_archives_v2/monorepo/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios/artifacts.zip'
       ),
       ArchivePaths(
           local=str(api.path['start_dir'].join('src/out/release-nobitcode/Flutter.dSYM.zip')),
-          remote='gs://flutter_archives_v2/monorepo/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/ios-release-nobitcode/Flutter.dSYM.zip'
+          remote='gs://flutter_archives_v2/monorepo/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release-nobitcode/Flutter.dSYM.zip'
       ),
       ArchivePaths(
           local=str(api.path['start_dir'].join('src/out/release/Flutter.dSYM.zip')),
-          remote='gs://flutter_archives_v2/monorepo/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/ios-release/Flutter.dSYM.zip'
+          remote='gs://flutter_archives_v2/monorepo/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release/Flutter.dSYM.zip'
       )
   ]
   env_to_results = {

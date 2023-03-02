@@ -131,7 +131,7 @@ class ArchivesApi(recipe_api.RecipeApi):
     self.m.file.ensure_directory('Ensure %s' % dir_part, local_dst_tree)
     self.m.file.copy('Copy %s to tmp location' % src, src, local_dst_tree)
     self.m.gsutil.upload(
-        name='Upload %s to gs://%s' % ('%s/*' % archive_dir, bucket),
+        name='Upload %s to %s' % (src, dst),
         source='%s/*' % archive_dir,
         bucket=bucket,
         dest='',
@@ -243,8 +243,17 @@ class ArchivesApi(recipe_api.RecipeApi):
     bucket_and_prefix = LUCI_TO_GCS_PREFIX.get(bucket)
 
     for archive in archives:
+      # Artifacts bucket is calculated using the LUCI bucket but we also use the realm to upload
+      # artifacts to the same bucket but different path when the build configurations use an
+      # experimental realm. Defaults to experimental.
+      artifact_realm = REALM_TO_PATH.get(archive.get('realm', ''), 'experimental')
       source = checkout.join(archive.get('source'))
-      artifact_path = '/'.join(filter(bool, [bucket_and_prefix, 'flutter', commit, archive.get('destination')]))
+      artifact_path = '/'.join(
+          filter(
+              bool, [bucket_and_prefix, 'flutter', artifact_realm, commit,
+                        archive.get('destination')]
+          )
+      )
       dst = 'gs://%s' % artifact_path
       results.append(ArchivePaths(self.m.path.abspath(source), dst))
     return results

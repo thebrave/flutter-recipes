@@ -38,13 +38,14 @@ release process.
 It is expected that a valid release branch, tag, and release_channel are passed
 to the recipe.
 
-The recipe will tag and push to github unless triggered 
+The recipe will tag and push to github unless triggered
 from an experimental run.
 """
 def RunSteps(api):
   branch = api.properties.get('branch')
-  tag = api.properties.get("tag")
-  release_channel = api.properties.get("release_channel")
+  tag = api.properties.get('tag')
+  release_channel = api.properties.get('release_channel')
+  dry_run = api.runtime.is_experimental or api.properties.get('dry_run', True) # default to True dry run
   assert branch and tag and release_channel
 
   checkout_path = api.path['start_dir'].join('flutter')
@@ -88,7 +89,7 @@ def RunSteps(api):
 
     api.git('tag release', 'tag', tag, release_git_hash)
 
-    # output tag for debug clarity, testing
+    # output tag for debug clarity & testing
     api.git('find commit',
       'rev-list',
       '-n',
@@ -96,11 +97,8 @@ def RunSteps(api):
       f'origin/{branch}',
       stdout=api.raw_io.output_text(add_output_log=True)).stdout.rstrip()
 
-    push_args = ['push']
-    if api.runtime.is_experimental:
-      # guard tag from being pushed on experimental runs
-      push_args.append('--dry-run')
-    push_args += ['origin', tag]
+    dry_run_arg = '--dry-run' if dry_run else None
+    push_args = ['push', dry_run_arg, 'origin', tag]
     api.git('push tag', *push_args)
 
 

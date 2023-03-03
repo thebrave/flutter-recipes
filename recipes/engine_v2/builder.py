@@ -81,6 +81,58 @@ MOCK_POM_PATH = (
 DIRECTORY = 'DIRECTORY'
 
 
+def run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes):
+  """Runs sub-builds generators."""
+  # Run pub on all of the pub_dirs.
+  for pub in pub_dirs:
+    pub_dir = api.path.abs_to_path(
+        api.path.dirname(
+            checkout.join(pub))
+    )
+    with api.context(env=env, env_prefixes=env_prefixes,
+                     cwd=pub_dir):
+      api.step('dart pub get', ['dart', 'pub', 'get'])
+  for generator_task in generator_tasks:
+    # Generators must run from inside flutter folder.
+    cmd = []
+    for script in generator_task.get('scripts'):
+      full_path_script = checkout.join(script)
+      cmd.append(full_path_script)
+    cmd.extend(generator_task.get('parameters', []))
+    api.step(generator_task.get('name'), cmd)
+
+
+def run_tests(api, tests, checkout, env, env_prefixes):
+  """Runs sub-build tests."""
+  # Run local tests in the builder to optimize resource usage.
+  for test in tests:
+    command = [test.get('language')] if test.get('language') else []
+    # Ideally local tests should be completely hermetic and in theory we can run
+    # them in parallel using futures. I haven't found a flutter engine
+    # configuration with more than one local test but once we find it we
+    # should run the list of tests using parallelism.
+    # TODO(godofredoc): Optimize to run multiple local tests in parallel.
+    command.append(checkout.join(test.get('script')))
+    command.extend(test.get('parameters', []))
+    #api.step(test.get('name'), command)
+    step_name = api.test_utils.test_step_name(test.get('name'))
+
+    def run_test():
+      return api.step(step_name, command)
+
+    # Rerun test step 3 times by default if failing.
+    # TODO(keyonghan): notify tree gardener for test failures/flakes:
+    # https://github.com/flutter/flutter/issues/89308
+    api.logs_util.initialize_logs_collection(env)
+    try:
+      # Run within another context to make the logs env variable available to
+      # test scripts.
+      with api.context(env=env, env_prefixes=env_prefixes):
+        api.retry.wrap(run_test, step_name=test.get('name'))
+    finally:
+      api.logs_util.upload_logs(test.get('name'))
+
+
 def Build(api, checkout, env, env_prefixes, outputs):
   """Builds a flavor identified as a set of gn and ninja configs."""
 
@@ -103,10 +155,6 @@ def Build(api, checkout, env, env_prefixes, outputs):
   ninja = build.get('ninja')
   ninja_tool[ninja.get('tool', 'ninja')
             ](ninja.get('config'), checkout, ninja.get('targets'))
-  # Archive full build. This is inneficient but necessary for global generators.
-  full_build_hash = api.shard_util_v2.archive_full_build(
-          checkout.join('out', build.get('name')), build.get('name'))
-  outputs['full_build'] = full_build_hash
   generator_tasks = build.get('generators', {}).get('tasks', [])
   pub_dirs = build.get('generators', {}).get('pub_dirs', [])
   archives = build.get('archives', [])
@@ -114,55 +162,16 @@ def Build(api, checkout, env, env_prefixes, outputs):
   tests = [t for t in build.get('tests', []) if t.get('type') == 'local']
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=checkout.join('flutter')):
-    # Run pub on all of the pub_dirs.
-    for pub in pub_dirs:
-      pub_dir = api.path.abs_to_path(
-          api.path.dirname(
-              checkout.join(pub))
-      )
-      with api.context(env=env, env_prefixes=env_prefixes,
-                       cwd=pub_dir):
-        api.step('dart pub get', ['dart', 'pub', 'get'])
-    for generator_task in generator_tasks:
-      # Generators must run from inside flutter folder.
-      cmd = []
-      for script in generator_task.get('scripts'):
-        full_path_script = checkout.join(script)
-        cmd.append(full_path_script)
-      cmd.extend(generator_task.get('parameters', []))
-      api.step(generator_task.get('name'), cmd)
-    # Run local tests in the builder to optimize resource usage.
-    for test in tests:
-      command = [test.get('language')] if test.get('language') else []
-      # Ideally local tests should be completely hermetic and in theory we can run
-      # them in parallel using futures. I haven't found a flutter engine
-      # configuration with more than one local test but once we find it we
-      # should run the list of tests using parallelism.
-      # TODO(godofredoc): Optimize to run multiple local tests in parallel.
-      command.append(checkout.join(test.get('script')))
-      command.extend(test.get('parameters', []))
-      #api.step(test.get('name'), command)
-      step_name = api.test_utils.test_step_name(test.get('name'))
-
-      def run_test():
-        return api.step(step_name, command)
-
-      # Rerun test step 3 times by default if failing.
-      # TODO(keyonghan): notify tree gardener for test failures/flakes:
-      # https://github.com/flutter/flutter/issues/89308
-      api.logs_util.initialize_logs_collection(env)
-      try:
-        # Run within another context to make the logs env variable available to
-        # test scripts.
-        with api.context(env=env, env_prefixes=env_prefixes):
-          api.retry.wrap(run_test, step_name=test.get('name'))
-      finally:
-        api.logs_util.upload_logs(test.get('name'))
-
+    run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes)
+    run_tests(api, tests, checkout, env, env_prefixes)
     api.flutter_bcid.report_stage('upload')
     for archive_config in archives:
       outputs[archive_config['name']] = Archive(api, checkout, archive_config)
     api.flutter_bcid.report_stage('upload-complete')
+  # Archive full build. This is inneficient but necessary for global generators.
+  full_build_hash = api.shard_util_v2.archive_full_build(
+          checkout.join('out', build.get('name')), build.get('name'))
+  outputs['full_build'] = full_build_hash
 
 
 def Archive(api, checkout,  archive_config):

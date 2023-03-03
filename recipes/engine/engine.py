@@ -862,8 +862,6 @@ def BuildLinux(api):
   PackageLinuxDesktopVariant(api, 'host_debug', 'linux-x64-debug')
   PackageLinuxDesktopVariant(api, 'host_profile', 'linux-x64-profile')
   PackageLinuxDesktopVariant(api, 'host_release', 'linux-x64-release')
-  # Legacy; remove once Flutter tooling is updated to use the -debug location.
-  PackageLinuxDesktopVariant(api, 'host_debug', 'linux-x64')
 
 
 def GetRemoteFileName(exec_path):

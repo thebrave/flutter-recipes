@@ -9,11 +9,11 @@ from PB.recipes.flutter.engine.engine_builder import InputProperties, EngineBuil
 
 DEPS = [
   'depot_tools/depot_tools',
+  'flutter/goma',
   'flutter/os_utils',
   'flutter/osx_sdk',
   'flutter/repo_util',
   'flutter/shard_util_v2',
-  'fuchsia/goma',
   'recipe_engine/buildbucket',
   'recipe_engine/cas',
   'recipe_engine/context',

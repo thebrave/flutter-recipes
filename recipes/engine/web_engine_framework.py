@@ -22,7 +22,7 @@ DEPS = [
     'flutter/repo_util',
     'flutter/shard_util_v2',
     'fuchsia/cas_util',
-    'fuchsia/goma',
+    'flutter/goma',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',

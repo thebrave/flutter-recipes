@@ -14,7 +14,7 @@ DEPS = [
     'flutter/flutter_deps',
     'flutter/os_utils',
     'flutter/repo_util',
-    'fuchsia/goma',
+    'flutter/goma',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',

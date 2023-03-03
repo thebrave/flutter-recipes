@@ -23,7 +23,7 @@ DEPS = [
     'flutter/vdl',
     'flutter/yaml',
     'fuchsia/cas_util',
-    'fuchsia/goma',
+    'flutter/goma',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',

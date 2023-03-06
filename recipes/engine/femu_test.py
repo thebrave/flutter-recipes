@@ -16,11 +16,9 @@ DEPS = [
     'depot_tools/depot_tools',
     'flutter/repo_util',
     'flutter/retry',
-    'flutter/sdk',
     'flutter/shard_util_v2',
     'flutter/ssh',
     'flutter/test_utils',
-    'flutter/vdl',
     'flutter/yaml',
     'fuchsia/cas_util',
     'flutter/goma',
@@ -135,42 +133,6 @@ def CasRoot(api):
         linkname=cas_tree.root.join(name_rel_to_root),
     )
 
-  def addPackageFiles():
-    fuchsia_packages = api.vdl.get_package_paths(sdk_version=sdk_version)
-    add(fuchsia_packages.pm, api.path.basename(fuchsia_packages.pm))
-    add(fuchsia_packages.amber_files,
-        api.path.basename(fuchsia_packages.amber_files))
-
-  def addImageFiles():
-    ssh_files = api.vdl.gen_ssh_files()
-    add(ssh_files.id_public, api.path.basename(ssh_files.id_public))
-    add(ssh_files.id_private, api.path.basename(ssh_files.id_private))
-
-    fuchsia_images = api.vdl.get_image_paths(sdk_version=sdk_version)
-    add(fuchsia_images.build_args, "qemu_buildargs")
-    add(fuchsia_images.kernel_file, "qemu_kernel")
-    add(fuchsia_images.system_fvm, "qemu_fvm")
-    add(api.sdk.sdk_path.join("tools", "x64", "far"), "far")
-    add(api.sdk.sdk_path.join("tools", "x64", "fvm"), "fvm")
-    add(api.sdk.sdk_path.join("tools", "x64", "symbolizer"), "symbolizer")
-
-    ## Provision and add zircon-a
-    authorized_zircona = api.buildbucket.builder_cache_path.join(
-        'zircon-authorized.zbi')
-    api.sdk.authorize_zbi(
-        ssh_key_path=ssh_files.id_public,
-        zbi_input_path=fuchsia_images.zircona,
-        zbi_output_path=authorized_zircona,
-    )
-    add(authorized_zircona, "qemu_zircona-ed25519")
-
-    ## Generate and add ssh_config
-    ssh_config = api.buildbucket.builder_cache_path.join('ssh_config')
-    api.ssh.generate_ssh_config(
-        private_key_path=api.path.basename(ssh_files.id_private),
-        dest=ssh_config)
-    add(ssh_config, "ssh_config")
-
   def addFlutterTests():
     arch = GetEmulatorArch(api)
     add(
@@ -211,8 +173,6 @@ def CasRoot(api):
           add(checkout.join('out', 'fuchsia_debug_%s' % arch, path), basename)
       test_suites.append(suite)
 
-  addPackageFiles()
-  addImageFiles()
   addFlutterTests()
 
   cas_tree.create_links("create tree of runfiles")
@@ -399,33 +359,6 @@ def GenTests(api):
       ),
       api.step_data('run FEMU test on x64.run v2_test.launch x64 emulator', retcode=1),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
-      api.platform('linux', 64),
-      api.path.exists(
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
-          ),
-          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
-          api.path['cache'].join('builder/ssh/id_ed25519'),
-          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
-          api.path['cache'].join('builder/ssh/ssh_host_key'),
-      ),
   )
 
   yield api.test(
@@ -471,33 +404,6 @@ def GenTests(api):
       ),
       api.step_data('run FEMU test on x64.run v2_test.publishing v2_test-123.far', retcode=1),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
-      api.platform('linux', 64),
-      api.path.exists(
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
-          ),
-          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
-          api.path['cache'].join('builder/ssh/id_ed25519'),
-          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
-          api.path['cache'].join('builder/ssh/ssh_host_key'),
-      ),
   )
 
   yield api.test(
@@ -537,33 +443,6 @@ def GenTests(api):
       ),
       api.step_data('run FEMU test on x64.run flutter-embedder-test.publishing flutter-embedder-test-0.far', retcode=1),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
-      api.platform('linux', 64),
-      api.path.exists(
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
-          ),
-          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
-          api.path['cache'].join('builder/ssh/id_ed25519'),
-          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
-          api.path['cache'].join('builder/ssh/ssh_host_key'),
-      ),
   )
 
   yield api.test(
@@ -578,33 +457,22 @@ def GenTests(api):
               vdl_version='g3-revision:vdl_fuchsia_xxxxxxxx_RC00',
               clobber=False,
           ), clobber=False,),
+    api.step_data(
+          'retrieve list of test suites.parse',
+          api.json.output([{
+              'package':
+                  'v2_test-123.far',
+              'test_command':
+                  'test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm'
+          }])),
+      api.step_data(
+          'retrieve list of test suites.read',
+          api.file.read_text("""# This is a comment.
+- package: v2_test-123.far
+  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm""")),
       api.step_data(
           'read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
-      ),
-      api.platform('linux', 64),
-      api.path.exists(
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
-          ),
-          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
-          api.path['cache'].join('builder/ssh/id_ed25519'),
-          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
-          api.path['cache'].join('builder/ssh/ssh_host_key'),
       ),
   )
 
@@ -652,33 +520,6 @@ def GenTests(api):
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
-      api.platform('linux', 64),
-      api.path.exists(
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
-          ),
-          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
-          api.path['cache'].join('builder/ssh/id_ed25519'),
-          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
-          api.path['cache'].join('builder/ssh/ssh_host_key'),
-      ),
   )
 
   yield api.test(
@@ -720,33 +561,6 @@ def GenTests(api):
       ),
       api.step_data('run FEMU test on x64.run dart-jit-runner-integration-test.publishing dart_aot_runner-0.far', retcode=1),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
-      api.platform('linux', 64),
-      api.path.exists(
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
-          ),
-          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
-          api.path['cache'].join('builder/ssh/id_ed25519'),
-          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
-          api.path['cache'].join('builder/ssh/ssh_host_key'),
-      ),
   )
 
   yield api.test(
@@ -779,33 +593,6 @@ def GenTests(api):
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
-      api.platform('linux', 64),
-      api.path.exists(
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
-          ),
-          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
-          api.path['cache'].join('builder/ssh/id_ed25519'),
-          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
-          api.path['cache'].join('builder/ssh/ssh_host_key'),
-      ),
   )
 
   yield api.test(
@@ -863,33 +650,6 @@ def GenTests(api):
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
-      api.platform('linux', 64),
-      api.path.exists(
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
-          ),
-          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
-          api.path['cache'].join('builder/ssh/id_ed25519'),
-          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
-          api.path['cache'].join('builder/ssh/ssh_host_key'),
-      ),
   )
 
   yield api.test(
@@ -925,33 +685,6 @@ def GenTests(api):
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
-      api.platform('linux', 64),
-      api.path.exists(
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
-          ),
-          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
-          api.path['cache'].join('builder/ssh/id_ed25519'),
-          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
-          api.path['cache'].join('builder/ssh/ssh_host_key'),
-      ),
   )
 
   yield api.test(
@@ -992,32 +725,5 @@ def GenTests(api):
       ),
       api.step_data('run FEMU test on x64.run v2_test.launch x64 emulator', retcode=1),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
-      api.platform('linux', 64),
-      api.path.exists(
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/pm'),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/amber-files'
-          ),
-          api.path['cache'].join(
-              'builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz'
-          ),
-          api.path['cache'].join('builder/ssh/id_ed25519.pub'),
-          api.path['cache'].join('builder/ssh/id_ed25519'),
-          api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
-          api.path['cache'].join('builder/ssh/ssh_host_key'),
-      ),
   )
 

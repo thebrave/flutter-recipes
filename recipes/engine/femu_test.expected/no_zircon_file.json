@@ -1065,82 +1065,12 @@
   },
   {
     "cmd": [],
-    "name": "ensure packages"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "ensure packages.init fuchsia_packages cache",
+    "name": "retrieve list of test suites",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "listdir",
-      "[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "ensure packages.check packages cache content",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@listdir@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "ensure packages.ensure gsutil",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_LOG_LINE@yaml@# This is a comment.@@@",
+      "@@@STEP_LOG_LINE@yaml@- package: v2_test-123.far@@@",
+      "@@@STEP_LOG_LINE@yaml@  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm@@@",
+      "@@@STEP_LOG_END@yaml@@@"
     ]
   },
   {
@@ -1151,7 +1081,43 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[flutter::gsutil]/resources/tool_manifest.json",
+      "[CACHE]/builder/src/flutter/testing/fuchsia/test_suites.yaml",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "retrieve list of test suites.read",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@# This is a comment.@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@- package: v2_test-123.far@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm@@@",
+      "@@@STEP_LOG_END@test_suites.yaml@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "RECIPE_MODULE[flutter::yaml]/resources/parse_yaml.py",
+      "--yaml_file",
+      "[CACHE]/builder/src/flutter/testing/fuchsia/test_suites.yaml",
+      "--json_file",
       "/path/to/tmp/json"
     ],
     "cwd": "[CACHE]/builder",
@@ -1172,34 +1138,25 @@
       ]
     },
     "infra_step": true,
-    "name": "ensure packages.ensure gsutil.read manifest",
+    "name": "retrieve list of test suites.parse",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gsutil\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "ensure packages.ensure gsutil.install path/to/gsutil",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@[@@@",
+      "@@@STEP_LOG_LINE@json.output@  {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"v2_test-123.far\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"test_command\": \"test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@]@@@",
+      "@@@STEP_LOG_END@json.output@@@"
     ]
   },
   {
     "cmd": [
-      "vpython3",
+      "python3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[START_DIR]/cipd_tool/path/to/gsutil/version%3Apinned-version"
+      "RECIPE_MODULE[fuchsia::cas_util]/resources/hardlink.py",
+      "--link-json",
+      "{\"[CACHE]/builder/src/out/fuchsia_bucket/flutter/x64/debug/aot/flutter_aot_runner-0.far\": [\"[CLEANUP]/femu_runfiles__tmp_1/flutter_aot_runner-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/v2_test-123.far\": [\"[CLEANUP]/femu_runfiles__tmp_1/v2_test-123.far\"]}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1219,9 +1176,80 @@
       ]
     },
     "infra_step": true,
-    "name": "ensure packages.ensure gsutil.install path/to/gsutil.ensure package directory",
+    "name": "create tree of runfiles"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[recipe_engine::cas]/resources/infra.sha1",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "read infra revision",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
+      "@@@STEP_LOG_LINE@infra.sha1@git_revision:mock_infra_git_revision@@@",
+      "@@@STEP_LOG_END@infra.sha1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "install infra/tools/luci/cas"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/cipd_tool/infra/tools/luci/cas/git_revision%3Amock_infra_git_revision"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "install infra/tools/luci/cas.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -1229,9 +1257,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/gsutil/version%3Apinned-version",
+      "[START_DIR]/cipd_tool/infra/tools/luci/cas/git_revision%3Amock_infra_git_revision",
       "-ensure-file",
-      "path/to/gsutil version:pinned-version",
+      "infra/tools/luci/cas/${platform} git_revision:mock_infra_git_revision",
       "-max-threads",
       "0",
       "-json-output",
@@ -1255,15 +1283,15 @@
       ]
     },
     "infra_step": true,
-    "name": "ensure packages.ensure gsutil.install path/to/gsutil.ensure_installed",
+    "name": "install infra/tools/luci/cas.ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gsutil\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:moc\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cas/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -1273,12 +1301,16 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gsutil/version%3Apinned-version/gsutil",
-      "-o",
-      "GSUtil:software_update_check_period=0",
-      "cp",
-      "gs://fuchsia/development/0.20200101.0.1/packages/qemu-x64.tar.gz",
-      "[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64"
+      "[START_DIR]/cipd_tool/infra/tools/luci/cas/git_revision%3Amock_infra_git_revision/cas",
+      "archive",
+      "-cas-instance",
+      "projects/example-cas-server/instances/default_instance",
+      "-dump-digest",
+      "/path/to/tmp/",
+      "-paths-json",
+      "[[\"[CLEANUP]/femu_runfiles__tmp_1\", \".\"]]",
+      "-log-level",
+      "debug"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1298,30 +1330,190 @@
       ]
     },
     "infra_step": true,
-    "name": "ensure packages.gsutil cp",
+    "name": "archive FEMU Run Files",
+    "timeout": 900.0,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_LINK@CAS UI@https://cas-viewer.appspot.com/projects/example-cas-server/instances/default_instance/blobs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0/tree@@@"
     ]
   },
   {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "config",
+      "set",
+      "overnet.cso",
+      "disabled"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "disable CSO in ffx"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "daemon",
+      "stop"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "restart ffx daemon"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "config",
+      "analytics",
+      "disable"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "disable ffx analytics"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "emu",
+      "list"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "list emulators"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "emu",
+      "stop",
+      "--all"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "stop all emulator instances"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "product-bundle",
+      "get",
+      "terminal.qemu-x64"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "get terminal.qemu-x64 product bundle"
+  },
+  {
     "cmd": [],
-    "name": "ensure packages.ensure bsdtar",
+    "name": "run FEMU test on x64"
+  },
+  {
+    "cmd": [],
+    "name": "run FEMU test on x64.run v2_test",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "RECIPE_MODULE[flutter::tar]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "-v",
+      "emu",
+      "start",
+      "terminal.qemu-x64",
+      "--headless",
+      "--log",
+      "[CLEANUP]/emulator_log_tmp_1"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
       "GOMA_DIR": "[CACHE]/goma/client"
     },
@@ -1338,37 +1530,18 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "infra_step": true,
-    "name": "ensure packages.ensure bsdtar.read manifest",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/bsdtar\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "ensure packages.ensure bsdtar.install path/to/bsdtar",
+    "name": "run FEMU test on x64.run v2_test.launch x64 emulator",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[START_DIR]/cipd_tool/path/to/bsdtar/version%3Apinned-version"
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "target",
+      "list"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
       "GOMA_DIR": "[CACHE]/goma/client"
     },
@@ -1385,26 +1558,18 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "infra_step": true,
-    "name": "ensure packages.ensure bsdtar.install path/to/bsdtar.ensure package directory",
+    "name": "run FEMU test on x64.run v2_test.list all targets in the collection",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[START_DIR]/cipd_tool/path/to/bsdtar/version%3Apinned-version",
-      "-ensure-file",
-      "path/to/bsdtar version:pinned-version",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "target",
+      "show"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
       "GOMA_DIR": "[CACHE]/goma/client"
     },
@@ -1421,34 +1586,20 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "infra_step": true,
-    "name": "ensure packages.ensure bsdtar.install path/to/bsdtar.ensure_installed",
+    "name": "run FEMU test on x64.run v2_test.retrieve femu information",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/bsdtar\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/bsdtar/version%3Apinned-version/bsdtar",
-      "--extract",
-      "--verbose",
-      "-f",
-      "[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64/qemu-x64.tar.gz",
-      "-C",
-      "[CACHE]/builder/0.20200101.0.1/fuchsia_packages/linux_intel_64"
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/fserve",
+      "-image",
+      "qemu-x64",
+      "-server-port",
+      "8084"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
       "GOMA_DIR": "[CACHE]/goma/client"
     },
@@ -1465,25 +1616,17 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "infra_step": true,
-    "name": "ensure packages.extract package tar.gz",
+    "name": "run FEMU test on x64.run v2_test.start fserve",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CACHE]/builder/ssh"
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/fpublish",
+      "v2_test-123.far"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
       "GOMA_DIR": "[CACHE]/goma/client"
     },
@@ -1500,56 +1643,19 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "infra_step": true,
-    "name": "init ssh cache"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "listdir",
-      "[CACHE]/builder/ssh"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "check ssh cache content",
+    "name": "run FEMU test on x64.run v2_test.publishing v2_test-123.far",
     "~followup_annotations": [
-      "@@@STEP_LOG_END@listdir@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [
-      "ssh-keygen",
-      "-t",
-      "ed25519",
-      "-h",
-      "-f",
-      "[CACHE]/builder/ssh/ssh_host_key",
-      "-P",
-      "",
-      "-N",
-      ""
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "test",
+      "run",
+      "fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
       "GOMA_DIR": "[CACHE]/goma/client"
     },
@@ -1566,93 +1672,18 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "infra_step": true,
-    "name": "ssh-keygen host",
-    "timeout": 600
-  },
-  {
-    "cmd": [
-      "ssh-keygen",
-      "-t",
-      "ed25519",
-      "-f",
-      "[CACHE]/builder/ssh/id_ed25519",
-      "-P",
-      "",
-      "-N",
-      ""
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "ssh-keygen device",
-    "timeout": 600
-  },
-  {
-    "cmd": [],
-    "name": "ensure image"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "ensure image.init fuchsia_image cache",
+    "name": "run FEMU test on x64.run v2_test.run ffx test",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "listdir",
-      "[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64"
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "log",
+      "dump"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
       "GOMA_DIR": "[CACHE]/goma/client"
     },
@@ -1669,23 +1700,19 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "infra_step": true,
-    "name": "ensure image.check image cache content",
+    "name": "run FEMU test on x64.run v2_test.ffx log dump",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@listdir@@@"
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@emulator_log@log@@@",
+      "@@@STEP_LOG_END@emulator_log@@@"
     ]
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gsutil/version%3Apinned-version/gsutil",
-      "-o",
-      "GSUtil:software_update_check_period=0",
-      "cp",
-      "gs://fuchsia/development/0.20200101.0.1/images/qemu-x64.tgz",
-      "[CLEANUP]/fuchsia_image_tmp_tmp_1"
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/fserve",
+      "-kill"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
       "GOMA_DIR": "[CACHE]/goma/client"
     },
@@ -1702,23 +1729,20 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "infra_step": true,
-    "name": "ensure image.gsutil cp",
+    "name": "run FEMU test on x64.run v2_test.kill fserve",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/bsdtar/version%3Apinned-version/bsdtar",
-      "--extract",
-      "--verbose",
-      "-f",
-      "[CLEANUP]/fuchsia_image_tmp_tmp_1/qemu-x64.tgz",
-      "-C",
-      "[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64"
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "-v",
+      "emu",
+      "stop",
+      "--all"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
       "GOMA_DIR": "[CACHE]/goma/client"
     },
@@ -1735,57 +1759,12 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "infra_step": true,
-    "name": "ensure image.extract image tgz",
+    "name": "run FEMU test on x64.run v2_test.stop x64 emulator",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "listdir",
-      "[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "ensure image.set image files",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@listdir@[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/buildargs.gn@@@",
-      "@@@STEP_LOG_LINE@listdir@[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/qemu-kernel.kernel@@@",
-      "@@@STEP_LOG_LINE@listdir@[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-full.blk@@@",
-      "@@@STEP_LOG_LINE@listdir@[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/storage-sparse.blk@@@",
-      "@@@STEP_LOG_LINE@listdir@[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-a.zbi@@@",
-      "@@@STEP_LOG_LINE@listdir@[CACHE]/builder/0.20200101.0.1/fuchsia_image/linux_intel_64/zircon-r.zbi@@@",
-      "@@@STEP_LOG_END@listdir@@@"
-    ]
-  },
-  {
-    "failure": {
-      "failure": {},
-      "humanReason": "Image paths do not exist. [Path([CACHE], 'builder', '0.20200101.0.1', 'fuchsia_image', 'linux_intel_64', 'zircon-a.zbi')]"
-    },
     "name": "$result"
   }
 ]

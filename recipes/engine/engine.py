@@ -355,62 +355,9 @@ def UploadSkyEngineDartPackage(api):
   UploadSkyEngineToCIPD(api, 'sky_engine')
 
 
-def UploadFlutterPatchedSdk(api):
-  host_debug_path = GetCheckoutPath(api).join('out/host_debug')
-  host_release_path = GetCheckoutPath(api).join('out/host_release')
-
-  # These are large and unused by Flutter, see #77950
-  api.file.rmglob(
-      'remove *.dill.S files from flutter_patched_sdk',
-      host_debug_path.join('flutter_patched_sdk'),
-      '*.dill.S',
-  )
-
-  api.bucket_util.upload_folder(
-      'Upload Flutter patched sdk', 'src/out/host_debug', 'flutter_patched_sdk',
-      'flutter_patched_sdk.zip'
-  )
-
-  flutter_patched_sdk_product = host_release_path.join(
-      'flutter_patched_sdk_product'
-  )
-
-  api.file.rmtree(
-      'Remove stale flutter_patched_sdk_product', flutter_patched_sdk_product
-  )
-  api.file.move(
-      'Move release flutter_patched_sdk to flutter_patched_sdk_product',
-      host_release_path.join('flutter_patched_sdk'), flutter_patched_sdk_product
-  )
-
-  api.file.rmglob(
-      'remove *.dill.S files from flutter_patched_sdk_product',
-      host_release_path.join('flutter_patched_sdk_product'),
-      '*.dill.S',
-  )
-
-  api.bucket_util.upload_folder(
-      'Upload Product Flutter patched sdk', 'src/out/host_release',
-      'flutter_patched_sdk_product', 'flutter_patched_sdk_product.zip'
-  )
-
-
 def UploadDartSdk(api, archive_name, target_path='src/out/host_debug'):
   api.bucket_util.upload_folder(
       'Upload Dart SDK', target_path, 'dart-sdk', archive_name
-  )
-
-
-def UploadWebSdk(api):
-  src = GetCheckoutPath(api).join(
-      'out',
-      'wasm_release',
-      'zip_archives',
-      'flutter-web-sdk.zip'
-  )
-  api.bucket_util.safe_upload(
-      src,
-      GetCloudPath(api, 'flutter-web-sdk.zip')
   )
 
 
@@ -774,23 +721,6 @@ def BuildLinuxAndroid(api, swarming_task_id):
     BuildLinuxAndroidAOT(api, swarming_task_id)
 
 
-def PackageLinuxDesktopVariant(api, label, bucket_name):
-  artifacts = [
-      'libflutter_linux_gtk.so',
-  ]
-  if bucket_name.endswith('profile') or bucket_name.endswith('release'):
-    artifacts.append('gen_snapshot')
-  # Headers for the library are in the flutter_linux folder.
-  api.bucket_util.upload_folder_and_files(
-      'Upload linux-x64 Flutter GTK artifacts',
-      'src/out/%s' % label,
-      'flutter_linux',
-      'linux-x64-flutter-gtk.zip',
-      platform=bucket_name,
-      file_paths=artifacts
-  )
-
-
 def BuildLinux(api):
   RunGN(api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--build-embedder-examples')
   RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk')
@@ -800,54 +730,61 @@ def BuildLinux(api):
   # flutter/sky/packages from host_debug_unopt is needed for RunTests 'dart'
   # type.
   Build(api, 'host_debug_unopt', 'flutter/sky/packages')
-  Build(api, 'host_debug')
-  Build(api, 'wasm_release')
+  Build(api, 'host_debug',
+        'flutter/build/archives:artifacts',
+        'flutter/build/archives:dart_sdk_archive',
+        'flutter/build/archives:embedder',
+        'flutter/build/archives:flutter_patched_sdk',
+        'flutter/build/dart:copy_dart_sdk',
+        'flutter/tools/font-subset',
+        'flutter:unittests',
+  )
+  Build(api, 'wasm_release', 'flutter/web_sdk:flutter_web_sdk_archive')
   # 'engine' suite has failing tests in host_debug.
   # https://github.com/flutter/flutter/issues/103757
   RunTests(api, 'host_debug', types='dart')
 
-  Build(api, 'host_profile')
+  Build(api, 'host_profile',
+        'flutter/shell/testing',
+        'flutter/tools/path_ops',
+        'flutter/build/dart:copy_dart_sdk',
+        'flutter/shell/testing',
+        'flutter:unittests',
+  )
   RunTests(api, 'host_profile', types='dart,engine')
-  Build(api, 'host_release')
-  api.file.listdir(
-      'host_release zips',
-      GetCheckoutPath(api).join('out', 'host_release', 'zip_archives'))
+  Build(api, 'host_release',
+        'flutter/build/archives:flutter_patched_sdk',
+        'flutter/build/dart:copy_dart_sdk',
+        'flutter/display_list:display_list_benchmarks',
+        'flutter/display_list:display_list_builder_benchmarks',
+        'flutter/fml:fml_benchmarks',
+        'flutter/impeller/geometry:geometry_benchmarks',
+        'flutter/lib/ui:ui_benchmarks',
+        'flutter/shell/common:shell_benchmarks',
+        'flutter/shell/testing',
+        'flutter/third_party/txt:txt_benchmarks',
+        'flutter/tools/path_ops',
+        'flutter:unittests'
+  )
   RunTests(api, 'host_release', types='dart,engine,benchmarks')
 
-  MoveShaderLib(api)
+  # host_debug
+  UploadArtifact(api, config='host_debug', platform='linux-x64',
+                   artifact_name='artifacts.zip')
+  UploadArtifact(api, config='host_debug', platform='linux-x64',
+                   artifact_name='linux-x64-embedder.zip')
+  UploadArtifact(api, config='host_debug', platform='linux-x64',
+                   artifact_name='font-subset.zip')
+  UploadArtifact(api, config='host_debug', platform='',
+                   artifact_name='flutter_patched_sdk.zip')
+  UploadArtifact(api, config='host_release', platform='',
+                   artifact_name='flutter_patched_sdk_product.zip')
+  UploadArtifact(api, config='host_debug', platform='',
+                   artifact_name='dart-sdk-linux-x64.zip')
 
-  UploadArtifacts(
-      api, 'linux-x64',
-      file_paths=[
-          ICU_DATA_PATH,
-          'out/host_debug/flutter_tester',
-          'out/host_debug/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
-          'out/host_debug/gen/flutter/tools/path_ops/LICENSE.path_ops.md',
-          'out/host_debug/impellerc',
-          'out/host_debug/libpath_ops.so',
-          'out/host_debug/libtessellator.so',
-          'out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin',
-          'out/host_debug/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
-          'out/host_debug/gen/frontend_server.dart.snapshot',
-      ],
-      directory_paths=[
-          IMPELLERC_SHADER_LIB_PATH,
-      ],
-  )
-
-  UploadArtifacts(
-      api,
-      'linux-x64', [
-          'out/host_debug/flutter_embedder.h',
-          'out/host_debug/libflutter_engine.so',
-      ],
-      archive_name='linux-x64-embedder'
-  )
-
-  UploadFontSubset(api, 'linux-x64')
-  UploadFlutterPatchedSdk(api)
-  UploadDartSdk(api, archive_name='dart-sdk-linux-x64.zip')
-  UploadWebSdk(api)
+  # Wasm release
+  UploadArtifact(api, config='wasm_release', platform='',
+                 artifact_name='flutter-web-sdk.zip')
 
   # Rebuild with fontconfig support enabled for the desktop embedding, since it
   # should be on for libflutter_linux_gtk.so, but not libflutter_engine.so.
@@ -855,13 +792,16 @@ def BuildLinux(api):
   RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--enable-fontconfig', '--prebuilt-dart-sdk')
   RunGN(api, '--runtime-mode', 'release', '--enable-fontconfig', '--prebuilt-dart-sdk')
 
-  Build(api, 'host_debug')
-  Build(api, 'host_profile')
-  Build(api, 'host_release')
+  Build(api, 'host_debug', 'flutter/shell/platform/linux:flutter_gtk')
+  Build(api, 'host_profile', 'flutter/shell/platform/linux:flutter_gtk')
+  Build(api, 'host_release', 'flutter/shell/platform/linux:flutter_gtk')
 
-  PackageLinuxDesktopVariant(api, 'host_debug', 'linux-x64-debug')
-  PackageLinuxDesktopVariant(api, 'host_profile', 'linux-x64-profile')
-  PackageLinuxDesktopVariant(api, 'host_release', 'linux-x64-release')
+  UploadArtifact(api, config='host_debug', platform='linux-x64-debug',
+                 artifact_name='linux-x64-flutter-gtk.zip')
+  UploadArtifact(api, config='host_profile', platform='linux-x64-profile',
+                 artifact_name='linux-x64-flutter-gtk.zip')
+  UploadArtifact(api, config='host_release', platform='linux-x64-release',
+                 artifact_name='linux-x64-flutter-gtk.zip')
 
 
 def GetRemoteFileName(exec_path):

@@ -299,7 +299,12 @@ def RunSteps(api, properties, env_properties):
   dart_bin = checkout.join('third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
                            'bin')
 
-  env = {'GOMA_DIR': api.goma.goma_dir}
+  ffx_isolate_dir = api.path.mkdtemp('ffx_isolate_files')
+
+  env = {
+    'GOMA_DIR': api.goma.goma_dir,
+    'FFX_ISOLATE_DIR': ffx_isolate_dir,
+  }
   env_prefixes = {'PATH': [dart_bin]}
 
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)

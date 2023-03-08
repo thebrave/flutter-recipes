@@ -471,7 +471,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     if version == 'version:3.16.1':
       cmake.add_package('infra/cmake/${platform}', version)
     else:
-      version = version or 'version:2@3.25.2.chromium.6'
+      version = version or 'build_id:8787856497187628321'
       cmake.add_package('infra/3pp/tools/cmake/${platform}', version)
     with self.m.step.nest('Install cmake'):
       self.m.cipd.ensure(cmake_path, cmake)

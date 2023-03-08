@@ -11,7 +11,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -36,7 +36,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -63,7 +63,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -95,7 +95,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -131,7 +131,7 @@
       "-u",
       "RECIPE_MODULE[depot_tools::bot_update]/resources/bot_update.py",
       "--spec-path",
-      "cache_dir = '[CACHE]/git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': False, 'name': 'src/flutter', 'url': 'https://github.com/flutter/engine'}]",
+      "cache_dir = '[CACHE]/git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': False, 'name': 'src/flutter', 'url': 'https://flutter.googlesource.com/mirrors/engine'}]",
       "--revision_mapping_file",
       "{\"got_engine_revision\": \"src/flutter\"}",
       "--git-cache-dir",
@@ -141,16 +141,14 @@
       "--output_json",
       "/path/to/tmp/json",
       "--revision",
-      "src/flutter@refs/pull/1/head",
+      "src/flutter@abcd1234",
       "--refs",
-      "refs/heads/main",
-      "--refs",
-      "refs/pull/1/head"
+      "refs/heads/main"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Linux Host Engine/8945511751514863184",
+      "DEPOT_TOOLS_REPORT_BUILD": "flutter/staging/Linux Engine/8945511751514863184",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
       "GIT_HTTP_LOW_SPEED_TIME": "1800",
@@ -169,7 +167,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -186,19 +184,19 @@
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"did_run\": true, @@@",
       "@@@STEP_LOG_LINE@json.output@  \"fixed_revisions\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"src/flutter\": \"refs/pull/1/head\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"src/flutter\": \"abcd1234\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }, @@@",
       "@@@STEP_LOG_LINE@json.output@  \"manifest\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"src/flutter\": {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"repository\": \"https://fake.org/src/flutter.git\", @@@",
-      "@@@STEP_LOG_LINE@json.output@      \"revision\": \"a63681edc0f69a72604596b16c7986513e809995\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"revision\": \"abcd1234\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@  }, @@@",
       "@@@STEP_LOG_LINE@json.output@  \"patch_failure\": false, @@@",
       "@@@STEP_LOG_LINE@json.output@  \"patch_root\": \"src/flutter\", @@@",
       "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision\": \"a63681edc0f69a72604596b16c7986513e809995\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision_cp\": \"refs/pull/1/head@{#84512}\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision\": \"abcd1234\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision_cp\": \"refs/heads/main@{#84512}\", @@@",
       "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"9221bca00ddbd888260084def81f09543281b952\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }, @@@",
       "@@@STEP_LOG_LINE@json.output@  \"root\": \"src/flutter\", @@@",
@@ -207,7 +205,7 @@
       "@@@STEP_LOG_LINE@json.output@      \"src/flutter\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"git_checkout\": {@@@",
       "@@@STEP_LOG_LINE@json.output@          \"repo_url\": \"https://fake.org/src/flutter.git\", @@@",
-      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"a63681edc0f69a72604596b16c7986513e809995\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"abcd1234\"@@@",
       "@@@STEP_LOG_LINE@json.output@        }@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    }, @@@",
@@ -216,8 +214,8 @@
       "@@@STEP_LOG_LINE@json.output@  \"step_text\": \"Some step text\"@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@SET_BUILD_PROPERTY@got_engine_revision@\"a63681edc0f69a72604596b16c7986513e809995\"@@@",
-      "@@@SET_BUILD_PROPERTY@got_engine_revision_cp@\"refs/pull/1/head@{#84512}\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_engine_revision@\"abcd1234\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_engine_revision_cp@\"refs/heads/main@{#84512}\"@@@",
       "@@@SET_BUILD_PROPERTY@got_revision@\"9221bca00ddbd888260084def81f09543281b952\"@@@"
     ]
   },
@@ -231,7 +229,7 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Linux Host Engine/8945511751514863184",
+      "DEPOT_TOOLS_REPORT_BUILD": "flutter/staging/Linux Engine/8945511751514863184",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
@@ -246,7 +244,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -271,7 +269,7 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Linux Host Engine/8945511751514863184",
+      "DEPOT_TOOLS_REPORT_BUILD": "flutter/staging/Linux Engine/8945511751514863184",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GOMA_DIR": "[CACHE]/goma/client"
     },
@@ -286,7 +284,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -325,7 +323,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -386,7 +384,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -452,7 +450,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -507,7 +505,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -566,7 +564,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -585,7 +583,7 @@
     "cmd": [
       "[CACHE]/builder/src/flutter/third_party/ninja/ninja",
       "-j",
-      "200",
+      "1024",
       "-C",
       "[CACHE]/builder/src/out/linux_debug_arm64",
       "flutter/build/archives:artifacts",
@@ -613,7 +611,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -662,7 +660,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -720,7 +718,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -767,7 +765,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -812,7 +810,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -859,7 +857,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -875,7 +873,7 @@
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Host Engine\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:53:21.500000\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000003000@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
@@ -920,7 +918,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -978,7 +976,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1025,7 +1023,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1055,7 +1053,7 @@
     "cmd": [
       "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
       "fuchsia-infra.artifacts.builds_beta_goma",
-      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Host Engine\", \"time_stamp\": \"2012-05-14 12:53:21.500000\", \"time_stamp_int\": 1337000003000}}"
+      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:53:21.500000\", \"time_stamp_int\": 1337000003000}}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1076,7 +1074,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1119,7 +1117,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1168,7 +1166,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1187,7 +1185,7 @@
     "cmd": [
       "[CACHE]/builder/src/flutter/third_party/ninja/ninja",
       "-j",
-      "200",
+      "1024",
       "-C",
       "[CACHE]/builder/src/out/linux_profile_arm64",
       "flutter/shell/platform/linux:flutter_gtk"
@@ -1212,7 +1210,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1261,7 +1259,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1319,7 +1317,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1366,7 +1364,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1411,7 +1409,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1458,7 +1456,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1474,7 +1472,7 @@
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Host Engine\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:53:24.500000\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000006000@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
@@ -1486,7 +1484,7 @@
     "cmd": [
       "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
       "fuchsia-infra.artifacts.builds_beta_goma",
-      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Host Engine\", \"time_stamp\": \"2012-05-14 12:53:24.500000\", \"time_stamp_int\": 1337000006000}}"
+      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:53:24.500000\", \"time_stamp_int\": 1337000006000}}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1507,7 +1505,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1549,7 +1547,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1598,7 +1596,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1617,7 +1615,7 @@
     "cmd": [
       "[CACHE]/builder/src/flutter/third_party/ninja/ninja",
       "-j",
-      "200",
+      "1024",
       "-C",
       "[CACHE]/builder/src/out/linux_release_arm64",
       "flutter/shell/platform/linux:flutter_gtk"
@@ -1642,7 +1640,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1691,7 +1689,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1749,7 +1747,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1796,7 +1794,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1841,7 +1839,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1888,7 +1886,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1904,7 +1902,7 @@
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Host Engine\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:53:27.500000\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000009000@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
@@ -1916,7 +1914,7 @@
     "cmd": [
       "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
       "fuchsia-infra.artifacts.builds_beta_goma",
-      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Host Engine\", \"time_stamp\": \"2012-05-14 12:53:27.500000\", \"time_stamp_int\": 1337000009000}}"
+      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:53:27.500000\", \"time_stamp_int\": 1337000009000}}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1937,7 +1935,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1964,7 +1962,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1987,7 +1985,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -2010,7 +2008,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -2033,7 +2031,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -2056,7 +2054,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -2083,7 +2081,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {

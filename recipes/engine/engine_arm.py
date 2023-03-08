@@ -14,6 +14,7 @@ DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/gclient',
     'flutter/bucket_util',
+    'flutter/flutter_bcid',
     'flutter/goma',
     'flutter/os_utils',
     'flutter/repo_util',
@@ -43,12 +44,6 @@ IMPELLERC_SHADER_LIB_PATH = 'shader_lib'
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
-def MoveShaderLib(api):
-  api.file.move(
-      'Move the impellerc shader lib to the current directory in preparation for upload',
-      GetCheckoutPath(api).join('out', 'linux_debug_arm64',
-                                IMPELLERC_SHADER_LIB_PATH), GetCheckoutPath(api).join(IMPELLERC_SHADER_LIB_PATH)
-  )
 
 def GetCheckoutPath(api):
   return api.path['cache'].join('builder', 'src')
@@ -80,97 +75,62 @@ def RunGN(api, *args):
   api.step('gn %s' % ' '.join(args), gn_cmd)
 
 
-def UploadArtifacts(api,
-                    platform,
-                    file_paths=[],
-                    directory_paths=[],
-                    archive_name='artifacts.zip',
-                    pkg_root=None):
-  dir_label = '%s UploadArtifacts %s' % (platform, archive_name)
-  with api.os_utils.make_temp_directory(dir_label) as temp_dir:
-    local_zip = temp_dir.join('artifacts.zip')
-    remote_name = '%s/%s' % (platform, archive_name)
-    remote_zip = GetCloudPath(api, remote_name)
-    if pkg_root is None:
-      pkg_root = GetCheckoutPath(api)
-    pkg = api.zip.make_package(pkg_root, local_zip)
-    api.bucket_util.add_files(pkg, file_paths)
-    api.bucket_util.add_directories(pkg, directory_paths)
-
-    pkg.zip('Zip %s %s' % (platform, archive_name))
-    if api.bucket_util.should_upload_packages():
-      api.bucket_util.safe_upload(local_zip, remote_zip)
-
-
-def UploadDartSdk(api, archive_name, target_path='src/out/host_debug'):
-  api.bucket_util.upload_folder('Upload Dart SDK', target_path, 'dart-sdk',
-                                archive_name)
-
-
-def PackageLinuxDesktopVariant(api, label, bucket_name):
-  artifacts = [
-      'libflutter_linux_gtk.so',
-  ]
-  if bucket_name.endswith('profile') or bucket_name.endswith('release'):
-    artifacts.append('gen_snapshot')
-  # Headers for the library are in the flutter_linux folder.
-  api.bucket_util.upload_folder_and_files(
-      'Upload linux-arm64 Flutter GTK artifacts',
-      'src/out/%s' % label,
-      'flutter_linux',
-      'linux-arm64-flutter-gtk.zip',
-      platform=bucket_name,
-      file_paths=artifacts
+def UploadArtifact(api, config, platform, artifact_name):
+  path = GetCheckoutPath(api).join(
+      'out',
+      config,
+      'zip_archives',
+      platform,
+      artifact_name
+  )
+  api.path.mock_add_file(path)
+  assert api.path.exists(path), '%s does not exist' % str(path)
+  if not api.flutter_bcid.is_prod_build():
+    return
+  dst = '%s/%s' % (platform, artifact_name) if platform else artifact_name
+  api.bucket_util.safe_upload(
+      path,
+      GetCloudPath(api, dst)
   )
 
 
 def BuildLinux(api):
   RunGN(api, '--runtime-mode', 'debug', '--target-os=linux',
         '--linux-cpu=arm64', '--prebuilt-dart-sdk')
-  Build(api, 'linux_debug_arm64')
+  Build(api, 'linux_debug_arm64',
+        'flutter/build/archives:artifacts',
+        'flutter/build/archives:dart_sdk_archive',
+        'flutter/tools/font-subset',
+        'flutter/shell/platform/linux:flutter_gtk')
 
   RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--target-os=linux',
         '--linux-cpu=arm64', '--prebuilt-dart-sdk')
-  Build(api, 'linux_profile_arm64')
+  Build(
+      api, 'linux_profile_arm64',
+      'flutter/shell/platform/linux:flutter_gtk')
 
   RunGN(api, '--runtime-mode', 'release', '--target-os=linux',
         '--linux-cpu=arm64', '--prebuilt-dart-sdk')
-  Build(api, 'linux_release_arm64')
+  Build(api, 'linux_release_arm64',
+        'flutter/shell/platform/linux:flutter_gtk')
 
-  MoveShaderLib(api)
 
-  UploadArtifacts(api, 'linux-arm64', [
-      ICU_DATA_PATH,
-      'out/linux_debug_arm64/flutter_tester',
-      'out/linux_debug_arm64/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
-      'out/linux_debug_arm64/gen/flutter/tools/path_ops/LICENSE.path_ops.md',
-      'out/linux_debug_arm64/impellerc',
-      'out/linux_debug_arm64/libpath_ops.so',
-      'out/linux_debug_arm64/libtessellator.so',
-      'out/linux_debug_arm64/gen/flutter/lib/snapshot/isolate_snapshot.bin',
-      'out/linux_debug_arm64/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
-      'out/linux_debug_arm64/gen/frontend_server.dart.snapshot',
-  ])
+  # linux_debug_arm64
+  UploadArtifact(api, config='linux_debug_arm64', platform='linux-arm64',
+                   artifact_name='artifacts.zip')
+  UploadArtifact(api, config='linux_debug_arm64', platform='linux-arm64',
+                 artifact_name='font-subset.zip')
+  UploadArtifact(api, config='linux_debug_arm64', platform='',
+                 artifact_name='dart-sdk-linux-arm64.zip')
 
-  # Font subset
-  UploadArtifacts(
-      api,
-      'linux-arm64', [
-          'out/linux_release_arm64/font-subset',
-          'out/linux_debug_arm64/gen/const_finder.dart.snapshot',
-      ],
-      archive_name='font-subset.zip'
-  )
 
   # Desktop embedding.
-  PackageLinuxDesktopVariant(api, 'linux_debug_arm64', 'linux-arm64-debug')
-  PackageLinuxDesktopVariant(api, 'linux_profile_arm64', 'linux-arm64-profile')
-  PackageLinuxDesktopVariant(api, 'linux_release_arm64', 'linux-arm64-release')
-
-  UploadDartSdk(
-      api,
-      archive_name='dart-sdk-linux-arm64.zip',
-      target_path='src/out/linux_debug_arm64')
+  UploadArtifact(api, config='linux_debug_arm64', platform='linux-arm64-debug',
+                 artifact_name='linux-arm64-flutter-gtk.zip')
+  UploadArtifact(api, config='linux_profile_arm64', platform='linux-arm64-profile',
+                 artifact_name='linux-arm64-flutter-gtk.zip')
+  UploadArtifact(api, config='linux_release_arm64', platform='linux-arm64-release',
+                 artifact_name='linux-arm64-flutter-gtk.zip')
 
 
 def RunSteps(api, properties, env_properties):
@@ -232,32 +192,35 @@ def GenTests(api):
   git_revision = 'abcd1234'
   for platform in ('mac', 'linux', 'win'):
     for should_upload in (True, False):
-      test = api.test(
-          '%s%s' % (platform, '_upload' if should_upload else ''),
-          api.platform(platform, 64),
-          api.buildbucket.ci_build(
-              builder='%s Engine' % platform.capitalize(),
-              git_repo=GIT_REPO,
-              project='flutter',
-              revision='%s' % git_revision,
-          ),
-          api.runtime(is_experimental=False),
-          api.properties(
-              InputProperties(
-                  clobber=False,
-                  goma_jobs='1024',
-                  fuchsia_ctl_version='version:0.0.2',
-                  build_host=True,
-                  build_fuchsia=True,
-                  build_android_aot=True,
-                  build_android_debug=True,
-                  upload_packages=should_upload,
-                  force_upload=True,
-              ),),
-          api.properties.environ(
-              EnvProperties(SWARMING_TASK_ID='deadbeef')),
-      )
-      yield test
+      for bucket in ('prod', 'staging',):
+        for experimental in (True, False,):
+          test = api.test(
+              '%s%s_%s_%s' % (platform, '_upload' if should_upload else '', bucket, experimental),
+              api.platform(platform, 64),
+              api.buildbucket.ci_build(
+                  builder='%s Engine' % platform.capitalize(),
+                  git_repo=GIT_REPO,
+                  project='flutter',
+                  revision='%s' % git_revision,
+                  bucket=bucket,
+              ),
+              api.runtime(is_experimental=experimental),
+              api.properties(
+                  InputProperties(
+                      clobber=False,
+                      goma_jobs='1024',
+                      fuchsia_ctl_version='version:0.0.2',
+                      build_host=True,
+                      build_fuchsia=True,
+                      build_android_aot=True,
+                      build_android_debug=True,
+                      upload_packages=should_upload,
+                      force_upload=True,
+                  ),),
+              api.properties.environ(
+                  EnvProperties(SWARMING_TASK_ID='deadbeef')),
+          )
+          yield test
 
   for should_upload in (True, False):
     yield api.test(

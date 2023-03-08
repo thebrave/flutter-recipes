@@ -1,81 +1,18 @@
 [
   {
     "cmd": [
-      "top",
-      "-l",
-      "3",
-      "-o",
-      "mem"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "OS info"
-  },
-  {
-    "cmd": [
-      "xattr",
-      "/opt/s/w/ir/cipd_bin_packages/python3"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "python3 xattr info"
-  },
-  {
-    "cmd": [
-      "xattr",
-      "/opt/s/w/ir/cipd_bin_packages/git"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "git xattr info"
-  },
-  {
-    "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "rmtree",
-      "[CACHE]/builder/src/out"
+      "[CACHE]\\builder\\src\\out"
     ],
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -91,18 +28,18 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
       "0777",
-      "[CACHE]/builder"
+      "[CACHE]\\builder"
     ],
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -120,10 +57,10 @@
   },
   {
     "cmd": [
-      "cipd",
+      "cipd.bat",
       "ensure",
       "-root",
-      "[CACHE]/goma/client",
+      "[CACHE]\\goma\\client",
       "-ensure-file",
       "flutter/third_party/goma/client/${platform} integration",
       "-max-threads",
@@ -134,7 +71,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -168,15 +105,15 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[depot_tools::bot_update]/resources/bot_update.py",
+      "RECIPE_MODULE[depot_tools::bot_update]\\resources\\bot_update.py",
       "--spec-path",
-      "cache_dir = '[CACHE]/git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': False, 'name': 'src/flutter', 'url': 'https://flutter.googlesource.com/mirrors/engine'}]",
+      "cache_dir = '[CACHE]\\\\git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': False, 'name': 'src/flutter', 'url': 'https://flutter.googlesource.com/mirrors/engine'}]",
       "--revision_mapping_file",
       "{\"got_engine_revision\": \"src/flutter\"}",
       "--git-cache-dir",
-      "[CACHE]/git",
+      "[CACHE]\\git",
       "--cleanup-dir",
-      "[CLEANUP]/bot_update",
+      "[CLEANUP]\\bot_update",
       "--output_json",
       "/path/to/tmp/json",
       "--revision",
@@ -184,14 +121,14 @@
       "--refs",
       "refs/heads/main"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CACHE]\\builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Mac Engine/8945511751514863184",
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_REPORT_BUILD": "flutter/staging/Win Engine/8945511751514863184",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
       "GIT_HTTP_LOW_SPEED_TIME": "1800",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_suffixes": {
       "DEPOT_TOOLS_UPDATE": [
@@ -206,7 +143,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -262,15 +199,15 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_REPO[depot_tools]/gclient.py",
+      "RECIPE_REPO[depot_tools]\\gclient.py",
       "runhooks"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CACHE]\\builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Mac Engine/8945511751514863184",
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_REPORT_BUILD": "flutter/staging/Win Engine/8945511751514863184",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_suffixes": {
       "DEPOT_TOOLS_UPDATE": [
@@ -283,7 +220,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -300,38 +237,17 @@
   },
   {
     "cmd": [
-      "rm",
-      "-rf",
-      "[HOME]/Library/Developer/Xcode/DerivedData"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Delete mac deriveddata"
-  },
-  {
-    "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_REPO[depot_tools]/gclient.py",
+      "RECIPE_REPO[depot_tools]\\gclient.py",
       "runhooks"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CACHE]\\builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "DEPOT_TOOLS_REPORT_BUILD": "flutter/ci/Mac Engine/8945511751514863184",
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_REPORT_BUILD": "flutter/staging/Win Engine/8945511751514863184",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GOMA_DIR": "[CACHE]\\goma\\client"
     },
     "env_suffixes": {
       "DEPOT_TOOLS_UPDATE": [
@@ -344,7 +260,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:ci"
+        "name": "flutter:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -359,7 +275,7 @@
   {
     "failure": {
       "failure": {},
-      "humanReason": "Mac Arm host builds not supported yet."
+      "humanReason": "Windows Arm host builds not supported yet."
     },
     "name": "$result"
   }

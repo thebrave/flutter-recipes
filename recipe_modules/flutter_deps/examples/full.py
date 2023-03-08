@@ -56,7 +56,6 @@ def RunSteps(api):
   api.flutter_deps.gradle_cache(env, env_prefixes, '')
   api.flutter_deps.flutter_engine(env, env_prefixes)
   api.flutter_deps.firebase(env, env_prefixes)
-  api.flutter_deps.cmake(env, env_prefixes, version='version:3.16.1')
   api.flutter_deps.cmake(env, env_prefixes, version='build_id:8787856497187628321')
   api.flutter_deps.codesign(env, env_prefixes, 'latest')
   api.flutter_deps.cosign(env, env_prefixes)

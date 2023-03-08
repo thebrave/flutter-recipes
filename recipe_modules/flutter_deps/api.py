@@ -463,16 +463,8 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     """
     cmake_path = self.m.path['cache'].join('cmake')
     cmake = self.m.cipd.EnsureFile()
-    # Current infra/cmake is 4 years old, and causes failure when curling urls.
-    # We should point to the new 3pp version for all our targets.
-    #
-    # TODO(keyonghan): remove the if condition after validating all existing
-    # targets pass with the new 3pp package.
-    if version == 'version:3.16.1':
-      cmake.add_package('infra/cmake/${platform}', version)
-    else:
-      version = version or 'build_id:8787856497187628321'
-      cmake.add_package('infra/3pp/tools/cmake/${platform}', version)
+    version = version or 'build_id:8787856497187628321'
+    cmake.add_package('infra/3pp/tools/cmake/${platform}', version)
     with self.m.step.nest('Install cmake'):
       self.m.cipd.ensure(cmake_path, cmake)
     paths = env_prefixes.get('PATH', [])

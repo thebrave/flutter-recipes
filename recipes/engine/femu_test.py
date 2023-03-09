@@ -201,7 +201,7 @@ def TestFuchsiaFEMU(api):
     api.step(
         'Set PBM metadata path', [
             ffx, 'config', 'set', 'pbms.metadata',
-            '\'[%s]\'' % product_bundle_manifest_path
+            '\'[\"%s\"]\'' % product_bundle_manifest_path
         ]
     )
     # We'll need to suffix all the product-bundle names with a full path

@@ -168,7 +168,7 @@ def CasRoot(api):
         basename = re.match(r'(:?.*/)*([^/]*$)', path).group(2)
         suite['package_basenames'].append(basename)
         if suite['run_with_dart_aot']:
-            add(checkout.join('out', 'fuchsia_profile_%s' % arch, path), basename)
+          add(checkout.join('out', 'fuchsia_profile_%s' % arch, path), basename)
         else:
           add(checkout.join('out', 'fuchsia_debug_%s' % arch, path), basename)
       test_suites.append(suite)
@@ -190,6 +190,26 @@ def TestFuchsiaFEMU(api):
   fserve = checkout.join('fuchsia/sdk/linux/tools/x64/fserve')
   fpublish = checkout.join('fuchsia/sdk/linux/tools/x64/fpublish')
 
+  # Fuchsia LSC runs will override the SDK and product bundles that should be
+  # used for the tests. The path to the test artifacts is passed through the
+  # `gclient_variables`.
+  gclient_variables = api.properties.get('gclient_variables', {})
+  pb_suffix = ''
+  if 'product_bundles_path' in gclient_variables:
+    product_bundle_manifest_path = 'gs://fuchsia-artifacts/%s' % gclient_variables['product_bundles_path']
+    # Set the ffx config to let it know that it's a valid product bundle path.
+    api.step(
+        'Set PBM metadata path', [
+            ffx, 'config', 'set', 'pbms.metadata',
+            '\'[%s]\'' % product_bundle_manifest_path
+        ]
+    )
+    # We'll need to suffix all the product-bundle names with a full path
+    # otherwise ffx product-bundle will complain that it can find a
+    # product-bundle associated with the current SDK version in the current PBM
+    # metadata path (this also avoid accidentally using the wrong product bundle).
+    pb_suffix = '%s#' % product_bundle_manifest_path
+
   # Conditionally enable ffx's CSO flag
   if api.properties.get('enable_cso', False):
     api.step('enable CSO in ffx', [ffx, 'config', 'set', 'overnet.cso', 'enabled'])
@@ -207,9 +227,11 @@ def TestFuchsiaFEMU(api):
 
   # Retrieve the required product bundle
   # Contains necessary images, packages, etc to launch the emulator
-  api.step('get terminal.qemu-%s product bundle' % arch,
-            [ffx, 'product-bundle', 'get',
-            'terminal.qemu-%s' % arch])
+  api.step(
+      'get terminal.qemu-%s product bundle' % arch,
+      [ffx, 'product-bundle', 'get',
+       '%sterminal.qemu-%s' % (pb_suffix, arch)]
+  )
 
   with api.context(cwd=root_dir), api.step.nest('run FEMU test on %s' % arch):
     for suite in test_suites:
@@ -732,3 +754,60 @@ def GenTests(api):
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
   )
 
+  yield api.test(
+      'start_femu_with_override_pbm',
+      api.properties(
+          InputProperties(
+              goma_jobs='1024',
+              build_fuchsia=True,
+              test_fuchsia=True,
+              git_url='https://github.com/flutter/engine',
+              git_ref='refs/pull/1/head',
+              clobber=False,
+              enable_cso=True,
+              gclient_variables={
+                  "download_fuchsia_sdk":
+                      True,
+                  "fuchsia_sdk_path":
+                      "development/8787238722685733041/sdk/linux-amd64/core.tar.gz",
+                  "product_bundles_path":
+                      "development/8787238722685733041/sdk/product_bundles.json"
+              },
+          ),
+          clobber=False,
+      ),
+      api.step_data(
+          'retrieve list of test suites.parse',
+          api.json.output([{
+              'package':
+                  'v2_test-123.far',
+              'test_command':
+                  'test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b'
+          }, {
+              'package':
+                  'v1_test_component-321.far',
+              'test_command':
+                  'test run fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b'
+          }])
+      ),
+      api.step_data(
+          'retrieve list of test suites.read',
+          api.file.read_text(
+              '''# This is a comment.
+- package: v2_test-123.far
+  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b
+
+# Legacy cfv1 test
+- package: v1_test_component-321.far
+  test_command: test run fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b'''
+          )
+      ),
+      api.step_data(
+          'read manifest',
+          api.file.read_json({'id': '0.20200101.0.1'}),
+      ),
+      api.step_data(
+          'run FEMU test on x64.run v2_test.launch x64 emulator', retcode=1
+      ),
+      api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+  )

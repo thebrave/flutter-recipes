@@ -31,8 +31,7 @@ DEPS = [
     'recipe_engine/swarming',
 ]
 
-# Fifteen minutes
-MAX_TIMEOUT_SECS = 30 * 60
+MAX_DEFAULT_TIMEOUT_SECS = 30 * 60
 
 def RunSteps(api):
   api.flutter_bcid.report_stage(BcidStage.START.value)
@@ -53,6 +52,8 @@ def RunSteps(api):
       api.properties.get('git_url'),
       api.properties.get('git_ref'),
   )
+
+  test_timeout_secs = api.properties.get('test_timeout_secs', MAX_DEFAULT_TIMEOUT_SECS)
 
   with api.context(cwd=flutter_path):
     commit_time = api.git(
@@ -128,12 +129,12 @@ def RunSteps(api):
       if str(api.swarming.bot_id).startswith('flutter-devicelab'):
         with api.devicelab_osx_sdk('ios'):
           test_status = mac_test(
-              api, env, env_prefixes, flutter_path, task_name, runner_params, suppress_log
+              api, env, env_prefixes, flutter_path, task_name, runner_params, suppress_log, test_timeout_secs
           )
       else:
         with api.osx_sdk('ios'):
           test_status = mac_test(
-              api, env, env_prefixes, flutter_path, task_name, runner_params, suppress_log
+              api, env, env_prefixes, flutter_path, task_name, runner_params, suppress_log, test_timeout_secs
           )
     else:
       with api.context(env=env, env_prefixes=env_prefixes):
@@ -159,7 +160,7 @@ def RunSteps(api):
           test_status = api.test_utils.run_test(
               'run %s' % task_name,
               test_runner_command,
-              timeout_secs=MAX_TIMEOUT_SECS,
+              timeout_secs=test_timeout_secs,
               suppress_log=suppress_log,
           )
         finally:
@@ -188,7 +189,7 @@ def debug_after_failure(api, task_name):
   api.os_utils.collect_os_info()
 
 
-def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params, suppress_log):
+def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params, suppress_log, test_timeout_secs):
   """Runs a devicelab mac test."""
   api.flutter_deps.gems(
       env, env_prefixes, flutter_path.join('dev', 'ci', 'mac')
@@ -210,7 +211,7 @@ def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params, sup
       test_status = api.test_utils.run_test(
           'run %s' % task_name,
           test_runner_command,
-          timeout_secs=MAX_TIMEOUT_SECS,
+          timeout_secs=test_timeout_secs,
           suppress_log=suppress_log,
       )
     finally:

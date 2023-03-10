@@ -15,6 +15,7 @@ DEPS = [
     'depot_tools/gclient',
     'depot_tools/gsutil',
     'flutter/bucket_util',
+    'flutter/build_util',
     'flutter/display_util',
     'flutter/flutter_bcid',
     'flutter/flutter_deps',
@@ -722,11 +723,11 @@ def BuildLinuxAndroid(api, swarming_task_id):
 
 
 def BuildLinux(api):
+  checkout = GetCheckoutPath(api)
   RunGN(api, '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--build-embedder-examples')
   RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk')
   RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk', '--build-embedder-examples')
   RunGN(api, '--runtime-mode', 'release', '--prebuilt-dart-sdk', '--build-embedder-examples')
-  RunGN(api, '--runtime-mode', 'release', '--web', '--build-canvaskit')
   # flutter/sky/packages from host_debug_unopt is needed for RunTests 'dart'
   # type.
   Build(api, 'host_debug_unopt', 'flutter/sky/packages')
@@ -739,7 +740,11 @@ def BuildLinux(api):
         'flutter/tools/font-subset',
         'flutter:unittests',
   )
-  Build(api, 'wasm_release', 'flutter/web_sdk:flutter_web_sdk_archive')
+  api.build_util.run_gn(
+      ['--runtime-mode', 'release', '--web', '--build-canvaskit', '--no-goma'],
+      checkout
+  )
+  api.build_util.build('wasm_release', checkout, ['flutter/web_sdk:flutter_web_sdk_archive'])
   # 'engine' suite has failing tests in host_debug.
   # https://github.com/flutter/flutter/issues/103757
   RunTests(api, 'host_debug', types='dart')

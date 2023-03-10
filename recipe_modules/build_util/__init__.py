@@ -6,6 +6,8 @@ DEPS = [
     'depot_tools/depot_tools',
     'fuchsia/goma',
     'recipe_engine/context',
+    'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/runtime',
     'recipe_engine/step',
 ]

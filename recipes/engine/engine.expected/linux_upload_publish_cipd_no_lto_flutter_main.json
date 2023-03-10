@@ -565,52 +565,6 @@
     "name": "gn --runtime-mode release --prebuilt-dart-sdk --build-embedder-examples --no-lto"
   },
   {
-    "cmd": [
-      "python3",
-      "[CACHE]/builder/src/flutter/tools/gn",
-      "--goma",
-      "--runtime-mode",
-      "release",
-      "--web",
-      "--build-canvaskit",
-      "--no-lto"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gn --runtime-mode release --web --build-canvaskit --no-lto"
-  },
-  {
     "cmd": [],
     "name": "setup goma"
   },
@@ -1913,6 +1867,145 @@
     ]
   },
   {
+    "cmd": [
+      "python3",
+      "[CACHE]/builder/src/flutter/tools/gn",
+      "--runtime-mode",
+      "release",
+      "--web",
+      "--build-canvaskit",
+      "--no-goma",
+      "--no-lto"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gn --runtime-mode release --web --build-canvaskit --no-goma --no-lto"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/flutter/third_party/ninja/ninja",
+      "-C",
+      "[CACHE]/builder/src/out/wasm_release",
+      "-j",
+      "200",
+      "flutter/web_sdk:flutter_web_sdk_archive"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0",
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]",
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "build wasm_release flutter/web_sdk:flutter_web_sdk_archive"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-vpython-spec",
+      "RECIPE_REPO[depot_tools]/.vpython3",
+      "[CACHE]/builder/src/flutter/testing/run_tests.py",
+      "--variant",
+      "host_debug",
+      "--type",
+      "dart",
+      "--engine-capture-core-dump"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "test: Host Tests for host_debug"
+  },
+  {
     "cmd": [],
     "name": "setup goma (3)"
   },
@@ -1977,8 +2070,12 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/wasm_release",
-      "flutter/web_sdk:flutter_web_sdk_archive"
+      "[CACHE]/builder/src/out/host_profile",
+      "flutter/shell/testing",
+      "flutter/tools/path_ops",
+      "flutter/build/dart:copy_dart_sdk",
+      "flutter/shell/testing",
+      "flutter:unittests"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -2017,7 +2114,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build wasm_release flutter/web_sdk:flutter_web_sdk_archive"
+    "name": "build host_profile flutter/shell/testing flutter/tools/path_ops flutter/build/dart:copy_dart_sdk flutter/shell/testing flutter:unittests"
   },
   {
     "cmd": [],
@@ -2366,9 +2463,9 @@
       "RECIPE_REPO[depot_tools]/.vpython3",
       "[CACHE]/builder/src/flutter/testing/run_tests.py",
       "--variant",
-      "host_debug",
+      "host_profile",
       "--type",
-      "dart",
+      "dart,engine",
       "--engine-capture-core-dump"
     ],
     "cwd": "[CACHE]/builder",
@@ -2404,7 +2501,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "test: Host Tests for host_debug"
+    "name": "test: Host Tests for host_profile"
   },
   {
     "cmd": [],
@@ -2471,11 +2568,18 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/host_profile",
-      "flutter/shell/testing",
-      "flutter/tools/path_ops",
+      "[CACHE]/builder/src/out/host_release",
+      "flutter/build/archives:flutter_patched_sdk",
       "flutter/build/dart:copy_dart_sdk",
+      "flutter/display_list:display_list_benchmarks",
+      "flutter/display_list:display_list_builder_benchmarks",
+      "flutter/fml:fml_benchmarks",
+      "flutter/impeller/geometry:geometry_benchmarks",
+      "flutter/lib/ui:ui_benchmarks",
+      "flutter/shell/common:shell_benchmarks",
       "flutter/shell/testing",
+      "flutter/third_party/txt:txt_benchmarks",
+      "flutter/tools/path_ops",
       "flutter:unittests"
     ],
     "cwd": "[CACHE]/builder",
@@ -2515,7 +2619,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build host_profile flutter/shell/testing flutter/tools/path_ops flutter/build/dart:copy_dart_sdk flutter/shell/testing flutter:unittests"
+    "name": "build host_release flutter/build/archives:flutter_patched_sdk flutter/build/dart:copy_dart_sdk flutter/display_list:display_list_benchmarks flutter/display_list:display_list_builder_benchmarks flutter/fml:fml_benchmarks flutter/impeller/geometry:geometry_benchmarks flutter/lib/ui:ui_benchmarks flutter/shell/common:shell_benchmarks flutter/shell/testing flutter/third_party/txt:txt_benchmarks flutter/tools/path_ops flutter:unittests"
   },
   {
     "cmd": [],
@@ -2864,9 +2968,9 @@
       "RECIPE_REPO[depot_tools]/.vpython3",
       "[CACHE]/builder/src/flutter/testing/run_tests.py",
       "--variant",
-      "host_profile",
+      "host_release",
       "--type",
-      "dart,engine",
+      "dart,engine,benchmarks",
       "--engine-capture-core-dump"
     ],
     "cwd": "[CACHE]/builder",
@@ -2902,7 +3006,145 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "test: Host Tests for host_profile"
+    "name": "test: Host Tests for host_release"
+  },
+  {
+    "cmd": [
+      "python3",
+      "[CACHE]/builder/src/flutter/tools/gn",
+      "--goma",
+      "--runtime-mode",
+      "debug",
+      "--enable-fontconfig",
+      "--prebuilt-dart-sdk",
+      "--no-lto"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gn --runtime-mode debug --enable-fontconfig --prebuilt-dart-sdk --no-lto"
+  },
+  {
+    "cmd": [
+      "python3",
+      "[CACHE]/builder/src/flutter/tools/gn",
+      "--goma",
+      "--runtime-mode",
+      "profile",
+      "--no-lto",
+      "--enable-fontconfig",
+      "--prebuilt-dart-sdk"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gn --runtime-mode profile --no-lto --enable-fontconfig --prebuilt-dart-sdk"
+  },
+  {
+    "cmd": [
+      "python3",
+      "[CACHE]/builder/src/flutter/tools/gn",
+      "--goma",
+      "--runtime-mode",
+      "release",
+      "--enable-fontconfig",
+      "--prebuilt-dart-sdk",
+      "--no-lto"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gn --runtime-mode release --enable-fontconfig --prebuilt-dart-sdk --no-lto"
   },
   {
     "cmd": [],
@@ -2969,19 +3211,8 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/host_release",
-      "flutter/build/archives:flutter_patched_sdk",
-      "flutter/build/dart:copy_dart_sdk",
-      "flutter/display_list:display_list_benchmarks",
-      "flutter/display_list:display_list_builder_benchmarks",
-      "flutter/fml:fml_benchmarks",
-      "flutter/impeller/geometry:geometry_benchmarks",
-      "flutter/lib/ui:ui_benchmarks",
-      "flutter/shell/common:shell_benchmarks",
-      "flutter/shell/testing",
-      "flutter/third_party/txt:txt_benchmarks",
-      "flutter/tools/path_ops",
-      "flutter:unittests"
+      "[CACHE]/builder/src/out/host_debug",
+      "flutter/shell/platform/linux:flutter_gtk"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -3020,7 +3251,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build host_release flutter/build/archives:flutter_patched_sdk flutter/build/dart:copy_dart_sdk flutter/display_list:display_list_benchmarks flutter/display_list:display_list_builder_benchmarks flutter/fml:fml_benchmarks flutter/impeller/geometry:geometry_benchmarks flutter/lib/ui:ui_benchmarks flutter/shell/common:shell_benchmarks flutter/shell/testing flutter/third_party/txt:txt_benchmarks flutter/tools/path_ops flutter:unittests"
+    "name": "build host_debug flutter/shell/platform/linux:flutter_gtk"
   },
   {
     "cmd": [],
@@ -3363,191 +3594,6 @@
     ]
   },
   {
-    "cmd": [
-      "vpython3",
-      "-vpython-spec",
-      "RECIPE_REPO[depot_tools]/.vpython3",
-      "[CACHE]/builder/src/flutter/testing/run_tests.py",
-      "--variant",
-      "host_release",
-      "--type",
-      "dart,engine,benchmarks",
-      "--engine-capture-core-dump"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "test: Host Tests for host_release"
-  },
-  {
-    "cmd": [
-      "python3",
-      "[CACHE]/builder/src/flutter/tools/gn",
-      "--goma",
-      "--runtime-mode",
-      "debug",
-      "--enable-fontconfig",
-      "--prebuilt-dart-sdk",
-      "--no-lto"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gn --runtime-mode debug --enable-fontconfig --prebuilt-dart-sdk --no-lto"
-  },
-  {
-    "cmd": [
-      "python3",
-      "[CACHE]/builder/src/flutter/tools/gn",
-      "--goma",
-      "--runtime-mode",
-      "profile",
-      "--no-lto",
-      "--enable-fontconfig",
-      "--prebuilt-dart-sdk"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gn --runtime-mode profile --no-lto --enable-fontconfig --prebuilt-dart-sdk"
-  },
-  {
-    "cmd": [
-      "python3",
-      "[CACHE]/builder/src/flutter/tools/gn",
-      "--goma",
-      "--runtime-mode",
-      "release",
-      "--enable-fontconfig",
-      "--prebuilt-dart-sdk",
-      "--no-lto"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gn --runtime-mode release --enable-fontconfig --prebuilt-dart-sdk --no-lto"
-  },
-  {
     "cmd": [],
     "name": "setup goma (6)"
   },
@@ -3612,7 +3658,7 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/host_debug",
+      "[CACHE]/builder/src/out/host_profile",
       "flutter/shell/platform/linux:flutter_gtk"
     ],
     "cwd": "[CACHE]/builder",
@@ -3652,7 +3698,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build host_debug flutter/shell/platform/linux:flutter_gtk"
+    "name": "build host_profile flutter/shell/platform/linux:flutter_gtk"
   },
   {
     "cmd": [],
@@ -4059,7 +4105,7 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/host_profile",
+      "[CACHE]/builder/src/out/host_release",
       "flutter/shell/platform/linux:flutter_gtk"
     ],
     "cwd": "[CACHE]/builder",
@@ -4099,7 +4145,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build host_profile flutter/shell/platform/linux:flutter_gtk"
+    "name": "build host_release flutter/shell/platform/linux:flutter_gtk"
   },
   {
     "cmd": [],
@@ -4442,6 +4488,51 @@
     ]
   },
   {
+    "cmd": [
+      "python3",
+      "[CACHE]/builder/src/flutter/tools/gn",
+      "--goma",
+      "--android",
+      "--android-cpu=x86",
+      "--runtime-mode=jit_release",
+      "--no-lto"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gn --android --android-cpu=x86 --runtime-mode=jit_release --no-lto"
+  },
+  {
     "cmd": [],
     "name": "setup goma (8)"
   },
@@ -4506,8 +4597,7 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/host_release",
-      "flutter/shell/platform/linux:flutter_gtk"
+      "[CACHE]/builder/src/out/android_jit_release_x86"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -4546,7 +4636,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build host_release flutter/shell/platform/linux:flutter_gtk"
+    "name": "build android_jit_release_x86"
   },
   {
     "cmd": [],
@@ -4894,8 +4984,8 @@
       "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
       "--android",
-      "--android-cpu=x86",
-      "--runtime-mode=jit_release",
+      "--unoptimized",
+      "--runtime-mode=debug",
       "--no-lto"
     ],
     "cwd": "[CACHE]/builder",
@@ -4931,7 +5021,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --android --android-cpu=x86 --runtime-mode=jit_release --no-lto"
+    "name": "gn --android --unoptimized --runtime-mode=debug --no-lto"
   },
   {
     "cmd": [],
@@ -4998,7 +5088,8 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/android_jit_release_x86"
+      "[CACHE]/builder/src/out/android_jit_release_x86",
+      "flutter/shell/platform/android:robolectric_tests"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -5037,7 +5128,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build android_jit_release_x86"
+    "name": "build android_jit_release_x86 flutter/shell/platform/android:robolectric_tests"
   },
   {
     "cmd": [],
@@ -5381,12 +5472,198 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-vpython-spec",
+      "RECIPE_REPO[depot_tools]/.vpython3",
+      "[CACHE]/builder/src/flutter/testing/run_tests.py",
+      "--variant",
+      "android_jit_release_x86",
+      "--type",
+      "java",
+      "--engine-capture-core-dump",
+      "--android-variant",
+      "android_jit_release_x86"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "test: Host Tests for android_jit_release_x86"
+  },
+  {
+    "cmd": [
+      "python3",
+      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Zip android-x86-jit-release artifacts.zip",
+    "stdin": "{\"entries\": [{\"archive_name\": \"flutter.jar\", \"path\": \"[CACHE]/builder/src/out/android_jit_release_x86/flutter.jar\", \"type\": \"file\"}], \"output\": \"[CLEANUP]/tmp_tmp_1/artifacts.zip\", \"root\": \"[CACHE]/builder/src\"}"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "[CLEANUP]/tmp_tmp_1/artifacts.zip",
+      "gs://flutter_infra_release/flutter/abcd1234/android-x86-jit-release/artifacts.zip"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil upload \"flutter/abcd1234/android-x86-jit-release/artifacts.zip\"",
+    "~followup_annotations": [
+      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/android-x86-jit-release/artifacts.zip@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CLEANUP]/tmp_tmp_1"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "temp dir for android-x86-jit-release UploadArtifacts artifacts.zip"
+  },
+  {
+    "cmd": [
       "python3",
       "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
       "--android",
-      "--unoptimized",
-      "--runtime-mode=debug",
+      "--android-cpu=arm",
       "--no-lto"
     ],
     "cwd": "[CACHE]/builder",
@@ -5422,7 +5699,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --android --unoptimized --runtime-mode=debug --no-lto"
+    "name": "gn --android --android-cpu=arm --no-lto"
   },
   {
     "cmd": [],
@@ -5489,8 +5766,7 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/android_jit_release_x86",
-      "flutter/shell/platform/android:robolectric_tests"
+      "[CACHE]/builder/src/out/android_debug"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -5529,7 +5805,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build android_jit_release_x86 flutter/shell/platform/android:robolectric_tests"
+    "name": "build android_debug"
   },
   {
     "cmd": [],
@@ -5873,198 +6149,12 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-vpython-spec",
-      "RECIPE_REPO[depot_tools]/.vpython3",
-      "[CACHE]/builder/src/flutter/testing/run_tests.py",
-      "--variant",
-      "android_jit_release_x86",
-      "--type",
-      "java",
-      "--engine-capture-core-dump",
-      "--android-variant",
-      "android_jit_release_x86"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "test: Host Tests for android_jit_release_x86"
-  },
-  {
-    "cmd": [
-      "python3",
-      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Zip android-x86-jit-release artifacts.zip",
-    "stdin": "{\"entries\": [{\"archive_name\": \"flutter.jar\", \"path\": \"[CACHE]/builder/src/out/android_jit_release_x86/flutter.jar\", \"type\": \"file\"}], \"output\": \"[CLEANUP]/tmp_tmp_1/artifacts.zip\", \"root\": \"[CACHE]/builder/src\"}"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]/tmp_tmp_1/artifacts.zip",
-      "gs://flutter_infra_release/flutter/abcd1234/android-x86-jit-release/artifacts.zip"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload \"flutter/abcd1234/android-x86-jit-release/artifacts.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/android-x86-jit-release/artifacts.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CLEANUP]/tmp_tmp_1"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "temp dir for android-x86-jit-release UploadArtifacts artifacts.zip"
-  },
-  {
-    "cmd": [
       "python3",
       "[CACHE]/builder/src/flutter/tools/gn",
       "--goma",
       "--android",
-      "--android-cpu=arm",
+      "--unoptimized",
+      "--runtime-mode=debug",
       "--no-lto"
     ],
     "cwd": "[CACHE]/builder",
@@ -6100,7 +6190,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --android --android-cpu=arm --no-lto"
+    "name": "gn --android --unoptimized --runtime-mode=debug --no-lto (2)"
   },
   {
     "cmd": [],
@@ -6167,7 +6257,8 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/android_debug"
+      "[CACHE]/builder/src/out/android_debug",
+      "flutter/shell/platform/android:robolectric_tests"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -6206,7 +6297,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build android_debug"
+    "name": "build android_debug flutter/shell/platform/android:robolectric_tests"
   },
   {
     "cmd": [],
@@ -6544,498 +6635,6 @@
       }
     },
     "name": "teardown goma (11).upload goma stats to bigquery",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "[CACHE]/builder/src/flutter/tools/gn",
-      "--goma",
-      "--android",
-      "--unoptimized",
-      "--runtime-mode=debug",
-      "--no-lto"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gn --android --unoptimized --runtime-mode=debug --no-lto (2)"
-  },
-  {
-    "cmd": [],
-    "name": "setup goma (12)"
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "restart"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "setup goma (12).start goma",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/builder/src/flutter/third_party/ninja/ninja",
-      "-j",
-      "1024",
-      "-C",
-      "[CACHE]/builder/src/out/android_debug",
-      "flutter/shell/platform/android:robolectric_tests"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0",
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]",
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "build android_debug flutter/shell/platform/android:robolectric_tests"
-  },
-  {
-    "cmd": [],
-    "name": "teardown goma (12)"
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "jsonstatus",
-      "[CACHE]/goma/client/jsonstatus"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "teardown goma (12).goma jsonstatus",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"notice\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@    {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"infra_status\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"num_user_error\": 0, @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"ping_status_code\": 200@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  ]@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "stat"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "teardown goma (12).goma stats",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "stop"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "teardown goma (12).stop goma",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CLEANUP]/compiler_proxy.WARNING",
-      "/path/to/tmp/"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "teardown goma (12).read goma_client warning log",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@compiler_proxy.WARNING@test log@@@",
-      "@@@STEP_LOG_END@compiler_proxy.WARNING@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CACHE]/goma/client/goma_stats.json",
-      "/path/to/tmp/"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "teardown goma (12).read goma_stats.json",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:53:54.500000\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000036000@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
-      "fuchsia-infra.artifacts.builds_beta_goma",
-      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:53:54.500000\", \"time_stamp_int\": 1337000036000}}"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "teardown goma (12).upload goma stats to bigquery",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -7513,7 +7112,7 @@
   },
   {
     "cmd": [],
-    "name": "setup goma (13)"
+    "name": "setup goma (12)"
   },
   {
     "cmd": [
@@ -7565,7 +7164,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "setup goma (13).start goma",
+    "name": "setup goma (12).start goma",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -7619,7 +7218,7 @@
   },
   {
     "cmd": [],
-    "name": "teardown goma (13)"
+    "name": "teardown goma (12)"
   },
   {
     "cmd": [
@@ -7671,7 +7270,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (13).goma jsonstatus",
+    "name": "teardown goma (12).goma jsonstatus",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -7736,7 +7335,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (13).goma stats",
+    "name": "teardown goma (12).goma stats",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -7790,7 +7389,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (13).stop goma",
+    "name": "teardown goma (12).stop goma",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -7842,7 +7441,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (13).read goma_client warning log",
+    "name": "teardown goma (12).read goma_client warning log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@compiler_proxy.WARNING@test log@@@",
@@ -7896,15 +7495,15 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (13).read goma_stats.json",
+    "name": "teardown goma (12).read goma_stats.json",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
       "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:53:57.500000\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000039000@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:53:54.500000\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000036000@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -7914,7 +7513,7 @@
     "cmd": [
       "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
       "fuchsia-infra.artifacts.builds_beta_goma",
-      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:53:57.500000\", \"time_stamp_int\": 1337000039000}}"
+      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:53:54.500000\", \"time_stamp_int\": 1337000036000}}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -7952,7 +7551,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (13).upload goma stats to bigquery",
+    "name": "teardown goma (12).upload goma stats to bigquery",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -8381,7 +7980,7 @@
   },
   {
     "cmd": [],
-    "name": "setup goma (14)"
+    "name": "setup goma (13)"
   },
   {
     "cmd": [
@@ -8433,7 +8032,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "setup goma (14).start goma",
+    "name": "setup goma (13).start goma",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -8487,7 +8086,7 @@
   },
   {
     "cmd": [],
-    "name": "teardown goma (14)"
+    "name": "teardown goma (13)"
   },
   {
     "cmd": [
@@ -8539,7 +8138,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (14).goma jsonstatus",
+    "name": "teardown goma (13).goma jsonstatus",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -8604,7 +8203,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (14).goma stats",
+    "name": "teardown goma (13).goma stats",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -8658,7 +8257,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (14).stop goma",
+    "name": "teardown goma (13).stop goma",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -8710,7 +8309,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (14).read goma_client warning log",
+    "name": "teardown goma (13).read goma_client warning log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@compiler_proxy.WARNING@test log@@@",
@@ -8764,15 +8363,15 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (14).read goma_stats.json",
+    "name": "teardown goma (13).read goma_stats.json",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
       "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:54:00.500000\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000042000@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:53:57.500000\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000039000@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -8782,7 +8381,7 @@
     "cmd": [
       "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
       "fuchsia-infra.artifacts.builds_beta_goma",
-      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:54:00.500000\", \"time_stamp_int\": 1337000042000}}"
+      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:53:57.500000\", \"time_stamp_int\": 1337000039000}}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -8820,7 +8419,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (14).upload goma stats to bigquery",
+    "name": "teardown goma (13).upload goma stats to bigquery",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -9249,7 +8848,7 @@
   },
   {
     "cmd": [],
-    "name": "setup goma (15)"
+    "name": "setup goma (14)"
   },
   {
     "cmd": [
@@ -9301,7 +8900,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "setup goma (15).start goma",
+    "name": "setup goma (14).start goma",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -9355,7 +8954,7 @@
   },
   {
     "cmd": [],
-    "name": "teardown goma (15)"
+    "name": "teardown goma (14)"
   },
   {
     "cmd": [
@@ -9407,7 +9006,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (15).goma jsonstatus",
+    "name": "teardown goma (14).goma jsonstatus",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -9472,7 +9071,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (15).goma stats",
+    "name": "teardown goma (14).goma stats",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -9526,7 +9125,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (15).stop goma",
+    "name": "teardown goma (14).stop goma",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -9578,7 +9177,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (15).read goma_client warning log",
+    "name": "teardown goma (14).read goma_client warning log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@compiler_proxy.WARNING@test log@@@",
@@ -9632,15 +9231,15 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (15).read goma_stats.json",
+    "name": "teardown goma (14).read goma_stats.json",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
       "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:54:03.500000\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000045000@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:54:00.500000\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000042000@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -9650,7 +9249,7 @@
     "cmd": [
       "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
       "fuchsia-infra.artifacts.builds_beta_goma",
-      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:54:03.500000\", \"time_stamp_int\": 1337000045000}}"
+      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:54:00.500000\", \"time_stamp_int\": 1337000042000}}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -9688,7 +9287,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (15).upload goma stats to bigquery",
+    "name": "teardown goma (14).upload goma stats to bigquery",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -10226,7 +9825,7 @@
   },
   {
     "cmd": [],
-    "name": "setup goma (16)"
+    "name": "setup goma (15)"
   },
   {
     "cmd": [
@@ -10278,7 +9877,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "setup goma (16).start goma",
+    "name": "setup goma (15).start goma",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -10333,7 +9932,7 @@
   },
   {
     "cmd": [],
-    "name": "teardown goma (16)"
+    "name": "teardown goma (15)"
   },
   {
     "cmd": [
@@ -10385,7 +9984,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (16).goma jsonstatus",
+    "name": "teardown goma (15).goma jsonstatus",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -10450,7 +10049,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (16).goma stats",
+    "name": "teardown goma (15).goma stats",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -10504,7 +10103,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (16).stop goma",
+    "name": "teardown goma (15).stop goma",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -10556,7 +10155,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (16).read goma_client warning log",
+    "name": "teardown goma (15).read goma_client warning log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@compiler_proxy.WARNING@test log@@@",
@@ -10610,15 +10209,15 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (16).read goma_stats.json",
+    "name": "teardown goma (15).read goma_stats.json",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
       "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:54:06.500000\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000048000@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:54:03.500000\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000045000@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -10628,7 +10227,7 @@
     "cmd": [
       "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
       "fuchsia-infra.artifacts.builds_beta_goma",
-      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:54:06.500000\", \"time_stamp_int\": 1337000048000}}"
+      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:54:03.500000\", \"time_stamp_int\": 1337000045000}}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -10666,7 +10265,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma (16).upload goma stats to bigquery",
+    "name": "teardown goma (15).upload goma stats to bigquery",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -12174,8 +11773,8 @@
       "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
       "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:54:09.500000\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000051000@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:54:06.500000\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000048000@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -12185,7 +11784,7 @@
     "cmd": [
       "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
       "fuchsia-infra.artifacts.builds_beta_goma",
-      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:54:09.500000\", \"time_stamp_int\": 1337000051000}}"
+      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:54:06.500000\", \"time_stamp_int\": 1337000048000}}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -17925,6 +17524,548 @@
   },
   {
     "cmd": [],
+    "name": "setup goma (16)"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[CACHE]/goma/client/goma_ctl.py",
+      "restart"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GLOG_log_dir": "[CLEANUP]",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
+      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
+      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
+      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
+      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "setup goma (16).start goma",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/flutter/third_party/ninja/ninja",
+      "-j",
+      "1024",
+      "-C",
+      "[CACHE]/builder/src/out/fuchsia_debug_x64",
+      "flutter/shell/platform/fuchsia:fuchsia",
+      "fuchsia_tests"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0",
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]",
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "build fuchsia_debug_x64 flutter/shell/platform/fuchsia:fuchsia fuchsia_tests"
+  },
+  {
+    "cmd": [],
+    "name": "teardown goma (16)"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[CACHE]/goma/client/goma_ctl.py",
+      "jsonstatus",
+      "[CACHE]/goma/client/jsonstatus"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GLOG_log_dir": "[CLEANUP]",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
+      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
+      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
+      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
+      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown goma (16).goma jsonstatus",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"notice\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"infra_status\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"num_user_error\": 0, @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"ping_status_code\": 200@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[CACHE]/goma/client/goma_ctl.py",
+      "stat"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GLOG_log_dir": "[CLEANUP]",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
+      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
+      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
+      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
+      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown goma (16).goma stats",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[CACHE]/goma/client/goma_ctl.py",
+      "stop"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GLOG_log_dir": "[CLEANUP]",
+      "GOMA_CACHE_DIR": "[CACHE]/goma",
+      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
+      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
+      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
+      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
+      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown goma (16).stop goma",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/compiler_proxy.WARNING",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown goma (16).read goma_client warning log",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@compiler_proxy.WARNING@test log@@@",
+      "@@@STEP_LOG_END@compiler_proxy.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/goma/client/goma_stats.json",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown goma (16).read goma_stats.json",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:54:09.500000\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000051000@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
+      "fuchsia-infra.artifacts.builds_beta_goma",
+      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:54:09.500000\", \"time_stamp_int\": 1337000051000}}"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client",
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown goma (16).upload goma stats to bigquery",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "[CACHE]/builder/src/flutter/tools/fuchsia/build_fuchsia_artifacts.py",
+      "--engine-version",
+      "abcd1234",
+      "--skip-build",
+      "--archs",
+      "x64",
+      "--runtime-mode",
+      "debug"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Package Fuchsia Artifacts"
+  },
+  {
+    "cmd": [
+      "python3",
+      "[CACHE]/builder/src/flutter/tools/gn",
+      "--goma",
+      "--fuchsia",
+      "--fuchsia-cpu",
+      "arm64",
+      "--runtime-mode",
+      "debug",
+      "--no-lto"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "flutter:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gn --fuchsia --fuchsia-cpu arm64 --runtime-mode debug --no-lto"
+  },
+  {
+    "cmd": [],
     "name": "setup goma (17)"
   },
   {
@@ -17988,7 +18129,7 @@
       "-j",
       "1024",
       "-C",
-      "[CACHE]/builder/src/out/fuchsia_debug_x64",
+      "[CACHE]/builder/src/out/fuchsia_debug_arm64",
       "flutter/shell/platform/fuchsia:fuchsia",
       "fuchsia_tests"
     ],
@@ -18029,7 +18170,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build fuchsia_debug_x64 flutter/shell/platform/fuchsia:fuchsia fuchsia_tests"
+    "name": "build fuchsia_debug_arm64 flutter/shell/platform/fuchsia:fuchsia fuchsia_tests"
   },
   {
     "cmd": [],
@@ -18367,548 +18508,6 @@
       }
     },
     "name": "teardown goma (17).upload goma stats to bigquery",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "[CACHE]/builder/src/flutter/tools/fuchsia/build_fuchsia_artifacts.py",
-      "--engine-version",
-      "abcd1234",
-      "--skip-build",
-      "--archs",
-      "x64",
-      "--runtime-mode",
-      "debug"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Package Fuchsia Artifacts"
-  },
-  {
-    "cmd": [
-      "python3",
-      "[CACHE]/builder/src/flutter/tools/gn",
-      "--goma",
-      "--fuchsia",
-      "--fuchsia-cpu",
-      "arm64",
-      "--runtime-mode",
-      "debug",
-      "--no-lto"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gn --fuchsia --fuchsia-cpu arm64 --runtime-mode debug --no-lto"
-  },
-  {
-    "cmd": [],
-    "name": "setup goma (18)"
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "restart"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "setup goma (18).start goma",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/builder/src/flutter/third_party/ninja/ninja",
-      "-j",
-      "1024",
-      "-C",
-      "[CACHE]/builder/src/out/fuchsia_debug_arm64",
-      "flutter/shell/platform/fuchsia:fuchsia",
-      "fuchsia_tests"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0",
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]",
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "build fuchsia_debug_arm64 flutter/shell/platform/fuchsia:fuchsia fuchsia_tests"
-  },
-  {
-    "cmd": [],
-    "name": "teardown goma (18)"
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "jsonstatus",
-      "[CACHE]/goma/client/jsonstatus"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "teardown goma (18).goma jsonstatus",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"notice\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@    {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"infra_status\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"num_user_error\": 0, @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"ping_status_code\": 200@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  ]@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "stat"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "teardown goma (18).goma stats",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "stop"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "teardown goma (18).stop goma",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CLEANUP]/compiler_proxy.WARNING",
-      "/path/to/tmp/"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "teardown goma (18).read goma_client warning log",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@compiler_proxy.WARNING@test log@@@",
-      "@@@STEP_LOG_END@compiler_proxy.WARNING@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CACHE]/goma/client/goma_stats.json",
-      "/path/to/tmp/"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "teardown goma (18).read goma_stats.json",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"build_info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"build_id\": 8945511751514863184, @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"builder\": \"Linux Engine\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp\": \"2012-05-14 12:54:15.500000\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"time_stamp_int\": 1337000057000@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
-      "fuchsia-infra.artifacts.builds_beta_goma",
-      "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:54:15.500000\", \"time_stamp_int\": 1337000057000}}"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "teardown goma (18).upload goma stats to bigquery",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

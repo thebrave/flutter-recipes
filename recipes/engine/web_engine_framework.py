@@ -75,7 +75,7 @@ def RunSteps(api, properties, env_properties):
     api.gclient.runhooks()
 
     target_name = 'wasm_release'
-    gn_flags = ['--web', '--runtime-mode=release', '--build-canvaskit', '--no-goma']
+    gn_flags = ['--web', '--runtime-mode=release']
 
     api.build_util.run_gn(gn_flags, checkout)
     api.build_util.build(target_name, checkout, [])

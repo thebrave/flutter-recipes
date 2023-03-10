@@ -740,11 +740,6 @@ def BuildLinux(api):
         'flutter/tools/font-subset',
         'flutter:unittests',
   )
-  api.build_util.run_gn(
-      ['--runtime-mode', 'release', '--web', '--build-canvaskit', '--no-goma'],
-      checkout
-  )
-  api.build_util.build('wasm_release', checkout, ['flutter/web_sdk:flutter_web_sdk_archive'])
   # 'engine' suite has failing tests in host_debug.
   # https://github.com/flutter/flutter/issues/103757
   RunTests(api, 'host_debug', types='dart')
@@ -786,10 +781,6 @@ def BuildLinux(api):
                    artifact_name='flutter_patched_sdk_product.zip')
   UploadArtifact(api, config='host_debug', platform='',
                    artifact_name='dart-sdk-linux-x64.zip')
-
-  # Wasm release
-  UploadArtifact(api, config='wasm_release', platform='',
-                 artifact_name='flutter-web-sdk.zip')
 
   # Rebuild with fontconfig support enabled for the desktop embedding, since it
   # should be on for libflutter_linux_gtk.so, but not libflutter_engine.so.

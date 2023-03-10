@@ -6,7 +6,7 @@ from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 
 DEPS = [
     'flutter/build_util',
-    'fuchsia/goma',
+    'flutter/goma',
     'recipe_engine/context',
     'recipe_engine/path',
     'recipe_engine/platform',

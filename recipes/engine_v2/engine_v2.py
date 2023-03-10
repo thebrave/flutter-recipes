@@ -109,19 +109,6 @@ def RunSteps(api, properties, env_properties):
       raise_on_failure=True,
   )
 
-  # Run tests
-  with api.step.nest('launch tests') as presentation:
-    tasks = api.shard_util_v2.schedule_tests(tests, build_results, presentation)
-  with api.step.nest('collect tests') as presentation:
-    test_results = api.shard_util_v2.collect(tasks, presentation)
-
-  api.display_util.display_subbuilds(
-      step_name='display tests',
-      subbuilds=test_results,
-      raise_on_failure=True,
-  )
-
-
   # Global generators
   if generators or archives:
     # Generators and archives require a full engine checkout.
@@ -155,6 +142,18 @@ def RunSteps(api, properties, env_properties):
       api.archives.upload_artifact(archive.local, archive.remote)
       api.flutter_bcid.upload_provenance(archive.local, archive.remote)
     api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
+
+  # Run tests
+  with api.step.nest('launch tests') as presentation:
+    tasks = api.shard_util_v2.schedule_tests(tests, build_results, presentation)
+  with api.step.nest('collect tests') as presentation:
+    test_results = api.shard_util_v2.collect(tasks, presentation)
+
+  api.display_util.display_subbuilds(
+      step_name='display tests',
+      subbuilds=test_results,
+      raise_on_failure=True,
+  )
 
 
 def _run_global_generators(api, generators, full_engine_checkout, env, env_prefixes):

@@ -151,10 +151,12 @@ def Build(api, checkout, env, env_prefixes, outputs):
   api.flutter_deps.required_deps(env, env_prefixes, deps)
   build = api.properties.get('build')
   api.flutter_bcid.report_stage('compile')
-  api.build_util.run_gn(build.get('gn'), checkout)
-  ninja = build.get('ninja')
-  ninja_tool[ninja.get('tool', 'ninja')
-            ](ninja.get('config'), checkout, ninja.get('targets'))
+  gn = build.get('gn')
+  if gn:
+    api.build_util.run_gn(build.get('gn'), checkout)
+    ninja = build.get('ninja')
+    ninja_tool[ninja.get('tool', 'ninja')](
+            ninja.get('config'), checkout, ninja.get('targets'))
   generator_tasks = build.get('generators', {}).get('tasks', [])
   pub_dirs = build.get('generators', {}).get('pub_dirs', [])
   archives = build.get('archives', [])

@@ -45,7 +45,8 @@ def RunSteps(api):
   branch = api.properties.get('branch')
   tag = api.properties.get('tag')
   release_channel = api.properties.get('release_channel')
-  dry_run = api.runtime.is_experimental or api.properties.get('dry_run', True) # default to True dry run
+  # default to True dry run
+  dry_run = api.runtime.is_experimental or api.properties.get('dry_run')=='True'
   assert branch and tag and release_channel
 
   checkout_path = api.path['start_dir'].join('flutter')
@@ -87,7 +88,12 @@ def RunSteps(api):
          'https','--with-token'],
         stdin=api.raw_io.input_text(data=token_txt))
 
-    api.git('tag release', 'tag', tag, release_git_hash)
+    tag_command = ['tag', tag, release_git_hash]
+    if dry_run:
+      tag_command.insert(0, 'echo')
+      api.step('Dry-run tag release command', tag_command)
+    else:
+      api.git('tag release', *tag_command)
 
     # output tag for debug clarity & testing
     api.git('find commit',
@@ -97,32 +103,47 @@ def RunSteps(api):
       f'origin/{branch}',
       stdout=api.raw_io.output_text(add_output_log=True)).stdout.rstrip()
 
-    dry_run_arg = '--dry-run' if dry_run else None
-    push_args = ['push', dry_run_arg, 'origin', tag]
-    api.git('push tag', *push_args)
+    # push tag
+    push_tag_args = ['push', 'origin', tag]
+    if dry_run:
+      push_tag_args.insert(0, 'echo')
+      api.step('Dry-run push tag command', push_tag_args)
+    else:
+      api.git('push tag', *push_tag_args)
+
+    # push refs to release channel
+    push_ref_args = ['push', 'origin', 'HEAD:%s' % release_channel]
+    if dry_run:
+      push_ref_args.insert(0, 'echo')
+      api.step('Dry-run push ref command', push_ref_args)
+    else:
+      push_ref_msg = 'push refs to release branch %s' % release_channel
+      api.git(push_ref_msg, *push_ref_args)
 
 
 def GenTests(api):
     for tag in ('1.2.3-4.5.pre', '1.2.3'):
       for release_channel in ('stable', 'beta'):
-        test = api.test(
-            '%s%s%s' % (
-                'flutter-2.8-candidate.9',
-                tag,
-                release_channel
-            ), api.platform('mac', 64),
-            api.properties(
-                branch='flutter-2.8-candidate.9',
-                tag=tag,
-                release_channel=release_channel
-            ), api.repo_util.flutter_environment_data(),
-            api.runtime(is_experimental=True),
-                  api.step_data('find commit', stdout=api.raw_io.output_text(
-              '82735b8904e82fd8b273cb1ae16cccd77ccf4248\n')),
-            api.post_process(post_process.MustRun,
-              'authenticating using gh cli'),
-            api.post_process(post_process.MustRun, 'tag release'),
-            api.post_process(post_process.MustRun, 'push tag'),
-            api.post_process(post_process.StatusSuccess),
-        )
-        yield test
+        for dry_run in ('True', 'False'):
+          test = api.test(
+              '%s_%s_%s%s' % (
+                  'flutter-2.8-candidate.9',
+                  tag,
+                  release_channel,
+                  '_dry_run' if dry_run=='True' else ''
+              ), api.platform('mac', 64),
+              api.properties(
+                  branch='flutter-2.8-candidate.9',
+                  tag=tag,
+                  release_channel=release_channel,
+                  dry_run=dry_run
+              ), api.repo_util.flutter_environment_data(),
+                    api.step_data('find commit', stdout=api.raw_io.output_text(
+                '82735b8904e82fd8b273cb1ae16cccd77ccf4248\n')),
+              api.post_process(post_process.MustRun,
+                'authenticating using gh cli'),
+              api.post_process(post_process.MustRunRE, r'.*tag release.*'),
+              api.post_process(post_process.MustRunRE, r'.*push tag.*'),
+              api.post_process(post_process.StatusSuccess),
+          )
+          yield test

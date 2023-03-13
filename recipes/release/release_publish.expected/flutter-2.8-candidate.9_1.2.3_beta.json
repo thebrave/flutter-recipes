@@ -406,7 +406,6 @@
     "cmd": [
       "git",
       "push",
-      "--dry-run",
       "origin",
       "1.2.3"
     ],
@@ -430,6 +429,35 @@
       ]
     },
     "name": "push tag",
+    "timeout": 600.0
+  },
+  {
+    "cmd": [
+      "git",
+      "push",
+      "origin",
+      "HEAD:beta"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[CACHE]/gh-cli/bin"
+      ]
+    },
+    "name": "push refs to release branch beta",
     "timeout": 600.0
   },
   {

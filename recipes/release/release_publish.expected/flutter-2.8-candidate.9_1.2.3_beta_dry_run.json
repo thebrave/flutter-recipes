@@ -341,9 +341,9 @@
   },
   {
     "cmd": [
-      "git",
+      "echo",
       "tag",
-      "1.2.3-4.5.pre",
+      "1.2.3",
       "deadbeef"
     ],
     "cwd": "[START_DIR]/flutter",
@@ -365,8 +365,7 @@
         "[CACHE]/gh-cli/bin"
       ]
     },
-    "name": "tag release",
-    "timeout": 600.0
+    "name": "Dry-run tag release command"
   },
   {
     "cmd": [
@@ -404,11 +403,10 @@
   },
   {
     "cmd": [
-      "git",
+      "echo",
       "push",
-      "--dry-run",
       "origin",
-      "1.2.3-4.5.pre"
+      "1.2.3"
     ],
     "cwd": "[START_DIR]/flutter",
     "env": {
@@ -429,8 +427,35 @@
         "[CACHE]/gh-cli/bin"
       ]
     },
-    "name": "push tag",
-    "timeout": 600.0
+    "name": "Dry-run push tag command"
+  },
+  {
+    "cmd": [
+      "echo",
+      "push",
+      "origin",
+      "HEAD:beta"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[CACHE]/gh-cli/bin"
+      ]
+    },
+    "name": "Dry-run push ref command"
   },
   {
     "name": "$result"

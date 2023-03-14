@@ -17,6 +17,7 @@ DEPS = [
   'recipe_engine/buildbucket',
   'recipe_engine/cas',
   'recipe_engine/context',
+  'recipe_engine/file',
   'recipe_engine/path',
   'recipe_engine/platform',
   'recipe_engine/properties',
@@ -31,6 +32,7 @@ PROPERTIES = InputProperties
 
 def Build(api, config, disable_goma, *targets):
   checkout = api.path['cache'].join('builder', 'src')
+  api.file.rmtree('Clobber build output', checkout.join('out'))
   build_dir = checkout.join('out/%s' % config)
   ninja_path = checkout.join('flutter', 'third_party', 'ninja', 'ninja')
 

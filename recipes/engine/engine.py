@@ -14,6 +14,7 @@ DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/gclient',
     'depot_tools/gsutil',
+    'flutter/archives',
     'flutter/bucket_util',
     'flutter/build_util',
     'flutter/display_util',
@@ -62,6 +63,22 @@ ENV_PROPERTIES = EnvProperties
 IMPELLERC_SHADER_LIB_PATH = 'shader_lib'
 
 
+# Relative paths used to mock paths for testing.
+MOCK_JAR_PATH = (
+    'io/flutter/x86_debug/'
+    '1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/'
+    'x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar'
+)
+MOCK_POM_PATH = (
+    'io/flutter/x86_debug/'
+    '1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/'
+    'x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
+)
+
+# Used for mock paths
+DIRECTORY = 'DIRECTORY'
+
+
 def MoveShaderLib(api):
   api.file.move(
       'Move the impellerc shader lib to the current directory in preparation for upload',
@@ -106,6 +123,32 @@ def UploadArtifact(api, config, platform, artifact_name):
       path,
       GetCloudPath(api, dst)
   )
+
+
+def UploadToDownloadFlutterIO(api, config):
+  src = GetCheckoutPath(api).join(
+      'out',
+      config,
+      'zip_archives',
+      'download.flutter.io'
+  )
+  api.path.mock_add_file(src)
+  assert api.path.exists(src), '%s does not exist' % str(src)
+  if not api.flutter_bcid.is_prod_build():
+    return
+  paths = api.file.listdir(
+      'Expand directory', src,
+      recursive=True, test_data=(MOCK_JAR_PATH, MOCK_POM_PATH))
+  paths = [api.path.abspath(p) for p in paths]
+  experimental = 'experimental' if api.runtime.is_experimental else ''
+  for path in paths:
+    dst_list = [
+        'gs://download.flutter.io',
+        experimental,
+        str(path).split('download.flutter.io/')[1]
+    ]
+    dst = '/'.join(filter(bool, dst_list))
+    api.archives.upload_artifact(path, dst)
 
 
 def GetCheckoutPath(api):
@@ -421,7 +464,8 @@ def UploadTreeMap(api, upload_dir, lib_flutter_path, android_triple):
 class AndroidAotVariant:
 
   def __init__(
-      self, android_cpu, out_dir, artifact_dir, clang_dir, android_triple, abi
+      self, android_cpu, out_dir, artifact_dir, clang_dir, android_triple, abi,
+      gn_args, ninja_targets
   ):
     self.android_cpu = android_cpu
     self.out_dir = out_dir
@@ -429,67 +473,31 @@ class AndroidAotVariant:
     self.clang_dir = clang_dir
     self.android_triple = android_triple
     self.abi = abi
+    self.gn_args = gn_args
+    self.ninja_targets = ninja_targets
 
-  def GetBuildOutDir(self, runtime_mode):
-    return self.out_dir % runtime_mode
+  def GetBuildOutDir(self):
+    return self.out_dir
 
-  def GetUploadDir(self, runtime_mode):
-    return self.artifact_dir % runtime_mode
-
-  def GetFlutterJarPath(self):
-    return 'flutter.jar'
-
-  def GetMavenArtifacts(self, runtime_mode):
-    return [
-        '%s_%s.jar' % (self.abi, runtime_mode),
-        '%s_%s.pom' % (self.abi, runtime_mode)
-    ]
-
-  def GetGenSnapshotPath(self):
-    return '%s/gen_snapshot' % (self.clang_dir)
-
-  def GetAnalyzeSnapshotPath(self):
-    return '%s/analyze_snapshot' % (self.clang_dir)
+  def GetUploadDir(self):
+    return self.artifact_dir
 
   def GetLibFlutterPath(self):
     return 'libflutter.so'
 
-  def GetEmbeddingArtifacts(self, runtime_mode):
-    return [
-        'flutter_embedding_%s.jar' % runtime_mode,
-        'flutter_embedding_%s.pom' % runtime_mode,
-        'flutter_embedding_%s-sources.jar' % runtime_mode,
-    ]
-
-  def GetGNArgs(self, runtime_mode):
-    return [
-        '--android', '--runtime-mode', runtime_mode, '--android-cpu',
-        self.android_cpu
-    ]
+  def GetGNArgs(self):
+    return self.gn_args
 
   def GetNinjaTargets(self):
-    return ['default', '%s/gen_snapshot' % self.clang_dir]
-
-  def GetOutputFiles(self, api, runtime_mode):
-    analyze_snapshot = []
-    if self.android_cpu == "x64" or self.android_cpu == "arm64":
-      if api.platform.is_linux:
-        analyze_snapshot = [self.GetAnalyzeSnapshotPath()]
-    return ([
-        self.GetFlutterJarPath(),
-        self.GetGenSnapshotPath(),
-        self.GetLibFlutterPath(),
-    ] + self.GetMavenArtifacts(runtime_mode)
-      + self.GetEmbeddingArtifacts(runtime_mode)
-      + analyze_snapshot)
+    return self.ninja_targets
 
 
 # This variant is built on the scheduling bot to run firebase tests.
 def BuildLinuxAndroidAOTArm64Profile(api, swarming_task_id, aot_variant):
   checkout = GetCheckoutPath(api)
-  build_output_dir = aot_variant.GetBuildOutDir('profile')
+  build_output_dir = aot_variant.GetBuildOutDir()
 
-  RunGN(api, *aot_variant.GetGNArgs('profile'))
+  RunGN(api, *aot_variant.GetGNArgs())
   Build(api, build_output_dir, *aot_variant.GetNinjaTargets())
 
   env = {
@@ -520,43 +528,151 @@ def BuildLinuxAndroidAOT(api, swarming_task_id):
   # earlier if they fail.
   aot_variants = [
       AndroidAotVariant(
-          'arm64', 'android_%s_arm64', 'android-arm64-%s', 'clang_x64',
-          'aarch64-linux-android', 'arm64_v8a'
+          android_cpu='arm64',
+          out_dir='android_profile_arm64',
+          artifact_dir='android-arm64-profile',
+          clang_dir='clang_x64',
+          android_triple='aarch64-linux-android',
+          abi='arm64_v8a',
+          gn_args=[
+              '--runtime-mode',
+              'profile',
+              '--android',
+              '--android-cpu',
+              'arm64'
+          ],
+          ninja_targets=[
+              'default',
+              'clang_x64/gen_snapshot',
+              'flutter/shell/platform/android:abi_jars',
+              'flutter/shell/platform/android:analyze_snapshot'
+          ]
       ),
       AndroidAotVariant(
-          'arm', 'android_%s', 'android-arm-%s', 'clang_x64',
-          'arm-linux-androideabi', 'armeabi_v7a'
+          android_cpu='arm64',
+          out_dir='android_release_arm64',
+          artifact_dir='android-arm64-release',
+          clang_dir='clang_x64',
+          android_triple='aarch64-linux-android',
+          abi='arm64_v8a',
+          gn_args=[
+              '--runtime-mode',
+              'release',
+              '--android',
+              '--android-cpu',
+              'arm64'
+          ],
+          ninja_targets=[
+              'default',
+              'clang_x64/gen_snapshot',
+              'flutter/shell/platform/android:abi_jars',
+              'flutter/shell/platform/android:analyze_snapshot'
+          ]
       ),
       AndroidAotVariant(
-          'x64', 'android_%s_x64', 'android-x64-%s', 'clang_x64',
-          'x86_64-linux-android', 'x86_64'
+          android_cpu='arm',
+          out_dir='android_profile',
+          artifact_dir='android-arm-profile',
+          clang_dir='clang_x64',
+          android_triple='arm-linux-androideabi',
+          abi='armeabi_v7a',
+          gn_args=[
+              '--runtime-mode',
+              'profile',
+              '--android',
+              '--android-cpu', 'arm'
+          ],
+          ninja_targets=[
+              'default',
+              'clang_x64/gen_snapshot',
+              'flutter/shell/platform/android:embedding_jars',
+              'flutter/shell/platform/android:abi_jars'
+          ]
+      ),
+      AndroidAotVariant(
+          android_cpu='arm',
+          out_dir='android_release',
+          artifact_dir='android-arm-release',
+          clang_dir='clang_x64',
+          android_triple='arm-linux-androideabi',
+          abi='armeabi_v7a',
+          gn_args=[
+              '--runtime-mode',
+              'release',
+              '--android',
+              '--android-cpu',
+              'arm'
+          ],
+          ninja_targets=[
+              'default',
+              'clang_x64/gen_snapshot',
+              'flutter/shell/platform/android:embedding_jars',
+              'flutter/shell/platform/android:abi_jars'
+          ]
+      ),
+      AndroidAotVariant(
+          android_cpu='x64',
+          out_dir='android_profile_x64',
+          artifact_dir='android-x64-profile',
+          clang_dir='clang_x64',
+          android_triple='x86_64-linux-android',
+          abi='x86_64',
+          gn_args=[
+              '--runtime-mode',
+              'profile',
+              '--android',
+              '--android-cpu',
+              'x64'
+          ],
+          ninja_targets=[
+              'default',
+              'clang_x64/gen_snapshot',
+              'flutter/shell/platform/android:abi_jars',
+              'flutter/shell/platform/android:analyze_snapshot'
+          ]
+      ),
+      AndroidAotVariant(
+          android_cpu='x64',
+          out_dir='android_release_x64',
+          artifact_dir='android-x64-release',
+          clang_dir='clang_x64',
+          android_triple='x86_64-linux-android',
+          abi='x86_64',
+          gn_args=[
+              '--runtime-mode',
+              'release',
+              '--android',
+              '--android-cpu', 'x64'
+          ],
+          ninja_targets=[
+              'default',
+              'clang_x64/gen_snapshot',
+              'flutter/shell/platform/android:abi_jars',
+              'flutter/shell/platform/android:analyze_snapshot'
+          ]
       ),
   ]
 
   builds = []
   for aot_variant in aot_variants:
-    for runtime_mode in ['profile', 'release']:
-      if runtime_mode == 'profile' and aot_variant.android_cpu == 'arm64':
-        # This variant will be executed on the current shard to facilitate,
-        # running firebase tests. See: BuildLinuxAndroidAOTArm64Profile
-        continue
+    build_out_dir = aot_variant.GetBuildOutDir()
+    if build_out_dir == 'android_profile_arm64':
+      continue
+    props = {
+        'builds': [{
+            'gn_args': aot_variant.GetGNArgs(),
+            'dir': build_out_dir,
+            'targets': aot_variant.GetNinjaTargets(),
+            'output_files': ['zip_archives', 'libflutter.so']
+        }],
+    }
 
-      build_out_dir = aot_variant.GetBuildOutDir(runtime_mode)
-      props = {
-          'builds': [{
-              'gn_args': aot_variant.GetGNArgs(runtime_mode),
-              'dir': build_out_dir,
-              'targets': aot_variant.GetNinjaTargets(),
-              'output_files': aot_variant.GetOutputFiles(api, runtime_mode),
-          }],
-      }
+    if 'git_url' in api.properties and 'git_ref' in api.properties:
+      props['git_url'] = api.properties['git_url']
+      props['git_ref'] = api.properties['git_ref']
 
-      if 'git_url' in api.properties and 'git_ref' in api.properties:
-        props['git_url'] = api.properties['git_url']
-        props['git_ref'] = api.properties['git_ref']
-
-      with api.step.nest('Schedule build %s' % build_out_dir):
-        builds += ScheduleBuilds(api, 'Linux Engine Drone', props)
+    with api.step.nest('Schedule build %s' % build_out_dir):
+      builds += ScheduleBuilds(api, 'Linux Engine Drone', props)
 
   checkout = GetCheckoutPath(api)
   git_rev = api.buildbucket.gitiles_commit.id or 'HEAD'
@@ -582,74 +698,89 @@ def BuildLinuxAndroidAOT(api, swarming_task_id):
           build_props['cas_output_hash'], GetCheckoutPath(api)
       )
 
-  embedding_artifacts_uploaded = 0
+  # Explicitly upload artifacts.
+
+  # Artifacts.zip
+  UploadArtifact(api, config='android_profile', platform='android-arm-profile',
+                 artifact_name='artifacts.zip')
+  UploadArtifact(api, config='android_profile_x64', platform='android-x64-profile',
+                 artifact_name='artifacts.zip')
+  UploadArtifact(api, config='android_profile_arm64', platform='android-arm64-profile',
+                 artifact_name='artifacts.zip')
+
+  UploadArtifact(api, config='android_release', platform='android-arm-release',
+                 artifact_name='artifacts.zip')
+  UploadArtifact(api, config='android_release_x64', platform='android-x64-release',
+                 artifact_name='artifacts.zip')
+  UploadArtifact(api, config='android_release_arm64', platform='android-arm64-release',
+                 artifact_name='artifacts.zip')
+  
+  # Linux-x64.zip.
+  UploadArtifact(api, config='android_profile', platform='android-arm-profile',
+                 artifact_name='linux-x64.zip')
+  UploadArtifact(api, config='android_profile_x64', platform='android-x64-profile',
+                 artifact_name='linux-x64.zip')
+  UploadArtifact(api, config='android_profile_arm64', platform='android-arm64-profile',
+                 artifact_name='linux-x64.zip')
+
+  UploadArtifact(api, config='android_release', platform='android-arm-release',
+                 artifact_name='linux-x64.zip')
+  UploadArtifact(api, config='android_release_x64', platform='android-x64-release',
+                 artifact_name='linux-x64.zip')
+  UploadArtifact(api, config='android_release_arm64', platform='android-arm64-release',
+                 artifact_name='linux-x64.zip')
+
+  # Symbols.zip
+  UploadArtifact(api, config='android_profile', platform='android-arm-profile',
+                 artifact_name='symbols.zip')
+  UploadArtifact(api, config='android_profile_x64', platform='android-x64-profile',
+                 artifact_name='symbols.zip')
+  UploadArtifact(api, config='android_profile_arm64', platform='android-arm64-profile',
+                 artifact_name='symbols.zip')
+
+  UploadArtifact(api, config='android_release', platform='android-arm-release',
+                 artifact_name='symbols.zip')
+  UploadArtifact(api, config='android_release_x64', platform='android-x64-release',
+                 artifact_name='symbols.zip')
+  UploadArtifact(api, config='android_release_arm64', platform='android-arm64-release',
+                 artifact_name='symbols.zip')
+
+  # analyze-snapshot-linux-x64.zip
+  UploadArtifact(api, config='android_profile_x64', platform='android-x64-profile',
+                 artifact_name='analyze-snapshot-linux-x64.zip')
+  UploadArtifact(api, config='android_profile_arm64', platform='android-arm64-profile',
+                 artifact_name='analyze-snapshot-linux-x64.zip')
+
+  UploadArtifact(api, config='android_release_x64', platform='android-x64-release',
+                 artifact_name='analyze-snapshot-linux-x64.zip')
+  UploadArtifact(api, config='android_release_arm64', platform='android-arm64-release',
+                 artifact_name='analyze-snapshot-linux-x64.zip')
+
+  # Jar, pom, embedding files.
+  UploadToDownloadFlutterIO(api, 'android_profile')
+  UploadToDownloadFlutterIO(api, 'android_profile_x64')
+  UploadToDownloadFlutterIO(api, 'android_profile_arm64')
+
+  UploadToDownloadFlutterIO(api, 'android_release')
+  UploadToDownloadFlutterIO(api, 'android_release_x64')
+  UploadToDownloadFlutterIO(api, 'android_release_arm64')
+
   for aot_variant in aot_variants:
-    for runtime_mode in ['profile', 'release']:
-      upload_dir = aot_variant.GetUploadDir(runtime_mode)
-      with api.step.nest('Upload artifacts %s' % upload_dir):
-        # Paths in AndroidAotVariant do not prefix build_dir
-        # that is expected when uploading artifacts.
-        def prefix_build_dir(path):
-          build_dir = aot_variant.GetBuildOutDir(runtime_mode)
-          return 'out/%s/%s' % (build_dir, path)
+    upload_dir = aot_variant.GetUploadDir()
+    with api.step.nest('Upload artifacts %s' % upload_dir):
+      # Paths in AndroidAotVariant do not prefix build_dir
+      # that is expected when uploading artifacts.
+      def prefix_build_dir(path):
+        build_dir = aot_variant.GetBuildOutDir()
+        return 'out/%s/%s' % (build_dir, path)
 
-        def prefix_build_dir_lst(lst):
-          return [prefix_build_dir(path) for path in lst]
+      unstripped_lib_flutter_path = prefix_build_dir(
+          aot_variant.GetLibFlutterPath()
+      )
 
-        # TODO(egarciad): Don't upload flutter.jar once the migration to Maven
-        # is completed.
-        UploadArtifacts(
-            api, upload_dir,
-            [prefix_build_dir(aot_variant.GetFlutterJarPath())]
-        )
-
-        # Upload the Maven artifacts.
-        UploadMavenArtifacts(
-            api,
-            prefix_build_dir_lst(aot_variant.GetMavenArtifacts(runtime_mode)),
-            swarming_task_id
-        )
-
-        # Upload artifacts used for AOT compilation on Linux hosts.
-        UploadArtifacts(
-            api,
-            upload_dir, [prefix_build_dir(aot_variant.GetGenSnapshotPath())],
-            archive_name='linux-x64.zip'
-        )
-
-        # analyze_snapshot is only needed for x64 and arm64 Android running on
-        # Linux.
-        if aot_variant.android_cpu == 'x64' or aot_variant.android_cpu == 'arm64':
-          UploadArtifacts(
-              api,
-              upload_dir,
-              [prefix_build_dir(aot_variant.GetAnalyzeSnapshotPath())],
-              archive_name='analyze-snapshot-linux-x64.zip',
-          )
-
-        unstripped_lib_flutter_path = prefix_build_dir(
-            aot_variant.GetLibFlutterPath()
-        )
-        UploadArtifacts(
-            api,
-            upload_dir, [unstripped_lib_flutter_path],
-            archive_name='symbols.zip'
-        )
-
-        if runtime_mode == 'release' and aot_variant.android_cpu != 'x64':
-          triple = aot_variant.android_triple
-          UploadTreeMap(api, upload_dir, unstripped_lib_flutter_path, triple)
-
-        # Upload the embedding artifacts, we only need this once per
-        # runtime mode.
-        if embedding_artifacts_uploaded < 2:
-          embedding_artifacts_uploaded += 1
-          UploadMavenArtifacts(
-              api,
-              prefix_build_dir_lst(
-                  aot_variant.GetEmbeddingArtifacts(runtime_mode)
-              ), swarming_task_id
-          )
+      if aot_variant.GetBuildOutDir() in ['android_release_arm64', 'android_release']:
+        triple = aot_variant.android_triple
+        UploadTreeMap(api, upload_dir, unstripped_lib_flutter_path, triple)
 
 
 def BuildLinuxAndroid(api, swarming_task_id):
@@ -1873,7 +2004,7 @@ def GenTests(api):
           builder='Linux Engine', git_repo=GIT_REPO, project='flutter'
       ),
       api.step_data(
-          'Build and test arm64 profile.gn --android --runtime-mode profile --android-cpu arm64',
+          'Build and test arm64 profile.gn --runtime-mode profile --android --android-cpu arm64',
           retcode=1
       ),
       api.properties(

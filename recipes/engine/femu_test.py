@@ -35,7 +35,6 @@ DEPS = [
 
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
-FSERVE_PORT = 8084
 
 
 def GetCheckoutPath(api):
@@ -187,8 +186,6 @@ def TestFuchsiaFEMU(api):
   checkout = GetCheckoutPath(api)
 
   ffx = checkout.join('fuchsia/sdk/linux/tools/x64/ffx')
-  fserve = checkout.join('fuchsia/sdk/linux/tools/x64/fserve')
-  fpublish = checkout.join('fuchsia/sdk/linux/tools/x64/fpublish')
 
   pb_suffix = ''
   with api.context(cwd=root_dir), api.step.nest('Set FFX config'):
@@ -231,7 +228,6 @@ def TestFuchsiaFEMU(api):
 
   # Pick up new config change
   api.step('restart ffx daemon', [ffx, 'daemon', 'stop'])
-
   # TODO(fxb/121613). Workaround for the issue of previously running
   # emulator.
   api.step('list emulators', [ffx, 'emu', 'list'])
@@ -269,19 +265,30 @@ def TestFuchsiaFEMU(api):
               'list all targets in the collection', [ffx, 'target', 'list']
           )
           api.step('retrieve femu information', [ffx, 'target', 'show'])
+          ffx_repo_list_json = api.step(
+              'get repository information',
+              [ffx, '--machine', 'json', 'repository', 'list'],
+              stdout=api.json.output()
+          ).stdout
+          ffx_repo_path = ffx_repo_list_json[0]['spec']['path']
 
-          # Start a package server, this listens in the background for published files
-          # https://fuchsia.dev/reference/tools/sdk/fserve
-          api.step(
-              'start fserve',
-              [fserve, '-image',
-               'qemu-%s' % arch, '-server-port', FSERVE_PORT]
-          )
-
-          # Publishes the required FAR files needed to run the test to the package server
-          # https://fuchsia.dev/reference/tools/sdk/fpublish
           for package in suite['package_basenames']:
-            api.step('publishing {}'.format(package), [fpublish, package])
+            api.step(
+                'ffx repository publish {}'.format(package), [
+                    ffx, 'repository', 'publish', ffx_repo_path,
+                    '--package-archive', package
+                ]
+            )
+
+          api.step(
+              'start FFX repository', [ffx, 'repository', 'server', 'start']
+          )
+          api.step(
+              'Register repository', [
+                  ffx, 'target', 'repository', 'register', '--alias',
+                  'fuchsia.com'
+              ]
+          )
 
           # Run the actual test
           # Test command is guaranteed to be well-formed
@@ -316,20 +323,21 @@ def TestFuchsiaFEMU(api):
                     'instances', 'fuchsia-emulator', 'emulator.log'
                 )
             )
-            dump_step.presentation.logs[
-                'emulator_serial_log'] = api.file.read_text(
-                    'read ffx daemon log',
-                    api.path.join(
-                        api.context.env.get('FFX_ISOLATE_DIR'), 'data', 'emu',
-                        'instances', 'fuchsia-emulator', 'emulator.log.serial'
-                    )
+            dump_step.presentation.logs['emulator_serial_log'] = api.file.read_text(
+                'read ffx daemon log',
+                api.path.join(
+                    api.context.env.get('FFX_ISOLATE_DIR'), 'data', 'emu',
+                    'instances', 'fuchsia-emulator', 'emulator.log.serial'
                 )
-
-            # Cleans up running processes to prevent clashing with future test runs
-            api.step('kill fserve', [fserve, '-kill'])
-            api.step(
-                'stop %s emulator' % arch, [ffx, '-v', 'emu', 'stop', '--all']
             )
+
+          # Cleans up running processes to prevent clashing with future test runs
+          api.step(
+              'stop FFX repository', [ffx, 'repository', 'server', 'stop']
+          )
+          api.step(
+              'stop %s emulator' % arch, [ffx, '-v', 'emu', 'stop', '--all']
+          )
 
 
 def BuildFuchsia(api):
@@ -384,6 +392,16 @@ def GenTests(api):
       builder='FEMU Test', project='flutter')
   build.output.CopyFrom(build_pb2.Build.Output(properties=output_props))
 
+  def ffx_repo_list_step_data(step_name):
+    return api.step_data(step_name, stdout=api.json.output([{
+        'name': 'terminal.qemu-arm64', 'spec': {
+            'type':
+                'pm',
+            'path':
+                '/foo/bar/data/pbms/18411389924820269552/terminal.qemu-arm64/packages'
+        }
+    }]))
+
   yield api.test(
       'start_femu',
       api.properties(
@@ -433,24 +451,25 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               clobber=False,
-          ), clobber=False,),
+          ),
+          clobber=False,
+      ),
       api.step_data(
           'retrieve list of test suites.parse',
           api.json.output([{
-            'test_command': 'test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b',
-            'packages': [
-              'v2_test-123.far'
-            ]
+              'test_command':
+                  'test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b',
+              'packages': ['v2_test-123.far']
           }, {
-            'test_command': 'test run fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b',
-            'packages': [
-              'v1_test_component-321.far'
-            ]
+              'test_command':
+                  'test run fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b',
+              'packages': ['v1_test_component-321.far']
           }])
       ),
       api.step_data(
           'retrieve list of test suites.read',
-          api.file.read_text('''# This is a comment.
+          api.file.read_text(
+              '''# This is a comment.
 - test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b
   packages:
     - v2_test-123.far
@@ -458,13 +477,20 @@ def GenTests(api):
 # Legacy cfv1 test
 - test_command: test run fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b
   packages:
-    - v1_test_component-321.far''')
+    - v1_test_component-321.far'''
+          )
       ),
       api.step_data(
           'read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
-      api.step_data('run FEMU test on x64.run v2_test.publishing v2_test-123.far', retcode=1),
+      ffx_repo_list_step_data(
+          'run FEMU test on x64.run v2_test.get repository information'
+      ),
+      api.step_data(
+          'run FEMU test on x64.run v2_test.ffx repository publish v2_test-123.far',
+          retcode=1
+      ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
   )
 
@@ -478,32 +504,43 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               clobber=False,
-          ), clobber=False,),
+          ),
+          clobber=False,
+      ),
       api.step_data(
           'retrieve list of test suites.parse',
           api.json.output([{
-            'test_command': 'test run fuchsia-pkg://fuchsia.com/flutter-embedder-test#meta/flutter-embedder-test.cmx',
-            'packages': [
-              'flutter-embedder-test-0.far',
-              'gen/flutter/shell/platform/fuchsia/flutter/integration_flutter_tests/embedder/child-view/child-view/child-view.far',
-              'gen/flutter/shell/platform/fuchsia/flutter/integration_flutter_tests/embedder/parent-view/parent-view/parent-view.far'
-            ]
+              'test_command':
+                  'test run fuchsia-pkg://fuchsia.com/flutter-embedder-test#meta/flutter-embedder-test.cmx',
+              'packages': [
+                  'flutter-embedder-test-0.far',
+                  'gen/flutter/shell/platform/fuchsia/flutter/integration_flutter_tests/embedder/child-view/child-view/child-view.far',
+                  'gen/flutter/shell/platform/fuchsia/flutter/integration_flutter_tests/embedder/parent-view/parent-view/parent-view.far'
+              ]
           }])
       ),
       api.step_data(
           'retrieve list of test suites.read',
-          api.file.read_text('''# This is a comment.
+          api.file.read_text(
+              '''# This is a comment.
 - test_command: test run fuchsia-pkg://fuchsia.com/flutter-embedder-test#meta/flutter-embedder-test.cmx
   packages:
     - flutter-embedder-test-0.far
     - gen/flutter/shell/platform/fuchsia/flutter/integration_flutter_tests/embedder/child-view/child-view/child-view.far
-    - gen/flutter/shell/platform/fuchsia/flutter/integration_flutter_tests/embedder/parent-view/parent-view/parent-view.far''')
+    - gen/flutter/shell/platform/fuchsia/flutter/integration_flutter_tests/embedder/parent-view/parent-view/parent-view.far'''
+          )
       ),
       api.step_data(
           'read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
-      api.step_data('run FEMU test on x64.run flutter-embedder-test.publishing flutter-embedder-test-0.far', retcode=1),
+      ffx_repo_list_step_data(
+          'run FEMU test on x64.run flutter-embedder-test.get repository information'
+      ),
+      api.step_data(
+          'run FEMU test on x64.run flutter-embedder-test.ffx repository publish flutter-embedder-test-0.far',
+          retcode=1
+      ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
   )
 
@@ -518,23 +555,32 @@ def GenTests(api):
               git_ref='refs/pull/1/head',
               vdl_version='g3-revision:vdl_fuchsia_xxxxxxxx_RC00',
               clobber=False,
-          ), clobber=False,),
-    api.step_data(
+          ),
+          clobber=False,
+      ),
+      api.step_data(
           'retrieve list of test suites.parse',
           api.json.output([{
               'package':
                   'v2_test-123.far',
               'test_command':
                   'test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm'
-          }])),
+          }])
+      ),
       api.step_data(
           'retrieve list of test suites.read',
-          api.file.read_text("""# This is a comment.
+          api.file.read_text(
+              """# This is a comment.
 - package: v2_test-123.far
-  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm""")),
+  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm"""
+          )
+      ),
       api.step_data(
           'read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
+      ),
+      ffx_repo_list_step_data(
+          'run FEMU test on x64.run v2_test.get repository information'
       ),
   )
 
@@ -594,34 +640,46 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               clobber=False,
-          ),  clobber=False,),
+          ),
+          clobber=False,
+      ),
       api.step_data(
           'retrieve list of test suites.parse',
           api.json.output([{
-            'test_command': 'test run fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm',
-            'run_with_dart_aot': 'true',
-            'packages': [
-              'dart-aot-runner-integration-test-0.far',
-              'dart_aot_runner-0.far',
-              'gen/flutter/shell/platform/fuchsia/dart_runner/tests/startup_integration_test/dart_jit_runner/dart_jit_echo_server/dart_jit_echo_server/dart_jit_echo_server.far'
-            ]
+              'test_command':
+                  'test run fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm',
+              'run_with_dart_aot':
+                  'true',
+              'packages': [
+                  'dart-aot-runner-integration-test-0.far',
+                  'dart_aot_runner-0.far',
+                  'gen/flutter/shell/platform/fuchsia/dart_runner/tests/startup_integration_test/dart_jit_runner/dart_jit_echo_server/dart_jit_echo_server/dart_jit_echo_server.far'
+              ]
           }])
       ),
       api.step_data(
           'retrieve list of test suites.read',
-          api.file.read_text('''# This is a comment.
+          api.file.read_text(
+              '''# This is a comment.
 - test_command: test run fuchsia-pkg://fuchsia.com/dart-jit-runner-integration-test#meta/dart-jit-runner-integration-test.cm
   run_with_dart_aot: true
   packages:
     - dart-aot-runner-integration-test-0.far
     - dart_aot_runner-0.far
-    - gen/flutter/shell/platform/fuchsia/dart_runner/tests/startup_integration_test/dart_jit_runner/dart_jit_echo_server/dart_jit_echo_server/dart_jit_echo_server.far''')
+    - gen/flutter/shell/platform/fuchsia/dart_runner/tests/startup_integration_test/dart_jit_runner/dart_jit_echo_server/dart_jit_echo_server/dart_jit_echo_server.far'''
+          )
       ),
       api.step_data(
           'read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
-      api.step_data('run FEMU test on x64.run dart-jit-runner-integration-test.publishing dart_aot_runner-0.far', retcode=1),
+      ffx_repo_list_step_data(
+          'run FEMU test on x64.run dart-jit-runner-integration-test.get repository information'
+      ),
+      api.step_data(
+          'run FEMU test on x64.run dart-jit-runner-integration-test.ffx repository publish dart_aot_runner-0.far',
+          retcode=1
+      ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
   )
 
@@ -636,7 +694,8 @@ def GenTests(api):
               git_ref='refs/pull/1/head',
               clobber=False,
               emulator_arch='x32'
-          ),),
+          ),
+      ),
       api.step_data(
           'retrieve list of test suites.parse',
           api.json.output([{
@@ -644,55 +703,60 @@ def GenTests(api):
                   'v2_test-123.far',
               'test_command':
                   'test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm'
-          }])),
+          }])
+      ),
       api.step_data(
           'retrieve list of test suites.read',
-          api.file.read_text("""# This is a comment.
+          api.file.read_text(
+              """# This is a comment.
 - package: v2_test-123.far
-  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm""")),
+  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm"""
+          )
+      ),
       api.step_data(
           'read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
+      ),
+      ffx_repo_list_step_data(
+          'run FEMU test on x64.run v2_test.get repository information'
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
   )
 
   yield api.test(
-    'run_on_test_specified_arch',
-    api.properties(
-        InputProperties(
-            goma_jobs='1024',
-            build_fuchsia=True,
-            test_fuchsia=True,
-            git_url='https://github.com/flutter/engine',
-            git_ref='refs/pull/1/head',
-            clobber=False,
-        ),),
-    api.step_data(
-        'retrieve list of test suites.parse',
-        api.json.output([{
-          'test_command': 'test run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm',
-          'packages': [
-            'dart-aot-runner-integration-test-0.far',
-            'dart_aot_runner-0.far',
-          ],
-          'emulator_arch': [
-            'x64',
-            'arm64',
-          ]
-        },{
-          'test_command': 'test run fuchsia-pkg://fuchsia.com/only-run-on-arm64#meta/only-run-on-arm64',
-          'packages': [
-            'dart_aot_runner-0.far'
-          ],
-          'emulator_arch': [
-            'arm64'
-          ]
-        }])
-    ),
-    api.step_data(
-        'retrieve list of test suites.read',
-        api.file.read_text('''# This is a comment.
+      'run_on_test_specified_arch',
+      api.properties(
+          InputProperties(
+              goma_jobs='1024',
+              build_fuchsia=True,
+              test_fuchsia=True,
+              git_url='https://github.com/flutter/engine',
+              git_ref='refs/pull/1/head',
+              clobber=False,
+          ),
+      ),
+      api.step_data(
+          'retrieve list of test suites.parse',
+          api.json.output([{
+              'test_command':
+                  'test run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm',
+              'packages': [
+                  'dart-aot-runner-integration-test-0.far',
+                  'dart_aot_runner-0.far',
+              ], 'emulator_arch': [
+                  'x64',
+                  'arm64',
+              ]
+          }, {
+              'test_command':
+                  'test run fuchsia-pkg://fuchsia.com/only-run-on-arm64#meta/only-run-on-arm64',
+              'packages': ['dart_aot_runner-0.far'], 'emulator_arch': ['arm64']
+          }])
+      ),
+      api.step_data(
+          'retrieve list of test suites.read',
+          api.file.read_text(
+              '''# This is a comment.
 - test_command: test run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm
   run_with_dart_aot: true
   packages:
@@ -705,11 +769,15 @@ def GenTests(api):
   packages:
     - dart_aot_runner-0.far'
   emulator_arch:
-    - arm64''')
+    - arm64'''
+          )
       ),
       api.step_data(
           'read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
+      ),
+      ffx_repo_list_step_data(
+          'run FEMU test on x64.run run-on-both-arch.get repository information'
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
   )
@@ -725,7 +793,8 @@ def GenTests(api):
               git_ref='refs/pull/1/head',
               clobber=False,
               emulator_arch='arm64'
-          ),),
+          ),
+      ),
       api.step_data(
           'retrieve list of test suites.parse',
           api.json.output([{
@@ -734,17 +803,24 @@ def GenTests(api):
               'test_command':
                   'test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm',
               'emulator_arch': ['arm64']
-          }])),
+          }])
+      ),
       api.step_data(
           'retrieve list of test suites.read',
-          api.file.read_text("""# This is a comment.
+          api.file.read_text(
+              """# This is a comment.
 - package: v2_test-123.far
   test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm
   emulator_arch:
-    - arm64""")),
+    - arm64"""
+          )
+      ),
       api.step_data(
           'read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
+      ),
+      ffx_repo_list_step_data(
+          'run FEMU test on arm64.run v2_test.get repository information'
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
   )

@@ -35,19 +35,19 @@ Tool proxy information can be found at go/tool-proxy.
 Because of this configuration, the recipe is triggered manually during the
 release process.
 
-It is expected that a valid release branch, tag, and release_channel are passed
+It is expected that a valid release git branch, tag, and release_channel are passed
 to the recipe.
 
 The recipe will tag and push to github unless triggered
 from an experimental run.
 """
 def RunSteps(api):
-  branch = api.properties.get('branch')
+  git_branch = api.properties.get('git_branch')
   tag = api.properties.get('tag')
   release_channel = api.properties.get('release_channel')
   # default to True dry run
   dry_run = api.runtime.is_experimental or api.properties.get('dry_run')=='True'
-  assert branch and tag and release_channel
+  assert git_branch and tag and release_channel
 
   checkout_path = api.path['start_dir'].join('flutter')
   git_url = 'https://github.com/flutter/flutter'
@@ -64,7 +64,7 @@ def RunSteps(api):
         'flutter',
         checkout_path=checkout_path,
         url=git_url,
-        ref="refs/heads/%s" % branch,
+        ref="refs/heads/%s" % git_branch,
     )
 
   env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
@@ -100,7 +100,7 @@ def RunSteps(api):
       'rev-list',
       '-n',
       '1',
-      f'origin/{branch}',
+      f'origin/{git_branch}',
       stdout=api.raw_io.output_text(add_output_log=True)).stdout.rstrip()
 
     # push tag
@@ -133,7 +133,7 @@ def GenTests(api):
                   '_dry_run' if dry_run=='True' else ''
               ), api.platform('mac', 64),
               api.properties(
-                  branch='flutter-2.8-candidate.9',
+                  git_branch='flutter-2.8-candidate.9',
                   tag=tag,
                   release_channel=release_channel,
                   dry_run=dry_run

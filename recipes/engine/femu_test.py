@@ -190,36 +190,48 @@ def TestFuchsiaFEMU(api):
   fserve = checkout.join('fuchsia/sdk/linux/tools/x64/fserve')
   fpublish = checkout.join('fuchsia/sdk/linux/tools/x64/fpublish')
 
-  # Fuchsia LSC runs will override the SDK and product bundles that should be
-  # used for the tests. The path to the test artifacts is passed through the
-  # `gclient_variables`.
-  gclient_variables = api.properties.get('gclient_variables', {})
   pb_suffix = ''
-  if 'product_bundles_path' in gclient_variables:
-    product_bundle_manifest_path = 'gs://fuchsia-artifacts/%s' % gclient_variables['product_bundles_path']
-    # Set the ffx config to let it know that it's a valid product bundle path.
-    api.step(
-        'Set PBM metadata path', [
-            ffx, 'config', 'set', 'pbms.metadata',
-            '["%s"]' % product_bundle_manifest_path
-        ]
-    )
-    # We'll need to suffix all the product-bundle names with a full path
-    # otherwise ffx product-bundle will complain that it can find a
-    # product-bundle associated with the current SDK version in the current PBM
-    # metadata path (this also avoid accidentally using the wrong product bundle).
-    pb_suffix = '%s#' % product_bundle_manifest_path
+  with api.context(cwd=root_dir), api.step.nest('Set FFX config'):
+    # Fuchsia LSC runs will override the SDK and product bundles that should be
+    # used for the tests. The path to the test artifacts is passed through the
+    # `gclient_variables`.
+    gclient_variables = api.properties.get('gclient_variables', {})
+    if 'product_bundles_path' in gclient_variables:
+      product_bundle_manifest_path = 'gs://fuchsia-artifacts/%s' % gclient_variables[
+          'product_bundles_path']
+      # Set the ffx config to let it know that it's a valid product bundle path.
+      api.step(
+          'Set PBM metadata path', [
+              ffx, 'config', 'set', 'pbms.metadata',
+              '["%s"]' % product_bundle_manifest_path
+          ]
+      )
+      # We'll need to suffix all the product-bundle names with a full path
+      # otherwise ffx product-bundle will complain that it can find a
+      # product-bundle associated with the current SDK version in the current PBM
+      # metadata path (this also avoid accidentally using the wrong product bundle).
+      pb_suffix = '%s#' % product_bundle_manifest_path
 
-  # Conditionally enable ffx's CSO flag
-  if api.properties.get('enable_cso', False):
-    api.step('enable CSO in ffx', [ffx, 'config', 'set', 'overnet.cso', 'enabled'])
-  else:
-    api.step('disable CSO in ffx', [ffx, 'config', 'set', 'overnet.cso', 'disabled'])
+    # Conditionally enable ffx's CSO flag
+    if api.properties.get('enable_cso', False):
+      api.step(
+          'enable CSO in ffx', [ffx, 'config', 'set', 'overnet.cso', 'enabled']
+      )
+    else:
+      api.step(
+          'disable CSO in ffx',
+          [ffx, 'config', 'set', 'overnet.cso', 'disabled']
+      )
+
+    # Disable ffx analytics so this does not count as a real user
+    api.step('disable ffx analytics', [ffx, 'config', 'analytics', 'disable'])
+
+    # Set the log level to debug to help investigate failures.
+    api.step('set logging level', [ffx, 'config', 'set', 'log.level', 'debug'])
+
   # Pick up new config change
   api.step('restart ffx daemon', [ffx, 'daemon', 'stop'])
 
-  # Disable ffx analytics so this does not count as a real user
-  api.step('disable ffx analytics', [ffx, 'config', 'analytics', 'disable'])
   # TODO(fxb/121613). Workaround for the issue of previously running
   # emulator.
   api.step('list emulators', [ffx, 'emu', 'list'])

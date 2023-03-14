@@ -1406,6 +1406,10 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "Set FFX config"
+  },
+  {
     "cmd": [
       "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
       "config",
@@ -1413,7 +1417,7 @@
       "overnet.cso",
       "disabled"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
       "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
       "GOMA_DIR": "[CACHE]/goma/client"
@@ -1431,7 +1435,71 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "disable CSO in ffx"
+    "name": "Set FFX config.disable CSO in ffx",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "config",
+      "analytics",
+      "disable"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Set FFX config.disable ffx analytics",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "config",
+      "set",
+      "log.level",
+      "debug"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Set FFX config.set logging level",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -1458,33 +1526,6 @@
       ]
     },
     "name": "restart ffx daemon"
-  },
-  {
-    "cmd": [
-      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
-      "config",
-      "analytics",
-      "disable"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "name": "disable ffx analytics"
   },
   {
     "cmd": [

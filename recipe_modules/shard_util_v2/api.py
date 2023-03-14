@@ -54,11 +54,11 @@ class ShardUtilApi(recipe_api.RecipeApi):
     """Creates a mutable dictionary out of a FrozenDict.
 
     FrozenDict example:
-      FrozenDict([('dependency', 'open_jdk'), ('version', 'version:1.8.0u202-b08')])
+      FrozenDict([('dependency', 'open_jdk'), ('version', 'version:11')])
     , which is not a default python type.
 
     This refactors it to regular dict:
-      {'dependency': 'open_jdk', 'version': 'version:1.8.0u202-b08'}
+      {'dependency': 'open_jdk', 'version': 'version:11'}
     """
     result = collections.OrderedDict()
     for k, v in sorted(dictionary.items()):

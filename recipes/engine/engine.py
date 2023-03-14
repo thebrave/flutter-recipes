@@ -1888,7 +1888,7 @@ def GenTests(api):
               'dependencies': [
                 {
                     'dependency': 'open_jdk',
-                    'version': 'version:1.8.0u202-b08',
+                    'version': 'version:11',
                 }
               ],
               'no_maven': False,

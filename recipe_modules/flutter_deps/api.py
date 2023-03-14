@@ -127,13 +127,13 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       version(str): The OpenJdk version to install.
     """
-    version = version or 'version:1.8.0u202-b08'
+    version = version or 'version:11'
     with self.m.step.nest('OpenJDK dependency'):
       java_cache_dir = self.m.path['cache'].join('java')
       self.m.cipd.ensure(
           java_cache_dir,
           self.m.cipd.EnsureFile().add_package(
-              'flutter_internal/java/openjdk/${platform}', version
+              'flutter/java/openjdk/${platform}', version
           )
       )
       java_home = java_cache_dir

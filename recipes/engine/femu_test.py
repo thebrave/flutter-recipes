@@ -248,65 +248,88 @@ def TestFuchsiaFEMU(api):
   with api.context(cwd=root_dir), api.step.nest('run FEMU test on %s' % arch):
     for suite in test_suites:
       with api.step.nest('run %s' % suite['name']):
-        # Launch the emulator
-        # Route the emulator_log to a temporary, defined path to output later
-        emulator_log_path = api.path.mkstemp('emulator_log')
-        if arch == 'arm64':
-          launch_step = api.step(
-              'launch arm64 emulator with QEMU engine', [
-                  ffx, '-v', 'emu', 'start', 'terminal.qemu-arm64', '--engine',
-                  'qemu', '--headless', '--startup-timeout', '360', '--log',
-                  api.raw_io.output_text(
-                      name='emulator_log', leak_to=emulator_log_path)
-              ],
-              step_test_data=(lambda: api.raw_io.test_api.output_text(
-                  'log', name='emulator_log')))
-        else:
-          launch_step = api.step(
-              'launch x64 emulator', [
-                  ffx, '-v', 'emu', 'start', 'terminal.qemu-x64', '--headless',
-                  '--log',
-                  api.raw_io.output_text(
-                      name='emulator_log', leak_to=emulator_log_path)
-              ],
-              step_test_data=(lambda: api.raw_io.test_api.output_text(
-                  'log', name='emulator_log')))
+        try:
+          # Launch the emulator
+          if arch == 'arm64':
+            launch_step = api.step(
+                'launch arm64 emulator with QEMU engine', [
+                    ffx, '-v', 'emu', 'start', 'terminal.qemu-arm64',
+                    '--engine', 'qemu', '--headless', '--startup-timeout', '360'
+                ]
+            )
+          else:
+            launch_step = api.step(
+                'launch x64 emulator',
+                [ffx, '-v', 'emu', 'start', 'terminal.qemu-x64', '--headless']
+            )
 
-        # Output information for current emulator
-        # Contains version, product information, etc.
-        api.step('list all targets in the collection', [ffx, 'target', 'list'])
-        api.step('retrieve femu information', [ffx, 'target', 'show']);
+          # Output information for current emulator
+          # Contains version, product information, etc.
+          api.step(
+              'list all targets in the collection', [ffx, 'target', 'list']
+          )
+          api.step('retrieve femu information', [ffx, 'target', 'show'])
 
-        # Start a package server, this listens in the background for published files
-        # https://fuchsia.dev/reference/tools/sdk/fserve
-        api.step(
-            'start fserve',
-            [fserve, '-image',
-              'qemu-%s' % arch, '-server-port', FSERVE_PORT])
+          # Start a package server, this listens in the background for published files
+          # https://fuchsia.dev/reference/tools/sdk/fserve
+          api.step(
+              'start fserve',
+              [fserve, '-image',
+               'qemu-%s' % arch, '-server-port', FSERVE_PORT]
+          )
 
-        # Publishes the required FAR files needed to run the test to the package server
-        # https://fuchsia.dev/reference/tools/sdk/fpublish
-        for package in suite['package_basenames']:
-          api.step('publishing {}'.format(package), [fpublish, package])
+          # Publishes the required FAR files needed to run the test to the package server
+          # https://fuchsia.dev/reference/tools/sdk/fpublish
+          for package in suite['package_basenames']:
+            api.step('publishing {}'.format(package), [fpublish, package])
 
-        # Run the actual test
-        # Test command is guaranteed to be well-formed
-        # TODO(http://fxb/121613): Emulator instances are not cleaned up
-        # when tests fail. Added a clean up step before tests start to
-        # stop all running emulators.
-        with api.step.defer_results():
-          api.retry.step('run ffx test', [ffx] + suite['test_command'].split(' '))
+          # Run the actual test
+          # Test command is guaranteed to be well-formed
+          # TODO(http://fxb/121613): Emulator instances are not cleaned up
+          # when tests fail. Added a clean up step before tests start to
+          # stop all running emulators.
+          with api.step.defer_results():
+            api.retry.step(
+                'run ffx test', [ffx] + suite['test_command'].split(' ')
+            )
 
-        # Outputs ffx log and emulator_log for debugging
-        dump_step = api.step('ffx log dump', [ffx, 'log', 'dump'])
-        # TODO(http://fxb/115447): Investigate why emulator_log isn't
-        # outputting full emulator logs
-        dump_step.presentation.logs[
-          'emulator_log'] = launch_step.raw_io.output_texts['emulator_log']
+        finally:
+          with api.step.nest('logs') as dump_step:
+            dump_step.presentation.logs['ffx_daemon_log'] = api.file.read_text(
+                'read ffx daemon log',
+                api.path.join(
+                    api.context.env.get('FFX_ISOLATE_DIR'), 'cache', 'logs',
+                    'ffx.daemon.log'
+                )
+            )
+            dump_step.presentation.logs['ffx_log'] = api.file.read_text(
+                'read ffx log',
+                api.path.join(
+                    api.context.env.get('FFX_ISOLATE_DIR'), 'cache', 'logs',
+                    'ffx.log'
+                )
+            )
+            dump_step.presentation.logs['emulator_log'] = api.file.read_text(
+                'read ffx daemon log',
+                api.path.join(
+                    api.context.env.get('FFX_ISOLATE_DIR'), 'data', 'emu',
+                    'instances', 'fuchsia-emulator', 'emulator.log'
+                )
+            )
+            dump_step.presentation.logs[
+                'emulator_serial_log'] = api.file.read_text(
+                    'read ffx daemon log',
+                    api.path.join(
+                        api.context.env.get('FFX_ISOLATE_DIR'), 'data', 'emu',
+                        'instances', 'fuchsia-emulator', 'emulator.log.serial'
+                    )
+                )
 
-        # Cleans up running processes to prevent clashing with future test runs
-        api.step('kill fserve', [fserve, '-kill'])
-        api.step('stop %s emulator' % arch, [ffx, '-v', 'emu', 'stop', '--all'])
+            # Cleans up running processes to prevent clashing with future test runs
+            api.step('kill fserve', [fserve, '-kill'])
+            api.step(
+                'stop %s emulator' % arch, [ffx, '-v', 'emu', 'stop', '--all']
+            )
 
 
 def BuildFuchsia(api):

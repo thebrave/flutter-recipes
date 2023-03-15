@@ -17,6 +17,7 @@ DEPS = [
   'recipe_engine/buildbucket',
   'recipe_engine/cas',
   'recipe_engine/context',
+  'recipe_engine/file',
   'recipe_engine/path',
   'recipe_engine/platform',
   'recipe_engine/properties',
@@ -64,6 +65,7 @@ def RunSteps(api, properties):
   # Collect memory/cpu/process after task execution.
   api.os_utils.collect_os_info()
   cache_root = api.path['cache'].join('builder')
+  api.file.rmtree('Clobber build output', cache_root.join('src', 'out'))
   api.repo_util.engine_checkout(cache_root, {}, {})
   with api.context(cwd=cache_root):
     api.goma.ensure()

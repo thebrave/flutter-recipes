@@ -276,14 +276,9 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CLEANUP]/token.txt",
-      "/path/to/tmp/"
+      "chmod",
+      "755",
+      "RECIPE[flutter::release/release_publish].resources/run_release.sh"
     ],
     "cwd": "[START_DIR]/flutter",
     "env": {
@@ -305,184 +300,40 @@
       ]
     },
     "infra_step": true,
-    "name": "Read token"
+    "name": "Set execute permission"
   },
   {
     "cmd": [
-      "gh",
-      "auth",
-      "login",
-      "--hostname",
-      "github.com",
-      "--git-protocol",
-      "https",
-      "--with-token"
+      "RECIPE[flutter::release/release_publish].resources/run_release.sh"
     ],
     "cwd": "[START_DIR]/flutter",
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "DRY_RUN_CMD": "echo",
       "GIT_BRANCH": "flutter-2.8-candidate.9",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
       "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "RELEASE_CHANNEL": "stable",
+      "RELEASE_GIT_HASH": "deadbeef",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "TAG": "1.2.3",
+      "TOKEN_PATH": "[CLEANUP]/token.txt"
     },
     "env_prefixes": {
       "PATH": [
         "[START_DIR]/flutter/bin",
         "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
-        "[CACHE]/gh-cli/bin"
-      ]
-    },
-    "name": "authenticating using gh cli"
-  },
-  {
-    "cmd": [
-      "gh",
-      "auth",
-      "setup-git"
-    ],
-    "cwd": "[START_DIR]/flutter",
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "flutter-2.8-candidate.9",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
+        "[CACHE]/gh-cli/bin",
         "[START_DIR]/flutter/bin",
         "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
         "[CACHE]/gh-cli/bin"
       ]
     },
-    "name": "configure gh for git auth"
-  },
-  {
-    "cmd": [
-      "echo",
-      "tag",
-      "1.2.3",
-      "deadbeef"
-    ],
-    "cwd": "[START_DIR]/flutter",
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "flutter-2.8-candidate.9",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
-        "[CACHE]/gh-cli/bin"
-      ]
-    },
-    "name": "Dry-run tag release command"
-  },
-  {
-    "cmd": [
-      "git",
-      "rev-list",
-      "-n",
-      "1",
-      "origin/flutter-2.8-candidate.9"
-    ],
-    "cwd": "[START_DIR]/flutter",
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "flutter-2.8-candidate.9",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
-        "[CACHE]/gh-cli/bin"
-      ]
-    },
-    "name": "find commit",
-    "timeout": 600.0,
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@raw_io.output_text@82735b8904e82fd8b273cb1ae16cccd77ccf4248@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "echo",
-      "push",
-      "origin",
-      "1.2.3"
-    ],
-    "cwd": "[START_DIR]/flutter",
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "flutter-2.8-candidate.9",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
-        "[CACHE]/gh-cli/bin"
-      ]
-    },
-    "name": "Dry-run push tag command"
-  },
-  {
-    "cmd": [
-      "echo",
-      "push",
-      "origin",
-      "HEAD:stable"
-    ],
-    "cwd": "[START_DIR]/flutter",
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "flutter-2.8-candidate.9",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
-        "[CACHE]/gh-cli/bin"
-      ]
-    },
-    "name": "Dry-run push ref command"
+    "name": "Tag and push release"
   },
   {
     "name": "$result"

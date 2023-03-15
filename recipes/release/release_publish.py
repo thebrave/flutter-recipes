@@ -81,52 +81,26 @@ def RunSteps(api):
     token_decrypted = api.path['cleanup'].join('token.txt')
     api.kms.get_secret('flutter-release-github-token.encrypted', token_decrypted)
 
-    token_txt = api.file.read_text('Read token', token_decrypted, include_log=False)
+    resource_name = api.resource('run_release.sh')
     api.step(
-        'authenticating using gh cli',
-        ['gh', 'auth', 'login', '--hostname', 'github.com', '--git-protocol',
-         'https','--with-token'],
-        stdin=api.raw_io.input_text(data=token_txt))
+        'Set execute permission',
+        ['chmod', '755', resource_name],
+        infra_step=True,
+    )
+    env['DRY_RUN_CMD'] = 'echo' if dry_run else ''
+    env['TOKEN_PATH'] = token_decrypted
+    env['TAG'] = tag
+    env['RELEASE_GIT_HASH'] = release_git_hash
+    env['RELEASE_CHANNEL'] = release_channel
+    env['GIT_BRANCH'] = git_branch
 
-    # configure gh to allow next authenticated git actions
-    api.step(
-      'configure gh for git auth',
-      ['gh', 'auth', 'setup-git'])
-
-    tag_command = ['tag', tag, release_git_hash]
-    if dry_run:
-      tag_command.insert(0, 'echo')
-      api.step('Dry-run tag release command', tag_command)
-    else:
-      api.git('tag release', *tag_command)
-
-    # output tag for debug clarity & testing
-    api.git('find commit',
-      'rev-list',
-      '-n',
-      '1',
-      f'origin/{git_branch}',
-      stdout=api.raw_io.output_text(add_output_log=True)).stdout.rstrip()
-
-    # push tag
-    push_tag_args = ['push', 'origin', tag]
-    if dry_run:
-      push_tag_args.insert(0, 'echo')
-      api.step('Dry-run push tag command', push_tag_args)
-    else:
-      api.git('push tag', *push_tag_args)
-
-    # push refs to release channel
-    push_ref_args = ['push', 'origin', 'HEAD:%s' % release_channel]
-    if dry_run:
-      push_ref_args.insert(0, 'echo')
-      api.step('Dry-run push ref command', push_ref_args)
-    else:
-      push_ref_msg = 'push refs to release branch %s' % release_channel
-      api.git(push_ref_msg, *push_ref_args)
+    # Run script within a new context to use the new env variables.
+    with api.context(env=env, env_prefixes=env_prefixes):
+      api.step('Tag and push release', [resource_name])
 
 
 def GenTests(api):
+    checkout_path = api.path['start_dir'].join('flutter')
     for tag in ('1.2.3-4.5.pre', '1.2.3'):
       for release_channel in ('stable', 'beta'):
         for dry_run in ('True', 'False'):
@@ -142,13 +116,10 @@ def GenTests(api):
                   tag=tag,
                   release_channel=release_channel,
                   dry_run=dry_run
-              ), api.repo_util.flutter_environment_data(),
-                    api.step_data('find commit', stdout=api.raw_io.output_text(
-                '82735b8904e82fd8b273cb1ae16cccd77ccf4248\n')),
+              ),
+              api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
               api.post_process(post_process.MustRun,
-                'authenticating using gh cli'),
-              api.post_process(post_process.MustRunRE, r'.*tag release.*'),
-              api.post_process(post_process.MustRunRE, r'.*push tag.*'),
+                'Tag and push release'),
               api.post_process(post_process.StatusSuccess),
           )
           yield test

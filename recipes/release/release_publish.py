@@ -81,7 +81,7 @@ def RunSteps(api):
     token_decrypted = api.path['cleanup'].join('token.txt')
     api.kms.get_secret('flutter-release-github-token.encrypted', token_decrypted)
 
-    resource_name = api.resource('run_release.sh')
+    resource_name = api.resource('push_release.sh')
     api.step(
         'Set execute permission',
         ['chmod', '755', resource_name],

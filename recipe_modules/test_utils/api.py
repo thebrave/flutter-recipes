@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import html
 import re
 
 from recipe_engine import recipe_api
@@ -80,7 +81,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
       if byte_count >= MAX_CHARS:
         break
       output.insert(0, line)
-    return '\n'.join(output)
+    return html.escape('\n'.join(output))
 
   def _is_flaky(self, output):
     """Check if test step is flaky"""

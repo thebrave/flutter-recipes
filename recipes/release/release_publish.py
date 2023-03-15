@@ -88,6 +88,11 @@ def RunSteps(api):
          'https','--with-token'],
         stdin=api.raw_io.input_text(data=token_txt))
 
+    # configure gh to allow next authenticated git actions
+    api.step(
+      'configure gh for git auth',
+      ['gh', 'auth', 'setup-git'])
+
     tag_command = ['tag', tag, release_git_hash]
     if dry_run:
       tag_command.insert(0, 'echo')

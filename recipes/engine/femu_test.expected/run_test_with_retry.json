@@ -1092,12 +1092,13 @@
     "name": "retrieve list of test suites",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@yaml@# This is a comment.@@@",
-      "@@@STEP_LOG_LINE@yaml@- package: v2_test-123.far@@@",
-      "@@@STEP_LOG_LINE@yaml@  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b@@@",
-      "@@@STEP_LOG_LINE@yaml@@@@",
-      "@@@STEP_LOG_LINE@yaml@# Legacy cfv1 test@@@",
-      "@@@STEP_LOG_LINE@yaml@- package: v1_test_component-321.far@@@",
-      "@@@STEP_LOG_LINE@yaml@  test_command: test run fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b@@@",
+      "@@@STEP_LOG_LINE@yaml@- test_command: test run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm@@@",
+      "@@@STEP_LOG_LINE@yaml@  run_with_dart_aot: true@@@",
+      "@@@STEP_LOG_LINE@yaml@  packages:@@@",
+      "@@@STEP_LOG_LINE@yaml@    - dart-aot-runner-integration-test-0.far@@@",
+      "@@@STEP_LOG_LINE@yaml@    - dart_aot_runner-0.far@@@",
+      "@@@STEP_LOG_LINE@yaml@  emulator_arch:@@@",
+      "@@@STEP_LOG_LINE@yaml@    - x64@@@",
       "@@@STEP_LOG_END@yaml@@@"
     ]
   },
@@ -1135,12 +1136,13 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@test_suites.yaml@# This is a comment.@@@",
-      "@@@STEP_LOG_LINE@test_suites.yaml@- package: v2_test-123.far@@@",
-      "@@@STEP_LOG_LINE@test_suites.yaml@  test_command: test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b@@@",
-      "@@@STEP_LOG_LINE@test_suites.yaml@@@@",
-      "@@@STEP_LOG_LINE@test_suites.yaml@# Legacy cfv1 test@@@",
-      "@@@STEP_LOG_LINE@test_suites.yaml@- package: v1_test_component-321.far@@@",
-      "@@@STEP_LOG_LINE@test_suites.yaml@  test_command: test run fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@- test_command: test run fuchsia-pkg://fuchsia.com/run-on-both-arch#meta/run-on-both-arch.cm@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@  run_with_dart_aot: true@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@  packages:@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@    - dart-aot-runner-integration-test-0.far@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@    - dart_aot_runner-0.far@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@  emulator_arch:@@@",
+      "@@@STEP_LOG_LINE@test_suites.yaml@    - x64@@@",
       "@@@STEP_LOG_END@test_suites.yaml@@@"
     ]
   },
@@ -1177,12 +1179,14 @@
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@[@@@",
       "@@@STEP_LOG_LINE@json.output@  {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"v2_test-123.far\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"test_command\": \"test run fuchsia-pkg://fuchsia.com/v2_test#meta/v2_test.cm -- --gtest_filter=-ParagraphTest.*:a.b\"@@@",
-      "@@@STEP_LOG_LINE@json.output@  }, @@@",
-      "@@@STEP_LOG_LINE@json.output@  {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"package\": \"v1_test_component-321.far\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"test_command\": \"test run fuchsia-pkg://fuchsia.com/v1_test_component#meta/v1_test_component.cmx -ParagraphTest.*:a.b\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"emulator_arch\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"x64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    ], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"packages\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"dart-aot-runner-integration-test-0.far\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"dart_aot_runner-0.far\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    ], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"test_command\": \"test run fuchsia-pkg://fuchsia.com/run-on-x64#meta/run-on-x64.cm\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@]@@@",
       "@@@STEP_LOG_END@json.output@@@"
@@ -1194,7 +1198,7 @@
       "-u",
       "RECIPE_MODULE[fuchsia::cas_util]/resources/hardlink.py",
       "--link-json",
-      "{\"[CACHE]/builder/src/out/fuchsia_bucket/flutter/x64/debug/aot/flutter_aot_runner-0.far\": [\"[CLEANUP]/femu_runfiles__tmp_1/flutter_aot_runner-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/v1_test_component-321.far\": [\"[CLEANUP]/femu_runfiles__tmp_1/v1_test_component-321.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/v2_test-123.far\": [\"[CLEANUP]/femu_runfiles__tmp_1/v2_test-123.far\"]}"
+      "{\"[CACHE]/builder/src/out/fuchsia_bucket/flutter/x64/debug/aot/flutter_aot_runner-0.far\": [\"[CLEANUP]/femu_runfiles__tmp_1/flutter_aot_runner-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/dart-aot-runner-integration-test-0.far\": [\"[CLEANUP]/femu_runfiles__tmp_1/dart-aot-runner-integration-test-0.far\"], \"[CACHE]/builder/src/out/fuchsia_debug_x64/dart_aot_runner-0.far\": [\"[CLEANUP]/femu_runfiles__tmp_1/dart_aot_runner-0.far\"]}"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1590,7 +1594,7 @@
   },
   {
     "cmd": [],
-    "name": "run FEMU test on x64.run v2_test",
+    "name": "run FEMU test on x64.run run-on-x64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_FAILURE@@@"
@@ -1623,7 +1627,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "run FEMU test on x64.run v2_test.launch x64 emulator",
+    "name": "run FEMU test on x64.run run-on-x64.launch x64 emulator",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_FAILURE@@@"
@@ -1631,7 +1635,7 @@
   },
   {
     "cmd": [],
-    "name": "run FEMU test on x64.run v2_test.logs",
+    "name": "run FEMU test on x64.run run-on-x64.logs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@ffx_daemon_log@@@@",
@@ -1674,7 +1678,7 @@
       ]
     },
     "infra_step": true,
-    "name": "run FEMU test on x64.run v2_test.logs.read ffx daemon log",
+    "name": "run FEMU test on x64.run run-on-x64.logs.read ffx daemon log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_END@ffx.daemon.log@@@"
@@ -1710,7 +1714,7 @@
       ]
     },
     "infra_step": true,
-    "name": "run FEMU test on x64.run v2_test.logs.read ffx log",
+    "name": "run FEMU test on x64.run run-on-x64.logs.read ffx log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_END@ffx.log@@@"
@@ -1746,7 +1750,7 @@
       ]
     },
     "infra_step": true,
-    "name": "run FEMU test on x64.run v2_test.logs.read ffx emulator log",
+    "name": "run FEMU test on x64.run run-on-x64.logs.read ffx emulator log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_END@emulator.log@@@"
@@ -1782,7 +1786,7 @@
       ]
     },
     "infra_step": true,
-    "name": "run FEMU test on x64.run v2_test.logs.read ffx serial log",
+    "name": "run FEMU test on x64.run run-on-x64.logs.read ffx serial log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_END@emulator.log.serial@@@"
@@ -1813,7 +1817,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "run FEMU test on x64.run v2_test.stop FFX repository",
+    "name": "run FEMU test on x64.run run-on-x64.stop FFX repository",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1844,14 +1848,14 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "run FEMU test on x64.run v2_test.stop x64 emulator",
+    "name": "run FEMU test on x64.run run-on-x64.stop x64 emulator",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "run FEMU test on x64.run v2_test (attempt #2)",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_FAILURE@@@"
@@ -1884,7 +1888,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "run FEMU test on x64.run v2_test (attempt #2).launch x64 emulator",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #2).launch x64 emulator",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_FAILURE@@@"
@@ -1892,7 +1896,7 @@
   },
   {
     "cmd": [],
-    "name": "run FEMU test on x64.run v2_test (attempt #2).logs",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #2).logs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@ffx_daemon_log@@@@",
@@ -1935,7 +1939,7 @@
       ]
     },
     "infra_step": true,
-    "name": "run FEMU test on x64.run v2_test (attempt #2).logs.read ffx daemon log",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #2).logs.read ffx daemon log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_END@ffx.daemon.log@@@"
@@ -1971,7 +1975,7 @@
       ]
     },
     "infra_step": true,
-    "name": "run FEMU test on x64.run v2_test (attempt #2).logs.read ffx log",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #2).logs.read ffx log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_END@ffx.log@@@"
@@ -2007,7 +2011,7 @@
       ]
     },
     "infra_step": true,
-    "name": "run FEMU test on x64.run v2_test (attempt #2).logs.read ffx emulator log",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #2).logs.read ffx emulator log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_END@emulator.log@@@"
@@ -2043,7 +2047,7 @@
       ]
     },
     "infra_step": true,
-    "name": "run FEMU test on x64.run v2_test (attempt #2).logs.read ffx serial log",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #2).logs.read ffx serial log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_END@emulator.log.serial@@@"
@@ -2074,7 +2078,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "run FEMU test on x64.run v2_test (attempt #2).stop FFX repository",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #2).stop FFX repository",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -2105,17 +2109,16 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "run FEMU test on x64.run v2_test (attempt #2).stop x64 emulator",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #2).stop x64 emulator",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "run FEMU test on x64.run v2_test (attempt #3)",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3)",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_FAILURE@@@"
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -2145,15 +2148,269 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "run FEMU test on x64.run v2_test (attempt #3).launch x64 emulator",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).launch x64 emulator",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "target",
+      "list"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).list all targets in the collection",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "target",
+      "show"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).retrieve femu information",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "--machine",
+      "json",
+      "repository",
+      "list"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).get repository information",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_FAILURE@@@"
+      "@@@STEP_LOG_LINE@json.output@[@@@",
+      "@@@STEP_LOG_LINE@json.output@  {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"name\": \"terminal.qemu-arm64\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"spec\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"path\": \"/foo/bar/data/pbms/18411389924820269552/terminal.qemu-arm64/packages\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"type\": \"pm\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@]@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "repository",
+      "publish",
+      "/foo/bar/data/pbms/18411389924820269552/terminal.qemu-arm64/packages",
+      "--package-archive",
+      "dart-aot-runner-integration-test-0.far"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).ffx repository publish dart-aot-runner-integration-test-0.far",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "repository",
+      "publish",
+      "/foo/bar/data/pbms/18411389924820269552/terminal.qemu-arm64/packages",
+      "--package-archive",
+      "dart_aot_runner-0.far"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).ffx repository publish dart_aot_runner-0.far",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "repository",
+      "server",
+      "start"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).start FFX repository",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "target",
+      "repository",
+      "register",
+      "--alias",
+      "fuchsia.com"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).Register repository",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "test",
+      "run",
+      "fuchsia-pkg://fuchsia.com/run-on-x64#meta/run-on-x64.cm"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
+      "GOMA_DIR": "[CACHE]/goma/client"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).run ffx test",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "run FEMU test on x64.run v2_test (attempt #3).logs",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).logs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@ffx_daemon_log@@@@",
@@ -2196,7 +2453,7 @@
       ]
     },
     "infra_step": true,
-    "name": "run FEMU test on x64.run v2_test (attempt #3).logs.read ffx daemon log",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).logs.read ffx daemon log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_END@ffx.daemon.log@@@"
@@ -2232,7 +2489,7 @@
       ]
     },
     "infra_step": true,
-    "name": "run FEMU test on x64.run v2_test (attempt #3).logs.read ffx log",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).logs.read ffx log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_END@ffx.log@@@"
@@ -2268,7 +2525,7 @@
       ]
     },
     "infra_step": true,
-    "name": "run FEMU test on x64.run v2_test (attempt #3).logs.read ffx emulator log",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).logs.read ffx emulator log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_END@emulator.log@@@"
@@ -2304,7 +2561,7 @@
       ]
     },
     "infra_step": true,
-    "name": "run FEMU test on x64.run v2_test (attempt #3).logs.read ffx serial log",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).logs.read ffx serial log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_END@emulator.log.serial@@@"
@@ -2335,7 +2592,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "run FEMU test on x64.run v2_test (attempt #3).stop FFX repository",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).stop FFX repository",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -2366,16 +2623,12 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "run FEMU test on x64.run v2_test (attempt #3).stop x64 emulator",
+    "name": "run FEMU test on x64.run run-on-x64 (attempt #3).stop x64 emulator",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
-    "failure": {
-      "failure": {},
-      "humanReason": "Step('run FEMU test on x64.run v2_test (attempt #3).launch x64 emulator') (retcode: 1)"
-    },
     "name": "$result"
   }
 ]

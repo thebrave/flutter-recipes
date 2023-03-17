@@ -83,7 +83,6 @@ def RunSteps(api, properties, env_properties):
       api.step(
           api.test_utils.test_step_name('Framework test'), [
               str(flutter_checkout_path.join('bin', 'flutter')), 'test',
-              '--null-assertions', '--sound-null-safety',
               '--local-engine=%s' % str(build_dir)
           ]
       )

@@ -43,6 +43,7 @@ def RunSteps(api, max_attempts):
 
   api.retry.wrap(func1, step_name='test: mytest_func', max_attempts=max_attempts)
   api.retry.basic_wrap(func2, max_attempts=max_attempts)
+  api.retry.run_flutter_doctor()
 
 
 def GenTests(api):

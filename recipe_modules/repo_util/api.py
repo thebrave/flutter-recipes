@@ -284,14 +284,6 @@ class RepoUtilApi(recipe_api.RecipeApi):
       ).stdout.strip()
       return commit
 
-  def run_flutter_doctor(self):
-    self.m.retry.step(
-        'flutter doctor',
-        ['flutter', 'doctor', '--verbose'],
-        max_attempts=3,
-        timeout=300,
-    )
-
   def get_env_ref(self):
     '''Get the ref of the current build from env.'''
     gitiles_commit = self.m.buildbucket.gitiles_commit.id

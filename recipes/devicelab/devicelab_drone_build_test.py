@@ -61,9 +61,7 @@ def RunSteps(api):
     raise ValueError('A task_name property is required')
 
   commit_sha = api.repo_util.get_env_ref()
-  artifact = api.properties.get('artifact', None)
-  if not artifact:
-    raise ValueError('An artifact property is required')
+  artifact = api.properties.get('artifact', task_name)
   bucket = api.buildbucket.build.builder.bucket
   artifact_gcs_dir = 'flutter/%s/%s' % (bucket, commit_sha)
   artifact_gcs_path = '%s/%s' % (artifact_gcs_dir, artifact)
@@ -102,7 +100,8 @@ def test(api, task_name, deps, artifact):
       'parent_builder': api.properties.get('buildername'),
       'artifact': artifact,
       'git_branch': api.properties.get('git_branch'),
-      'tags': tags
+      'tags': tags,
+      '$flutter/devicelab_osx_sdk': {'sdk_version': api.properties.get('xcode')}
   }
   reqs.append(
        {'name': task_name, 'properties': test_props,
@@ -154,12 +153,29 @@ def build(api, task_name, artifact, artifact_gcs_dir):
     # git_branch is set only when the build was triggered on post-submit.
     runner_params.extend(['--git-branch', git_branch])
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
-    api.repo_util.run_flutter_doctor()
+    api.retry.run_flutter_doctor()
     api.step('dart pub get', ['dart', 'pub', 'get'], infra_step=True)
-    dep_list = {d['dependency']: d.get('version') for d in deps}
-    if 'xcode' not in dep_list:
-      with api.context(env=env, env_prefixes=env_prefixes):
-        api.repo_util.run_flutter_doctor()
+    deps = api.properties.get('dependencies', [])
+    with api.context(env=env, env_prefixes=env_prefixes):
+      api.step('dart pub get', ['dart', 'pub', 'get'], infra_step=True)
+      dep_list = {d['dependency']: d.get('version') for d in deps}
+      if 'xcode' in dep_list:
+        with api.osx_sdk('ios'):
+          api.flutter_deps.gems(
+              env, env_prefixes, flutter_path.join('dev', 'ci', 'mac')
+          )
+          with api.context(env=env, env_prefixes=env_prefixes):
+            test_runner_command = ['dart', 'bin/test_runner.dart', 'test']
+            test_runner_command.extend(runner_params)
+            try:
+              api.test_utils.run_test(
+                  'build %s' % task_name,
+                  test_runner_command,
+                  timeout_secs=MAX_TIMEOUT_SECS
+              )
+            finally:
+              debug_after_failure(api, task_name)
+      else:
         test_runner_command = ['dart', 'bin/test_runner.dart', 'test']
         test_runner_command.extend(runner_params)
         try:
@@ -168,18 +184,18 @@ def build(api, task_name, artifact, artifact_gcs_dir):
               test_runner_command,
               timeout_secs=MAX_TIMEOUT_SECS
           )
-          api.gsutil.upload(
-              bucket='flutter_devicelab',
-              source='%s/*' % artifact_dir,
-              dest=artifact_gcs_dir,
-              link_name='artifacts',
-              args=['-r'],
-              multithreaded=True,
-              name='upload artifacts',
-              unauthenticated_url=True
-          )
         finally:
           debug_after_failure(api, task_name)
+      api.gsutil.upload(
+          bucket='flutter_devicelab',
+          source='%s/*' % artifact_dir,
+          dest=artifact_gcs_dir,
+          link_name='artifacts',
+          args=['-r'],
+          multithreaded=True,
+          name='upload artifacts',
+          unauthenticated_url=True
+      )
 
 
 def debug_after_failure(api, task_name):
@@ -193,13 +209,6 @@ def GenTests(api):
   checkout_path = api.path['cleanup'].join('tmp_tmp_1', 'flutter sdk')
   yield api.test(
       "no-task-name",
-      api.expect_exception('ValueError'),
-  )
-  yield api.test(
-      "no-artifact-name",
-      api.properties(
-          buildername='Linux abc', task_name='abc', git_ref='refs/pull/1/head'
-      ),
       api.expect_exception('ValueError'),
   )
   yield api.test(
@@ -218,12 +227,6 @@ def GenTests(api):
           stdout=api.raw_io
           .output_text('gs://flutter_devicelab/flutter/refs/pull/1/head/def')
       ),
-      api.buildbucket.ci_build(
-          project='test',
-          bucket='prod',
-          git_repo='git.example.com/test/repo',
-          git_ref='refs/heads/master',
-      )
   )
   yield api.test(
       "artifact does not exist",
@@ -237,7 +240,6 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',
-          bucket='prod',
           git_repo='git.example.com/test/repo',
       ),
   )
@@ -253,8 +255,22 @@ def GenTests(api):
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',
-          bucket='prod',
           git_repo='git.example.com/test/repo',
           git_ref='refs/heads/master',
       )
+  )
+  yield api.test(
+      "xcode-mac",
+      api.properties(
+          buildername='Mac_ios abc',
+          task_name='abc',
+          tags=['ios'],
+          dependencies=[{'dependency': 'xcode'}],
+          git_branch='master',
+          **{'$flutter/osx_sdk': {
+              'sdk_version': 'deadbeef',
+          }}
+      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.platform.name('mac'),
+      api.buildbucket.ci_build(git_ref='refs/heads/master',)
   )

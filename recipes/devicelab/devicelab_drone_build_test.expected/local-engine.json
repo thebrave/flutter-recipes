@@ -11,7 +11,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -32,12 +32,12 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "ls",
-      "gs://flutter_devicelab/flutter/prod/2d72510e447ab60a9728aeea2362d8be2cbd7789/def"
+      "gs://flutter_devicelab/flutter/ci/2d72510e447ab60a9728aeea2362d8be2cbd7789/def"
     ],
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -65,7 +65,7 @@
     ],
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -96,7 +96,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -122,7 +122,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -147,7 +147,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -176,7 +176,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -201,7 +201,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -228,7 +228,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -253,7 +253,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -283,7 +283,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -322,7 +322,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -353,7 +353,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -393,7 +393,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -423,7 +423,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -463,7 +463,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -505,7 +505,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -519,9 +519,9 @@
   },
   {
     "cmd": [
-      "flutter",
-      "doctor",
-      "--verbose"
+      "dart",
+      "pub",
+      "get"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -546,9 +546,10 @@
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
+    "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -558,8 +559,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "flutter doctor (2)",
-    "timeout": 300
+    "name": "dart pub get (2)"
   },
   {
     "cmd": [
@@ -604,7 +604,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -621,61 +621,6 @@
       "@@@STEP_LOG_END@test_stdout@@@",
       "@@@STEP_LOG_LINE@test_stderr@@@@",
       "@@@STEP_LOG_END@test_stderr@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "-m",
-      "----",
-      "cp",
-      "-r",
-      "[CLEANUP]/tmp_tmp_2/*",
-      "gs://flutter_devicelab/flutter/prod/2d72510e447ab60a9728aeea2362d8be2cbd7789/def"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "master",
-      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "test:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload artifacts",
-    "~followup_annotations": [
-      "@@@STEP_LINK@artifacts@https://console.cloud.google.com/storage/browser/flutter_devicelab/flutter/prod/2d72510e447ab60a9728aeea2362d8be2cbd7789/def@@@"
     ]
   },
   {
@@ -713,7 +658,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -759,7 +704,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -805,7 +750,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -851,7 +796,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -897,7 +842,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -947,7 +892,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -958,6 +903,61 @@
       }
     },
     "name": "OS info (2)"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "-m",
+      "----",
+      "cp",
+      "-r",
+      "[CLEANUP]/tmp_tmp_2/*",
+      "gs://flutter_devicelab/flutter/ci/2d72510e447ab60a9728aeea2362d8be2cbd7789/def"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "master",
+      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "test:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil upload artifacts",
+    "~followup_annotations": [
+      "@@@STEP_LINK@artifacts@https://console.cloud.google.com/storage/browser/flutter_devicelab/flutter/ci/2d72510e447ab60a9728aeea2362d8be2cbd7789/def@@@"
+    ]
   },
   {
     "cmd": [],
@@ -973,7 +973,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -984,7 +984,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"prod\", \"builder\": \"Linux Production Engine Drone\", \"project\": \"test\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"git.example.com\", \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", \"project\": \"test/repo\", \"ref\": \"refs/heads/master\"}, \"priority\": 25, \"properties\": {\"artifact\": \"def\", \"build\": {\"drone_dimensions\": [], \"name\": \"abc\", \"properties\": {\"artifact\": \"def\", \"dependencies\": [], \"git_branch\": \"master\", \"parent_builder\": \"Linux abc\", \"tags\": [], \"task_name\": \"abc\"}}, \"dependencies\": [], \"gclient_variables\": {}, \"git_branch\": \"master\", \"local_engine\": \"host-release\", \"local_engine_cas_hash\": \"isolatehashlocalengine/22\", \"parent_builder\": \"Linux abc\", \"recipe\": \"devicelab/devicelab_test_drone\", \"tags\": [], \"task_name\": \"abc\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"ci\", \"builder\": \"Linux Engine Drone\", \"project\": \"test\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"git.example.com\", \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", \"project\": \"test/repo\", \"ref\": \"refs/heads/master\"}, \"priority\": 25, \"properties\": {\"$flutter/devicelab_osx_sdk\": {\"sdk_version\": null}, \"artifact\": \"def\", \"build\": {\"drone_dimensions\": [], \"name\": \"abc\", \"properties\": {\"$flutter/devicelab_osx_sdk\": {\"sdk_version\": null}, \"artifact\": \"def\", \"dependencies\": [], \"git_branch\": \"master\", \"parent_builder\": \"Linux abc\", \"tags\": [], \"task_name\": \"abc\"}}, \"dependencies\": [], \"gclient_variables\": {}, \"git_branch\": \"master\", \"local_engine\": \"host-release\", \"local_engine_cas_hash\": \"isolatehashlocalengine/22\", \"parent_builder\": \"Linux abc\", \"recipe\": \"devicelab/devicelab_test_drone\", \"tags\": [], \"task_name\": \"abc\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -992,8 +992,8 @@
       "@@@STEP_LOG_LINE@json.output@    {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"scheduleBuild\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"prod\", @@@",
-      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"Linux Production Engine Drone\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"ci\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"Linux Engine Drone\", @@@",
       "@@@STEP_LOG_LINE@json.output@          \"project\": \"test\"@@@",
       "@@@STEP_LOG_LINE@json.output@        }, @@@",
       "@@@STEP_LOG_LINE@json.output@        \"id\": \"8922054662172514000\"@@@",
@@ -1007,8 +1007,8 @@
       "@@@STEP_LOG_LINE@request@    {@@@",
       "@@@STEP_LOG_LINE@request@      \"scheduleBuild\": {@@@",
       "@@@STEP_LOG_LINE@request@        \"builder\": {@@@",
-      "@@@STEP_LOG_LINE@request@          \"bucket\": \"prod\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"builder\": \"Linux Production Engine Drone\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"bucket\": \"ci\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"builder\": \"Linux Engine Drone\", @@@",
       "@@@STEP_LOG_LINE@request@          \"project\": \"test\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"exe\": {@@@",
@@ -1027,11 +1027,17 @@
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"priority\": 25, @@@",
       "@@@STEP_LOG_LINE@request@        \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@request@          \"$flutter/devicelab_osx_sdk\": {@@@",
+      "@@@STEP_LOG_LINE@request@            \"sdk_version\": null@@@",
+      "@@@STEP_LOG_LINE@request@          }, @@@",
       "@@@STEP_LOG_LINE@request@          \"artifact\": \"def\", @@@",
       "@@@STEP_LOG_LINE@request@          \"build\": {@@@",
       "@@@STEP_LOG_LINE@request@            \"drone_dimensions\": [], @@@",
       "@@@STEP_LOG_LINE@request@            \"name\": \"abc\", @@@",
       "@@@STEP_LOG_LINE@request@            \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@request@              \"$flutter/devicelab_osx_sdk\": {@@@",
+      "@@@STEP_LOG_LINE@request@                \"sdk_version\": null@@@",
+      "@@@STEP_LOG_LINE@request@              }, @@@",
       "@@@STEP_LOG_LINE@request@              \"artifact\": \"def\", @@@",
       "@@@STEP_LOG_LINE@request@              \"dependencies\": [], @@@",
       "@@@STEP_LOG_LINE@request@              \"git_branch\": \"master\", @@@",
@@ -1096,7 +1102,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {
@@ -1122,7 +1128,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "test:prod"
+        "name": "test:ci"
       },
       "resultdb": {
         "current_invocation": {

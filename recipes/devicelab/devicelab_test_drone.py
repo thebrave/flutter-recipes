@@ -109,24 +109,19 @@ def RunSteps(api):
     runner_params.extend(['--git-branch', git_branch])
   test_status = ''
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
-    api.repo_util.run_flutter_doctor()
+    api.retry.run_flutter_doctor()
     api.step('dart pub get', ['dart', 'pub', 'get'], infra_step=True)
     dep_list = {d['dependency']: d.get('version') for d in deps}
     if 'xcode' not in dep_list:
       with api.context(env=env, env_prefixes=env_prefixes):
-        api.repo_util.run_flutter_doctor()
-        test_runner_command = ['dart', 'bin/test_runner.dart', 'test']
-        test_runner_command.extend(runner_params)
-        try:
-          test_status = api.test_utils.run_test(
-              'run %s' % task_name,
-              test_runner_command,
-              timeout_secs=MAX_TIMEOUT_SECS
-          )
-        finally:
-          debug_after_failure(api, task_name)
-        if test_status == 'flaky':
-          api.test_utils.flaky_step('run %s' % task_name)
+        run_test(api, task_name, runner_params)
+    else:
+      api.os_utils.clean_derived_data()
+      if str(api.swarming.bot_id).startswith('flutter-devicelab'):
+        with api.devicelab_osx_sdk('ios'):
+          with api.context(env=env, env_prefixes=env_prefixes):
+            run_test(api, task_name, runner_params)
+
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadResults(
         api, env, env_prefixes, results_path, test_status == 'flaky',
@@ -135,6 +130,21 @@ def RunSteps(api):
     )
     uploadMetricsToCas(api, results_path)
 
+def run_test(api, task_name, runner_params):
+  '''Run the devicelab test.'''
+  api.retry.run_flutter_doctor()
+  test_runner_command = ['dart', 'bin/test_runner.dart', 'test']
+  test_runner_command.extend(runner_params)
+  try:
+    test_status = api.test_utils.run_test(
+          'run %s' % task_name,
+          test_runner_command,
+          timeout_secs=MAX_TIMEOUT_SECS
+    )
+  finally:
+    debug_after_failure(api, task_name)
+    if test_status == 'flaky':
+      api.test_utils.flaky_step('run %s' % task_name)
 
 def download_artifact(api, artifact, artifact_destination_dir):
   '''Download pre-build artifact.'''
@@ -358,5 +368,31 @@ def GenTests(api):
           project='test',
           git_repo='git.example.com/test/repo',
           git_ref='refs/heads/master',
+      )
+  )
+  yield api.test(
+      "mac",
+      api.properties(
+          buildername='Mac_ios abc',
+          task_name='abc',
+          tags=['ios'],
+          dependencies=[{'dependency': 'xcode'}],
+          git_branch='master',
+          **{'$flutter/devicelab_osx_sdk': {
+              'sdk_version': 'deadbeef',
+          }},
+          artifact='def',
+          parent_builder='ghi'
+      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.platform.name('mac'),
+      api.buildbucket.ci_build(git_ref='refs/heads/master',),
+      api.step_data(
+          'run abc',
+          stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
+          retcode=0
+      ), api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
+      api.step_data(
+          'Find device type',
+          stdout=api.raw_io.output_text('iPhone8,1'),
       )
   )

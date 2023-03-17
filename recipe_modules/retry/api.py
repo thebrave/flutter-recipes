@@ -124,3 +124,11 @@ class RetryApi(recipe_api.RecipeApi):
             raise
           self.m.time.sleep(sleep)
           sleep *= backoff_factor
+
+  def run_flutter_doctor(self):
+    self.step(
+        'flutter doctor',
+        ['flutter', 'doctor', '--verbose'],
+        max_attempts=3,
+        timeout=300,
+    )

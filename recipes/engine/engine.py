@@ -323,6 +323,57 @@ def UploadArtifacts(
     api.bucket_util.safe_upload(local_zip, remote_zip)
 
 
+# Takes an artifact filename such as `flutter_embedding_release.jar`
+# and returns `io/flutter/flutter_embedding_release/1.0.0-<hash>/
+# flutter_embedding_release-1.0.0-<hash>.jar`.
+def GetCloudMavenPath(api, artifact_filename, swarming_task_id):
+  if api.runtime.is_experimental:
+    # If this is not somewhat unique then led tasks will fail with
+    # a missing delete permission.
+    engine_git_hash = 'experimental-%s' % swarming_task_id
+  else:
+    engine_git_hash = api.buildbucket.gitiles_commit.id or 'testing'
+
+  artifact_id, artifact_extension = artifact_filename.split('.', 2)
+
+  # Source artifacts
+  if artifact_id.endswith('-sources'):
+    filename_pattern = '%s-1.0.0-%s-sources.%s'
+  else:
+    filename_pattern = '%s-1.0.0-%s.%s'
+
+  artifact_id = artifact_id.replace('-sources', '')
+  filename = filename_pattern % (
+      artifact_id, engine_git_hash, artifact_extension
+  )
+
+  return 'io/flutter/%s/1.0.0-%s/%s' % (artifact_id, engine_git_hash, filename)
+
+
+# Uploads the local Maven artifact.
+def UploadMavenArtifacts(api, artifacts, swarming_task_id):
+  checkout = GetCheckoutPath(api)
+
+  for local_artifact in artifacts:
+    filename = api.path.basename(local_artifact)
+    remote_artifact = GetCloudMavenPath(api, filename, swarming_task_id)
+
+    api.bucket_util.safe_upload(
+        checkout.join(local_artifact),
+        remote_artifact,
+        bucket_name=MAVEN_BUCKET_NAME,
+        dry_run=api.properties.get('no_maven', False),
+    )
+
+
+def UploadDartPackage(api, package_name):
+  api.bucket_util.upload_folder(
+      'UploadDartPackage %s' % package_name,
+      'src/out/android_debug/dist/packages', package_name,
+      "%s.zip" % package_name
+  )
+
+
 def UploadSkyEngineToCIPD(api, package_name):
   git_rev = api.buildbucket.gitiles_commit.id or 'HEAD'
   package_dir = 'src/out/android_debug/dist/packages'
@@ -344,6 +395,7 @@ def UploadSkyEngineToCIPD(api, package_name):
 
 
 def UploadSkyEngineDartPackage(api):
+  UploadDartPackage(api, 'sky_engine')
   UploadSkyEngineToCIPD(api, 'sky_engine')
 
 
@@ -662,7 +714,7 @@ def BuildLinuxAndroidAOT(api, swarming_task_id):
                  artifact_name='artifacts.zip')
   UploadArtifact(api, config='android_release_arm64', platform='android-arm64-release',
                  artifact_name='artifacts.zip')
-
+  
   # Linux-x64.zip.
   UploadArtifact(api, config='android_profile', platform='android-arm-profile',
                  artifact_name='linux-x64.zip')
@@ -755,124 +807,47 @@ def BuildLinuxAndroid(api, swarming_task_id):
 
   if api.properties.get('build_android_debug', True):
     debug_variants = [
-        AndroidAotVariant(
-          android_cpu='x86',
-          out_dir='android_debug_x86',
-          artifact_dir='android-x86',
-          clang_dir='',
-          android_triple='',
-          abi='x86',
-          gn_args=[
-              '--android',
-              '--android-cpu=x86',
-              '--no-lto'
-          ],
-          ninja_targets=[
-              'flutter',
-              'flutter/shell/platform/android:abi_jars',
-              'flutter/shell/platform/android:robolectric_tests'
-          ]
-        ),
-        AndroidAotVariant(
-          android_cpu='x64',
-          out_dir='android_debug_x64',
-          artifact_dir='android-x64',
-          clang_dir='',
-          android_triple='',
-          abi='x86_64',
-          gn_args=[
-              '--android',
-              '--android-cpu=x64',
-              '--no-lto'
-          ],
-          ninja_targets=[
-              'flutter',
-              'flutter/shell/platform/android:abi_jars'
-          ]
-        ),
-        AndroidAotVariant(
-          android_cpu='arm',
-          out_dir='android_debug',
-          artifact_dir='android-arm',
-          clang_dir='',
-          android_triple='',
-          abi='armeabi_v7a',
-          gn_args=[
-              '--android',
-              '--android-cpu=arm',
-              '--no-lto'
-          ],
-          ninja_targets=[
-              'flutter',
-              'flutter/sky/dist:zip_old_location',
-              'flutter/shell/platform/android:embedding_jars',
-              'flutter/shell/platform/android:abi_jars'
-          ]
-        ),
-        AndroidAotVariant(
-          android_cpu='arm64',
-          out_dir='android_debug_arm64',
-          artifact_dir='android-arm64',
-          clang_dir='',
-          android_triple='',
-          abi='arm64_v8a',
-          gn_args=[
-              '--android',
-              '--android-cpu=arm64',
-              '--no-lto'
-          ],
-          ninja_targets=[
-              'flutter',
-              'flutter/shell/platform/android:abi_jars'
-          ]
-        )
+        ('arm', 'android_debug', 'android-arm', True, 'armeabi_v7a'),
+        ('arm64', 'android_debug_arm64', 'android-arm64', False, 'arm64_v8a'),
+        ('x86', 'android_debug_x86', 'android-x86', False, 'x86'),
+        ('x64', 'android_debug_x64', 'android-x64', False, 'x86_64'),
     ]
-    for debug_variant in debug_variants:
-      RunGN(api, *(debug_variant.GetGNArgs()))
-      Build(api, debug_variant.GetBuildOutDir(), *(debug_variant.GetNinjaTargets()))
+    for android_cpu, out_dir, artifact_dir, run_tests, abi in debug_variants:
+      RunGN(api, '--android', '--android-cpu=%s' % android_cpu, '--no-lto')
+      Build(api, out_dir)
+      if run_tests:
+        RunGN(api, '--android', '--unoptimized', '--runtime-mode=debug', '--no-lto')
+        Build(api, out_dir, 'flutter/shell/platform/android:robolectric_tests')
+        RunTests(api, out_dir, android_out_dir=out_dir, types='java')
+      artifacts = ['out/%s/flutter.jar' % out_dir]
+      UploadArtifacts(api, artifact_dir, artifacts)
+      UploadArtifacts(
+          api,
+          artifact_dir, ['out/%s/libflutter.so' % out_dir],
+          archive_name='symbols.zip'
+      )
 
-    # Run tests
-    RunGN(api, '--android', '--unoptimized', '--runtime-mode=debug', '--no-lto')
-    Build(api, 'android_debug', 'flutter/shell/platform/android:robolectric_tests')
-    RunTests(api, 'android_debug', android_out_dir='android_debug', types='java')
+      # Upload the Maven artifacts.
+      engine_filename = '%s_debug' % abi
+      UploadMavenArtifacts(
+          api, [
+              'out/%s/%s.jar' % (out_dir, engine_filename),
+              'out/%s/%s.pom' % (out_dir, engine_filename),
+          ], swarming_task_id
+      )
 
-    # Explicitly upload artifacts.
+    # Upload the embedding
+    UploadMavenArtifacts(
+        api, [
+            'out/android_debug/flutter_embedding_debug.jar',
+            'out/android_debug/flutter_embedding_debug.pom',
+            'out/android_debug/flutter_embedding_debug-sources.jar',
+        ], swarming_task_id
+    )
 
-    # Artifacts.zip
-    UploadArtifact(api, config='android_debug_x86', platform='android-x86',
-                   artifact_name='artifacts.zip')
-    UploadArtifact(api, config='android_debug_x64', platform='android-x64',
-                   artifact_name='artifacts.zip')
-    UploadArtifact(api, config='android_debug', platform='android-arm',
-                   artifact_name='artifacts.zip')
-    UploadArtifact(api, config='android_debug_arm64', platform='android-arm64',
-                   artifact_name='artifacts.zip')
-
-    # Symbols.zip
-    UploadArtifact(api, config='android_debug_x86', platform='android-x86',
-                   artifact_name='symbols.zip')
-    UploadArtifact(api, config='android_debug_x64', platform='android-x64',
-                   artifact_name='symbols.zip')
-    UploadArtifact(api, config='android_debug', platform='android-arm',
-                   artifact_name='symbols.zip')
-    UploadArtifact(api, config='android_debug_arm64', platform='android-arm64',
-                   artifact_name='symbols.zip')
-
-    # Jar, pom, embedding files.
-    UploadToDownloadFlutterIO(api, 'android_debug_x86')
-    UploadToDownloadFlutterIO(api, 'android_debug_x64')
-    UploadToDownloadFlutterIO(api, 'android_debug') #arm
-    UploadToDownloadFlutterIO(api, 'android_debug_arm64')
-
-    # Additional artifacts for android_debug
-    UploadArtifact(api, config='android_debug', platform='',
-                   artifact_name='sky_engine.zip')
-    UploadArtifact(api, config='android_debug', platform='',
-                   artifact_name='android-javadoc.zip')
-
-    # Upload to CIPD.
-    # TODO(godofredoc): Validate if this can be removed.
+    Build(api, 'android_debug', ':dist')
     UploadSkyEngineDartPackage(api)
+    UploadJavadoc(api, 'android_debug')
 
   if api.properties.get('build_android_aot', True):
     BuildLinuxAndroidAOT(api, swarming_task_id)
@@ -1686,6 +1661,14 @@ def BuildWindows(api):
                    artifact_name='windows-x64.zip')
     UploadArtifact(api, config='android_release_x64', platform='android-x64-release',
                    artifact_name='windows-x64.zip')
+
+
+def UploadJavadoc(api, variant):
+  checkout = GetCheckoutPath(api)
+  api.bucket_util.safe_upload(
+      checkout.join('out/%s/zip_archives/android-javadoc.zip' % variant),
+      GetCloudPath(api, 'android-javadoc.zip')
+  )
 
 
 def BuildObjcDoc(api, env, env_prefixes):

@@ -733,25 +733,34 @@ def BuildLinuxAndroidAOT(api, swarming_task_id):
 
 def BuildLinuxAndroid(api, swarming_task_id):
   if api.properties.get('build_android_jit_release', True):
-    jit_release_variants = [
-        (
-            'x86', 'android_jit_release_x86', 'android-x86-jit-release', True,
-            'x86'
-        ),
-    ]
-    for android_cpu, out_dir, artifact_dir, \
-            run_tests, abi in jit_release_variants:
-      RunGN(
-          api, '--android', '--android-cpu=%s' % android_cpu,
-          '--runtime-mode=jit_release'
-      )
-      Build(api, out_dir)
-      if run_tests:
-        RunGN(api, '--android', '--unoptimized', '--runtime-mode=debug', '--no-lto')
-        Build(api, out_dir, 'flutter/shell/platform/android:robolectric_tests')
-        RunTests(api, out_dir, android_out_dir=out_dir, types='java')
-      artifacts = ['out/%s/flutter.jar' % out_dir]
-      UploadArtifacts(api, artifact_dir, artifacts)
+    RunGN(
+        api,
+        '--android',
+        '--android-cpu=x86',
+        '--runtime-mode=jit_release'
+    )
+    Build(
+       api,
+       'android_jit_release_x86',
+       'flutter',
+       'flutter/shell/platform/android:abi_jars',
+       'flutter/shell/platform/android:embedding_jars',
+       'flutter/shell/platform/android:robolectric_tests'
+    )
+
+    # Upload artifacts.zip
+    UploadArtifact(
+        api,
+        config='android_jit_release_x86',
+        platform='android-x86-jit-release',
+        artifact_name='artifacts.zip'
+    )
+    RunTests(
+        api,
+        'android_jit_release_x86',
+        android_out_dir='android_jit_release_x86',
+        types='java'
+    )
 
   if api.properties.get('build_android_debug', True):
     debug_variants = [

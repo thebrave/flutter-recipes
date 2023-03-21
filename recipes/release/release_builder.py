@@ -79,7 +79,7 @@ def RunSteps(api, properties, env_properties):
       if ShouldRun(api, git_ref, target):
         target = api.shard_util_v2.pre_process_properties(target)
         tasks.update(api.shard_util_v2.schedule(
-          [target, ], target['recipe'], presentation))
+          [target, ], presentation))
   with api.step.nest('collect builds') as presentation:
     build_results = api.shard_util_v2.collect(tasks, presentation)
 

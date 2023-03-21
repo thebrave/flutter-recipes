@@ -103,7 +103,7 @@ def RunSteps(api, properties, env_properties):
       web_engine_analysis.append('analyze')
       api.step('web engine analysis', web_engine_analysis)
       with api.step.nest('launch builds') as presentation:
-        tasks = api.shard_util_v2.schedule(targets, 'engine/web_engine_drone', presentation)
+        tasks = api.shard_util_v2.schedule(targets, presentation)
       with api.step.nest('collect builds') as presentation:
         build_results = api.shard_util_v2.collect(tasks, presentation)
       api.display_util.display_subbuilds(
@@ -149,6 +149,7 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
   properties['name'] = properties['command_name']
   # These are the felt commands which will be used.
   properties['command_args'] = ['test', '--browser=chrome', '--require-skia-gold']
+  properties['recipe'] = 'engine/web_engine_drone'
   targets.append(properties)
 
   # For running Chrome Unit tests with CanvasKit
@@ -160,6 +161,7 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
       'test', '--browser=chrome', '--require-skia-gold',
       '--use-local-canvaskit'
   ]
+  properties['recipe'] = 'engine/web_engine_drone'
   targets.append(properties)
 
   # For running Chrome Unit tests compiled to wasm:
@@ -171,6 +173,7 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
       'test', '--browser=chrome', '--require-skia-gold',
       '--wasm'
   ]
+  properties['recipe'] = 'engine/web_engine_drone'
   targets.append(properties)
 
   # For running Firefox Unit tests:
@@ -179,6 +182,7 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
   properties['name'] = properties['command_name']
   # These are the felt commands which will be used.
   properties['command_args'] = ['test', '--browser=firefox']
+  properties['recipe'] = 'engine/web_engine_drone'
   targets.append(properties)
   return targets
 

@@ -119,7 +119,13 @@ class ShardUtilApi(recipe_api.RecipeApi):
     Returns:
       A dictionary with a long build_id as key and SubbuildResult as value.
     """
-    return self.schedule(builds, 'engine_v2/builder', presentation,
+    # Update build with default recipe.
+    updated_builds = []
+    for b in builds:
+      build = self.unfreeze_dict(b)
+      build['recipe'] = build.get('recipe') or 'engine_v2/builder'
+      updated_builds.append(build)
+    return self.schedule(updated_builds, presentation,
                          branch=branch)
 
   def schedule_tests(self, tests, build_results, presentation):
@@ -139,20 +145,20 @@ class ShardUtilApi(recipe_api.RecipeApi):
     for t in tests:
       test = self.unfreeze_dict(t)
       test['resolved_deps'] = []
+      test['recipe'] = test.get('recipe') or 'engine_v2/tester'
       for dep in test.get('dependencies', []):
         dep_dict = self.struct_to_dict(
             results_map[dep].build_proto.output.properties['cas_output_hash']
         )
         test['resolved_deps'].append(dep_dict)
       updated_tests.append(test)
-    return self.schedule(updated_tests, 'engine_v2/tester', presentation)
+    return self.schedule(updated_tests, presentation)
 
-  def schedule(self, builds, recipe_name, presentation, branch='main'):
+  def schedule(self, builds, presentation, branch='main'):
     """Schedules one subbuild per build configuration.
 
     Args:
       builds(dict): The build/test configurations to be passed to BuildBucket or led.
-      recipe_name(str): A string with the recipe name to use.
       presentation(StepPresentation): The step object used to add links and/or logs.
       branch(String): The current branch name.
     Returns:
@@ -160,17 +166,16 @@ class ShardUtilApi(recipe_api.RecipeApi):
     """
     build_list = [self.unfreeze_dict(b) for b in builds]
     if self.m.led.launched_by_led:
-      builds = self._schedule_with_led(build_list, recipe_name)
+      builds = self._schedule_with_led(build_list)
     else:
-      builds = self._schedule_with_bb(build_list, recipe_name, branch=branch)
+      builds = self._schedule_with_bb(build_list, branch=branch)
     return builds
 
-  def _schedule_with_led(self, builds, recipe_name):
+  def _schedule_with_led(self, builds):
     """Schedules one subbuild per build using led.
 
     Args:
       builds(dict): The build/test configurations to be passed to BuildBucket or led.
-      recipe_name(str): A string with the recipe name to use.
     Returns:
       A dictionary with a long build_id as key and SubbuildResult as value.
     """
@@ -197,7 +202,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       )
 
       # Override recipe.
-      drone_properties['recipe'] = recipe_name
+      drone_properties['recipe'] = build['recipe']
       bucket = self.m.buildbucket.build.builder.bucket
       environment = ENVIRONMENTS_MAP.get(bucket, '')
       builder_name = build.get(
@@ -221,11 +226,11 @@ class ShardUtilApi(recipe_api.RecipeApi):
       led_data.result.buildbucket.bbagent_args.build.infra.swarming.priority -= 20
       led_data = led_data.then('edit', *edit_args)
       led_data = led_data.then('edit', '-name', task_name)
-      led_data = led_data.then('edit', '-r', recipe_name)
+      led_data = led_data.then('edit', '-r', build['recipe'])
       for d in drone_dimensions:
         led_data = led_data.then('edit', '-d', d)
       for k,v in ci_yaml_dimensions.items():
-        led_data = led_data.then('edit', "-d", '%s=%s' % (k,v)) 
+        led_data = led_data.then('edit', "-d", '%s=%s' % (k,v))
       led_data = self.m.led.inject_input_recipes(led_data)
       launch_res = led_data.then('launch', '-modernize')
       task_id = launch_res.launch_result.task_id
@@ -241,12 +246,11 @@ class ShardUtilApi(recipe_api.RecipeApi):
       )
     return results
 
-  def _schedule_with_bb(self, builds, recipe_name, branch='main'):
+  def _schedule_with_bb(self, builds, branch='main'):
     """Schedules builds using builbbucket.
 
     Args:
       builds(dict): The build/test configurations to be passed to BuildBucket or led.
-      recipe_name(str): A string with the recipe name to use.
       branch(String): The current branch name.
     Returns:
       A dictionary with a long build_id as key and SubbuildResult as value.
@@ -286,7 +290,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       for k,v in ci_yaml_dimensions.items():
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
       # Override recipe.
-      drone_properties['recipe'] = recipe_name
+      drone_properties['recipe'] = build['recipe']
       properties = collections.OrderedDict(
           (key, val)
           for key, val in sorted(drone_properties.items())

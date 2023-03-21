@@ -77,7 +77,7 @@ def RunSteps(api):
       api, task_name, api.properties.get('dependencies', []), artifact
   )
   with api.step.nest('launch builds') as presentation:
-    tasks = api.shard_util_v2.schedule(targets, 'devicelab/devicelab_test_drone', presentation)
+    tasks = api.shard_util_v2.schedule(targets, presentation)
   with api.step.nest('collect builds') as presentation:
     build_results = api.shard_util_v2.collect(tasks, presentation)
     api.display_util.display_subbuilds(
@@ -104,8 +104,12 @@ def test(api, task_name, deps, artifact):
       '$flutter/devicelab_osx_sdk': {'sdk_version': api.properties.get('xcode')}
   }
   reqs.append(
-       {'name': task_name, 'properties': test_props,
-        'drone_dimensions': api.properties.get('drone_dimensions', [])}
+      {
+          'name': task_name,
+          'properties': test_props,
+          'drone_dimensions': api.properties.get('drone_dimensions', []),
+          'recipe': 'devicelab/devicelab_test_drone'
+      }
   )
   return reqs
 

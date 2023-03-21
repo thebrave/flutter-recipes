@@ -121,7 +121,7 @@ def RunSteps(api, properties, env_properties):
     # side is kept in `ref`.
     targets = generate_targets(api, cas_hash, ref.strip(), url, deps)
     with api.step.nest('launch builds') as presentation:
-       tasks = api.shard_util_v2.schedule(targets, 'flutter/flutter_drone', presentation)
+       tasks = api.shard_util_v2.schedule(targets, presentation)
     with api.step.nest('collect builds') as presentation:
        build_results = api.shard_util_v2.collect(tasks, presentation)
     api.display_util.display_subbuilds(
@@ -147,7 +147,13 @@ def generate_targets(api, cas_hash, ref, url, deps):
     }
     drone_props['git_url'] = url
     drone_props['git_ref'] = ref
-    targets.append({'name': task_name, 'properties': drone_props})
+    targets.append(
+        {
+            'name': task_name,
+            'properties': drone_props,
+            'recipe': 'flutter/flutter_drone'
+        }
+    )
   return targets
 
 

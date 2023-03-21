@@ -1392,61 +1392,129 @@ def BuildMac(api):
     )
 
   if api.properties.get('build_android_aot', True):
-    RunGN(api, '--runtime-mode', 'profile', '--android')
-    RunGN(api, '--runtime-mode', 'profile', '--android', '--android-cpu=arm64')
-    RunGN(api, '--runtime-mode', 'profile', '--android', '--android-cpu=x64')
-    RunGN(api, '--runtime-mode', 'release', '--android')
-    RunGN(api, '--runtime-mode', 'release', '--android', '--android-cpu=arm64')
-    RunGN(api, '--runtime-mode', 'release', '--android', '--android-cpu=x64')
+    # Profile arm
+    RunGN(
+        api,
+        '--runtime-mode',
+        'profile',
+        '--android'
+    )
+    Build(
+        api,
+        'android_profile',
+        'flutter/lib/snapshot',
+        'flutter/shell/platform/android:gen_snapshot'
+    )
+    UploadArtifact(
+        api,
+        config='android_profile',
+        platform='android-arm-profile',
+        artifact_name='darwin-x64.zip'
+    )
 
-    Build(api, 'android_profile', 'flutter/lib/snapshot')
-    Build(api, 'android_profile_arm64', 'flutter/lib/snapshot')
-    Build(api, 'android_profile_x64', 'flutter/lib/snapshot')
-    Build(api, 'android_release', 'flutter/lib/snapshot')
-    Build(api, 'android_release_arm64', 'flutter/lib/snapshot')
-    Build(api, 'android_release_x64', 'flutter/lib/snapshot')
+    # Profile arm64
+    RunGN(
+        api,
+        '--runtime-mode',
+        'profile',
+        '--android',
+        '--android-cpu=arm64'
+    )
+    Build(
+        api,
+        'android_profile_arm64',
+        'flutter/lib/snapshot',
+        'flutter/shell/platform/android:gen_snapshot'
+    )
+    UploadArtifact(
+        api,
+        config='android_profile_arm64',
+        platform='android-arm64-profile',
+        artifact_name='darwin-x64.zip'
+    )
 
-    UploadArtifacts(
+    # Profile x64
+    RunGN(
         api,
-        "android-arm-profile", [
-            'out/android_profile/clang_x64/gen_snapshot',
-        ],
-        archive_name='darwin-x64.zip'
+        '--runtime-mode',
+        'profile',
+        '--android',
+        '--android-cpu=x64'
     )
-    UploadArtifacts(
+    Build(
         api,
-        "android-arm64-profile", [
-            'out/android_profile_arm64/clang_x64/gen_snapshot',
-        ],
-        archive_name='darwin-x64.zip'
+        'android_profile_x64',
+        'flutter/lib/snapshot',
+        'flutter/shell/platform/android:gen_snapshot'
     )
-    UploadArtifacts(
+    UploadArtifact(
         api,
-        "android-x64-profile", [
-            'out/android_profile_x64/clang_x64/gen_snapshot',
-        ],
-        archive_name='darwin-x64.zip'
+        config='android_profile_x64',
+        platform='android-x64-profile',
+        artifact_name='darwin-x64.zip'
     )
-    UploadArtifacts(
+
+    # Release arm
+    RunGN(
         api,
-        "android-arm-release", [
-            'out/android_release/clang_x64/gen_snapshot',
-        ],
-        archive_name='darwin-x64.zip'
+        '--runtime-mode',
+        'release',
+        '--android'
     )
-    UploadArtifacts(
+    Build(
         api,
-        "android-arm64-release", [
-            'out/android_release_arm64/clang_x64/gen_snapshot',
-        ],
-        archive_name='darwin-x64.zip'
+        'android_release',
+        'flutter/lib/snapshot',
+        'flutter/shell/platform/android:gen_snapshot'
     )
-    UploadArtifacts(
+    UploadArtifact(
         api,
-        "android-x64-release", [
-            'out/android_release_x64/clang_x64/gen_snapshot',
-        ],
-        archive_name='darwin-x64.zip'
+        config='android_release',
+        platform='android-arm-release',
+        artifact_name='darwin-x64.zip'
+    )
+
+    # Release arm64
+    RunGN(
+        api,
+        '--runtime-mode',
+        'release',
+        '--android',
+        '--android-cpu=arm64'
+    )
+    Build(
+        api,
+        'android_release_arm64',
+        'flutter/lib/snapshot',
+        'flutter/shell/platform/android:gen_snapshot'
+    )
+    UploadArtifact(
+        api,
+        config='android_release_arm64',
+        platform='android-arm64-release',
+        artifact_name='darwin-x64.zip'
+    )
+
+    # Release x64
+    RunGN(
+        api,
+        '--runtime-mode',
+        'release',
+        '--android',
+        '--android-cpu=x64'
+    )
+    Build(
+        api,
+        'android_release_x64',
+        'flutter/lib/snapshot',
+        'flutter/shell/platform/android:gen_snapshot'
+
+    )
+    UploadArtifact(
+        api,
+        config='android_release_x64',
+        platform='android-x64-release',
+        artifact_name='darwin-x64.zip'
     )
 
 

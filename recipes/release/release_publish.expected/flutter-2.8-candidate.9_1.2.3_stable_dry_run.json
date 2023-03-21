@@ -132,41 +132,6 @@
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/gh-cli",
-      "-ensure-file",
-      "flutter_internal/tools/gh-cli/${platform} latest",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "name": "ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter_internal/tools/gh-cli/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/gh-cli/bin/gh",
-      "--version"
-    ],
-    "name": "check gh version"
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
       "[START_DIR]/cloudkms",
       "-ensure-file",
       "infra/tools/luci/cloudkms/${platform} latest",
@@ -190,11 +155,10 @@
     "env_prefixes": {
       "PATH": [
         "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
-        "[CACHE]/gh-cli/bin"
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
       ]
     },
-    "name": "ensure_installed (2)",
+    "name": "ensure_installed",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
@@ -236,8 +200,7 @@
     "env_prefixes": {
       "PATH": [
         "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
-        "[CACHE]/gh-cli/bin"
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -268,8 +231,7 @@
     "env_prefixes": {
       "PATH": [
         "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
-        "[CACHE]/gh-cli/bin"
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
       ]
     },
     "name": "cloudkms get key"
@@ -295,8 +257,7 @@
     "env_prefixes": {
       "PATH": [
         "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
-        "[CACHE]/gh-cli/bin"
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -310,6 +271,7 @@
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "DRY_RUN_CMD": "echo",
+      "GITHUB_USER": "fluttergithubbot",
       "GIT_BRANCH": "flutter-2.8-candidate.9",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -327,10 +289,8 @@
       "PATH": [
         "[START_DIR]/flutter/bin",
         "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
-        "[CACHE]/gh-cli/bin",
         "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
-        "[CACHE]/gh-cli/bin"
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
       ]
     },
     "name": "Tag and push release"

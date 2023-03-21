@@ -74,9 +74,6 @@ def RunSteps(api):
       api.properties.get('dependencies', []),
   )
 
-  # install gh cli
-  api.flutter_deps.gh_cli(env, env_prefixes, 'latest')
-
   with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
     token_decrypted = api.path['cleanup'].join('token.txt')
     api.kms.get_secret('flutter-release-github-token.encrypted', token_decrypted)
@@ -93,6 +90,7 @@ def RunSteps(api):
     env['RELEASE_GIT_HASH'] = release_git_hash
     env['RELEASE_CHANNEL'] = release_channel
     env['GIT_BRANCH'] = git_branch
+    env['GITHUB_USER'] = 'fluttergithubbot'
 
     # Run script within a new context to use the new env variables.
     with api.context(env=env, env_prefixes=env_prefixes):

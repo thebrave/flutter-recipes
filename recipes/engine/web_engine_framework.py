@@ -151,7 +151,8 @@ def generate_targets(api, cas_hash, ref, url, deps):
         {
             'name': task_name,
             'properties': drone_props,
-            'recipe': 'flutter/flutter_drone'
+            'recipe': 'flutter/flutter_drone',
+            'drone_dimensions': api.properties.get('drone_dimensions', []),
         }
     )
   return targets

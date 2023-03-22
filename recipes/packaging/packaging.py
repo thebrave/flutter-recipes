@@ -175,15 +175,12 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes):
     with api.depot_tools.on_path():
       match = PACKAGED_REF_RE.match(git_ref)
-      if match:
+      if match and not api.runtime.is_experimental:
         branch = match.group(1)
         CreateAndUploadFlutterPackage(api, release_git_hash, branch, packaging_script)
         # Nothing left to do on a packaging branch.
         return
-      raise api.step.StepFailure(
-          'could not determine the release branch: "git_ref"'
-          'property should be set when manually triggering builds'
-      )
+      api.step('Running on test mode - no uploads will happen', [])
 
 
 def GenTests(api):

@@ -77,7 +77,7 @@ def run_tests(api, test, checkout, env, env_prefixes):
   deps = test.get('test_dependencies', [])
   api.flutter_deps.required_deps(env, env_prefixes, deps)
 
-  out_path = checkout.join('src', 'out')
+  out_path = checkout.join('out')
   # Download build dependencies.
   for dep in test.get('resolved_deps', []):
     out_hash = dep.get('full_build')

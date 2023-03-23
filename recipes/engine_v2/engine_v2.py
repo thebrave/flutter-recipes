@@ -114,8 +114,13 @@ def RunSteps(api, properties, env_properties):
     # Generators and archives require a full engine checkout.
     full_engine_checkout = api.path['cache'].join('builder')
     api.file.ensure_directory('Ensure full engine checkout folder', full_engine_checkout)
-    env, env_prefixes = api.repo_util.engine_environment(full_engine_checkout)
-    api.repo_util.engine_checkout(full_engine_checkout, env, env_prefixes)
+    if api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
+      env, env_prefixes = api.repo_util.monorepo_environment(full_engine_checkout)
+      api.repo_util.monorepo_checkout(full_engine_checkout, env, env_prefixes)
+      full_engine_checkout = full_engine_checkout.join('engine')
+    else:
+      env, env_prefixes = api.repo_util.engine_environment(full_engine_checkout)
+      api.repo_util.engine_checkout(full_engine_checkout, env, env_prefixes)
 
   if generators:
     # Download sub-builds
@@ -374,7 +379,7 @@ def GenTests(api):
       ),
       api.step_data(
           'Read build config file', api.file.read_json({'builds': builds,
-          'tests': tests})
+          'tests': tests, 'generators': generators, 'archives': archives})
       ),
       api.step_data(
           'Identify branches.git branch',

@@ -414,6 +414,40 @@ class RepoUtilApi(recipe_api.RecipeApi):
     env_prefixes = {'PATH': ['%s' % str(dart_bin)]}
     return env, env_prefixes
 
+  def monorepo_environment(self, checkout_path):
+    """Returns env and env_prefixes of a monorepo command environment."""
+    dart_bin = checkout_path.join(
+        'engine', 'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
+    )
+    git_ref = self.m.properties.get('git_ref', '')
+    android_home = checkout_path.join('engine', 'src', 'third_party', 'android_tools', 'sdk')
+    env = {
+        # Windows Packaging script assumes this is set.
+        'DEPOT_TOOLS':
+            str(self.m.depot_tools.root),
+        'ENGINE_CHECKOUT_PATH':
+            checkout_path.join('engine'),
+        'LUCI_CI':
+            True,
+        'LUCI_PR':
+            re.sub('refs\/pull\/|\/head', '', git_ref),
+        'LUCI_BRANCH':
+            self.m.properties.get('release_ref', '').replace('refs/heads/', ''),
+        'GIT_BRANCH':
+            self.get_branch(checkout_path.join('flutter')),
+        'OS':
+            'linux' if self.m.platform.name == 'linux' else
+            ('darwin' if self.m.platform.name == 'mac' else 'win'),
+        'ANDROID_HOME':
+            str(android_home),
+        'LUCI_WORKDIR':
+            str(self.m.path['start_dir']),
+        'REVISION':
+            self.m.buildbucket.gitiles_commit.id or ''
+    }
+    env_prefixes = {'PATH': ['%s' % str(dart_bin)]}
+    return env, env_prefixes
+
   def sdk_checkout_path(self):
     """Returns the checkoout path of the current flutter_environment.
 

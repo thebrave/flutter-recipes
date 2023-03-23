@@ -39,6 +39,7 @@ def RunSteps(api):
   api.repo_util.get_env_ref()
 
   env, env_paths = api.repo_util.engine_environment(flutter_checkout_path)
+  env, env_paths = api.repo_util.monorepo_environment(flutter_checkout_path)
   env, env_paths = api.repo_util.flutter_environment(flutter_checkout_path)
   api.repo_util.in_release_and_main(flutter_checkout_path)
   checkout_path = api.path['start_dir']

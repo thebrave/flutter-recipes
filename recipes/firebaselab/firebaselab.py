@@ -61,8 +61,9 @@ def RunSteps(api):
       '--device',
       'model=Nexus5,version=23',
       # SDK 24 is run on a physical griffin/Moto Z above.
-      '--device',
-      'model=Nexus6P,version=25',
+      # TODO(flutter/flutter#123331): This device is flaking.
+      # '--device',
+      # 'model=Nexus6P,version=25',
       '--device',
       'model=Nexus6P,version=26',
       '--device',

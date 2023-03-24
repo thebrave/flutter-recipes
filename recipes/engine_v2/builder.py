@@ -147,9 +147,9 @@ def Build(api, checkout, env, env_prefixes, outputs):
   ninja_tool = {
       "ninja": api.build_util.build,
   }
-  deps = api.properties.get('dependencies', [])
-  api.flutter_deps.required_deps(env, env_prefixes, deps)
   build = api.properties.get('build')
+  deps = build.get('dependencies', [])
+  api.flutter_deps.required_deps(env, env_prefixes, deps)
   api.flutter_bcid.report_stage('compile')
   gn = build.get('gn')
   if gn:

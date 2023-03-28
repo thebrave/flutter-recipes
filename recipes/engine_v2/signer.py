@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Recipe that executes apple code signing on a code signing bot. A code
-# signing bot is a machine with flutter certificates and signing related
-# set ups.
+# Recipe that executes apple code signing on a mac bot.
 #
 # This recipe receives as properties the list of google cloud bucket paths
 # of engine artifacts, and reads code sign related passwords from
@@ -26,6 +24,7 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/raw_io',
     'recipe_engine/step',
 ]
 
@@ -34,43 +33,133 @@ def RunSteps(api):
   if not api.platform.is_mac:
     pass
 
-  # Installing dependencies for code sign.
+  # Install dependencies for code sign.
   env = {}
   env_prefixes = {}
   with api.step.nest('Dependencies'):
     codesign_path = api.flutter_deps.codesign(env, env_prefixes)
 
+  secrets_dict = {
+      'FLUTTER_P12': 'flutter_p12.encrypted',
+      'FLUTTER_P12_PASSWORD': 'p12_password.encrypted',
+      'CODESIGN_TEAM_ID': 'codesign_team_id.encrypted',
+      'CODESIGN_APP_SPECIFIC_PASSWORD':
+        'codesign_app_specific_password.encrypted',
+      'CODESIGN_APP_STORE_ID': 'codesign_app_store_id.encrypted'
+  }
+
+  api.kms.decrypt_secrets(env, secrets_dict)
+
+  env['CODESIGN_PATH'] = codesign_path
+
+  try:
+    KeychainSetup(api, env, env_prefixes)
+
+    SignerBuilds(
+        api, codesign_path, env, env_prefixes
+    )
+
+  finally:
+    KeychainCleanup(api)
+
+
+def KeychainSetup(api, env, env_prefixes):
+  """KeychainSetup adds flutter .p12 to a temporary keychain named 'build'.
+
+  Args:
+      codesign_path (str): path of codesign cipd package.
+      p12_filepath (str) : path of the .p12 file that has flutter credentials.
+      p12_password_raw (str) : the password to decode the .p12 flutter file.
+  """
+  api.step(
+      'delete previous keychain',
+      ['security', 'delete-keychain', 'build.keychain'],
+      ok_ret='any'
+  )
+  api.step(
+      'create keychain',
+      ['security', 'create-keychain', '-p', '', 'build.keychain']
+  )
+  api.step(
+      'default keychain',
+      ['security', 'default-keychain', '-s', 'build.keychain']
+  )
+  api.step(
+      'unlock build keychain',
+      ['security', 'unlock-keychain', '-p', '', 'build.keychain']
+  )
+  ImportCertificate(api, env, env_prefixes)
+  api.step(
+      'set key partition list', [
+          'security', 'set-key-partition-list', '-S',
+          'apple-tool:,apple:,codesign:', '-s', '-k', '', 'build.keychain'
+      ]
+  )
+  show_identities_step = api.step(
+      'show-identities', ['security', 'find-identity', '-v'],
+      ok_ret='any',
+      stdout=api.raw_io.output_text(),
+      stderr=api.raw_io.output_text()
+  )
+  flutter_identity_name = 'FLUTTER.IO LLC'
+  if flutter_identity_name not in show_identities_step.stdout:
+    raise ValueError(
+        'identities are %s, does not include flutter identity' %
+        (show_identities_step.stdout)
+    )
+
+
+def ImportCertificate(api, env, env_prefixes):
+  """Import flutter codesign identity into keychain.
+
+  This function triggers a shell script that supplies p12 password,
+  and grants codesign cipd and system codesign the correct access controls.
+  The p12 password is hidden from stdout.
+
+  Args:
+      env (dict): environment variables.
+      env_prefixes (dict) : environment paths.
+  """
+  resource_name = api.resource('import_certificate.sh')
+  api.step(
+      'Set execute permission',
+      ['chmod', '755', resource_name],
+      infra_step=True,
+  )
+  # Only filepath with a .p12 suffix will be recognized.
+  p12_suffix_filepath = api.path['cleanup'].join('flutter.p12')
+  env['P12_SUFFIX_FILEPATH'] = p12_suffix_filepath
+  with api.context(env=env, env_prefixes=env_prefixes):
+    api.step('import certificate', [resource_name])
+
+
+def SignerBuilds(
+    api, codesign_path, env, env_prefixes
+):
+  """Concurrently creates jobs to codesign each binary.
+
+  Args:
+      codesign_path (str): path of codesign cipd package.
+      env (dict): environment variables.
+      env_prefixes (dict) : environment paths.
+  """
   # The list is iterated running one signer tool command per file. This can be
   # optimized using the multiprocessing API.
   final_sources_list = api.properties.get('signing_file_list', [])
-  signer_builds = []
-  codesign_dir = api.path.mkdtemp()
-  app_specific_password_filepath = codesign_dir.join(
-      'codesign_app_specific_password.encrypted'
-  )
-  appstore_id_filepath = codesign_dir.join('codesign_app_store_id.encrypted')
-  team_id_filepath = codesign_dir.join('codesign_team_id.encrypted')
-  api.kms.get_secret('codesign_team_id.encrypted', team_id_filepath)
-  api.kms.get_secret(
-      'codesign_app_specific_password.encrypted', app_specific_password_filepath
-  )
-  api.kms.get_secret('codesign_app_store_id.encrypted', appstore_id_filepath)
 
-  # unlock keychain
-  with api.context(env=env, env_prefixes=env_prefixes):
-    resource_name = api.resource('runner.sh')
-    api.step('Set execute permission', ['chmod', '755', resource_name])
-    cmd = ['bash', resource_name]
-    api.step('unlock keychain', cmd)
-
-  # keep track of the output zip files in separate temp folders to avoid name conflicts
+  # keep track of the output zip files in separate temp folders to avoid name
+  # conflicts
   output_zips = {}
 
   codesign_string_path = "%s" % codesign_path
+  app_specific_password_filepath = env['CODESIGN_APP_SPECIFIC_PASSWORD']
+  appstore_id_filepath = env['CODESIGN_APP_STORE_ID']
+  team_id_filepath = env['CODESIGN_TEAM_ID']
+  signer_builds = []
   with api.osx_sdk('ios'):
     for source_path in final_sources_list:
       input_tmp_folder = api.path.mkdtemp()
-      _, artifact_base_name = api.path.split(source_path) 
+      _, artifact_base_name = api.path.split(source_path)
       local_zip_path = input_tmp_folder.join('unsigned_%s' % artifact_base_name)
       local_zip_string_path = str(local_zip_path)
 
@@ -94,6 +183,7 @@ def RunSteps(api):
   for source_path, output_zip_path in output_zips.items():
     api.archives.upload_artifact(src=output_zip_path, dst=source_path)
 
+
 def RunSignerToolCommand(
     api, env, env_prefixes, input_zip_string_path, output_zip_string_path,
     app_specific_password_filepath, appstore_id_filepath, team_id_filepath,
@@ -114,6 +204,10 @@ def RunSignerToolCommand(
       cipd package. This is to differentiate codesign cipd from mac system codesign.
   """
   flutter_certificate_name = 'FLUTTER.IO LLC'
+  api.step(
+      'unlock build keychain',
+      ['security', 'unlock-keychain', '-p', '', 'build.keychain']
+  )
   with api.context(env=env, env_prefixes=env_prefixes):
     api.step(
         'codesign Apple engine binaries',
@@ -136,6 +230,15 @@ def RunSignerToolCommand(
     )
 
 
+def KeychainCleanup(api):
+  """Clean up temporary keychain used in codesign process."""
+  api.step('delete keychain', ['security', 'delete-keychain', 'build.keychain'])
+  api.step(
+      'restore default keychain',
+      ['security', 'default-keychain', '-s', 'login.keychain']
+  )
+
+
 def GenTests(api):
 
   yield api.test(
@@ -146,5 +249,23 @@ def GenTests(api):
               'version': 'latest',
           }],
           signing_file_list=["gs://a/b/c/artifact.zip"]
-      )
+      ),
+      api.step_data(
+          'show-identities',
+          stdout=api.raw_io.output_text(
+              '1) ABCD "Developer ID Application: FLUTTER.IO LLC (ABCD)"'
+          )
+      ),
+  )
+
+  yield api.test(
+      'import_flutter_identity_failure',
+      api.properties(
+          dependencies=[{
+              'dependency': 'codesign',
+              'version': 'latest',
+          }],
+          signing_file_list=["gs://a/b/c/artifact.zip"]
+      ),
+      api.expect_exception('ValueError'),
   )

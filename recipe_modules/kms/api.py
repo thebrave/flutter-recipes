@@ -45,7 +45,7 @@ class KMSApi(recipe_api.RecipeApi):
 
     Args:
       env(dict): Current environment variables.
-      secrets(dict): The key is the n. me of the env variable referencing the
+      secrets(dict): The key is the name of the env variable referencing the
         decrypted file and the value is the path to the encrypted file in gcs.
     """
     for k, v in secrets.items():

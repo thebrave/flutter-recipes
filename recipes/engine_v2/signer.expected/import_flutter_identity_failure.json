@@ -403,112 +403,6 @@
   },
   {
     "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "gs://a/b/c/artifact.zip",
-      "[CLEANUP]/tmp_tmp_2/unsigned_artifact.zip"
-    ],
-    "infra_step": true,
-    "name": "gsutil download gs://a/b/c/artifact.zip"
-  },
-  {
-    "cmd": [
-      "security",
-      "unlock-keychain",
-      "-p",
-      "",
-      "build.keychain"
-    ],
-    "name": "unlock build keychain (2)"
-  },
-  {
-    "cmd": [
-      "[CLEANUP]/tmp_tmp_1/codesign",
-      "--codesign-cert-name",
-      "FLUTTER.IO LLC",
-      "--no-dryrun",
-      "--app-specific-password-file-path",
-      "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
-      "--codesign-appstore-id-file-path",
-      "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "--codesign-team-id-file-path",
-      "[CLEANUP]/CODESIGN_TEAM_ID",
-      "--input-zip-file-path",
-      "[CLEANUP]/tmp_tmp_2/unsigned_artifact.zip",
-      "--output-zip-file-path",
-      "[CLEANUP]/tmp_tmp_2/artifact.zip"
-    ],
-    "env": {
-      "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
-      "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_1/codesign",
-      "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
-      "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
-      "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
-      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1"
-      ]
-    },
-    "name": "codesign Apple engine binaries"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CLEANUP]/tmp_tmp_3/b/c"
-    ],
-    "infra_step": true,
-    "name": "Ensure b/c"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CLEANUP]/tmp_tmp_2/artifact.zip",
-      "[CLEANUP]/tmp_tmp_3/b/c"
-    ],
-    "infra_step": true,
-    "name": "Copy [CLEANUP]/tmp_tmp_2/artifact.zip to tmp location"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "-r",
-      "[CLEANUP]/tmp_tmp_3/*",
-      "gs://a/"
-    ],
-    "infra_step": true,
-    "name": "gsutil Upload [CLEANUP]/tmp_tmp_2/artifact.zip to gs://a/b/c/artifact.zip",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/a/@@@"
-    ]
-  },
-  {
-    "cmd": [
       "security",
       "delete-keychain",
       "build.keychain"
@@ -525,6 +419,24 @@
     "name": "restore default keychain"
   },
   {
+    "cmd": [],
+    "name": "RECIPE CRASH (Uncaught exception)",
+    "~followup_annotations": [
+      "@@@STEP_EXCEPTION@@@",
+      "The recipe has crashed at point 'Uncaught exception'!",
+      "",
+      "Traceback (most recent call last):",
+      "  File \"RECIPE_REPO[flutter]/recipes/engine_v2/signer.py\", line 56, in RunSteps",
+      "    KeychainSetup(api, env, env_prefixes)",
+      "  File \"RECIPE_REPO[flutter]/recipes/engine_v2/signer.py\", line 106, in KeychainSetup",
+      "    raise ValueError(",
+      "ValueError('identities are , does not include flutter identity')"
+    ]
+  },
+  {
+    "failure": {
+      "humanReason": "Uncaught Exception: ValueError('identities are , does not include flutter identity')"
+    },
     "name": "$result"
   }
 ]

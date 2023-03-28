@@ -79,33 +79,6 @@ MOCK_POM_PATH = (
 DIRECTORY = 'DIRECTORY'
 
 
-def MoveShaderLib(api):
-  api.file.move(
-      'Move the impellerc shader lib to the current directory in preparation for upload',
-      GetCheckoutPath(api).join('out', 'host_debug',
-                                IMPELLERC_SHADER_LIB_PATH), GetCheckoutPath(api).join(IMPELLERC_SHADER_LIB_PATH)
-  )
-
-
-def BuildFontSubset(api):
-  return api.properties.get('build_font_subset', True)
-
-def UploadFontSubset(api, platform, config='host_release'):
-  if not BuildFontSubset(api):
-    return
-  font_subset_path = GetCheckoutPath(api).join(
-      'out',
-      config,
-      'zip_archives',
-      platform,
-      'font-subset.zip'
-  )
-  api.bucket_util.safe_upload(
-      font_subset_path,
-      GetCloudPath(api, '%s/font-subset.zip' % platform)
-  )
-
-
 def UploadArtifact(api, config, platform, artifact_name):
   path = GetCheckoutPath(api).join(
       'out',
@@ -345,12 +318,6 @@ def UploadSkyEngineToCIPD(api, package_name):
 
 def UploadSkyEngineDartPackage(api):
   UploadSkyEngineToCIPD(api, 'sky_engine')
-
-
-def UploadDartSdk(api, archive_name, target_path='src/out/host_debug'):
-  api.bucket_util.upload_folder(
-      'Upload Dart SDK', target_path, 'dart-sdk', archive_name
-  )
 
 
 def VerifyExportedSymbols(api):
@@ -1249,49 +1216,205 @@ def PackageMacOSVariant(
 
 def BuildMac(api):
   if api.properties.get('build_host', True):
+    # Host Debug x64
     RunGN(
-        api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk'
-    )
-    RunGN(
-        api, '--runtime-mode', 'debug', '--no-lto', '--prebuilt-dart-sdk',
+        api,
+        '--runtime-mode',
+        'debug',
+        '--no-lto',
+        '--prebuilt-dart-sdk',
         '--build-embedder-examples'
     )
-    RunGN(
-        api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk',
-        '--build-embedder-examples'
+    Build(
+        api,
+        'host_debug',
+        'flutter/build/archives:archive_gen_snapshot',
+        'flutter/build/archives:artifacts',
+        'flutter/build/archives:dart_sdk_archive',
+        'flutter/build/archives:flutter_embedder_framework',
+        'flutter/build/dart:copy_dart_sdk',
+        'flutter/shell/platform/darwin/macos:zip_macos_flutter_framework',
+        'flutter/tools/font-subset',
+        'flutter:unittests'
     )
-    RunGN(
-        api, '--runtime-mode', 'release', '--no-lto', '--prebuilt-dart-sdk',
-        '--build-embedder-examples'
-    )
-    RunGN(
-        api, '--mac', '--mac-cpu', 'arm64', '--runtime-mode', 'debug',
-        '--no-lto', '--prebuilt-dart-sdk'
-    )
-    RunGN(
-        api, '--mac', '--mac-cpu', 'arm64', '--runtime-mode', 'profile',
-        '--no-lto', '--prebuilt-dart-sdk'
-    )
-    RunGN(
-        api, '--mac', '--mac-cpu', 'arm64', '--runtime-mode', 'release',
-        '--no-lto', '--prebuilt-dart-sdk'
-    )
-
-    # flutter/sky/packages from host_debug_unopt is needed for RunTests 'dart'
-    # type.
-    Build(api, 'host_debug_unopt', 'flutter/sky/packages')
-    Build(api, 'host_debug')
-    # Fix the 'engine' suite for host_debug:
-    # https://github.com/flutter/flutter/issues/103757.
     RunTests(api, 'host_debug', types='dart')
-    Build(api, 'host_profile')
-    RunTests(api, 'host_profile', types='dart,engine')
-    Build(api, 'host_release')
-    RunTests(api, 'host_release', types='dart,engine')
-    Build(api, 'mac_debug_arm64')
-    Build(api, 'mac_profile_arm64')
-    Build(api, 'mac_release_arm64')
 
+    # Host Profile x64
+    RunGN(
+        api,
+        '--runtime-mode',
+        'profile', '--no-lto',
+        '--prebuilt-dart-sdk',
+        '--build-embedder-examples'
+    )
+    Build(
+        api,
+        'host_profile',
+        'flutter/build/archives:archive_gen_snapshot',
+        'flutter/build/archives:artifacts',
+        'flutter/build/dart:copy_dart_sdk',
+        'flutter/shell/platform/darwin/macos:zip_macos_flutter_framework',
+        'flutter:unittests'
+    )
+    RunTests(api, 'host_profile', types='dart,engine')
+
+    # Host release x64
+    RunGN(
+        api,
+        '--runtime-mode',
+        'release',
+        '--no-lto',
+        '--prebuilt-dart-sdk',
+        '--build-embedder-examples'
+    )
+    Build(
+        api,
+        'host_release',
+        'flutter/build/archives:archive_gen_snapshot',
+        'flutter/build/archives:artifacts',
+        'flutter/build/dart:copy_dart_sdk',
+        'flutter/shell/platform/darwin/macos:zip_macos_flutter_framework',
+        'flutter:unittests'
+    )
+    RunTests(api, 'host_release', types='dart,engine')
+
+    # Host debug arm64
+    RunGN(
+        api,
+        '--mac',
+        '--mac-cpu',
+        'arm64',
+        '--runtime-mode',
+        'debug',
+        '--no-lto',
+        '--prebuilt-dart-sdk'
+    )
+    Build(
+        api,
+        'mac_debug_arm64',
+        'flutter/build/archives:archive_gen_snapshot',
+        'flutter/build/archives:artifacts',
+        'flutter/build/archives:dart_sdk_archive',
+        'flutter/shell/platform/darwin/macos:zip_macos_flutter_framework',
+        'flutter/tools/font-subset'
+    )
+
+    # Host profile arm64
+    RunGN(
+        api,
+        '--mac',
+        '--mac-cpu',
+        'arm64',
+        '--runtime-mode',
+        'profile',
+        '--no-lto',
+        '--prebuilt-dart-sdk'
+    )
+    Build(
+        api,
+        'mac_profile_arm64',
+        'flutter/build/archives:artifacts',
+        'flutter/shell/platform/darwin/macos:zip_macos_flutter_framework'
+    )
+
+    # Host release arm64
+    RunGN(
+        api,
+        '--mac',
+        '--mac-cpu',
+        'arm64',
+        '--runtime-mode',
+        'release',
+        '--no-lto',
+        '--prebuilt-dart-sdk'
+    )
+    Build(
+        api,
+        'mac_release_arm64',
+        'flutter/build/archives:artifacts',
+        'flutter/shell/platform/darwin/macos:zip_macos_flutter_framework'
+    )
+
+    # Artifact uploads.
+    # Host Debug x64
+    UploadArtifact(
+        api,
+        config='host_debug',
+        platform='darwin-x64',
+        artifact_name='artifacts.zip'
+    )
+    UploadArtifact(
+        api,
+        config='host_debug',
+        platform='darwin-x64',
+        artifact_name='FlutterEmbedder.framework.zip'
+    )
+    UploadArtifact(
+        api,
+        config='host_debug',
+        platform='',
+        artifact_name='dart-sdk-darwin-x64.zip'
+    )
+    UploadArtifact(
+        api,
+        config='host_debug',
+        platform='darwin-x64',
+        artifact_name='font-subset.zip'
+    )
+
+    # Host Profile x64
+    UploadArtifact(
+        api,
+        config='host_profile',
+        platform='darwin-x64-profile',
+        artifact_name='artifacts.zip'
+    )
+
+    # Host release x64
+    UploadArtifact(
+        api,
+        config='host_release',
+        platform='darwin-x64-release',
+        artifact_name='artifacts.zip'
+    )
+
+    # Host debug arm64
+    UploadArtifact(
+        api,
+        config='mac_debug_arm64',
+        platform='darwin-arm64',
+        artifact_name='artifacts.zip'
+    )
+    UploadArtifact(
+        api,
+        config='mac_debug_arm64',
+        platform='',
+        artifact_name='dart-sdk-darwin-arm64.zip'
+    )
+    UploadArtifact(
+        api,
+        config='mac_debug_arm64',
+        platform='darwin-arm64',
+        artifact_name='font-subset.zip'
+    )
+
+    # Host profile arm64
+    UploadArtifact(
+        api,
+        config='mac_profile_arm64',
+        platform='darwin-arm64-profile',
+        artifact_name='artifacts.zip'
+    )
+
+    # Host release arm64
+    UploadArtifact(
+        api,
+        config='mac_release_arm64',
+        platform='darwin-arm64-release',
+        artifact_name='artifacts.zip'
+    )
+
+    # These artifacts will translate to global generators.
     PackageMacOSVariant(
         api, 'debug', 'mac_debug_arm64', 'host_debug', 'darwin-x64'
     )
@@ -1302,94 +1425,6 @@ def BuildMac(api):
         api, 'release', 'mac_release_arm64', 'host_release', 'darwin-x64-release'
     )
 
-    host_debug_path = GetCheckoutPath(api).join('out', 'host_debug')
-    api.zip.directory(
-        'Archive FlutterEmbedder.framework',
-        host_debug_path.join('FlutterEmbedder.framework'),
-        host_debug_path.join('FlutterEmbedder.framework.zip')
-    )
-
-    MoveShaderLib(api)
-
-    UploadArtifacts(
-        api, 'darwin-x64',
-        file_paths=[
-            ICU_DATA_PATH,
-            'out/host_debug/flutter_tester',
-            'out/host_debug/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
-            'out/host_debug/gen/flutter/tools/path_ops/LICENSE.path_ops.md',
-            'out/host_debug/impellerc',
-            'out/host_debug/libpath_ops.dylib',
-            'out/host_debug/libtessellator.dylib',
-            'out/host_debug/gen/flutter/lib/snapshot/isolate_snapshot.bin',
-            'out/host_debug/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
-            'out/host_debug/gen/frontend_server.dart.snapshot',
-            # Remove after the tool no longer uses it.
-            'out/host_debug/gen_snapshot',
-        ],
-        directory_paths=[
-            IMPELLERC_SHADER_LIB_PATH,
-        ],
-    )
-    UploadArtifacts(
-        api, 'darwin-arm64',
-        file_paths=[
-            ICU_DATA_PATH,
-            'out/mac_debug_arm64/flutter_tester',
-            'out/mac_debug_arm64/gen/flutter/impeller/compiler/LICENSE.impellerc.md',
-            'out/mac_debug_arm64/gen/flutter/tools/path_ops/LICENSE.path_ops.md',
-            'out/mac_debug_arm64/impellerc',
-            'out/mac_debug_arm64/libpath_ops.dylib',
-            'out/mac_debug_arm64/libtessellator.dylib',
-            'out/mac_debug_arm64/gen/flutter/lib/snapshot/isolate_snapshot.bin',
-            'out/mac_debug_arm64/gen/flutter/lib/snapshot/vm_isolate_snapshot.bin',
-            'out/mac_debug_arm64/gen/frontend_server.dart.snapshot',
-            # Remove after the tool no longer uses it.
-            'out/mac_debug_arm64/gen_snapshot',
-        ],
-        directory_paths=[
-            IMPELLERC_SHADER_LIB_PATH,
-        ],
-    )
-
-    # Remove after the tool no longer uses it.
-    UploadArtifacts(
-        api, 'darwin-x64-profile', [
-            'out/host_profile/gen_snapshot',
-        ]
-    )
-    UploadArtifacts(
-        api, 'darwin-arm64-profile', [
-            'out/mac_profile_arm64/gen_snapshot',
-        ]
-    )
-    # Remove after the tool no longer uses it.
-    UploadArtifacts(
-        api, 'darwin-x64-release', [
-            'out/host_release/gen_snapshot',
-        ]
-    )
-    UploadArtifacts(
-        api, 'darwin-arm64-release', [
-            'out/mac_release_arm64/gen_snapshot',
-        ]
-    )
-
-    UploadArtifacts(
-        api,
-        'darwin-x64', ['out/host_debug/FlutterEmbedder.framework.zip'],
-        archive_name='FlutterEmbedder.framework.zip'
-    )
-
-    UploadFontSubset(api, 'darwin-x64')
-    UploadFontSubset(api, 'darwin-arm64', config='mac_release_arm64')
-
-    UploadDartSdk(api, archive_name='dart-sdk-darwin-x64.zip')
-    UploadDartSdk(
-        api,
-        archive_name='dart-sdk-darwin-arm64.zip',
-        target_path='src/out/mac_debug_arm64'
-    )
 
   if api.properties.get('build_android_aot', True):
     # Profile arm

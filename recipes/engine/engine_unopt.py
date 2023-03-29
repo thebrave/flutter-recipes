@@ -120,7 +120,8 @@ def RunMaliocDiff(api, out_dir):
       '--before',
       GetCheckoutPath(api).join('flutter', 'impeller', 'tools', 'malioc.json'),
       '--after',
-      GetCheckoutPath(api).join('out', out_dir, 'gen', 'malioc')
+      GetCheckoutPath(api).join('out', out_dir, 'gen', 'malioc'),
+      '--print-diff'
   ]
   api.step('malioc diff', args)
 

@@ -13,15 +13,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
 
   def __init__(self, *args, **kwargs):
     super(BuildUtilApi, self).__init__(*args, **kwargs)
-    self._initialized = None
     self.use_goma = True
-
-  def _initialize(self):
-    if self._initialized:
-      return
-    if self.use_goma:
-      self.m.goma.ensure()
-    self._initialized = True
 
   def run_gn(self, gn_args, checkout_path):
     """Run a gn command with the given arguments.
@@ -32,14 +24,10 @@ class BuildUtilApi(recipe_api.RecipeApi):
     """
     gn_cmd = ['python3', checkout_path.join('flutter/tools/gn')]
     self.use_goma = False if '--no-goma' in gn_args else True
-    self._initialize()
     if self.m.properties.get('no_lto', False) and '--no-lto' not in gn_args:
       gn_args += ('--no-lto',)
     gn_cmd.extend(gn_args)
-    env = {}
-    if self.use_goma:
-      self.m.goma.set_path(self.m.goma.goma_dir)
-      env = {'GOMA_DIR': self.m.goma.goma_dir}
+    env = {'GOMA_DIR': self.m.goma.goma_dir}
     with self.m.context(env=env):
       self.m.step('gn %s' % ' '.join(gn_args), gn_cmd)
 
@@ -69,15 +57,11 @@ class BuildUtilApi(recipe_api.RecipeApi):
       checkout_path(Path): A path object with the checkout location.
       targets(list): A list of string with the ninja targets to build.
     """
-    self._initialize()
     build_dir = checkout_path.join('out/%s' % config)
     goma_jobs = self.m.properties.get('goma_jobs') or self._calculate_j_value()
     ninja_args = [tool, '-j', goma_jobs, '-C', build_dir]
     ninja_args.extend(targets)
-    self.m.goma.set_path(self.m.goma.goma_dir)
-    env = {'GOMA_DIR': self.m.goma.goma_dir}
-    with self.m.context(
-        env=env), self.m.goma.build_with_goma(), self.m.depot_tools.on_path():
+    with self.m.goma(), self.m.depot_tools.on_path():
       name = 'build %s' % ' '.join([config] + list(targets))
       self.m.step(name, ninja_args)
 
@@ -89,7 +73,6 @@ class BuildUtilApi(recipe_api.RecipeApi):
       checkout_path(Path): A path object with the checkout location.
       targets(list): A list of string with the ninja targets to build.
     """
-    self._initialize()
     build_dir = checkout_path.join('out/%s' % config)
     concurrent_jobs = self.m.properties.get('concurrent_jobs') or self._calculate_j_value()
     ninja_args = [tool, '-C', build_dir, '-j', concurrent_jobs]

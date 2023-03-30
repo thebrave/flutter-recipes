@@ -13,7 +13,6 @@ class GomaApi(recipe_api.RecipeApi):
     def __init__(self, props, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._is_local = bool(props.goma_dir)
         self._enable_arbitrary_toolchains = props.enable_arbitrary_toolchains
         self._goma_dir = props.goma_dir
         self._goma_log_dir = None
@@ -77,7 +76,8 @@ class GomaApi(recipe_api.RecipeApi):
 
     @property
     def goma_dir(self):
-        assert self._goma_dir
+        if not self._goma_dir:
+            self._ensure()
         return self._goma_dir
 
     @property
@@ -88,25 +88,18 @@ class GomaApi(recipe_api.RecipeApi):
     def set_path(self, path):
         self._goma_dir = path
 
-    def ensure(self, canary=False):
-        if self._is_local:
-            return self._goma_dir
+    def _ensure(self):
+        if self._goma_dir:
+            return
 
-        with self.m.step.nest("ensure goma") as step_result:
-            if canary:
-                step_result.presentation.step_text = "using canary goma client"
-                step_result.presentation.status = self.m.step.WARNING
-
-            with self.m.context(infra_steps=True):
-                pkgs = self.m.cipd.EnsureFile()
-                ref = "integration"
-                if canary:
-                    ref = "candidate"
-                pkgs.add_package("flutter/third_party/goma/client/${platform}", ref)
-                self._goma_dir = self.m.path["cache"].join("goma", "client")
-
-                self.m.cipd.ensure(self._goma_dir, pkgs)
-                return self._goma_dir
+        with self.m.step.nest("ensure goma"), self.m.context(infra_steps=True):
+            self._goma_dir = self.m.path["cache"].join("goma", "client")
+            self.m.cipd.ensure(
+                self._goma_dir,
+                self.m.cipd.EnsureFile().add_package(
+                    "flutter/third_party/goma/client/${platform}", "integration"
+                ),
+            )
 
     def _run_jsonstatus(self):
         with self.m.context(env=self._goma_ctl_env):
@@ -165,13 +158,10 @@ class GomaApi(recipe_api.RecipeApi):
         )
 
     def start(self):
-        """Start goma compiler_proxy.
-
-        A user MUST execute ensure_goma beforehand. It is user's
-        responsibility to handle failure of starting compiler_proxy.
-        """
-        assert self._goma_dir
+        """Start goma compiler_proxy."""
         assert not self._goma_started
+
+        self._ensure()
 
         with self.m.step.nest("setup goma") as nested_result:
             # Allow user to override from the command line.
@@ -293,7 +283,7 @@ class GomaApi(recipe_api.RecipeApi):
                 raise
 
     @contextmanager
-    def build_with_goma(self):
+    def __call__(self):
         """Make context wrapping goma start/stop.
 
         Raises:

@@ -59,7 +59,7 @@ def Build(api, config, *targets):
   ninja_path = checkout.join('flutter', 'third_party', 'ninja', 'ninja')
   ninja_args = [ninja_path, '-j', goma_jobs, '-C', build_dir]
   ninja_args.extend(targets)
-  with api.goma.build_with_goma():
+  with api.goma():
     name = 'build %s' % ' '.join([config] + list(targets))
     api.step(name, ninja_args)
 
@@ -108,7 +108,10 @@ def RunGN(api, *args):
   checkout = GetCheckoutPath(api)
   gn_cmd = ['python3', checkout.join('flutter/tools/gn'), '--goma']
   gn_cmd.extend(args)
-  api.step('gn %s' % ' '.join(args), gn_cmd)
+  # Run with goma_dir context.
+  env = {'GOMA_DIR': api.goma.goma_dir}
+  with api.context(env=env):
+    api.step('gn %s' % ' '.join(args), gn_cmd)
 
 
 def GetFuchsiaBuildId(api):
@@ -377,14 +380,12 @@ def RunSteps(api, properties, env_properties):
   checkout = GetCheckoutPath(api)
   api.file.rmtree('clobber build output', checkout.join('out'))
   api.file.ensure_directory('ensure checkout cache', cache_root)
-  api.goma.ensure()
   dart_bin = checkout.join('third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
                            'bin')
 
   ffx_isolate_dir = api.path.mkdtemp('ffx_isolate_files')
 
   env = {
-    'GOMA_DIR': api.goma.goma_dir,
     'FFX_ISOLATE_DIR': ffx_isolate_dir,
   }
   env_prefixes = {'PATH': [dart_bin]}

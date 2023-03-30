@@ -53,52 +53,6 @@
   },
   {
     "cmd": [],
-    "name": "ensure goma"
-  },
-  {
-    "cmd": [
-      "cipd.bat",
-      "ensure",
-      "-root",
-      "[CACHE]\\goma\\client",
-      "-ensure-file",
-      "flutter/third_party/goma/client/${platform} integration",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "ensure goma.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-integration-----\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/third_party/goma/client/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [],
     "name": "Initialize logs"
   },
   {
@@ -215,8 +169,7 @@
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
     },
     "env_prefixes": {
       "PATH": [
@@ -316,8 +269,7 @@
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
-      "GIT_HTTP_LOW_SPEED_TIME": "1800",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GIT_HTTP_LOW_SPEED_TIME": "1800"
     },
     "env_prefixes": {
       "PATH": [
@@ -403,8 +355,7 @@
       "DEPOT_TOOLS_REPORT_BUILD": "flutter/prod/Win Engine/8945511751514863184",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
     },
     "env_prefixes": {
       "PATH": [
@@ -451,8 +402,7 @@
       "DEPOT_TOOLS_REPORT_BUILD": "flutter/prod/Win Engine/8945511751514863184",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
     },
     "env_prefixes": {
       "PATH": [
@@ -482,6 +432,73 @@
       }
     },
     "name": "gclient runhooks"
+  },
+  {
+    "cmd": [],
+    "name": "ensure goma"
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "ensure",
+      "-root",
+      "[CACHE]\\goma\\client",
+      "-ensure-file",
+      "flutter/third_party/goma/client/${platform} integration",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]\\builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\certs",
+        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure goma.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-integration-----\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/third_party/goma/client/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
   },
   {
     "cmd": [
@@ -561,7 +578,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -636,7 +652,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -700,7 +715,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -768,7 +782,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -830,7 +843,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -885,7 +897,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -952,7 +963,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -1008,7 +1018,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -1065,7 +1074,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -1120,7 +1128,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -1189,7 +1196,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -1255,7 +1261,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -1310,7 +1315,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -1369,7 +1373,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -1519,7 +1522,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -1577,7 +1579,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -1632,7 +1633,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -1699,7 +1699,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -1755,7 +1754,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -1812,7 +1810,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -1867,7 +1864,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -1924,7 +1920,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -2026,7 +2021,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -2084,7 +2078,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -2139,7 +2132,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -2206,7 +2198,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -2262,7 +2253,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -2319,7 +2309,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -2374,7 +2363,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -2431,7 +2419,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -2482,8 +2469,7 @@
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
     },
     "env_prefixes": {
       "PATH": [
@@ -2811,7 +2797,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -2867,7 +2852,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -2922,7 +2906,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -2989,7 +2972,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -3045,7 +3027,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -3102,7 +3083,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -3157,7 +3137,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -3214,7 +3193,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -3270,7 +3248,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -3326,7 +3303,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -3381,7 +3357,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -3448,7 +3423,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -3504,7 +3478,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -3561,7 +3534,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -3616,7 +3588,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -3673,7 +3644,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -3729,7 +3699,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -3785,7 +3754,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -3840,7 +3808,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -3907,7 +3874,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -3963,7 +3929,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -4020,7 +3985,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -4075,7 +4039,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -4132,7 +4095,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -4188,7 +4150,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -4244,7 +4205,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -4299,7 +4259,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -4366,7 +4325,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -4422,7 +4380,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -4479,7 +4436,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -4534,7 +4490,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -4591,7 +4546,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -4647,7 +4601,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -4703,7 +4656,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -4758,7 +4710,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -4825,7 +4776,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -4881,7 +4831,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -4938,7 +4887,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -4993,7 +4941,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -5050,7 +4997,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -5106,7 +5052,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -5162,7 +5107,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -5217,7 +5161,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -5284,7 +5227,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -5340,7 +5282,6 @@
       "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
       "GOMA_CACHE_DIR": "[CACHE]\\goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -5397,7 +5338,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -5452,7 +5392,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -5509,7 +5448,6 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -5568,8 +5506,7 @@
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
     },
     "env_prefixes": {
       "PATH": [
@@ -5620,8 +5557,7 @@
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
     },
     "env_prefixes": {
       "PATH": [
@@ -5680,8 +5616,7 @@
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
     },
     "env_prefixes": {
       "PATH": [
@@ -5734,8 +5669,7 @@
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
     },
     "env_prefixes": {
       "PATH": [
@@ -5781,8 +5715,7 @@
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
     },
     "env_prefixes": {
       "PATH": [
@@ -5828,8 +5761,7 @@
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
     },
     "env_prefixes": {
       "PATH": [
@@ -5875,8 +5807,7 @@
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
     },
     "env_prefixes": {
       "PATH": [

@@ -142,7 +142,7 @@ def Build(api, config, *targets):
   ninja_path = checkout.join('flutter', 'third_party', 'ninja', 'ninja')
   ninja_args = [ninja_path, '-j', goma_jobs, '-C', build_dir]
   ninja_args.extend(targets)
-  with api.goma.build_with_goma(), api.depot_tools.on_path():
+  with api.goma(), api.depot_tools.on_path():
     name = 'build %s' % ' '.join([config] + list(targets))
     api.step(name, ninja_args)
 
@@ -164,7 +164,11 @@ def RunTests(api, out_dir, android_out_dir=None, types='all'):
   step_name = api.test_utils.test_step_name('Host Tests for %s' % out_dir)
 
   def run_test():
-    return api.step(step_name, args)
+    # Sometimes tests build artifacts, which will be extremelly slow if it does not run
+    # from a goma context.
+    env = {'GOMA_DIR': api.goma.goma_dir}
+    with api.context(env=env):
+      return api.step(step_name, args)
 
   # Rerun test step 3 times by default if failing.
   # TODO(keyonghan): notify tree gardener for test failures/flakes:
@@ -270,7 +274,10 @@ def RunGN(api, *args):
   if api.properties.get('no_lto', False) and '--no-lto' not in args:
     args += ('--no-lto',)
   gn_cmd.extend(args)
-  api.step('gn %s' % ' '.join(args), gn_cmd)
+  # Run GN with a goma_dir context.
+  env = {'GOMA_DIR': api.goma.goma_dir}
+  with api.context(env=env):
+    api.step('gn %s' % ' '.join(args), gn_cmd)
 
 
 def UploadArtifacts(
@@ -1828,7 +1835,6 @@ def RunSteps(api, properties, env_properties):
   api.file.rmtree('Clobber build output', checkout.join('out'))
 
   api.file.ensure_directory('Ensure checkout cache', cache_root)
-  api.goma.ensure()
   dart_bin = checkout.join(
       'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
   )
@@ -1836,7 +1842,6 @@ def RunSteps(api, properties, env_properties):
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
 
   env = {
-    'GOMA_DIR': api.goma.goma_dir,
     'ANDROID_HOME': str(android_home),
   }
 

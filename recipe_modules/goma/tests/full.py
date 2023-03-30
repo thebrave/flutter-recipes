@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from PB.recipe_modules.fuchsia.goma.properties import InputProperties
+from PB.recipe_modules.flutter.goma.properties import InputProperties
 
 DEPS = [
     "flutter/goma",
@@ -16,13 +16,13 @@ DEPS = [
 
 
 def RunSteps(api):
-    api.goma.ensure()
-    api.goma.ensure(canary=True)
-    api.goma.set_path(api.goma.goma_dir)
-
-    with api.goma.build_with_goma():
+    # Grab goma_dir out of the context.
+    api.goma.goma_dir
+    with api.goma():
         # build something using goma.
         api.step("echo goma jobs", ["echo", str(api.goma.jobs)])
+
+    api.goma.set_path(api.goma.goma_dir)
 
 
 def GenTests(api):

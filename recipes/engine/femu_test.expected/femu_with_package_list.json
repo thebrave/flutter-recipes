@@ -29,40 +29,6 @@
   },
   {
     "cmd": [],
-    "name": "ensure goma"
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CACHE]/goma/client",
-      "-ensure-file",
-      "flutter/third_party/goma/client/${platform} integration",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "name": "ensure goma.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-integration-----\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/third_party/goma/client/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [],
     "name": "Checkout source code"
   },
   {
@@ -90,8 +56,7 @@
       "DEPOT_TOOLS_COLLECT_METRICS": "0",
       "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
-      "GIT_HTTP_LOW_SPEED_TIME": "1800",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "GIT_HTTP_LOW_SPEED_TIME": "1800"
     },
     "env_prefixes": {
       "PATH": [
@@ -160,8 +125,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -180,6 +144,57 @@
     "name": "Checkout source code.gclient runhooks",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure goma"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/goma/client",
+      "-ensure-file",
+      "flutter/third_party/goma/client/${platform} integration",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "ensure goma.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-integration-----\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/third_party/goma/client/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
     ]
   },
   {
@@ -274,7 +289,6 @@
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -332,7 +346,6 @@
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -379,7 +392,6 @@
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -430,7 +442,6 @@
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -471,7 +482,6 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -507,7 +517,6 @@
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -557,7 +566,6 @@
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -596,7 +604,6 @@
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -637,7 +644,6 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -676,7 +682,6 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -715,7 +720,6 @@
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -756,7 +760,6 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -792,7 +795,6 @@
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -842,7 +844,6 @@
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -881,7 +882,6 @@
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
       "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
       "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
       "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
@@ -922,7 +922,6 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -961,7 +960,6 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False"
     },
@@ -998,8 +996,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1031,8 +1028,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1062,8 +1058,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1116,8 +1111,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1159,8 +1153,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1206,8 +1199,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1238,8 +1230,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1279,8 +1270,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1316,8 +1306,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1364,8 +1353,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1401,8 +1389,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1431,8 +1418,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1462,8 +1448,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1491,8 +1476,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1517,8 +1501,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1544,8 +1527,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1571,8 +1553,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1615,8 +1596,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1644,8 +1624,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1673,8 +1652,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1704,8 +1682,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1746,8 +1723,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1796,8 +1772,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1832,8 +1807,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1868,8 +1842,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1904,8 +1877,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1936,8 +1908,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -1967,8 +1938,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2007,8 +1977,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2036,8 +2005,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2065,8 +2033,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2096,8 +2063,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2138,8 +2104,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2188,8 +2153,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2224,8 +2188,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2260,8 +2223,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2296,8 +2258,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2328,8 +2289,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2359,8 +2319,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2399,8 +2358,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2428,8 +2386,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2457,8 +2414,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2488,8 +2444,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2530,8 +2485,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2580,8 +2534,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2616,8 +2569,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2652,8 +2604,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2688,8 +2639,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2720,8 +2670,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [
@@ -2751,8 +2700,7 @@
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
     "env": {
-      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1",
-      "GOMA_DIR": "[CACHE]/goma/client"
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
     },
     "env_prefixes": {
       "PATH": [

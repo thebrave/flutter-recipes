@@ -38,7 +38,7 @@ def Build(api, config, disable_goma, *targets):
   if not disable_goma:
     ninja_args = [ninja_path, '-C', build_dir]
     ninja_args.extend(targets)
-    with api.goma.build_with_goma():
+    with api.goma():
       name='build %s' % ' '.join([config] + list(targets))
       api.step(name, ninja_args)
   else:
@@ -47,11 +47,18 @@ def Build(api, config, disable_goma, *targets):
     api.step('build %s' % ' '.join([config] + list(targets)), ninja_args)
 
 
-def RunGN(api, *args):
+def RunGN(api, disable_goma, *args):
   checkout = api.path['cache'].join('builder', 'src')
   gn_cmd = ['python3', checkout.join('flutter/tools/gn')]
   gn_cmd.extend(args)
-  api.step('gn %s' % ' '.join(args), gn_cmd)
+  if disable_goma:
+    api.step('gn %s' % ' '.join(args), gn_cmd)
+  else:
+    # Run gn within a context.
+    env = {'GOMA_DIR': api.goma.goma_dir.get_result()}
+    with api.context(env=env):
+      api.step('gn %s' % ' '.join(args), gn_cmd)
+
 
 
 def CasOutputs(api, output_files, output_dirs):
@@ -68,10 +75,8 @@ def RunSteps(api, properties):
   api.file.rmtree('Clobber build output', cache_root.join('src', 'out'))
   api.repo_util.engine_checkout(cache_root, {}, {})
   with api.context(cwd=cache_root):
-    api.goma.ensure()
-
     android_home = cache_root.join('src', 'third_party', 'android_tools', 'sdk')
-    env = {'GOMA_DIR': api.goma.goma_dir, 'ANDROID_HOME': str(android_home)}
+    env = {'ANDROID_HOME': str(android_home)}
 
     output_files = []
     output_dirs = []
@@ -80,7 +85,7 @@ def RunSteps(api, properties):
       for build in properties.builds:
         with api.step.nest('build %s (%s)' %
                            (build.dir, ','.join(build.targets))):
-          RunGN(api, *build.gn_args)
+          RunGN(api, build.disable_goma, *build.gn_args)
           Build(api, build.dir, build.disable_goma, *build.targets)
           for output_file in build.output_files:
             output_files.append(
@@ -99,25 +104,31 @@ def RunSteps(api, properties):
 
 
 def GenTests(api):
-  yield (api.test('Schedule two builds one with goma and one without') +
-         api.platform('linux', 64) + api.buildbucket.ci_build(
-             builder='Linux Drone',
-             git_repo=GIT_REPO,
-             project='flutter',
-         ) + api.properties(
-             InputProperties(
-                 mastername='client.flutter',
-                 builds=[
-                     EngineBuild(
-                         disable_goma=True,
-                         gn_args=['--unoptimized', '--android'],
-                         dir='android_debug_unopt',
-                         output_files=['libflutter.so'],
-                         output_dirs=['some_dir'],
-                     ),
-                     EngineBuild(
-                         disable_goma=False,
-                         gn_args=['--unoptimized'],
-                         dir='host_debug_unopt',
-                         output_files=['shell_unittests'])
-                 ])))
+  yield api.test(
+      'Schedule two builds one with goma and one without',
+      api.platform('linux', 64),
+      api.buildbucket.ci_build(
+          builder='Linux Drone',
+          git_repo=GIT_REPO,
+          project='flutter',
+      ),
+      api.properties(
+          InputProperties(
+              mastername='client.flutter',
+              builds=[
+                  EngineBuild(
+                      disable_goma=True,
+                      gn_args=['--unoptimized', '--android'],
+                      dir='android_debug_unopt',
+                      output_files=['libflutter.so'],
+                      output_dirs=['some_dir'],
+                  ),
+                  EngineBuild(
+                      disable_goma=False,
+                      gn_args=['--unoptimized'],
+                      dir='host_debug_unopt',
+                      output_files=['shell_unittests'])
+              ]
+          )
+      )
+  )

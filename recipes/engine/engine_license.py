@@ -12,7 +12,6 @@ DEPS = [
     'depot_tools/gclient',
     'flutter/build_util',
     'flutter/flutter_deps',
-    'flutter/goma',
     'flutter/logs_util',
     'flutter/os_utils',
     'flutter/repo_util',
@@ -55,7 +54,6 @@ def RunSteps(api, properties, env_properties):
   api.file.rmtree('Clobber build output', checkout.join('out'))
 
   api.file.ensure_directory('Ensure checkout cache', cache_root)
-  api.goma.ensure()
   dart_bin = checkout.join(
       'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
   )
@@ -63,7 +61,6 @@ def RunSteps(api, properties, env_properties):
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
 
   env = {
-    'GOMA_DIR': api.goma.goma_dir,
     'ANDROID_HOME': str(android_home),
     'FLUTTER_PREBUILT_DART_SDK': 'True',
   }

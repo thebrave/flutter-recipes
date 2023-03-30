@@ -39,7 +39,7 @@ def Build(api, config, *targets):
   ninja_path = checkout.join('flutter', 'third_party', 'ninja', 'ninja')
   ninja_args = [ninja_path, '-j', goma_jobs, '-C', build_dir]
   ninja_args.extend(targets)
-  with api.goma.build_with_goma():
+  with api.goma():
     name = 'build %s' % ' '.join([config] + list(targets))
     api.step(name, ninja_args)
 
@@ -48,7 +48,9 @@ def RunGN(api, *args):
   checkout = GetCheckoutPath(api)
   gn_cmd = ['python3', checkout.join('flutter/tools/gn'), '--goma']
   gn_cmd.extend(args)
-  api.step('gn %s' % ' '.join(args), gn_cmd)
+  env = {'GOMA_DIR': api.goma.goma_dir}
+  with api.context(env=env):
+    api.step('gn %s' % ' '.join(args), gn_cmd)
 
 def RunAndroidUnitTests(api, env, env_prefixes):
   """Runs the unit tests for the Android embedder on a x64 Android Emulator."""
@@ -92,14 +94,12 @@ def RunSteps(api, properties, env_properties):
 
   api.file.rmtree('Clobber build output', checkout.join('out'))
   api.file.ensure_directory('Ensure checkout cache', cache_root)
-  api.goma.ensure()
 
   dart_bin = checkout.join(
       'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
   )
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
   env = {
-    'GOMA_DIR': api.goma.goma_dir,
     'ANDROID_HOME': str(android_home),
     'FLUTTER_PREBUILT_DART_SDK': 'True',
   }

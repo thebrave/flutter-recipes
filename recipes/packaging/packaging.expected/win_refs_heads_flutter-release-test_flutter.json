@@ -1128,6 +1128,109 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "file_hash",
+      "[START_DIR]\\archive\\flutter-archive-package.zip"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Compute file hash",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@Hash calculated: 2b2498f81606a952a0c5a93eb659b6b0e37ba163da26562392376dc5f5e5c00b@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\reporter\\snoopy_broker",
+      "-report-gcs",
+      "-digest",
+      "2b2498f81606a952a0c5a93eb659b6b0e37ba163da26562392376dc5f5e5c00b",
+      "-gcs-uri",
+      "gs://flutter_infra_release/releases/flutter-release-test/windows/experimental/flutter-archive-package.zip"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "snoop: report_gcs"
+  },
+  {
+    "cmd": [
       "[START_DIR]\\reporter\\snoopy_broker",
       "-report-stage",
       "-stage",

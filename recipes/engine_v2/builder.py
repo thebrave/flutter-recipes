@@ -156,7 +156,9 @@ def Build(api, checkout, env, env_prefixes, outputs):
     api.build_util.run_gn(build.get('gn'), checkout)
     ninja = build.get('ninja')
     ninja_tool[ninja.get('tool', 'ninja')](
-            ninja.get('config'), checkout, ninja.get('targets'))
+            ninja.get('config'),
+            checkout,
+            ninja.get('targets', []))
   generator_tasks = build.get('generators', {}).get('tasks', [])
   pub_dirs = build.get('generators', {}).get('pub_dirs', [])
   archives = build.get('archives', [])

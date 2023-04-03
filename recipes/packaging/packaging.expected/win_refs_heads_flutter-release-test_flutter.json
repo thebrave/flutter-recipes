@@ -1,5 +1,91 @@
 [
   {
+    "cmd": [
+      "cipd.bat",
+      "ensure",
+      "-root",
+      "[START_DIR]\\reporter",
+      "-ensure-file",
+      "infra/tools/security/provenance_broker/${platform} git_revision:d3cf3b0144447a77fd79c84fe8500dfe993ef602",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "project:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:d3c\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/security/provenance_broker/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\reporter\\snoopy_broker",
+      "-report-stage",
+      "-stage",
+      "start",
+      "-recipe",
+      "packaging/packaging",
+      "-pid",
+      "12345"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "project:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "snoop: report_stage"
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\reporter\\snoopy_broker",
+      "-report-stage",
+      "-stage",
+      "fetch"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "project:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "snoop: report_stage (2)"
+  },
+  {
     "cmd": [],
     "name": "determine release revision"
   },
@@ -516,6 +602,52 @@
   },
   {
     "cmd": [
+      "[START_DIR]\\reporter\\snoopy_broker",
+      "-report-stage",
+      "-stage",
+      "compile"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "snoop: report_stage (3)"
+  },
+  {
+    "cmd": [
       "vpython3",
       "-u",
       "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
@@ -666,7 +798,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure_installed",
+    "name": "ensure_installed (2)",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
@@ -784,6 +916,53 @@
       "@@@STEP_LOG_LINE@glob@[START_DIR]\\archive\\flutter-archive-package.zip@@@",
       "@@@STEP_LOG_END@glob@@@"
     ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\reporter\\snoopy_broker",
+      "-report-stage",
+      "-stage",
+      "upload"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "snoop: report_stage (4)"
   },
   {
     "cmd": [
@@ -946,6 +1125,53 @@
     "~followup_annotations": [
       "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_infra_release/@@@"
     ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\reporter\\snoopy_broker",
+      "-report-stage",
+      "-stage",
+      "upload-complete"
+    ],
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "snoop: report_stage (5)"
   },
   {
     "name": "$result"

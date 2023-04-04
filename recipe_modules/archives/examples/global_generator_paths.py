@@ -61,10 +61,25 @@ def RunSteps(api):
           remote='gs://flutter_archives_v2/monorepo/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release/Flutter.dSYM.zip'
       )
   ]
+  expected_try_results = [
+      ArchivePaths(
+          local=str(api.path['start_dir'].join('src/out/debug/artifacts.zip')),
+          remote='gs://flutter_archives_v2/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios/artifacts.zip'
+      ),
+      ArchivePaths(
+          local=str(api.path['start_dir'].join('src/out/release-nobitcode/Flutter.dSYM.zip')),
+          remote='gs://flutter_archives_v2/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release-nobitcode/Flutter.dSYM.zip'
+      ),
+      ArchivePaths(
+          local=str(api.path['start_dir'].join('src/out/release/Flutter.dSYM.zip')),
+          remote='gs://flutter_archives_v2/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release/Flutter.dSYM.zip'
+      )
+  ]
   env_to_results = {
       'production': expected_results,
       'monorepo': expected_monorepo_results,
-      'monorepo_try': []
+      'monorepo_try': [],
+      'try': expected_try_results
   }
   config = api.properties.get('config')
   results = api.archives.global_generator_paths(checkout, archives)
@@ -96,4 +111,19 @@ def GenTests(api):
       'monorepo_try',
       api.properties(config='monorepo_try'),
       api.monorepo.try_build(),
+  )
+  yield api.test(
+      'try',
+      api.properties(config='try'),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='try',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main'
+      ),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
   )

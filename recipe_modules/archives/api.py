@@ -42,7 +42,8 @@ LUCI_TO_GCS_PREFIX = {
     MONOREPO: 'flutter_archives_v2/monorepo/flutter_infra_release',
     'prod': 'flutter_infra_release',
     'staging': 'flutter_archives_v2/flutter_infra_release',
-    'try': 'flutter_archives_v2/flutter_infra_release'
+    'try': 'flutter_archives_v2/flutter_infra_release',
+    'try.shadow': 'flutter_archives_v2/flutter_infra_release'
 }
 
 # Bucket + initial prefix for artifact destination.
@@ -51,7 +52,8 @@ LUCI_TO_ANDROID_GCS_PREFIX = {
     MONOREPO: 'flutter_archives_v2/monorepo',
     'prod': '',
     'staging': 'flutter_archives_v2',
-    'try': 'flutter_archives_v2'
+    'try': 'flutter_archives_v2',
+    'try.shadow': 'flutter_archives_v2'
 }
 
 # Subpath for realms. A realm is used to separate file destinations
@@ -167,9 +169,8 @@ class ArchivesApi(recipe_api.RecipeApi):
     # artifacts to the same bucket but different path when the build configurations use an experimental
     # realm. Defaults to experimental.
     artifact_realm = REALM_TO_PATH.get(archive_config.get('realm', ''), 'experimental')
-    # Do not archive if the build is a try build or has no input commit
-    if (self.m.buildbucket.build.input.gerrit_changes or
-        not self.m.buildbucket.gitiles_commit.project):
+    # Do not archive if this is a monorepo try build.
+    if self.m.monorepo.is_monorepo_try_build:
       return results
 
     # Calculate prefix and commit.
@@ -228,9 +229,8 @@ class ArchivesApi(recipe_api.RecipeApi):
     """
     results = []
 
-    # Do not archive if the build is a try build or has no input commit
-    if (self.m.buildbucket.build.input.gerrit_changes or
-        not self.m.buildbucket.gitiles_commit.project):
+    # Do not archive if this is a monorepo try build.
+    if self.m.monorepo.is_monorepo_try_build:
       return results
 
     # Calculate prefix and commit.

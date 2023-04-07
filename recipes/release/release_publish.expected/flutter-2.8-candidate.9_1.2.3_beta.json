@@ -1,11 +1,11 @@
 [
   {
     "cmd": [],
-    "name": "checkout release branch"
+    "name": "checkout flutter release branch"
   },
   {
     "cmd": [],
-    "name": "checkout release branch.Checkout flutter/flutter",
+    "name": "checkout flutter release branch.Checkout flutter/flutter",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -20,7 +20,7 @@
       "--url",
       "https://github.com/flutter/flutter"
     ],
-    "name": "checkout release branch.Checkout flutter/flutter.git setup",
+    "name": "checkout flutter release branch.Checkout flutter/flutter.git setup",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -40,7 +40,7 @@
       "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
     },
     "infra_step": true,
-    "name": "checkout release branch.Checkout flutter/flutter.git fetch",
+    "name": "checkout flutter release branch.Checkout flutter/flutter.git fetch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -54,7 +54,7 @@
     ],
     "cwd": "[START_DIR]/flutter",
     "infra_step": true,
-    "name": "checkout release branch.Checkout flutter/flutter.git checkout",
+    "name": "checkout flutter release branch.Checkout flutter/flutter.git checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -67,7 +67,7 @@
     ],
     "cwd": "[START_DIR]/flutter",
     "infra_step": true,
-    "name": "checkout release branch.Checkout flutter/flutter.read revision",
+    "name": "checkout flutter release branch.Checkout flutter/flutter.read revision",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
@@ -84,7 +84,7 @@
     ],
     "cwd": "[START_DIR]/flutter",
     "infra_step": true,
-    "name": "checkout release branch.Checkout flutter/flutter.git clean",
+    "name": "checkout flutter release branch.Checkout flutter/flutter.git clean",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -97,7 +97,7 @@
     ],
     "cwd": "[START_DIR]/flutter",
     "infra_step": true,
-    "name": "checkout release branch.Checkout flutter/flutter.submodule sync",
+    "name": "checkout flutter release branch.Checkout flutter/flutter.submodule sync",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -112,7 +112,125 @@
     ],
     "cwd": "[START_DIR]/flutter",
     "infra_step": true,
-    "name": "checkout release branch.Checkout flutter/flutter.submodule update",
+    "name": "checkout flutter release branch.Checkout flutter/flutter.submodule update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "checkout engine release branch"
+  },
+  {
+    "cmd": [],
+    "name": "checkout engine release branch.Checkout flutter/engine",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[START_DIR]/engine",
+      "--url",
+      "https://github.com/flutter/engine"
+    ],
+    "name": "checkout engine release branch.Checkout flutter/engine.git setup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "flutter-2.8-candidate.9",
+      "--recurse-submodules",
+      "--progress",
+      "--tags"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "env": {
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+    },
+    "infra_step": true,
+    "name": "checkout engine release branch.Checkout flutter/engine.git fetch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "name": "checkout engine release branch.Checkout flutter/engine.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "name": "checkout engine release branch.Checkout flutter/engine.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"deadbeef\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "name": "checkout engine release branch.Checkout flutter/engine.git clean",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "name": "checkout engine release branch.Checkout flutter/engine.submodule sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "name": "checkout engine release branch.Checkout flutter/engine.submodule update",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -126,6 +244,15 @@
     "cwd": "[START_DIR]/flutter",
     "infra_step": true,
     "name": "git rev-parse"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE[flutter::release/release_publish].resources/push_release.sh"
+    ],
+    "infra_step": true,
+    "name": "Set execute permission"
   },
   {
     "cmd": [
@@ -238,33 +365,6 @@
   },
   {
     "cmd": [
-      "chmod",
-      "755",
-      "RECIPE[flutter::release/release_publish].resources/push_release.sh"
-    ],
-    "cwd": "[START_DIR]/flutter",
-    "env": {
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "flutter-2.8-candidate.9",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "name": "Set execute permission"
-  },
-  {
-    "cmd": [
       "RECIPE[flutter::release/release_publish].resources/push_release.sh"
     ],
     "cwd": "[START_DIR]/flutter",
@@ -279,7 +379,8 @@
       "OS": "darwin",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "RELEASE_CHANNEL": "beta",
-      "RELEASE_GIT_HASH": "deadbeef",
+      "REL_HASH": "deadbeef",
+      "REPO": "flutter",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
       "TAG": "1.2.3",
@@ -293,7 +394,148 @@
         "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
       ]
     },
-    "name": "Tag and push release"
+    "name": "Tag and push release on flutter/flutter"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "ANDROID_HOME": "[START_DIR]/flutter/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "GIT_BRANCH": "flutter-2.8-candidate.9",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "darwin",
+      "REVISION": ""
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "name": "ensure_installed (2)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/flutter-release-github-token.encrypted",
+      "[CLEANUP]/flutter-release-github-token.encrypted"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "ANDROID_HOME": "[START_DIR]/flutter/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "GIT_BRANCH": "flutter-2.8-candidate.9",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "darwin",
+      "REVISION": ""
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "gsutil download (2)"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/flutter-release-github-token.encrypted",
+      "-output",
+      "[CLEANUP]/token.txt",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "ANDROID_HOME": "[START_DIR]/flutter/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "GIT_BRANCH": "flutter-2.8-candidate.9",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "darwin",
+      "REVISION": ""
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "name": "cloudkms get key (2)"
+  },
+  {
+    "cmd": [
+      "RECIPE[flutter::release/release_publish].resources/push_release.sh"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "ANDROID_HOME": "[START_DIR]/flutter/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "DRY_RUN_CMD": "",
+      "ENGINE_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "GITHUB_USER": "fluttergithubbot",
+      "GIT_BRANCH": "flutter-2.8-candidate.9",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "darwin",
+      "RELEASE_CHANNEL": "beta",
+      "REL_HASH": "deadbeef",
+      "REPO": "engine",
+      "REVISION": "",
+      "TAG": "1.2.3",
+      "TOKEN_PATH": "[CLEANUP]/token.txt"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[START_DIR]/flutter/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "name": "Tag and push release on flutter/engine"
   },
   {
     "name": "$result"

@@ -41,6 +41,24 @@ class ZipApi(recipe_api.RecipeApi):
     pkg.add_directory(directory)
     pkg.zip(step_name)
 
+  def namelist(self, step_name, zip_file):
+    """Step to get the name list of |zip_file|.
+
+    Args:
+      step_name: display name of a step.
+      zip_file: path to a zip file to get its namelist, should exist.
+    """
+    script_input = {
+      'zip_file': str(zip_file),
+    }
+    names_step = self.m.step(
+      step_name,
+      [ 'python3', self.resource('namelist.py') ],
+      stdin=self.m.json.input(script_input),
+      stdout=self.m.json.output(),
+    )
+    return names_step.stdout or []
+
   def unzip(self, step_name, zip_file, output, quiet=False):
     """Step to uncompress |zip_file| into |output| directory.
 

@@ -9,6 +9,7 @@ DEPS = [
   'recipe_engine/path',
   'recipe_engine/platform',
   'recipe_engine/step',
+  'recipe_engine/json',
 ]
 
 def RunSteps(api):
@@ -38,6 +39,12 @@ def RunSteps(api):
   # List unzipped content.
   with api.context(cwd=temp.join('output')):
     api.step('listing', ['find'])
+
+  # Retrieve zip file names list.
+  expected_namelist = ['/a/b/c.txt']
+  namelist = api.zip.namelist('namelist', temp.join('output.zip'))
+  assert namelist == expected_namelist
+
   # Clean up.
   api.file.rmtree('cleanup', temp)
 
@@ -47,4 +54,5 @@ def GenTests(api):
     yield api.test(
         platform,
         api.platform.name(platform),
+        api.zip.namelist('namelist', ['/a/b/c.txt'])
     )

@@ -1,0 +1,556 @@
+[
+  {
+    "cmd": [],
+    "name": "Codesign Dependencies"
+  },
+  {
+    "cmd": [],
+    "name": "Codesign Dependencies.Installing Mac codesign CIPD pkg",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CLEANUP]/tmp_tmp_1",
+      "-ensure-file",
+      "flutter/codesign/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Codesign Dependencies.Installing Mac codesign CIPD pkg.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/codesign/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Setup codesign environment"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Setup codesign environment.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/flutter_p12.encrypted",
+      "[CLEANUP]/flutter_p12.encrypted"
+    ],
+    "infra_step": true,
+    "name": "Setup codesign environment.gsutil download",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/flutter_p12.encrypted",
+      "-output",
+      "[CLEANUP]/FLUTTER_P12",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "name": "Setup codesign environment.cloudkms get key",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Setup codesign environment.ensure_installed (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/p12_password.encrypted",
+      "[CLEANUP]/p12_password.encrypted"
+    ],
+    "infra_step": true,
+    "name": "Setup codesign environment.gsutil download (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/p12_password.encrypted",
+      "-output",
+      "[CLEANUP]/FLUTTER_P12_PASSWORD",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "name": "Setup codesign environment.cloudkms get key (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Setup codesign environment.ensure_installed (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/codesign_team_id.encrypted",
+      "[CLEANUP]/codesign_team_id.encrypted"
+    ],
+    "infra_step": true,
+    "name": "Setup codesign environment.gsutil download (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/codesign_team_id.encrypted",
+      "-output",
+      "[CLEANUP]/CODESIGN_TEAM_ID",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "name": "Setup codesign environment.cloudkms get key (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Setup codesign environment.ensure_installed (4)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/codesign_app_specific_password.encrypted",
+      "[CLEANUP]/codesign_app_specific_password.encrypted"
+    ],
+    "infra_step": true,
+    "name": "Setup codesign environment.gsutil download (4)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/codesign_app_specific_password.encrypted",
+      "-output",
+      "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "name": "Setup codesign environment.cloudkms get key (4)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Setup codesign environment.ensure_installed (5)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/codesign_app_store_id.encrypted",
+      "[CLEANUP]/codesign_app_store_id.encrypted"
+    ],
+    "infra_step": true,
+    "name": "Setup codesign environment.gsutil download (5)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/codesign_app_store_id.encrypted",
+      "-output",
+      "[CLEANUP]/CODESIGN_APP_STORE_ID",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "name": "Setup codesign environment.cloudkms get key (5)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Setup keychain"
+  },
+  {
+    "cmd": [
+      "security",
+      "delete-keychain",
+      "build.keychain"
+    ],
+    "name": "Setup keychain.delete previous keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "create-keychain",
+      "-p",
+      "",
+      "build.keychain"
+    ],
+    "name": "Setup keychain.create keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "default-keychain",
+      "-s",
+      "build.keychain"
+    ],
+    "name": "Setup keychain.default keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "unlock-keychain",
+      "-p",
+      "",
+      "build.keychain"
+    ],
+    "name": "Setup keychain.unlock build keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::signing]/resources/import_certificate.sh"
+    ],
+    "infra_step": true,
+    "name": "Setup keychain.Set execute permission",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::signing]/resources/import_certificate.sh"
+    ],
+    "env": {
+      "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
+      "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
+      "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
+      "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
+      "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
+      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12"
+    },
+    "name": "Setup keychain.import certificate",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "set-key-partition-list",
+      "-S",
+      "apple-tool:,apple:,codesign:",
+      "-s",
+      "-k",
+      "",
+      "build.keychain"
+    ],
+    "name": "Setup keychain.set key partition list",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "find-identity",
+      "-v"
+    ],
+    "name": "Setup keychain.show-identities",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "file1.zip",
+      "file1.zip"
+    ],
+    "infra_step": true,
+    "name": "Move file1.zip"
+  },
+  {
+    "cmd": [],
+    "name": "Codesign file1.zip"
+  },
+  {
+    "cmd": [
+      "security",
+      "unlock-keychain",
+      "-p",
+      "",
+      "build.keychain"
+    ],
+    "name": "Codesign file1.zip.unlock build keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CLEANUP]/tmp_tmp_1/codesign",
+      "--codesign-cert-name",
+      "FLUTTER.IO LLC",
+      "--no-dryrun",
+      "--app-specific-password-file-path",
+      "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
+      "--codesign-appstore-id-file-path",
+      "[CLEANUP]/CODESIGN_APP_STORE_ID",
+      "--codesign-team-id-file-path",
+      "[CLEANUP]/CODESIGN_TEAM_ID",
+      "--input-zip-file-path",
+      "file1.zip",
+      "--output-zip-file-path",
+      "file1.zip"
+    ],
+    "env": {
+      "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
+      "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
+      "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
+      "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
+      "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
+      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12"
+    },
+    "name": "Codesign file1.zip.codesign Apple engine binaries",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Keychain cleanup"
+  },
+  {
+    "cmd": [
+      "security",
+      "delete-keychain",
+      "build.keychain"
+    ],
+    "name": "Keychain cleanup.delete keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "default-keychain",
+      "-s",
+      "login.keychain"
+    ],
+    "name": "Keychain cleanup.Cleanup keychain.restore default keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]

@@ -1,0 +1,107 @@
+[
+  {
+    "cmd": [],
+    "name": "Create test file"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "myfile",
+      "[CLEANUP]/tmp_tmp_1/content/myfile.txt"
+    ],
+    "infra_step": true,
+    "name": "Create test file.write file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@myfile.txt@myfile@@@",
+      "@@@STEP_LOG_END@myfile.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "",
+      "[CLEANUP]/tmp_tmp_1/content/entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "Create test file.write entitlements.txt",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@entitlements.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "",
+      "[CLEANUP]/tmp_tmp_1/content/without_entitlements.txt"
+    ],
+    "infra_step": true,
+    "name": "Create test file.write without_entitlements.txt",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@without_entitlements.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+    ],
+    "name": "Create test file.create zip",
+    "stdin": "{\"entries\": [{\"path\": \"[CLEANUP]/tmp_tmp_1/content\", \"type\": \"dir\"}], \"output\": \"[CLEANUP]/tmp_tmp_1/myzip.zip\", \"root\": \"[CLEANUP]/tmp_tmp_1/content\"}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "RECIPE_MODULE[flutter::zip]/resources/namelist.py"
+    ],
+    "name": "Create test file.namelist",
+    "stdin": "{\"zip_file\": \"[CLEANUP]/tmp_tmp_1/myzip.zip\"}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@[@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"myfile.txt\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"without_entitlements.txt\"@@@",
+      "@@@STEP_LOG_LINE@json.output@]@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CLEANUP]/tmp_tmp_1"
+    ],
+    "infra_step": true,
+    "name": "Create test file.Delete tmp folder",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]

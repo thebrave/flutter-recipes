@@ -40,6 +40,7 @@ class CodeSignApi(recipe_api.RecipeApi):
 
   @property
   def codesign_binary(self):
+    """Property pointing to the signing tool location."""
     self._ensure()
     return self._codesign_binary_path
 
@@ -82,15 +83,16 @@ class CodeSignApi(recipe_api.RecipeApi):
           'CODESIGN_APP_STORE_ID': 'codesign_app_store_id.encrypted'
       }
       self.m.kms.decrypt_secrets(env, secrets_dict)
+      env['CODESIGN_PATH'] = self.codesign_binary
+
 
 
   def _keychain_setup(self, env, env_prefixes):
     """KeychainSetup adds flutter .p12 to a temporary keychain named 'build'.
 
     Args:
-      codesign_path (str): path of codesign cipd package.
-      p12_filepath (str) : path of the .p12 file that has flutter credentials.
-      p12_password_raw (str) : the password to decode the .p12 flutter file.
+      env (dict): environment variables.
+      env_prefixes (dict) : environment paths.
     """
     with self.m.step.nest('Setup keychain'):
       # Delete build.keychain if exists.
@@ -166,7 +168,6 @@ class CodeSignApi(recipe_api.RecipeApi):
     """Concurrently creates jobs to codesign each binary.
 
     Args:
-      codesign_path (str): path of codesign cipd package.
       env (dict): environment variables.
       env_prefixes (dict) : environment paths.
     """
@@ -194,21 +195,15 @@ class CodeSignApi(recipe_api.RecipeApi):
     """Runs code sign standalone app.
 
     Args:
+      env (dict): environment variables.
+      env_prefixes (dict) : environment paths.
       source_path (Path): path of the artifact to sign.
-      app_specific_password_filepath (str) : path of app specific password, one of
-      the code sign credentials.
-      appstore_id_filepath (str) : path of apple store id, one of the codesign
-      credentials.
-      team_id_filepath (str) : path of flutter team id used for codesign, one of the
-      codesign credentials.
-      codesign_string_path (str): the absolute path of the codesign standalone app
-      cipd package. This is to differentiate codesign cipd from mac system codesign.
     """
     app_specific_password_filepath = env['CODESIGN_APP_SPECIFIC_PASSWORD']
     appstore_id_filepath = env['CODESIGN_APP_STORE_ID']
     team_id_filepath = env['CODESIGN_TEAM_ID']
     path, base_name = self.m.path.split(source_path)
-    unsigned_path = self.m.path.join(path, base_name)
+    unsigned_path = self.m.path.join(path, 'unsigned_%s' % base_name)
     self.m.file.move(
         'Move %s' % str(source_path),
         source_path,

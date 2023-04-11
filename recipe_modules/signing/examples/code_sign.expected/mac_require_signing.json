@@ -425,6 +425,7 @@
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_1/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -471,14 +472,14 @@
       "/path/to/tmp/json",
       "move",
       "file1.zip",
-      "file1.zip"
+      "unsigned_file1.zip"
     ],
     "infra_step": true,
     "name": "Move file1.zip"
   },
   {
     "cmd": [],
-    "name": "Codesign file1.zip"
+    "name": "Codesign unsigned_file1.zip"
   },
   {
     "cmd": [
@@ -488,7 +489,7 @@
       "",
       "build.keychain"
     ],
-    "name": "Codesign file1.zip.unlock build keychain",
+    "name": "Codesign unsigned_file1.zip.unlock build keychain",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -506,19 +507,20 @@
       "--codesign-team-id-file-path",
       "[CLEANUP]/CODESIGN_TEAM_ID",
       "--input-zip-file-path",
-      "file1.zip",
+      "unsigned_file1.zip",
       "--output-zip-file-path",
       "file1.zip"
     ],
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_1/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
       "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12"
     },
-    "name": "Codesign file1.zip.codesign Apple engine binaries",
+    "name": "Codesign unsigned_file1.zip.codesign Apple engine binaries",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

@@ -17,7 +17,7 @@ def main():
   assert os.path.isfile(zip_file), zip_file
 
   with zipfile.ZipFile(zip_file) as artifact_zip:
-    json.dumps(artifact_zip.namelist())
+    sys.stdout.write(json.dumps(artifact_zip.namelist()))
   return 0
 
 if __name__ == '__main__':

@@ -125,7 +125,18 @@ def RunSteps(api):
         def run_firebase():
           return api.gcloud(*firebase_cmd)
 
-        api.retry.wrap(run_firebase, max_attempts=3, retriable_ret=(1, 15, 20))
+        # Sometimes, infra failures on the FTL side are persistent. We should
+        # allow CI to pass in that case rather than block the tree.
+        infra_failure_codes = (1, 15, 20)
+        try:
+          api.retry.wrap(run_firebase, max_attempts=3, retriable_codes=infra_failure_codes)
+        except api.step.StepFailure:
+          if api.step.active_result.retcode in infra_failure_codes:
+            # FTL is having some infra outage. Don't block the tree. Still
+            # check logs for pieces that may have passed.
+            pass
+          else:
+            raise
 
       logcat_path = '%s/%s/*/logcat' % (task_name, task_id)
       tmp_logcat = api.path['cleanup'].join('logcat')
@@ -144,6 +155,10 @@ def GenTests(api):
   yield api.test('failure 15',
                  api.repo_util.flutter_environment_data()) + api.step_data(
                      'test_execution.gcloud firebase', retcode=15
+                 ) + api.step_data(
+                     'test_execution.gcloud firebase (2)', retcode=15
+                 ) + api.step_data(
+                     'test_execution.gcloud firebase (3)', retcode=15
                  )
 
   yield api.test('failure 10',

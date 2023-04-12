@@ -49,7 +49,8 @@ def RunSteps(api):
   dry_run = api.runtime.is_experimental or api.properties.get('dry_run')=='True'
   assert git_branch and tag and release_channel
 
-  checkout_path = api.path['start_dir'].join('flutter')
+  flutter_checkout = api.path['start_dir'].join('flutter')
+  engine_checkout = api.path['start_dir'].join('engine')
   flutter_git_url = 'https://github.com/flutter/flutter'
   engine_git_url = 'https://github.com/flutter/engine'
 
@@ -63,7 +64,7 @@ def RunSteps(api):
   with api.step.nest('checkout flutter release branch'):
     rel_hash = api.repo_util.checkout(
       'flutter',
-      api.path['start_dir'].join('flutter'),
+      flutter_checkout,
       url=flutter_git_url,
       ref="refs/heads/%s" % git_branch,
     )
@@ -75,8 +76,8 @@ def RunSteps(api):
       ref='refs/heads/%s' % git_branch,
     )
 
-  env_flutter, env_flutter_prefixes = api.repo_util.flutter_environment(checkout_path)
-  env_engine, env_engine_prefixes = api.repo_util.engine_environment(checkout_path)
+  env_flutter, env_flutter_prefixes = api.repo_util.flutter_environment(flutter_checkout)
+  env_engine, env_engine_prefixes = api.repo_util.engine_environment(engine_checkout)
   api.flutter_deps.required_deps(
       env_flutter,
       env_flutter_prefixes,
@@ -99,10 +100,12 @@ def RunSteps(api):
     if repo=='flutter':
         env = env_flutter
         env_prefixes=env_flutter_prefixes
+        checkout = flutter_checkout
     else:
         env = env_engine
         env_prefixes=env_engine_prefixes
-    with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
+        checkout = engine_checkout
+    with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout):
       token_decrypted = api.path['cleanup'].join('token.txt')
       api.kms.get_secret('flutter-release-github-token.encrypted', token_decrypted)
 

@@ -303,6 +303,11 @@ def UploadArtifacts(
     api.bucket_util.add_directories(pkg, directory_paths)
 
     pkg.zip('Zip %s %s' % (platform, archive_name))
+
+    # Do not upload if not running from the prod bucket.
+    if not api.flutter_bcid.is_prod_build():
+      return
+
     api.bucket_util.safe_upload(local_zip, remote_zip)
 
 

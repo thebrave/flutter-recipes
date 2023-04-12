@@ -47,6 +47,7 @@ DEPS = [
     'flutter/repo_util',
     'flutter/retry',
     'flutter/shard_util_v2',
+    'flutter/signing',
     'flutter/test_utils',
     'fuchsia/cas_util',
     'recipe_engine/bcid_reporter',
@@ -180,6 +181,16 @@ def Build(api, checkout, env, env_prefixes, outputs):
 
 def Archive(api, checkout,  archive_config):
   paths = api.archives.engine_v2_gcs_paths(checkout, archive_config)
+  # Sign artifacts if running on mac and a release candidate branch.
+  is_release_branch = api.repo_util.is_release_candidate_branch(
+      checkout.join('flutter')
+  )
+  if api.platform.is_mac and is_release_branch:
+    signing_paths = [
+        path.local for path in paths
+        if api.signing.requires_signing(path.local)
+    ]
+    api.signing.code_sign(signing_paths)
   for path in paths:
     api.archives.upload_artifact(path.local, path.remote)
     api.flutter_bcid.upload_provenance(
@@ -276,6 +287,13 @@ def GenTests(api):
           revision='abcd' * 10,
           build_number=123,
       ),
+      api.signing.flutter_signing_identity(),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io
+              .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+      ),
+
   )
   yield api.test(
       'monorepo',

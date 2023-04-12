@@ -1,0 +1,2306 @@
+[
+  {
+    "cmd": [],
+    "name": "Checkout flutter/engine"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[START_DIR]/engine",
+      "--url",
+      "https://flutter.googlesource.com/mirrors/engine"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.git setup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "--recurse-submodules",
+      "--progress",
+      "--tags"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "env": {
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.git fetch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"deadbeef\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.git clean",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.submodule sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.submodule update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[START_DIR]/engine/ci/builders/config_name.json",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Read build config file",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@config_name.json@{@@@",
+      "@@@STEP_LOG_LINE@config_name.json@  \"archives\": [@@@",
+      "@@@STEP_LOG_LINE@config_name.json@    {@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      \"destination\": \"bucket/c.txt\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      \"name\": \"c.txt\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      \"source\": \"/a/b/c.txt\"@@@",
+      "@@@STEP_LOG_LINE@config_name.json@    }@@@",
+      "@@@STEP_LOG_LINE@config_name.json@  ],@@@",
+      "@@@STEP_LOG_LINE@config_name.json@  \"builds\": [@@@",
+      "@@@STEP_LOG_LINE@config_name.json@    {@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      \"archives\": [@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        {@@@",
+      "@@@STEP_LOG_LINE@config_name.json@          \"base_path\": \"out/host_debug/zip_archives/\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@          \"include_paths\": [@@@",
+      "@@@STEP_LOG_LINE@config_name.json@            \"out/host_debug/zip_archives/darwin-x64/artifacts.zip\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@            \"out/host_debug/zip_archives/darwin-x64/FlutterEmbedder.framework.zip\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@            \"out/host_debug/zip_archives/dart-sdk-darwin-x64.zip\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@            \"out/host_debug/zip_archives/flutter-web-sdk-darwin-x64.zip\"@@@",
+      "@@@STEP_LOG_LINE@config_name.json@          ],@@@",
+      "@@@STEP_LOG_LINE@config_name.json@          \"name\": \"host_debug\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@          \"type\": \"gcs\"@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        }@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      ],@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      \"generators\": [@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        {@@@",
+      "@@@STEP_LOG_LINE@config_name.json@          \"name\": \"generator1\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@          \"script\": \"script1.sh\"@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        }@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      ],@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      \"gn\": [@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        \"--ios\"@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      ],@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      \"name\": \"ios_debug\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      \"ninja\": {@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        \"config\": \"ios_debug\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        \"targets\": []@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      }@@@",
+      "@@@STEP_LOG_LINE@config_name.json@    }@@@",
+      "@@@STEP_LOG_LINE@config_name.json@  ],@@@",
+      "@@@STEP_LOG_LINE@config_name.json@  \"generators\": {@@@",
+      "@@@STEP_LOG_LINE@config_name.json@    \"tasks\": [@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      {@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        \"language\": \"python3\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        \"name\": \"Debug-FlutterMacOS.framework\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        \"parameters\": [@@@",
+      "@@@STEP_LOG_LINE@config_name.json@          \"--variant\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@          \"host_profile\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@          \"--type\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@          \"engine\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@          \"--engine-capture-core-dump\"@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        ],@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        \"script\": \"flutter/sky/tools/create_macos_framework.py\",@@@",
+      "@@@STEP_LOG_LINE@config_name.json@        \"type\": \"local\"@@@",
+      "@@@STEP_LOG_LINE@config_name.json@      }@@@",
+      "@@@STEP_LOG_LINE@config_name.json@    ]@@@",
+      "@@@STEP_LOG_LINE@config_name.json@  }@@@",
+      "@@@STEP_LOG_LINE@config_name.json@}@@@",
+      "@@@STEP_LOG_END@config_name.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Identify branches"
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Identify branches.git rev-parse",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "branch",
+      "-a",
+      "--contains",
+      "12345abcde12345abcde12345abcde12345abcde"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Identify branches.git branch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Identify branches (2)"
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Identify branches (2).git rev-parse",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "branch",
+      "-a",
+      "--contains",
+      "12345abcde12345abcde12345abcde12345abcde"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Identify branches (2).git branch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch builds"
+  },
+  {
+    "cmd": [
+      "bb",
+      "batch",
+      "-host",
+      "cr-buildbucket.appspot.com"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "launch builds.schedule",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Mac Engine Drone\", \"project\": \"proj\"}, \"exe\": {\"cipdVersion\": \"refs/heads/flutter-3.2-candidate.5\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/engine\"}], \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"build\": {\"archives\": [{\"base_path\": \"out/host_debug/zip_archives/\", \"include_paths\": [\"out/host_debug/zip_archives/darwin-x64/artifacts.zip\", \"out/host_debug/zip_archives/darwin-x64/FlutterEmbedder.framework.zip\", \"out/host_debug/zip_archives/dart-sdk-darwin-x64.zip\", \"out/host_debug/zip_archives/flutter-web-sdk-darwin-x64.zip\"], \"name\": \"host_debug\", \"type\": \"gcs\"}], \"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}, \"recipe\": \"engine_v2/builder\"}, \"config_name\": \"config_name\", \"environment\": \"Staging\", \"gclient_variables\": {}, \"recipe\": \"engine_v2/builder\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"scheduleBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"try\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"builder-subbuild1\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }, @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"8945511751514863186\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@request@{@@@",
+      "@@@STEP_LOG_LINE@request@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"scheduleBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@request@          \"bucket\": \"try\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"builder\": \"Mac Engine Drone\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"project\": \"proj\"@@@",
+      "@@@STEP_LOG_LINE@request@        }, @@@",
+      "@@@STEP_LOG_LINE@request@        \"exe\": {@@@",
+      "@@@STEP_LOG_LINE@request@          \"cipdVersion\": \"refs/heads/flutter-3.2-candidate.5\"@@@",
+      "@@@STEP_LOG_LINE@request@        }, @@@",
+      "@@@STEP_LOG_LINE@request@        \"experimental\": \"NO\", @@@",
+      "@@@STEP_LOG_LINE@request@        \"experiments\": {@@@",
+      "@@@STEP_LOG_LINE@request@          \"luci.buildbucket.parent_tracking\": false@@@",
+      "@@@STEP_LOG_LINE@request@        }, @@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", @@@",
+      "@@@STEP_LOG_LINE@request@        \"gerritChanges\": [@@@",
+      "@@@STEP_LOG_LINE@request@          {@@@",
+      "@@@STEP_LOG_LINE@request@            \"change\": \"123456\", @@@",
+      "@@@STEP_LOG_LINE@request@            \"host\": \"flutter-review.googlesource.com\", @@@",
+      "@@@STEP_LOG_LINE@request@            \"patchset\": \"7\", @@@",
+      "@@@STEP_LOG_LINE@request@            \"project\": \"mirrors/engine\"@@@",
+      "@@@STEP_LOG_LINE@request@          }@@@",
+      "@@@STEP_LOG_LINE@request@        ], @@@",
+      "@@@STEP_LOG_LINE@request@        \"gitilesCommit\": {@@@",
+      "@@@STEP_LOG_LINE@request@          \"host\": \"flutter.googlesource.com\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"project\": \"mirrors/engine\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@request@        }, @@@",
+      "@@@STEP_LOG_LINE@request@        \"priority\": 30, @@@",
+      "@@@STEP_LOG_LINE@request@        \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@request@          \"build\": {@@@",
+      "@@@STEP_LOG_LINE@request@            \"archives\": [@@@",
+      "@@@STEP_LOG_LINE@request@              {@@@",
+      "@@@STEP_LOG_LINE@request@                \"base_path\": \"out/host_debug/zip_archives/\", @@@",
+      "@@@STEP_LOG_LINE@request@                \"include_paths\": [@@@",
+      "@@@STEP_LOG_LINE@request@                  \"out/host_debug/zip_archives/darwin-x64/artifacts.zip\", @@@",
+      "@@@STEP_LOG_LINE@request@                  \"out/host_debug/zip_archives/darwin-x64/FlutterEmbedder.framework.zip\", @@@",
+      "@@@STEP_LOG_LINE@request@                  \"out/host_debug/zip_archives/dart-sdk-darwin-x64.zip\", @@@",
+      "@@@STEP_LOG_LINE@request@                  \"out/host_debug/zip_archives/flutter-web-sdk-darwin-x64.zip\"@@@",
+      "@@@STEP_LOG_LINE@request@                ], @@@",
+      "@@@STEP_LOG_LINE@request@                \"name\": \"host_debug\", @@@",
+      "@@@STEP_LOG_LINE@request@                \"type\": \"gcs\"@@@",
+      "@@@STEP_LOG_LINE@request@              }@@@",
+      "@@@STEP_LOG_LINE@request@            ], @@@",
+      "@@@STEP_LOG_LINE@request@            \"generators\": [@@@",
+      "@@@STEP_LOG_LINE@request@              {@@@",
+      "@@@STEP_LOG_LINE@request@                \"name\": \"generator1\", @@@",
+      "@@@STEP_LOG_LINE@request@                \"script\": \"script1.sh\"@@@",
+      "@@@STEP_LOG_LINE@request@              }@@@",
+      "@@@STEP_LOG_LINE@request@            ], @@@",
+      "@@@STEP_LOG_LINE@request@            \"gn\": [@@@",
+      "@@@STEP_LOG_LINE@request@              \"--ios\"@@@",
+      "@@@STEP_LOG_LINE@request@            ], @@@",
+      "@@@STEP_LOG_LINE@request@            \"name\": \"ios_debug\", @@@",
+      "@@@STEP_LOG_LINE@request@            \"ninja\": {@@@",
+      "@@@STEP_LOG_LINE@request@              \"config\": \"ios_debug\", @@@",
+      "@@@STEP_LOG_LINE@request@              \"targets\": []@@@",
+      "@@@STEP_LOG_LINE@request@            }, @@@",
+      "@@@STEP_LOG_LINE@request@            \"recipe\": \"engine_v2/builder\"@@@",
+      "@@@STEP_LOG_LINE@request@          }, @@@",
+      "@@@STEP_LOG_LINE@request@          \"config_name\": \"config_name\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"environment\": \"Staging\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"gclient_variables\": {}, @@@",
+      "@@@STEP_LOG_LINE@request@          \"recipe\": \"engine_v2/builder\"@@@",
+      "@@@STEP_LOG_LINE@request@        }, @@@",
+      "@@@STEP_LOG_LINE@request@        \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", @@@",
+      "@@@STEP_LOG_LINE@request@        \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@request@          \"parentRunId\": \"fake-task-id\"@@@",
+      "@@@STEP_LOG_LINE@request@        }, @@@",
+      "@@@STEP_LOG_LINE@request@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@request@          {@@@",
+      "@@@STEP_LOG_LINE@request@            \"key\": \"cq_experimental\", @@@",
+      "@@@STEP_LOG_LINE@request@            \"value\": \"false\"@@@",
+      "@@@STEP_LOG_LINE@request@          }, @@@",
+      "@@@STEP_LOG_LINE@request@          {@@@",
+      "@@@STEP_LOG_LINE@request@            \"key\": \"parent_buildbucket_id\", @@@",
+      "@@@STEP_LOG_LINE@request@            \"value\": \"8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@request@          }, @@@",
+      "@@@STEP_LOG_LINE@request@          {@@@",
+      "@@@STEP_LOG_LINE@request@            \"key\": \"user_agent\", @@@",
+      "@@@STEP_LOG_LINE@request@            \"value\": \"recipe\"@@@",
+      "@@@STEP_LOG_LINE@request@          }@@@",
+      "@@@STEP_LOG_LINE@request@        ]@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    }@@@",
+      "@@@STEP_LOG_LINE@request@  ]@@@",
+      "@@@STEP_LOG_LINE@request@}@@@",
+      "@@@STEP_LOG_END@request@@@",
+      "@@@STEP_LINK@8945511751514863186@https://cr-buildbucket.appspot.com/build/8945511751514863186@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "collect builds"
+  },
+  {
+    "cmd": [],
+    "name": "collect builds.collect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "collect",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-interval",
+      "20s",
+      "8945511751514863186"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "collect builds.collect.wait",
+    "timeout": 86400,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "batch",
+      "-host",
+      "cr-buildbucket.appspot.com"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "collect builds.collect.get",
+    "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,infra.swarming.taskId,input,number,output,startTime,status,summaryMarkdown,updateTime\", \"id\": \"8945511751514863186\"}}]}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"try\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"builder-subbuild1\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }, @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createTime\": \"2018-05-25T23:50:17Z\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createdBy\": \"project:fuchsia\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"8945511751514863186\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"invocation\": \"invocations/build:8945511751514863186\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }, @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"priority\": 30, @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"taskId\": \"abc123\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        }, @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"gerritChanges\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            {@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"change\": \"123456\", @@@",
+      "@@@STEP_LOG_LINE@json.output@              \"host\": \"chromium-review.googlesource.com\", @@@",
+      "@@@STEP_LOG_LINE@json.output@              \"patchset\": \"7\", @@@",
+      "@@@STEP_LOG_LINE@json.output@              \"project\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            }@@@",
+      "@@@STEP_LOG_LINE@json.output@          ]@@@",
+      "@@@STEP_LOG_LINE@json.output@        }, @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"output\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"test_orchestration_inputs_hash\": \"abc\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        }, @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"status\": \"SUCCESS\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"key\": \"cq_experimental\", @@@",
+      "@@@STEP_LOG_LINE@json.output@            \"value\": \"false\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        ]@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@request@{@@@",
+      "@@@STEP_LOG_LINE@request@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,infra.swarming.taskId,input,number,output,startTime,status,summaryMarkdown,updateTime\", @@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"8945511751514863186\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    }@@@",
+      "@@@STEP_LOG_LINE@request@  ]@@@",
+      "@@@STEP_LOG_LINE@request@}@@@",
+      "@@@STEP_LOG_END@request@@@",
+      "@@@STEP_LINK@8945511751514863186@https://cr-buildbucket.appspot.com/build/8945511751514863186@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "display builds"
+  },
+  {
+    "cmd": [],
+    "name": "display builds.ios_debug",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@8945511751514863186@https://cr-buildbucket.appspot.com/build/8945511751514863186@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch tests"
+  },
+  {
+    "cmd": [],
+    "name": "collect tests"
+  },
+  {
+    "cmd": [],
+    "name": "display tests"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Ensure full engine checkout folder"
+  },
+  {
+    "cmd": [],
+    "name": "Checkout source code"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "RECIPE_REPO[depot_tools]/gerrit_client.py",
+      "changes",
+      "--host",
+      "https://flutter-review.googlesource.com",
+      "--json_file",
+      "/path/to/tmp/json",
+      "--limit",
+      "1",
+      "-p",
+      "change=123456",
+      "-o",
+      "ALL_REVISIONS",
+      "-o",
+      "DOWNLOAD_COMMANDS"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "darwin",
+      "PATH": "<PATH>:RECIPE_REPO[depot_tools]",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout source code.gerrit fetch current CL info",
+    "timeout": 60,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@[@@@",
+      "@@@STEP_LOG_LINE@json.output@  {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"branch\": \"main\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"owner\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"John Doe\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }, @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"revisions\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"184ebe53805e102605d11f6b143486d15c23a09c\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"_number\": \"7\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"ref\": \"refs/changes/56/123456/7\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@]@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::bot_update]/resources/bot_update.py",
+      "--spec-path",
+      "cache_dir = '[CACHE]/git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': False, 'name': 'src/flutter', 'url': 'https://flutter.googlesource.com/mirrors/engine'}]",
+      "--patch_root",
+      "src/flutter",
+      "--revision_mapping_file",
+      "{\"got_engine_revision\": \"src/flutter\"}",
+      "--git-cache-dir",
+      "[CACHE]/git",
+      "--cleanup-dir",
+      "[CLEANUP]/bot_update",
+      "--output_json",
+      "/path/to/tmp/json",
+      "--patch_ref",
+      "https://flutter.googlesource.com/mirrors/engine@refs/heads/main:refs/changes/56/123456/7",
+      "--revision",
+      "src/flutter@refs/heads/main",
+      "--refs",
+      "refs/heads/main",
+      "--refs",
+      "refs/heads/main"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "DEPOT_TOOLS_REPORT_BUILD": "proj/try/try-builder/8945511751514863184",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
+      "GIT_HTTP_LOW_SPEED_TIME": "1800",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "darwin",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0",
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]",
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout source code.bot_update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@Some step text@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"did_run\": true, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"fixed_revisions\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"src/flutter\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"manifest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"src/flutter\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"repository\": \"https://fake.org/src/flutter.git\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"revision\": \"e1f32bac24d72ebe0a5713009ae850c6320e7c7d\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"patch_failure\": false, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"patch_root\": \"src/flutter\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision\": \"e1f32bac24d72ebe0a5713009ae850c6320e7c7d\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision_cp\": \"refs/heads/main@{#84512}\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"9221bca00ddbd888260084def81f09543281b952\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"root\": \"src/flutter\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"source_manifest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"directories\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"src/flutter\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"git_checkout\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"repo_url\": \"https://fake.org/src/flutter.git\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"e1f32bac24d72ebe0a5713009ae850c6320e7c7d\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }, @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"version\": 0@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"step_text\": \"Some step text\"@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@SET_BUILD_PROPERTY@got_engine_revision@\"e1f32bac24d72ebe0a5713009ae850c6320e7c7d\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_engine_revision_cp@\"refs/heads/main@{#84512}\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"9221bca00ddbd888260084def81f09543281b952\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_REPO[depot_tools]/gclient.py",
+      "runhooks"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "DEPOT_TOOLS_REPORT_BUILD": "proj/try/try-builder/8945511751514863184",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "darwin",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]",
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout source code.gclient runhooks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CACHE]/builder/src/out"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Clobber build download folder"
+  },
+  {
+    "cmd": [],
+    "name": "Global generators"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/osx_sdk",
+      "-ensure-file",
+      "infra/tools/mac_toolchain/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/osx_sdk/mac_toolchain",
+      "install",
+      "-kind",
+      "ios",
+      "-xcode-version",
+      "9f2000",
+      "-output-dir",
+      "[CACHE]/osx_sdk/XCode.app",
+      "-cipd-package-prefix",
+      "flutter_internal/ios/xcode",
+      "-with-runtime=True"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.install xcode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "com.apple.CoreSimulator.CoreSimulatorDevice"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.kill dart",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--switch",
+      "[CACHE]/osx_sdk/XCode.app"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.select XCode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "simctl",
+      "list"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.list simulators",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder/src/out",
+      "--recursive"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "darwin",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.List checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "[CACHE]/builder/src/flutter/sky/tools/create_macos_framework.py",
+      "--variant",
+      "host_profile",
+      "--type",
+      "engine",
+      "--engine-capture-core-dump"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "darwin",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Debug-FlutterMacOS.framework",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[CACHE]/builder/src/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.git rev-parse",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Global generators.Identify branches",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[CACHE]/builder/src/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Identify branches.git rev-parse",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "branch",
+      "-a",
+      "--contains",
+      "12345abcde12345abcde12345abcde12345abcde"
+    ],
+    "cwd": "[CACHE]/builder/src/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Identify branches.git branch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "RECIPE_MODULE[flutter::zip]/resources/namelist.py"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.namelist",
+    "stdin": "{\"zip_file\": \"/a/b/c.txt\"}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@json.output (invalid)@@@",
+      "@@@STEP_LOG_LINE@json.output (exception)@No JSON object could be decoded@@@",
+      "@@@STEP_LOG_END@json.output (exception)@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "RECIPE_MODULE[flutter::zip]/resources/namelist.py"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.namelist (2)",
+    "stdin": "{\"zip_file\": \"/a/b/c.txt\"}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@json.output (invalid)@@@",
+      "@@@STEP_LOG_LINE@json.output (exception)@No JSON object could be decoded@@@",
+      "@@@STEP_LOG_END@json.output (exception)@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Global generators.Codesign Dependencies",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Global generators.Codesign Dependencies.Installing Mac codesign CIPD pkg",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CLEANUP]/tmp_tmp_1",
+      "-ensure-file",
+      "flutter/codesign/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Codesign Dependencies.Installing Mac codesign CIPD pkg.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter/codesign/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Global generators.Setup codesign environment",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/flutter_p12.encrypted",
+      "[CLEANUP]/flutter_p12.encrypted"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.gsutil download",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/flutter_p12.encrypted",
+      "-output",
+      "[CLEANUP]/FLUTTER_P12",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.cloudkms get key",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.ensure_installed (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/p12_password.encrypted",
+      "[CLEANUP]/p12_password.encrypted"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.gsutil download (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/p12_password.encrypted",
+      "-output",
+      "[CLEANUP]/FLUTTER_P12_PASSWORD",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.cloudkms get key (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.ensure_installed (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/codesign_team_id.encrypted",
+      "[CLEANUP]/codesign_team_id.encrypted"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.gsutil download (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/codesign_team_id.encrypted",
+      "-output",
+      "[CLEANUP]/CODESIGN_TEAM_ID",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.cloudkms get key (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.ensure_installed (4)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/codesign_app_specific_password.encrypted",
+      "[CLEANUP]/codesign_app_specific_password.encrypted"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.gsutil download (4)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/codesign_app_specific_password.encrypted",
+      "-output",
+      "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.cloudkms get key (4)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cloudkms",
+      "-ensure-file",
+      "infra/tools/luci/cloudkms/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.ensure_installed (5)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_configs/codesign_app_store_id.encrypted",
+      "[CLEANUP]/codesign_app_store_id.encrypted"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.gsutil download (5)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cloudkms/cloudkms",
+      "decrypt",
+      "-input",
+      "[CLEANUP]/codesign_app_store_id.encrypted",
+      "-output",
+      "[CLEANUP]/CODESIGN_APP_STORE_ID",
+      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup codesign environment.cloudkms get key (5)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Global generators.Setup keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "delete-keychain",
+      "build.keychain"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup keychain.delete previous keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "create-keychain",
+      "-p",
+      "",
+      "build.keychain"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup keychain.create keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "default-keychain",
+      "-s",
+      "build.keychain"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup keychain.default keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "unlock-keychain",
+      "-p",
+      "",
+      "build.keychain"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup keychain.unlock build keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::signing]/resources/import_certificate.sh"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup keychain.Set execute permission",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::signing]/resources/import_certificate.sh"
+    ],
+    "env": {
+      "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
+      "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_1/codesign",
+      "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
+      "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
+      "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
+      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup keychain.import certificate",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "set-key-partition-list",
+      "-S",
+      "apple-tool:,apple:,codesign:",
+      "-s",
+      "-k",
+      "",
+      "build.keychain"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup keychain.set key partition list",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "find-identity",
+      "-v"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Setup keychain.show-identities",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Global generators.Keychain cleanup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "delete-keychain",
+      "build.keychain"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Keychain cleanup.delete keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "security",
+      "default-keychain",
+      "-s",
+      "login.keychain"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Keychain cleanup.Cleanup keychain.restore default keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CLEANUP]/tmp_tmp_2/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Ensure flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "/a/b/c.txt",
+      "[CLEANUP]/tmp_tmp_2/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Copy /a/b/c.txt to tmp location",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "-r",
+      "[CLEANUP]/tmp_tmp_2/*",
+      "gs://flutter_archives_v2/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.gsutil Upload /a/b/c.txt to gs://flutter_archives_v2/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket/c.txt",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_archives_v2/@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--reset"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.reset XCode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch tests (2)"
+  },
+  {
+    "cmd": [],
+    "name": "collect tests (2)"
+  },
+  {
+    "cmd": [],
+    "name": "display tests (2)"
+  },
+  {
+    "name": "$result"
+  }
+]

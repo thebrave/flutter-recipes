@@ -24,7 +24,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"prod\", \"builder\": \"Mac Production Engine Drone\", \"project\": \"flutter\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"archives\": [{\"destination\": \"bucket/c.txt\", \"name\": \"c.txt\", \"source\": \"/a/b/c.txt\"}], \"build\": {\"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}, \"recipe\": \"engine_v2/builder\"}, \"gclient_variables\": {}, \"generators\": {\"tasks\": [{\"language\": \"python3\", \"name\": \"Debug-FlutterMacOS.framework\", \"parameters\": [\"--variant\", \"host_profile\", \"--type\", \"engine\", \"--engine-capture-core-dump\"], \"script\": \"flutter/sky/tools/create_macos_framework.py\", \"type\": \"local\"}]}, \"recipe\": \"engine_v2/builder\", \"tests\": []}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"prod\", \"builder\": \"Mac Production Engine Drone\", \"project\": \"flutter\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"archives\": [{\"destination\": \"bucket/c.txt\", \"name\": \"c.txt\", \"source\": \"/a/b/c.txt\"}], \"build\": {\"archives\": [{\"base_path\": \"out/host_debug/zip_archives/\", \"include_paths\": [\"out/host_debug/zip_archives/darwin-x64/artifacts.zip\", \"out/host_debug/zip_archives/darwin-x64/FlutterEmbedder.framework.zip\", \"out/host_debug/zip_archives/dart-sdk-darwin-x64.zip\", \"out/host_debug/zip_archives/flutter-web-sdk-darwin-x64.zip\"], \"name\": \"host_debug\", \"type\": \"gcs\"}], \"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}, \"recipe\": \"engine_v2/builder\"}, \"gclient_variables\": {}, \"generators\": {\"tasks\": [{\"language\": \"python3\", \"name\": \"Debug-FlutterMacOS.framework\", \"parameters\": [\"--variant\", \"host_profile\", \"--type\", \"engine\", \"--engine-capture-core-dump\"], \"script\": \"flutter/sky/tools/create_macos_framework.py\", \"type\": \"local\"}]}, \"recipe\": \"engine_v2/builder\", \"tests\": []}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -75,6 +75,19 @@
       "@@@STEP_LOG_LINE@request@            }@@@",
       "@@@STEP_LOG_LINE@request@          ], @@@",
       "@@@STEP_LOG_LINE@request@          \"build\": {@@@",
+      "@@@STEP_LOG_LINE@request@            \"archives\": [@@@",
+      "@@@STEP_LOG_LINE@request@              {@@@",
+      "@@@STEP_LOG_LINE@request@                \"base_path\": \"out/host_debug/zip_archives/\", @@@",
+      "@@@STEP_LOG_LINE@request@                \"include_paths\": [@@@",
+      "@@@STEP_LOG_LINE@request@                  \"out/host_debug/zip_archives/darwin-x64/artifacts.zip\", @@@",
+      "@@@STEP_LOG_LINE@request@                  \"out/host_debug/zip_archives/darwin-x64/FlutterEmbedder.framework.zip\", @@@",
+      "@@@STEP_LOG_LINE@request@                  \"out/host_debug/zip_archives/dart-sdk-darwin-x64.zip\", @@@",
+      "@@@STEP_LOG_LINE@request@                  \"out/host_debug/zip_archives/flutter-web-sdk-darwin-x64.zip\"@@@",
+      "@@@STEP_LOG_LINE@request@                ], @@@",
+      "@@@STEP_LOG_LINE@request@                \"name\": \"host_debug\", @@@",
+      "@@@STEP_LOG_LINE@request@                \"type\": \"gcs\"@@@",
+      "@@@STEP_LOG_LINE@request@              }@@@",
+      "@@@STEP_LOG_LINE@request@            ], @@@",
       "@@@STEP_LOG_LINE@request@            \"generators\": [@@@",
       "@@@STEP_LOG_LINE@request@              {@@@",
       "@@@STEP_LOG_LINE@request@                \"name\": \"generator1\", @@@",
@@ -271,6 +284,18 @@
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LINK@8945511751514863186@https://cr-buildbucket.appspot.com/build/8945511751514863186@@@"
     ]
+  },
+  {
+    "cmd": [],
+    "name": "launch tests"
+  },
+  {
+    "cmd": [],
+    "name": "collect tests"
+  },
+  {
+    "cmd": [],
+    "name": "display tests"
   },
   {
     "cmd": [
@@ -733,10 +758,11 @@
   },
   {
     "cmd": [
-      "sudo",
-      "xcode-select",
-      "--reset"
+      "git",
+      "rev-parse",
+      "HEAD"
     ],
+    "cwd": "[CACHE]/builder/src/flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -750,7 +776,14 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Global generators.reset XCode",
+    "name": "Global generators.git rev-parse",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Global generators.Identify branches",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -775,7 +808,63 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "git rev-parse"
+    "name": "Global generators.Identify branches.git rev-parse",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "branch",
+      "-a",
+      "--contains",
+      "12345abcde12345abcde12345abcde12345abcde"
+    ],
+    "cwd": "[CACHE]/builder/src/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Identify branches.git branch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "RECIPE_MODULE[flutter::zip]/resources/namelist.py"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.namelist",
+    "stdin": "{\"zip_file\": \"/a/b/c.txt\"}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@json.output (invalid)@@@",
+      "@@@STEP_LOG_LINE@json.output (exception)@No JSON object could be decoded@@@",
+      "@@@STEP_LOG_END@json.output (exception)@@@"
+    ]
   },
   {
     "cmd": [
@@ -802,7 +891,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Ensure flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket"
+    "name": "Global generators.Ensure flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -828,7 +920,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Copy /a/b/c.txt to tmp location"
+    "name": "Global generators.Copy /a/b/c.txt to tmp location",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -856,22 +951,47 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gsutil Upload /a/b/c.txt to gs://flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket/c.txt",
+    "name": "Global generators.gsutil Upload /a/b/c.txt to gs://flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket/c.txt",
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_infra_release/@@@"
     ]
   },
   {
-    "cmd": [],
-    "name": "launch tests"
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--reset"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.reset XCode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [],
-    "name": "collect tests"
+    "name": "launch tests (2)"
   },
   {
     "cmd": [],
-    "name": "display tests"
+    "name": "collect tests (2)"
+  },
+  {
+    "cmd": [],
+    "name": "display tests (2)"
   },
   {
     "name": "$result"

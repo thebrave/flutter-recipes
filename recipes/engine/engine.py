@@ -1640,6 +1640,8 @@ def PackageIOSVariant(
     pkg.add_directory(label_dir.join('Flutter.dSYM'))
     pkg.zip('Zip Flutter.dSYM')
     remote_name = '%s/Flutter.dSYM.zip' % bucket_name
+    if not api.flutter_bcid.is_prod_build():
+      return
     remote_zip = GetCloudPath(api, remote_name)
     api.bucket_util.safe_upload(dsym_zip, remote_zip)
 

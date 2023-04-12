@@ -11453,56 +11453,6 @@
   },
   {
     "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "[CACHE]/builder/src/out/release/Flutter.dSYM.zip",
-      "gs://flutter_infra_release/flutter/abcd1234/ios-release/Flutter.dSYM.zip"
-    ],
-    "cwd": "[CACHE]/builder",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "flutter:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload \"flutter/abcd1234/ios-release/Flutter.dSYM.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/abcd1234/ios-release/Flutter.dSYM.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
       "bb",
       "batch",
       "-host",

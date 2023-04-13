@@ -1828,7 +1828,8 @@ def BuildObjcDoc(api, env, env_prefixes):
     api.zip.directory(
         'archive obj-c doc', temp_dir, checkout.join('out/ios-objcdoc.zip')
     )
-
+    if not api.flutter_bcid.is_prod_build():
+      return
     api.bucket_util.safe_upload(
         checkout.join('out/ios-objcdoc.zip'),
         GetCloudPath(api, 'ios-objcdoc.zip')

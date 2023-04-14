@@ -97,6 +97,8 @@ def RunSteps(api, properties, env_properties):
   current_branch = 'main'
   if checkout_path and api.repo_util.is_release_candidate_branch(checkout_path):
     current_branch = api.repo_util.release_candidate_branch(checkout_path)
+
+  # Execute subbuilds
   with api.step.nest('launch builds') as presentation:
     tasks = api.shard_util_v2.schedule_builds(
         builds, presentation, branch=current_branch
@@ -110,19 +112,6 @@ def RunSteps(api, properties, env_properties):
       raise_on_failure=True,
   )
 
-  # Run tests
-  with api.step.nest('launch tests') as presentation:
-    tasks = api.shard_util_v2.schedule_tests(tests, build_results, presentation)
-  with api.step.nest('collect tests') as presentation:
-    test_results = api.shard_util_v2.collect(tasks, presentation)
-
-  api.display_util.display_subbuilds(
-      step_name='display tests',
-      subbuilds=test_results,
-      raise_on_failure=True,
-  )
-
-  signing_file_list = []
 
   # Global generators
   if generators or archives or (

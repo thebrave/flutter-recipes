@@ -14,9 +14,10 @@ then
   git tag $TAG $REL_HASH || true
 elif [ $REPO == 'engine' ]
 then
-  echo 'using tag' $(<../flutter/bin/internal/engine.version)
-  git tag $TAG $(<../flutter/bin/internal/engine.version) || true
+  # for engine, change hash to use output of engine version in flutter/flutter
+  echo 'using tag' $REL_HASH
+  git tag $TAG $REL_HASH || true
 fi
 git remote set-url origin https://$GITHUB_USER:$TOKEN@github.com/flutter/$REPO.git
-$DRY_RUN_CMD git push origin $TAG || true
-$DRY_RUN_CMD git push origin HEAD:$RELEASE_CHANNEL
+git push origin $TAG || true
+git push origin HEAD:$RELEASE_CHANNEL $FORCE_FLAG

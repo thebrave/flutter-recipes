@@ -370,7 +370,7 @@
     "cwd": "[START_DIR]/flutter",
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "DRY_RUN_CMD": "",
+      "FORCE_FLAG": "--force-with-lease=beta:deadbeef",
       "GITHUB_USER": "fluttergithubbot",
       "GIT_BRANCH": "flutter-2.8-candidate.9",
       "LUCI_BRANCH": "",
@@ -383,7 +383,7 @@
       "REPO": "flutter",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
-      "TAG": "1.2.3-4.5.pre",
+      "TAG": "1.2.3",
       "TOKEN_PATH": "[CLEANUP]/token.txt"
     },
     "env_prefixes": {
@@ -395,6 +395,23 @@
       ]
     },
     "name": "Tag and push release on flutter/flutter"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[START_DIR]/flutter/bin/internal/engine.version",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "read engine hash",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@engine.version@@@"
+    ]
   },
   {
     "cmd": [
@@ -513,8 +530,8 @@
     "env": {
       "ANDROID_HOME": "[START_DIR]/engine/src/third_party/android_tools/sdk",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "DRY_RUN_CMD": "",
       "ENGINE_CHECKOUT_PATH": "[START_DIR]/engine",
+      "FORCE_FLAG": "--force-with-lease=beta:",
       "GITHUB_USER": "fluttergithubbot",
       "GIT_BRANCH": "flutter-2.8-candidate.9",
       "LUCI_BRANCH": "",
@@ -523,10 +540,10 @@
       "LUCI_WORKDIR": "[START_DIR]",
       "OS": "darwin",
       "RELEASE_CHANNEL": "beta",
-      "REL_HASH": "deadbeef",
+      "REL_HASH": "",
       "REPO": "engine",
       "REVISION": "",
-      "TAG": "1.2.3-4.5.pre",
+      "TAG": "1.2.3",
       "TOKEN_PATH": "[CLEANUP]/token.txt"
     },
     "env_prefixes": {

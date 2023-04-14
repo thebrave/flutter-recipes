@@ -45,8 +45,8 @@ def RunSteps(api):
   git_branch = api.properties.get('git_branch')
   tag = api.properties.get('tag')
   release_channel = api.properties.get('release_channel')
-  # default to True dry run
-  dry_run = api.runtime.is_experimental or api.properties.get('dry_run')=='True'
+  # default to False force push
+  force = False if api.runtime.is_experimental else api.properties.get('force', False)
   assert git_branch and tag and release_channel
 
   flutter_checkout = api.path['start_dir'].join('flutter')
@@ -97,19 +97,15 @@ def RunSteps(api):
   )
 
   for repo in ('flutter', 'engine'):
-    if repo=='flutter':
-        env = env_flutter
-        env_prefixes=env_flutter_prefixes
-        checkout = flutter_checkout
-    else:
-        env = env_engine
-        env_prefixes=env_engine_prefixes
-        checkout = engine_checkout
+    env = env_flutter if repo=='flutter' else env_engine
+    env_prefixes = env_flutter_prefixes if repo=='flutter' else env_engine_prefixes
+    checkout = flutter_checkout if repo=='flutter' else engine_checkout
+    rel_hash = rel_hash if repo=='flutter' else GetEngineVersion(api, flutter_checkout)
     with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout):
       token_decrypted = api.path['cleanup'].join('token.txt')
       api.kms.get_secret('flutter-release-github-token.encrypted', token_decrypted)
 
-      env['DRY_RUN_CMD'] = 'echo' if dry_run else ''
+      env['FORCE_FLAG'] = '--force-with-lease=%s:%s' % (release_channel, rel_hash) if force else ''
       env['TOKEN_PATH'] = token_decrypted
       env['TAG'] = tag
       env['REL_HASH'] = rel_hash
@@ -124,24 +120,26 @@ def RunSteps(api):
       with api.context(env=env, env_prefixes=env_prefixes):
         api.step('Tag and push release on flutter/%s' % repo, [resource_name])
 
+def GetEngineVersion(api, flutter_checkout):
+  return api.file.read_text('read engine hash', str(flutter_checkout)+'/bin/internal/engine.version').strip()
 
 def GenTests(api):
     checkout_path = api.path['start_dir'].join('flutter')
     for tag in ('1.2.3-4.5.pre', '1.2.3'):
       for release_channel in ('stable', 'beta'):
-        for dry_run in ('True', 'False'):
+        for force in ('True', 'False'):
           test = api.test(
               '%s_%s_%s%s' % (
                   'flutter-2.8-candidate.9',
                   tag,
                   release_channel,
-                  '_dry_run' if dry_run=='True' else ''
+                  '_force' if force=='True' else 'False'
               ), api.platform('mac', 64),
               api.properties(
                   git_branch='flutter-2.8-candidate.9',
                   tag=tag,
                   release_channel=release_channel,
-                  dry_run=dry_run
+                  force=force
               ),
               api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
               api.post_process(post_process.MustRun,

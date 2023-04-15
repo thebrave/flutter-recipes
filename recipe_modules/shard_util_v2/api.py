@@ -201,6 +201,15 @@ class ShardUtilApi(recipe_api.RecipeApi):
           self.m.platform.name
       )
 
+      # Buildbucket properties are not propagated to sub-builds when running with
+      # led. Copy the properties bb gitiles_commit to git_ref and git_url if not
+      # set already.
+      if not (drone_properties.get('git_ref') or drone_properties.get('git_url')):
+        host = self.m.buildbucket.gitiles_commit.host
+        project = self.m.buildbucket.gitiles_commit.project
+        drone_properties['git_url'] = f'https://{host}/{project}'
+        drone_properties['git_ref'] = self.m.buildbucket.gitiles_commit.id
+
       # Override recipe.
       drone_properties['recipe'] = build['recipe']
       bucket = self.m.buildbucket.build.builder.bucket

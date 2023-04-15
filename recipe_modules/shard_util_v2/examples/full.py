@@ -149,3 +149,21 @@ def GenTests(api):
           collect_step='collect builds',
       )
   )
+
+  presubmit_props = copy.deepcopy(props)
+  presubmit_props['builds'][0]['drone_builder_name'] = 'custom drone builder'
+  yield api.test(
+      'presubmit_led_subbuilds', api.properties(**presubmit_props),
+      api.platform.name('linux'),
+      api.buildbucket.try_build(
+          project='proj',
+          builder='try-builder',
+          git_repo='https://github.com/repo/a',
+          revision='a' * 40,
+          build_number=123
+      ),
+      api.shard_util_v2.child_led_steps(
+          subbuilds=[try_subbuild1, try_subbuild2],
+          collect_step='collect builds',
+      )
+  )

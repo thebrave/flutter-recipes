@@ -62,7 +62,7 @@ def RunSteps(api):
   assert api.platform.is_linux or api.platform.is_mac
 
   with api.step.nest('checkout flutter release branch'):
-    rel_hash = api.repo_util.checkout(
+    flutter_rel_hash = api.repo_util.checkout(
       'flutter',
       flutter_checkout,
       url=flutter_git_url,
@@ -100,7 +100,7 @@ def RunSteps(api):
     env = env_flutter if repo=='flutter' else env_engine
     env_prefixes = env_flutter_prefixes if repo=='flutter' else env_engine_prefixes
     checkout = flutter_checkout if repo=='flutter' else engine_checkout
-    rel_hash = rel_hash if repo=='flutter' else GetEngineVersion(api, flutter_checkout)
+    rel_hash = flutter_rel_hash if repo=='flutter' else GetEngineVersion(api, flutter_checkout)
     with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout):
       token_decrypted = api.path['cleanup'].join('token.txt')
       api.kms.get_secret('flutter-release-github-token.encrypted', token_decrypted)

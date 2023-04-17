@@ -214,6 +214,11 @@ def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params, sup
           timeout_secs=test_timeout_secs,
           suppress_log=suppress_log,
       )
+    except api.step.StepFailure as failure:
+      test_status = 'flaky'
+      if failure.had_timeout:
+        # presumably diagnosis already ran and passed, but let's open Xcode anyway
+        api.os_utils.ios_debug_symbol_doctor(diagnose_first=False)
     finally:
       debug_after_failure(api, task_name)
     if test_status == 'flaky':
@@ -410,6 +415,31 @@ def GenTests(api):
           'Find device type',
           stdout=api.raw_io.output_text('iPhone8,1'),
       )
+  )
+  yield api.test(
+      "xcode-devicelab-timeout",
+      api.properties(
+          buildername='Mac_ios abc',
+          task_name='abc',
+          tags=['ios'],
+          dependencies=[{'dependency': 'xcode'}],
+          test_timeout_secs=1,
+          git_branch='master',
+          **{'$flutter/devicelab_osx_sdk': {
+              'sdk_version': 'deadbeef',
+          }}
+      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.platform.name('mac'),
+      api.buildbucket.ci_build(git_ref='refs/heads/master',),
+      api.step_data(
+          'Find device type',
+          stdout=api.raw_io.output_text('iPhone8,1'),
+      ),
+      api.step_data(
+          'run abc',
+          times_out_after=2,
+          had_timeout=True,
+      ), api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
   )
   yield api.test(
       "xcode-chromium-mac",

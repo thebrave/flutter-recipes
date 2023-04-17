@@ -55,6 +55,7 @@ def GenTests(api):
       api.step_data('ios_debug_symbol_doctor.diagnose (2)', retcode=1),
       api.step_data('ios_debug_symbol_doctor.diagnose (3)', retcode=1),
       api.step_data('ios_debug_symbol_doctor.diagnose (4)', retcode=1),
+      api.step_data('ios_debug_symbol_doctor.diagnose (5)', retcode=1),
       api.platform('mac', 64),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')

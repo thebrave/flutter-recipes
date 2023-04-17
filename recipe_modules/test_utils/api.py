@@ -131,7 +131,10 @@ class TestUtilsApi(recipe_api.RecipeApi):
       stdout = self._truncateString(result.stdout)
       # Truncate stderr
       stderr = self._truncateString(result.stderr)
-      raise self.m.step.StepFailure('\n\n```%s```\n' % (stdout or stderr))
+      raise self.m.step.StepFailure(
+        '\n\n```%s```\n' % (stdout or stderr),
+        result=result,
+      )
     finally:
       if not suppress_log:
         self.m.step.active_result.presentation.logs[

@@ -127,6 +127,10 @@ def RunSteps(api, properties, env_properties):
     else:
       env, env_prefixes = api.repo_util.engine_environment(full_engine_checkout)
       api.repo_util.engine_checkout(full_engine_checkout, env, env_prefixes)
+      # The checkouts are using cache which may have some old artifacts in the out
+      # directory. We are cleaning out the folder to ensure we start from an empty
+      # out folder.
+      api.file.rmtree('Clobber build output', full_engine_checkout.join('src', 'out'))
 
   if generators:
     # Download sub-builds

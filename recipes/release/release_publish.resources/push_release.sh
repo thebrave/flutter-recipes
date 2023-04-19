@@ -8,16 +8,9 @@ set -e
 TOKEN=$(cat $TOKEN_PATH)
 git checkout $GIT_BRANCH
 git branch
-if [ $REPO == 'flutter' ]
-then
-  echo 'using tag' $REL_HASH
-  git tag $TAG $REL_HASH || true
-elif [ $REPO == 'engine' ]
-then
-  # for engine, change hash to use output of engine version in flutter/flutter
-  echo 'using tag' $REL_HASH
-  git tag $TAG $REL_HASH || true
-fi
+echo "##### TAGGING #####"
+git tag $TAG $REL_HASH || true
 git remote set-url origin https://$GITHUB_USER:$TOKEN@github.com/flutter/$REPO.git
 git push origin $TAG || true
+echo "##### PUSHING TO $RELEASE_CHANNEL #####"
 git push origin HEAD:$RELEASE_CHANNEL $FORCE_FLAG

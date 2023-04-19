@@ -1932,106 +1932,9 @@
   },
   {
     "cmd": [
-      "security",
-      "delete-keychain",
-      "build.keychain"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Global generators.Setup keychain.delete previous keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "create-keychain",
-      "-p",
-      "",
-      "build.keychain"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Global generators.Setup keychain.create keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "default-keychain",
-      "-s",
-      "build.keychain"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Global generators.Setup keychain.default keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "unlock-keychain",
-      "-p",
-      "",
-      "build.keychain"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Global generators.Setup keychain.unlock build keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
       "chmod",
       "755",
-      "RECIPE_MODULE[flutter::signing]/resources/import_certificate.sh"
+      "RECIPE_MODULE[flutter::signing]/resources/setup_keychain.sh"
     ],
     "infra_step": true,
     "luci_context": {
@@ -2053,7 +1956,7 @@
   },
   {
     "cmd": [
-      "RECIPE_MODULE[flutter::signing]/resources/import_certificate.sh"
+      "RECIPE_MODULE[flutter::signing]/resources/setup_keychain.sh"
     ],
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
@@ -2076,60 +1979,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Global generators.Setup keychain.import certificate",
+    "name": "Global generators.run keychain setup script",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "set-key-partition-list",
-      "-S",
-      "apple-tool:,apple:,codesign:",
-      "-s",
-      "-k",
-      "",
-      "build.keychain"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Global generators.Setup keychain.set key partition list",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "find-identity",
-      "-v"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "proj:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Global generators.Setup keychain.show-identities",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {

@@ -442,7 +442,6 @@ def GenTests(api):
           stdout=api.raw_io
           .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
       ),
-      api.signing.flutter_signing_identity('Global generators.Setup keychain.show-identities'),
   )
 
   tests = [{

@@ -287,7 +287,6 @@ def GenTests(api):
           revision='abcd' * 10,
           build_number=123,
       ),
-      api.signing.flutter_signing_identity(),
       api.step_data(
           'Identify branches.git branch',
           stdout=api.raw_io

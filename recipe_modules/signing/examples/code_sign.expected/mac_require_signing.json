@@ -359,58 +359,9 @@
   },
   {
     "cmd": [
-      "security",
-      "delete-keychain",
-      "build.keychain"
-    ],
-    "name": "Setup keychain.delete previous keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "create-keychain",
-      "-p",
-      "",
-      "build.keychain"
-    ],
-    "name": "Setup keychain.create keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "default-keychain",
-      "-s",
-      "build.keychain"
-    ],
-    "name": "Setup keychain.default keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "unlock-keychain",
-      "-p",
-      "",
-      "build.keychain"
-    ],
-    "name": "Setup keychain.unlock build keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
       "chmod",
       "755",
-      "RECIPE_MODULE[flutter::signing]/resources/import_certificate.sh"
+      "RECIPE_MODULE[flutter::signing]/resources/setup_keychain.sh"
     ],
     "infra_step": true,
     "name": "Setup keychain.Set execute permission",
@@ -420,7 +371,7 @@
   },
   {
     "cmd": [
-      "RECIPE_MODULE[flutter::signing]/resources/import_certificate.sh"
+      "RECIPE_MODULE[flutter::signing]/resources/setup_keychain.sh"
     ],
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
@@ -431,37 +382,7 @@
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
       "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12"
     },
-    "name": "Setup keychain.import certificate",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "set-key-partition-list",
-      "-S",
-      "apple-tool:,apple:,codesign:",
-      "-s",
-      "-k",
-      "",
-      "build.keychain"
-    ],
-    "name": "Setup keychain.set key partition list",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "find-identity",
-      "-v"
-    ],
-    "name": "Setup keychain.show-identities",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
+    "name": "run keychain setup script"
   },
   {
     "cmd": [
@@ -498,7 +419,7 @@
     "cmd": [
       "[CLEANUP]/tmp_tmp_1/codesign",
       "--codesign-cert-name",
-      "FLUTTER.IO LLC",
+      "Developer ID Application: FLUTTER.IO LLC (S8QB4VV633)",
       "--no-dryrun",
       "--app-specific-password-file-path",
       "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",

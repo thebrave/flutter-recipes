@@ -355,65 +355,13 @@
   },
   {
     "cmd": [],
-    "name": "Setup keychain",
-    "~followup_annotations": [
-      "@@@STEP_EXCEPTION@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "delete-keychain",
-      "build.keychain"
-    ],
-    "name": "Setup keychain.delete previous keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "create-keychain",
-      "-p",
-      "",
-      "build.keychain"
-    ],
-    "name": "Setup keychain.create keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "default-keychain",
-      "-s",
-      "build.keychain"
-    ],
-    "name": "Setup keychain.default keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "unlock-keychain",
-      "-p",
-      "",
-      "build.keychain"
-    ],
-    "name": "Setup keychain.unlock build keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
+    "name": "Setup keychain"
   },
   {
     "cmd": [
       "chmod",
       "755",
-      "RECIPE_MODULE[flutter::signing]/resources/import_certificate.sh"
+      "RECIPE_MODULE[flutter::signing]/resources/setup_keychain.sh"
     ],
     "infra_step": true,
     "name": "Setup keychain.Set execute permission",
@@ -423,7 +371,7 @@
   },
   {
     "cmd": [
-      "RECIPE_MODULE[flutter::signing]/resources/import_certificate.sh"
+      "RECIPE_MODULE[flutter::signing]/resources/setup_keychain.sh"
     ],
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
@@ -434,23 +382,81 @@
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
       "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12"
     },
-    "name": "Setup keychain.import certificate",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
+    "name": "run keychain setup script"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "file1.zip",
+      "unsigned_file1.zip"
+    ],
+    "infra_step": true,
+    "name": "Move file1.zip"
+  },
+  {
+    "cmd": [],
+    "name": "Codesign unsigned_file1.zip"
   },
   {
     "cmd": [
       "security",
-      "set-key-partition-list",
-      "-S",
-      "apple-tool:,apple:,codesign:",
-      "-s",
-      "-k",
+      "unlock-keychain",
+      "-p",
       "",
       "build.keychain"
     ],
-    "name": "Setup keychain.set key partition list",
+    "name": "Codesign unsigned_file1.zip.unlock build keychain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CLEANUP]/tmp_tmp_1/codesign",
+      "--codesign-cert-name",
+      "Developer ID Application: FLUTTER.IO LLC (S8QB4VV633)",
+      "--no-dryrun",
+      "--app-specific-password-file-path",
+      "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
+      "--codesign-appstore-id-file-path",
+      "[CLEANUP]/CODESIGN_APP_STORE_ID",
+      "--codesign-team-id-file-path",
+      "[CLEANUP]/CODESIGN_TEAM_ID",
+      "--input-zip-file-path",
+      "unsigned_file1.zip",
+      "--output-zip-file-path",
+      "file1.zip"
+    ],
+    "env": {
+      "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
+      "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_1/codesign",
+      "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
+      "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
+      "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
+      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12"
+    },
+    "name": "Codesign unsigned_file1.zip.codesign Apple engine binaries",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Keychain cleanup"
+  },
+  {
+    "cmd": [
+      "security",
+      "delete-keychain",
+      "build.keychain"
+    ],
+    "name": "Keychain cleanup.delete keychain",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -458,10 +464,11 @@
   {
     "cmd": [
       "security",
-      "find-identity",
-      "-v"
+      "default-keychain",
+      "-s",
+      "login.keychain"
     ],
-    "name": "Setup keychain.show-identities",
+    "name": "Keychain cleanup.Cleanup keychain.restore default keychain",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

@@ -15,18 +15,8 @@ DEPS = [
 
 
 def RunSteps(api):
-  env = {}
-  env_prefixes = {}
   files_to_sign = ['file1.zip']
-  if api.properties.get('raises'):
-    with api.assertions.assertRaises(ValueError):
-      api.signing.code_sign(
-          files_to_sign=files_to_sign,
-      )
-  else:
-    api.signing.code_sign(
-        files_to_sign=files_to_sign,
-    )
+  api.signing.code_sign(files_to_sign=files_to_sign)
 
 
 def GenTests(api):
@@ -38,11 +28,10 @@ def GenTests(api):
   yield api.test(
      'mac_require_signing',
      api.platform.name('mac'),
-     api.properties(expected_result=True),
-     api.signing.flutter_signing_identity(),
+     api.properties(expected_result=True)
   )
   yield api.test(
      'no_signing_identity',
      api.platform.name('mac'),
-     api.properties(expected_result=False, raises=True),
+     api.properties(expected_result=False)
   )

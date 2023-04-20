@@ -112,7 +112,6 @@ def RunSteps(api, properties, env_properties):
       raise_on_failure=True,
   )
 
-
   # Global generators
   if generators or archives or (
       checkout_path and
@@ -155,6 +154,7 @@ def RunSteps(api, properties, env_properties):
   # Run tests
   with api.step.nest('launch tests') as presentation:
     tasks = api.shard_util_v2.schedule_tests(tests, build_results, presentation)
+
   with api.step.nest('collect tests') as presentation:
     test_results = api.shard_util_v2.collect(tasks, presentation)
 

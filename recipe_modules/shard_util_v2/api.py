@@ -419,6 +419,9 @@ class ShardUtilApi(recipe_api.RecipeApi):
         timeout=24 * 60 * 60,
         step_name="collect",
         fields=bb_fields,
+        # Setting mirror status to False allows to pass the error processing
+        # to the subbuild presentation step.
+        mirror_status=False,
     )
     failed_builds = [
         b for b in builds.values() if b.status != common_pb2.SUCCESS

@@ -12,5 +12,8 @@ echo "##### TAGGING #####"
 git tag $TAG $REL_HASH || true
 git remote set-url origin https://$GITHUB_USER:$TOKEN@github.com/flutter/$REPO.git
 git push origin $TAG || true
-echo "##### PUSHING TO $RELEASE_CHANNEL #####"
-git push origin HEAD:$RELEASE_CHANNEL $FORCE_FLAG
+if [ $REPO == 'flutter' ]
+then
+  echo "##### PUSHING TO $RELEASE_CHANNEL #####"
+  git push origin HEAD:$RELEASE_CHANNEL $FORCE_FLAG
+fi

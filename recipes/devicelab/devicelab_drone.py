@@ -215,10 +215,10 @@ def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params, sup
           suppress_log=suppress_log,
       )
     except api.step.StepFailure as failure:
-      test_status = 'flaky'
       if failure.had_timeout:
         # presumably diagnosis already ran and passed, but let's open Xcode anyway
         api.os_utils.ios_debug_symbol_doctor(diagnose_first=False)
+      raise
     finally:
       debug_after_failure(api, task_name)
     if test_status == 'flaky':

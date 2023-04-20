@@ -34,6 +34,7 @@ _RUNTIMESPATH = [
         'Runtimes'
         ]
 
+_XCODE_CACHE_PATH = 'osx_sdk'
 
 
 class OSXSDKApi(recipe_api.RecipeApi):
@@ -49,7 +50,9 @@ class OSXSDKApi(recipe_api.RecipeApi):
     self._cleanup_cache = False
 
   def _clean_cache(self):
-    if self._cleanup_cache or self._runtime_versions:
+    # TODO(keyonghan): ideally we can cleanup a specific version of xcode cache.
+    # https://github.com/flutter/flutter/issues/117541
+    if self._cleanup_cache:
       self.m.file.rmtree('Cleaning up Xcode cache', self.m.path['cache'].join('osx_sdk'))
 
   def initialize(self):
@@ -95,53 +98,18 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
         caches: [
           {
-            # Cache for mac_toolchain tool and XCode.app
-            name: "osx_sdk"
+            name: "flutter_xcode"
             path: "osx_sdk"
-          },
-          {
-            # Runtime version
-            name: xcode_runtime_ios-14-0,
-            path: xcode_runtime_ios-14-0
           }
         ]
 
-    If you have builders which e.g. use a non-current SDK, you can give them
-    a uniqely named cache:
+    The Xcode app will be installed under:
+        osx_sdk/xcode_<xcode-version>
 
-        caches: {
-          # Cache for N-1 version mac_toolchain tool and XCode.app
-          name: "osx_sdk_old"
-          path: "osx_sdk"
-        }
+    If any iOS runtime is needed, the corresponding path will be:
+        osx_sdk/xcode_<xcode-version>_runtime_<runtime-version>
 
-    If you use multiple runtimes you'll need to provide a cache for each of
-    the runtimes.
-
-        caches: [
-          {
-            # Cache for mac_toolchain tool and XCode.app
-            name: "osx_sdk"
-            path: "osx_sdk"
-          },
-          {
-            # Runtime version
-            name: xcode_runtime_ios-14-0,
-            path: xcode_runtime_ios-14-0
-          },
-          {
-            # Runtime version
-            name: xcode_runtime_ios-13-0,
-            path: xcode_runtime_ios-13-0
-          }
-
-        ]
-
-    Similarly, if you have mac and iOS builders you may want to distinguish the
-    cache name by adding '_ios' to it. However, if you're sharing the same bots
-    for both mac and iOS, consider having a single cache and just always
-    fetching the iOS version. This will lead to lower overall disk utilization
-    and should help to reduce cache thrashing.
+    These cached packages will be shared across builds/bots.
 
     Usage:
       with api.osx_sdk('mac'):
@@ -180,7 +148,12 @@ class OSXSDKApi(recipe_api.RecipeApi):
     """Ensures the mac_toolchain tool and OS X SDK packages are installed.
 
     Returns Path to the installed sdk app bundle."""
-    cache_dir = self.m.path['cache'].join('osx_sdk')
+    runtime_version = None
+    sdk_version = 'xcode_' + self._sdk_version
+    if self._runtime_versions:
+      runtime_version = "_".join(self._runtime_versions)
+      sdk_version = sdk_version + '_runtime_' + runtime_version
+    cache_dir = self.m.path['cache'].join(_XCODE_CACHE_PATH).join(sdk_version)
 
     ef = self.m.cipd.EnsureFile()
     ef.add_package(self._tool_pkg, self._tool_ver)
@@ -203,41 +176,35 @@ class OSXSDKApi(recipe_api.RecipeApi):
             '-with-runtime=%s' % (not bool(self._runtime_versions))
         ],
     )
+    # Skips runtime installation if it already exists. Otherwise,
+    # installs each runtime version under `osx_sdk` for cache sharing,
+    # and then copies over to the destination.
     if self._runtime_versions:
-      # Remove default runtime
-      self.remove_runtime(sdk_app.join(*_RUNTIMESPATH).join('iOS.simruntime'))
-      for version in self._runtime_versions:
-        runtime_name = 'iOS %s.simruntime' % version.lower().replace('ios-', '').replace('-', '.')
-        dest = sdk_app.join(*_RUNTIMESPATH).join(runtime_name)
-        self.remove_runtime(dest)
-
       self.m.file.ensure_directory('Ensuring runtimes directory', sdk_app.join(*_RUNTIMESPATH))
       for version in self._runtime_versions:
-        runtime_cache_dir = self.m.path['cache'].join('xcode_runtime_%s' % version.lower())
-        self.m.step(
-            'install xcode runtime %s' % version.lower(),
-            [
-                cache_dir.join('mac_toolchain'),
-                'install-runtime',
-                '-cipd-package-prefix',
-                'flutter_internal/ios/xcode',
-                '-runtime-version',
-                version.lower(),
-                '-output-dir',
-                runtime_cache_dir,
-            ],
-        )
-        # Move the runtimes
         runtime_name = 'iOS %s.simruntime' % version.lower().replace('ios-', '').replace('-', '.')
-        path_with_version = runtime_cache_dir.join(runtime_name)
-        # If the runtime was the default for xcode the cipd bundle contains a directory called iOS.simruntime otherwise
-        # it contains a folder called "iOS <version>.simruntime".
-        source = path_with_version if self.m.path.exists(path_with_version) else runtime_cache_dir.join('iOS.simruntime')
         dest = sdk_app.join(*_RUNTIMESPATH).join(runtime_name)
-        self.m.file.copytree('Copy runtime to %s' % dest, source, dest, symlinks=True)
+        if not self.m.path.exists(dest):
+          runtime_cache_dir = self.m.path['cache'].join(_XCODE_CACHE_PATH).join(
+              'xcode_runtime_%s' % version.lower()
+          )
+          self.m.step(
+              'install xcode runtime %s' % version.lower(),
+              [
+                  cache_dir.join('mac_toolchain'),
+                  'install-runtime',
+                  '-cipd-package-prefix',
+                  'flutter_internal/ios/xcode',
+                  '-runtime-version',
+                  version.lower(),
+                  '-output-dir',
+                  runtime_cache_dir,
+              ],
+          )
+          # Move the runtimes
+          path_with_version = runtime_cache_dir.join(runtime_name)
+          # If the runtime was the default for xcode the cipd bundle contains a directory called iOS.simruntime otherwise
+          # it contains a folder called "iOS <version>.simruntime".
+          source = path_with_version if self.m.path.exists(path_with_version) else runtime_cache_dir.join('iOS.simruntime')
+          self.m.file.copytree('Copy runtime to %s' % dest, source, dest, symlinks=True)
     return sdk_app
-
-  def remove_runtime(self, dest):
-    is_symlink = self.m.os_utils.is_symlink(dest)
-    msg = 'Removing %s' % dest
-    self.m.file.remove(msg, dest) if is_symlink else self.m.file.rmtree(msg, dest)

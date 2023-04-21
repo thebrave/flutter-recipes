@@ -47,7 +47,7 @@ def RunSteps(api):
   release_channel = api.properties.get('release_channel')
   # default to False force push
   force = False if api.runtime.is_experimental else api.properties.get('force', False)
-  assert git_branch and tag and release_channel
+  assert git_branch and tag and release_channel in ('stable', 'beta')
 
   flutter_checkout = api.path['start_dir'].join('flutter')
   engine_checkout = api.path['start_dir'].join('engine')
@@ -57,9 +57,9 @@ def RunSteps(api):
   # Validate the given tag is correctly formatted for either stable or latest
   assert isValidTag(tag)
 
-  # This recipe should only be executed on linux or mac machines to
-  # guard against Windows git issues
-  assert api.platform.is_linux or api.platform.is_mac
+  # This recipe is only able to be triggered on linux, and the other platforms
+  # are not necessary
+  assert api.platform.is_linux
 
   with api.step.nest('checkout flutter release branch'):
     flutter_rel_hash = api.repo_util.checkout(
@@ -134,7 +134,7 @@ def GenTests(api):
                   tag,
                   release_channel,
                   '_force' if force=='True' else 'False'
-              ), api.platform('mac', 64),
+              ), api.platform('linux', 64),
               api.properties(
                   git_branch='flutter-2.8-candidate.9',
                   tag=tag,

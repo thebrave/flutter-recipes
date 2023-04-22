@@ -1722,6 +1722,29 @@ def BuildWindows(api):
     RunGN(api, '--runtime-mode', 'release', '--no-lto', '--prebuilt-dart-sdk')
     Build(api, 'host_release', 'windows', 'flutter:gen_snapshot', 'flutter/build/archives:windows_flutter')
 
+    branch = api.properties.get('git_branch', None)
+    if branch == 'main':
+      RunGN(api, '--runtime-mode', 'debug', '--no-lto', '--prebuilt-dart-sdk',
+            '--windows-cpu', 'arm64')
+      Build(api, 'host_debug_arm64', 'flutter/build/archives:artifacts',
+            'flutter/build/archives:embedder', 'flutter/tools/font-subset',
+            'flutter/build/archives:dart_sdk_archive',
+            'flutter/shell/platform/windows/client_wrapper:client_wrapper_archive',
+            'flutter/build/archives:windows_flutter')
+      RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--prebuilt-dart-sdk',
+            '--windows-cpu', 'arm64')
+      Build(api, 'host_profile_arm64', 'windows', 'gen_snapshot',
+            'flutter/build/archives:windows_flutter')
+      RunGN(api, '--runtime-mode', 'release', '--no-lto', '--prebuilt-dart-sdk',
+            '--windows-cpu', 'arm64')
+      Build(api, 'host_release_arm64', 'windows', 'gen_snapshot',
+          'flutter/build/archives:windows_flutter')
+
+    api.file.listdir(
+        'host_release zips',
+        GetCheckoutPath(api).join('out', 'host_release', 'zip_archives'))
+
+
     # host_debug
     UploadArtifact(api, config='host_debug', platform='windows-x64',
                    artifact_name='artifacts.zip')
@@ -1743,6 +1766,27 @@ def BuildWindows(api):
     # Host_release
     UploadArtifact(api, config='host_release', platform='windows-x64-release',
                    artifact_name='windows-x64-flutter.zip')
+
+    if branch == 'main':
+      # host_debug_arm64.
+      UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',
+                     artifact_name='artifacts.zip')
+      UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',
+                     artifact_name='windows-arm64-embedder.zip')
+      UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64-debug',
+                     artifact_name='windows-arm64-flutter.zip')
+      UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',
+                     artifact_name='flutter-cpp-client-wrapper.zip')
+      UploadArtifact(api, config='host_debug_arm64', platform='',
+                     artifact_name='dart-sdk-windows-arm64.zip')
+      UploadArtifact(api, config='host_debug_arm64', platform='windows-arm64',
+                     artifact_name='font-subset.zip')
+      # host_profile_arm64.
+      UploadArtifact(api, config='host_profile_arm64', platform='windows-arm64-profile',
+                     artifact_name='windows-arm64-flutter.zip')
+      # host_release_arm64.
+      UploadArtifact(api, config='host_release_arm64', platform='windows-arm64-release',
+                     artifact_name='windows-arm64-flutter.zip')
 
   if api.properties.get('build_android_aot', True):
     RunGN(api, '--runtime-mode', 'profile', '--android')

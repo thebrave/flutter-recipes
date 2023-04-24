@@ -28,7 +28,9 @@ class BuildUtilApi(recipe_api.RecipeApi):
       gn_args += ('--no-lto',)
     gn_cmd.extend(gn_args)
     env = {'GOMA_DIR': self.m.goma.goma_dir}
-    with self.m.goma(), self.m.context(env=env):
+    # Some gn configurations expect depot_tools in path. e.g. vs_studio
+    # tool_chain update script.
+    with self.m.goma(), self.m.context(env=env), self.m.depot_tools.on_path():
       self.m.step('gn %s' % ' '.join(gn_args), gn_cmd)
 
   def _calculate_j_value(self):

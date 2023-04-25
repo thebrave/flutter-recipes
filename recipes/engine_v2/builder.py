@@ -164,7 +164,7 @@ def Build(api, checkout, env, env_prefixes, outputs):
   pub_dirs = build.get('generators', {}).get('pub_dirs', [])
   archives = build.get('archives', [])
   # Get only local tests.
-  tests = [t for t in build.get('tests', []) if t.get('type') == 'local']
+  tests = build.get('tests', [])
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=checkout.join('flutter')):
     run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes)

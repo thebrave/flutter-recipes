@@ -6,7 +6,6 @@ from recipe_engine.recipe_api import Property
 
 DEPS = [
     "flutter/display_util",
-    "fuchsia/status_check",
     "recipe_engine/buildbucket",
 ]
 
@@ -36,8 +35,8 @@ def GenTests(api):
       return b
 
   yield (
-      api.status_check.test(
-          "mixed_with_infra_failures", status="infra_failure") +
+      api.test(
+          "mixed_with_infra_failures", status="INFRA_FAILURE") +
       # Exercise all status colors.
       # Purple failures prioritized over red failures.
       api.buildbucket.simulated_collect_output([
@@ -62,8 +61,8 @@ def GenTests(api):
       ]))
 
   yield (
-      api.status_check.test(
-          "canceled_buildss", status="infra_failure") +
+      api.test(
+          "canceled_buildss", status="INFRA_FAILURE") +
       # Exercise all status colors.
       # Purple failures prioritized over red failures.
       api.buildbucket.simulated_collect_output([
@@ -83,7 +82,7 @@ def GenTests(api):
       ]))
 
   yield (
-      api.status_check.test("mixed_without_infra_failures", status="failure") +
+      api.test("mixed_without_infra_failures", status="FAILURE") +
       # With just red failures, raise red.
       api.buildbucket.simulated_collect_output([
           build(
@@ -105,7 +104,7 @@ def GenTests(api):
       ]))
 
   yield (
-      api.status_check.test("all_passed") +
+      api.test("all_passed") +
       # With just red failures, raise red.
       api.buildbucket.simulated_collect_output([
           build(

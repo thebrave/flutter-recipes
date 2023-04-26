@@ -1,0 +1,656 @@
+[
+  {
+    "cmd": [],
+    "name": "launch/collect"
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_SUMMARY_TEXT@pass passed, 3 failed, 3 incomplete@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.pass (attempt 0)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://testhost/task?id=100@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.pass (attempt 0).launch pass",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_TEXT@100@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.flake (attempt 0)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://testhost/task?id=200@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.flake (attempt 0).launch flake",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_TEXT@200@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.fail (attempt 0)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://testhost/task?id=300@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.fail (attempt 0).launch fail",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_TEXT@300@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.pass_long (attempt 0)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://testhost/task?id=400@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.pass_long (attempt 0).launch pass_long",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_TEXT@400@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.flake_long (attempt 0)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://testhost/task?id=500@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.flake_long (attempt 0).launch flake_long",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_TEXT@500@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.fail_long (attempt 0)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://testhost/task?id=600@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.fail_long (attempt 0).launch fail_long",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_TEXT@600@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.abort_early_task (attempt 0)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://testhost/task?id=700@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.abort_early_task (attempt 0).launch abort_early_task",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_TEXT@700@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.install infra/tools/luci/swarming",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin"
+    ],
+    "infra_step": true,
+    "name": "launch/collect.0.install infra/tools/luci/swarming.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin",
+      "-ensure-file",
+      "infra/tools/luci/swarming/${platform} swarming_module_pin",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "launch/collect.0.install infra/tools/luci/swarming.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-swarming_module_\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/swarming/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "collect",
+      "-server",
+      "https://example.swarmingserver.appspot.com",
+      "-task-summary-json",
+      "/path/to/tmp/json",
+      "-task-output-stdout",
+      "json",
+      "-verbose",
+      "-eager",
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "700"
+    ],
+    "cost": {
+      "cpu": 100,
+      "disk": 0,
+      "memory": 50,
+      "net": 0
+    },
+    "infra_step": true,
+    "name": "launch/collect.0.collect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"100\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"0\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"pass\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"100\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"200\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"1\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"flake\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"200\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"300\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"1\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"fail\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"300\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"700\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"1\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"abort_early_task\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"700\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@task stdout+stderr: abort_early_task@hello world!@@@",
+      "@@@STEP_LOG_END@task stdout+stderr: abort_early_task@@@",
+      "@@@STEP_LOG_LINE@task stdout+stderr: fail@hello world!@@@",
+      "@@@STEP_LOG_END@task stdout+stderr: fail@@@",
+      "@@@STEP_LOG_LINE@task stdout+stderr: flake@hello world!@@@",
+      "@@@STEP_LOG_END@task stdout+stderr: flake@@@",
+      "@@@STEP_LOG_LINE@task stdout+stderr: pass@hello world!@@@",
+      "@@@STEP_LOG_END@task stdout+stderr: pass@@@",
+      "@@@STEP_LINK@task cas outputs: abort_early_task@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@",
+      "@@@STEP_LINK@task cas outputs: fail@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@",
+      "@@@STEP_LINK@task cas outputs: flake@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@",
+      "@@@STEP_LINK@task cas outputs: pass@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.process results",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.process results.abort_early_task",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.process results.fail",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.process results.flake",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.process results.pass",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.passed tasks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LINK@pass (attempt 0)@https://testhost/task?id=100@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.failed tasks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LINK@abort_early_task (attempt 0)@https://testhost/task?id=700@@@",
+      "@@@STEP_LINK@fail (attempt 0)@https://testhost/task?id=300@@@",
+      "@@@STEP_LINK@flake (attempt 0)@https://testhost/task?id=200@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.incomplete tasks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LINK@pass_long (attempt 0)@https://testhost/task?id=400@@@",
+      "@@@STEP_LINK@flake_long (attempt 0)@https://testhost/task?id=500@@@",
+      "@@@STEP_LINK@fail_long (attempt 0)@https://testhost/task?id=600@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_SUMMARY_TEXT@abort_early_task failed, 5 incomplete, abort_early_task failed after max attempts@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.launch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.launch.flake (attempt 1)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://testhost/task?id=201@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.launch.flake (attempt 1).launch flake",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_TEXT@201@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.launch.fail (attempt 1)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://testhost/task?id=301@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.launch.fail (attempt 1).launch fail",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_TEXT@301@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.launch.abort_early_task (attempt 1)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://testhost/task?id=701@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.launch.abort_early_task (attempt 1).launch abort_early_task",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_TEXT@701@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "collect",
+      "-server",
+      "https://example.swarmingserver.appspot.com",
+      "-task-summary-json",
+      "/path/to/tmp/json",
+      "-task-output-stdout",
+      "json",
+      "-verbose",
+      "-eager",
+      "201",
+      "301",
+      "400",
+      "500",
+      "600",
+      "701"
+    ],
+    "cost": {
+      "cpu": 100,
+      "disk": 0,
+      "memory": 50,
+      "net": 0
+    },
+    "infra_step": true,
+    "name": "launch/collect.1.collect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"701\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"1\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"abort_early_task\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"701\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@task stdout+stderr: abort_early_task@hello world!@@@",
+      "@@@STEP_LOG_END@task stdout+stderr: abort_early_task@@@",
+      "@@@STEP_LINK@task cas outputs: abort_early_task@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.process results",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.process results.abort_early_task",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.failed tasks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LINK@abort_early_task (attempt 1)@https://testhost/task?id=701@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.incomplete tasks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LINK@flake (attempt 1)@https://testhost/task?id=201@@@",
+      "@@@STEP_LINK@fail (attempt 1)@https://testhost/task?id=301@@@",
+      "@@@STEP_LINK@pass_long (attempt 0)@https://testhost/task?id=400@@@",
+      "@@@STEP_LINK@flake_long (attempt 0)@https://testhost/task?id=500@@@",
+      "@@@STEP_LINK@fail_long (attempt 0)@https://testhost/task?id=600@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "passes",
+    "~followup_annotations": [
+      "@@@STEP_SUMMARY_TEXT@1 passed@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "passes.pass",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@attempt 0 (pass)@https://testhost/task?id=100@@@",
+      "@@@STEP_LINK@vm-123@https://testhost/bot?id=vm-123@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "flakes",
+    "~followup_annotations": [
+      "@@@STEP_SUMMARY_TEXT@1 flaked@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "flakes.pass",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@attempt 0 (pass)@https://testhost/task?id=100@@@",
+      "@@@STEP_LINK@vm-123@https://testhost/bot?id=vm-123@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "failures",
+    "~followup_annotations": [
+      "@@@STEP_SUMMARY_TEXT@1 failed@@@",
+      "@@@STEP_FAILURE@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "failures.abort_early_task",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=700@@@",
+      "@@@STEP_LINK@vm-123@https://testhost/bot?id=vm-123@@@",
+      "@@@STEP_LINK@attempt 1 (fail)@https://testhost/task?id=701@@@",
+      "@@@STEP_FAILURE@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "incomplete",
+    "~followup_annotations": [
+      "@@@STEP_SUMMARY_TEXT@5 incomplete@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "incomplete.flake",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=200@@@",
+      "@@@STEP_LINK@vm-123@https://testhost/bot?id=vm-123@@@",
+      "@@@STEP_LINK@attempt 1 (fail)@https://testhost/task?id=201@@@",
+      "@@@STEP_LINK@None@None@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "incomplete.fail",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=300@@@",
+      "@@@STEP_LINK@vm-123@https://testhost/bot?id=vm-123@@@",
+      "@@@STEP_LINK@attempt 1 (fail)@https://testhost/task?id=301@@@",
+      "@@@STEP_LINK@None@None@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "incomplete.pass_long",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=400@@@",
+      "@@@STEP_LINK@None@None@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "incomplete.flake_long",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=500@@@",
+      "@@@STEP_LINK@None@None@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "incomplete.fail_long",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=600@@@",
+      "@@@STEP_LINK@None@None@@@"
+    ]
+  },
+  {
+    "failure": {
+      "failure": {},
+      "humanReason": "1 task failed: abort_early_task"
+    },
+    "name": "$result"
+  }
+]

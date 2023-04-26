@@ -220,6 +220,7 @@ def GenTests(api):
                   ),),
               api.properties.environ(
                   EnvProperties(SWARMING_TASK_ID='deadbeef')),
+              status='FAILURE' if platform in ['mac', 'win'] else 'SUCCESS'
           )
           yield test
 

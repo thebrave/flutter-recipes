@@ -15,64 +15,45 @@ class GomaApi(recipe_api.RecipeApi):
 
         self._enable_arbitrary_toolchains = props.enable_arbitrary_toolchains
         self._goma_dir = props.goma_dir
-        self._goma_log_dir = None
         self._jobs = props.jobs
         self._server = (
             props.server or "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog"
         )
-        self._use_http2 = props.use_http2
-
-        self._goma_context = None
-
         self._goma_started = False
+        self._goma_log_dir = None
 
-        self._goma_ctl_env = {}
-        self._http2_proxy_port = 8199
-        self._http2_proxy_pid_file = None
-        self._recommended_jobs = None
-        self._jsonstatus = None
-
-    @property
-    def json_path(self):
-        assert self._goma_dir
-        return self.m.path.join(self._goma_dir, "jsonstatus")
-
-    @property
-    def jsonstatus(self):  # pragma: no cover
-        return self._jsonstatus
+    @contextmanager
+    def __call__(self):
+        """Make context wrapping goma start/stop."""
+        # Some environment needs to be set for both compiler_proxy and gomacc.
+        # Push those variables used by both into context so the build can use
+        # them.
+        with self.m.context(
+            env={
+                # Allow user to override from the command line.
+                "GOMA_TMP_DIR": self.m.context.env.get(
+                    "GOMA_TMP_DIR", self.m.path["cleanup"].join("goma")
+                ),
+                "GOMA_USE_LOCAL": False,
+            }
+        ):
+            with self.m.step.nest("setup goma"):
+                self._start()
+            try:
+                yield
+            finally:
+                if not self.m.runtime.in_global_shutdown:
+                    with self.m.step.nest("teardown goma"):
+                        self._stop()
 
     @property
     def jobs(self):
-        """Returns number of jobs for parallel build using Goma.
-
-        Uses value from property "$infra/goma:{\"jobs\": JOBS}" if
-        configured (typically in cr-buildbucket.cfg), else defaults to
-        `recommended_goma_jobs`.
-        """
-        return self._jobs or self.recommended_goma_jobs
-
-    @property
-    def recommended_goma_jobs(self):
-        """Return the recommended number of jobs for parallel build using Goma.
-
-        Prefer to use just `goma.jobs` and configure it through default builder
-        properties in cr-buildbucket.cfg.
-
-        This function caches the _recommended_jobs.
-        """
-        if self._recommended_jobs is None:
-            # When goma is used, 10 * self.m.platform.cpu_count is basically good in
-            # various situations according to our measurement. Build speed won't
-            # be improved if -j is larger than that.
-            #
-            # For safety, we'd like to set the upper limit to 1000.
-            self._recommended_jobs = min(10 * self.m.platform.cpu_count, 1000)
-
-        return self._recommended_jobs
-
-    @property
-    def goma_ctl(self):
-        return self.m.path.join(self._goma_dir, "goma_ctl.py")
+        """Returns number of jobs for parallel build using Goma."""
+        if self._jobs:
+            return self._jobs
+        # Based on measurements, anything beyond 10*cpu_count won't improve
+        # build speed. For safety, set an upper limit of 1000.
+        return min(10 * self.m.platform.cpu_count, 1000)
 
     @property
     def goma_dir(self):
@@ -82,8 +63,12 @@ class GomaApi(recipe_api.RecipeApi):
 
     @property
     def _stats_path(self):
-        assert self._goma_dir
-        return self.m.path.join(self._goma_dir, "goma_stats.json")
+        return self.m.path.join(self.goma_dir, "goma_stats.json")
+
+    def initialize(self):
+        self._goma_log_dir = self.m.path["cleanup"]
+        if self.m.platform.is_win:
+            self._enable_arbitrary_toolchains = True
 
     def set_path(self, path):
         self._goma_dir = path
@@ -108,32 +93,40 @@ class GomaApi(recipe_api.RecipeApi):
                 ),
             )
 
-    def _run_jsonstatus(self):
-        with self.m.context(env=self._goma_ctl_env):
-            jsonstatus_result = self.m.python3(
-                "goma jsonstatus",
-                [
-                    self.goma_ctl,
-                    "jsonstatus",
-                    self.m.json.output(leak_to=self.json_path),
-                ],
-                step_test_data=lambda: self.m.json.test_api.output(
-                    data={
-                        "notice": [
-                            {
-                                "infra_status": {
-                                    "ping_status_code": 200,
-                                    "num_user_error": 0,
-                                }
-                            }
-                        ]
-                    }
-                ),
+    def _goma_ctl(self, step_name, args, **kwargs):
+        """Run a goma_ctl.py subcommand."""
+        env = {
+            "GLOG_log_dir": self._goma_log_dir,
+            "GOMA_CACHE_DIR": self.m.path["cache"].join("goma"),
+            "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
+            "GOMA_LOCAL_OUTPUT_CACHE_DIR": self.m.path["cache"].join(
+                "goma", "localoutputcache"
+            ),
+            "GOMA_STORE_LOCAL_RUN_OUTPUT": True,
+            "GOMA_SERVER_HOST": self._server,
+            "GOMA_DUMP_STATS_FILE": self._stats_path,
+            # The next power of 2 larger than the currently known largest
+            # output (153565624) from the core.x64 profile build.
+            "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": 256,
+        }
+        if self._enable_arbitrary_toolchains:
+            env["GOMA_ARBITRARY_TOOLCHAIN_SUPPORT"] = True
+
+        with self.m.context(env=env, infra_steps=True):
+            return self.m.python3(
+                step_name,
+                [self.m.path.join(self.goma_dir, "goma_ctl.py")] + list(args),
+                **kwargs,
             )
 
-        self._jsonstatus = jsonstatus_result.json.output
-        if self._jsonstatus is None:
-            jsonstatus_result.presentation.status = self.m.step.WARNING
+    def _run_jsonstatus(self):
+        step = self._goma_ctl(
+            "goma jsonstatus",
+            ["jsonstatus", self.m.json.output(add_json_log=True)],
+            step_test_data=lambda: self.m.json.test_api.output({"foo": "bar"}),
+        )
+        if step.json.output is None:
+            step.presentation.status = self.m.step.WARNING
 
     def _upload_goma_stats(self):
         stats = self.m.file.read_json(
@@ -164,150 +157,46 @@ class GomaApi(recipe_api.RecipeApi):
             ok_ret="all",
         )
 
-    def start(self):
-        """Start goma compiler_proxy."""
+    def _start(self):
+        """Start goma compiler proxy."""
         assert not self._goma_started
 
         self._ensure()
 
-        with self.m.step.nest("setup goma") as nested_result:
-            # Allow user to override from the command line.
-            self._goma_ctl_env["GOMA_TMP_DIR"] = self.m.context.env.get(
-                "GOMA_TMP_DIR", self.m.path["cleanup"].join("goma")
-            )
-            self._goma_ctl_env["GOMA_USE_LOCAL"] = False
-            self._goma_log_dir = self.m.path["cleanup"]
-            self._goma_ctl_env["GLOG_log_dir"] = self._goma_log_dir
+        try:
+            self._goma_ctl("start goma", ["restart"])
+            self._goma_started = True
+        except self.m.step.StepFailure:  # pragma: no cover
+            with self.m.step.defer_results():
+                self._run_jsonstatus()
+                self._goma_ctl("stop goma (start failure)", ["stop"])
+            raise
 
-            self._goma_ctl_env["GOMA_CACHE_DIR"] = self.m.path["cache"].join("goma")
-            self._goma_ctl_env["GOMA_DEPS_CACHE_FILE"] = "goma_deps_cache"
-            self._goma_ctl_env["GOMA_LOCAL_OUTPUT_CACHE_DIR"] = self.m.path[
-                "cache"
-            ].join("goma", "localoutputcache")
-            self._goma_ctl_env["GOMA_STORE_LOCAL_RUN_OUTPUT"] = True
-
-            if self._use_http2:
-                self._http2_proxy_pid_file = self.m.path["tmp_base"].join(
-                    "goma_http2_proxy.pid"
-                )
-                self.m.daemonizer.start(
-                    self._http2_proxy_pid_file,
-                    [
-                        self._goma_dir.join("http_proxy"),
-                        "-server-host",
-                        self._server,
-                        "-port",
-                        self._http2_proxy_port,
-                    ],
-                )
-                self._goma_ctl_env["GOMA_SERVER_HOST"] = "127.0.0.1"
-                self._goma_ctl_env["GOMA_SERVER_PORT"] = str(self._http2_proxy_port)
-                self._goma_ctl_env["GOMA_USE_SSL"] = "false"
-            else:
-                self._goma_ctl_env["GOMA_SERVER_HOST"] = self._server
-
-            if self.m.platform.is_win:
-                self._enable_arbitrary_toolchains = True
-            if self._enable_arbitrary_toolchains:
-                self._goma_ctl_env[
-                    "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT"
-                ] = self._enable_arbitrary_toolchains
-
-            self._goma_ctl_env["GOMA_DUMP_STATS_FILE"] = self._stats_path
-            # The next power of 2 larger than the currently known largest
-            # output (153565624) from the core.x64 profile build.
-            self._goma_ctl_env["GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB"] = 256
-
-            goma_ctl_env = self._goma_ctl_env.copy()
-
-            try:
-                with self.m.context(env=goma_ctl_env):
-                    self.m.python3(
-                        "start goma",
-                        [self.goma_ctl, "restart"],
-                        infra_step=True,
-                    )
-                self._goma_started = True
-            except self.m.step.InfraFailure as e:  # pragma: no cover
-                with self.m.step.defer_results():
-                    self._run_jsonstatus()
-                    if self._use_http2:
-                        self.m.daemonizer.stop(self._http2_proxy_pid_file)
-
-                    with self.m.context(env=self._goma_ctl_env):
-                        self.m.python3(
-                            "stop goma (start failure)",
-                            [self.goma_ctl, "stop"],
-                        )
-                nested_result.presentation.status = self.m.step.EXCEPTION
-                raise e
-
-    def stop(self):
-        """Stop goma compiler_proxy.
-
-        A user MUST execute start beforehand.
-        It is user's responsibility to handle failure of stopping compiler_proxy.
-
-        Raises:
-            StepFailure if it fails to stop goma.
-        """
-        assert self._goma_dir
+    def _stop(self):
+        """Stop goma compiler proxy."""
         assert self._goma_started
 
-        with self.m.step.nest("teardown goma") as nested_result:
+        with self.m.step.defer_results():
+            self._run_jsonstatus()
+            self._goma_ctl("goma stats", ["stat"])
+            self._goma_ctl("stop goma", ["stop"])
+
+        self._goma_started = False
+
+        compiler_proxy_warning_log_path = self._goma_log_dir.join(
+            "compiler_proxy.WARNING"
+        )
+        # Not all builds use goma, so it might not exist.
+        self.m.path.mock_add_paths(compiler_proxy_warning_log_path)
+        if self.m.path.exists(compiler_proxy_warning_log_path):
             try:
-                with self.m.step.defer_results():
-                    self._run_jsonstatus()
-                    if self._use_http2:
-                        self.m.daemonizer.stop(self._http2_proxy_pid_file)
+                self.m.file.read_text(
+                    "read goma_client warning log",
+                    compiler_proxy_warning_log_path,
+                    test_data="test log",
+                )
+            except self.m.step.StepFailure:  # pragma: no cover
+                # Ignore. Not a big deal.
+                pass
 
-                    with self.m.context(env=self._goma_ctl_env):
-                        self.m.python3("goma stats", [self.goma_ctl, "stat"])
-                        self.m.python3("stop goma", [self.goma_ctl, "stop"])
-                self._goma_started = False
-
-                if self._goma_log_dir:
-                    compiler_proxy_warning_log_path = self._goma_log_dir.join(
-                        "compiler_proxy.WARNING"
-                    )
-                    # Not all builds use goma, so it might not exist.
-                    self.m.path.mock_add_paths(compiler_proxy_warning_log_path)
-                    if self.m.path.exists(compiler_proxy_warning_log_path):
-                        try:
-                            self.m.file.read_text(
-                                "read goma_client warning log",
-                                compiler_proxy_warning_log_path,
-                                test_data="test log",
-                            )
-                        except self.m.step.StepFailure:  # pragma: no cover
-                            # Ignore. Not a big deal.
-                            nested_result.presentation.status = self.m.step.EXCEPTION
-                # Upload stats to BigQuery
-                self._upload_goma_stats()
-
-            except self.m.step.StepFailure:
-                nested_result.presentation.status = self.m.step.EXCEPTION
-                raise
-
-    @contextmanager
-    def __call__(self):
-        """Make context wrapping goma start/stop.
-
-        Raises:
-            StepFailure or InfraFailure if it fails to build.
-        """
-        self.start()
-        # Some environment needs to be set for both compiler_proxy and gomacc.
-        # Push those variables used by both into context so the build can use
-        # them.
-        gomacc_env_vars = ["GOMA_TMP_DIR", "GOMA_USE_LOCAL"]
-        gomacc_env = {
-            k: v for (k, v) in self._goma_ctl_env.items() if k in gomacc_env_vars
-        }
-
-        with self.m.context(env=gomacc_env):
-            try:
-                yield
-            finally:
-                if not self.m.runtime.in_global_shutdown:
-                    self.stop()
+        self._upload_goma_stats()

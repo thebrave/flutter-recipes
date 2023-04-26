@@ -1,0 +1,461 @@
+[
+  {
+    "cmd": [],
+    "name": "launch/collect"
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_SUMMARY_TEXT@task passed, task incomplete@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.task (attempt 0)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://example.swarmingserver.appspot.com/task?id=100@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.task (attempt 0).install infra/tools/luci/swarming",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin"
+    ],
+    "infra_step": true,
+    "name": "launch/collect.0.launch.task (attempt 0).install infra/tools/luci/swarming.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@5@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin",
+      "-ensure-file",
+      "infra/tools/luci/swarming/${platform} swarming_module_pin",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "launch/collect.0.launch.task (attempt 0).install infra/tools/luci/swarming.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@5@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-swarming_module_\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/swarming/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "spawn-tasks",
+      "-server",
+      "https://example.swarmingserver.appspot.com",
+      "-json-input",
+      "{\"requests\": [{\"name\": \"task\", \"priority\": \"200\", \"service_account\": \"\", \"task_slices\": [{\"expiration_secs\": \"300\", \"properties\": {\"command\": [], \"containment\": {\"containment_type\": \"NONE\"}, \"dimensions\": [{\"key\": \"device_type\", \"value\": \"device_type\"}, {\"key\": \"pool\", \"value\": \"pool\"}], \"env\": [], \"env_prefixes\": [], \"execution_timeout_secs\": \"1200\", \"grace_period_secs\": \"30\", \"idempotent\": false, \"io_timeout_secs\": \"60\", \"outputs\": [], \"relative_cwd\": \"\"}, \"wait_for_capacity\": false}]}]}",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "launch/collect.0.launch.task (attempt 0).trigger",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"tasks\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"request\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"name\": \"task\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"100\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"resultdb_info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"invocation\": \"invocations/100\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@json.input@{@@@",
+      "@@@STEP_LOG_LINE@json.input@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@json.input@    {@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"name\": \"task\", @@@",
+      "@@@STEP_LOG_LINE@json.input@      \"priority\": \"200\", @@@",
+      "@@@STEP_LOG_LINE@json.input@      \"service_account\": \"\", @@@",
+      "@@@STEP_LOG_LINE@json.input@      \"task_slices\": [@@@",
+      "@@@STEP_LOG_LINE@json.input@        {@@@",
+      "@@@STEP_LOG_LINE@json.input@          \"expiration_secs\": \"300\", @@@",
+      "@@@STEP_LOG_LINE@json.input@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@json.input@            \"command\": [], @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"containment\": {@@@",
+      "@@@STEP_LOG_LINE@json.input@              \"containment_type\": \"NONE\"@@@",
+      "@@@STEP_LOG_LINE@json.input@            }, @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"dimensions\": [@@@",
+      "@@@STEP_LOG_LINE@json.input@              {@@@",
+      "@@@STEP_LOG_LINE@json.input@                \"key\": \"device_type\", @@@",
+      "@@@STEP_LOG_LINE@json.input@                \"value\": \"device_type\"@@@",
+      "@@@STEP_LOG_LINE@json.input@              }, @@@",
+      "@@@STEP_LOG_LINE@json.input@              {@@@",
+      "@@@STEP_LOG_LINE@json.input@                \"key\": \"pool\", @@@",
+      "@@@STEP_LOG_LINE@json.input@                \"value\": \"pool\"@@@",
+      "@@@STEP_LOG_LINE@json.input@              }@@@",
+      "@@@STEP_LOG_LINE@json.input@            ], @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"env\": [], @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"env_prefixes\": [], @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"execution_timeout_secs\": \"1200\", @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"grace_period_secs\": \"30\", @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"idempotent\": false, @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"io_timeout_secs\": \"60\", @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"outputs\": [], @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"relative_cwd\": \"\"@@@",
+      "@@@STEP_LOG_LINE@json.input@          }, @@@",
+      "@@@STEP_LOG_LINE@json.input@          \"wait_for_capacity\": false@@@",
+      "@@@STEP_LOG_LINE@json.input@        }@@@",
+      "@@@STEP_LOG_LINE@json.input@      ]@@@",
+      "@@@STEP_LOG_LINE@json.input@    }@@@",
+      "@@@STEP_LOG_LINE@json.input@  ]@@@",
+      "@@@STEP_LOG_LINE@json.input@}@@@",
+      "@@@STEP_LOG_END@json.input@@@",
+      "@@@STEP_LINK@task UI: task@https://example.swarmingserver.appspot.com/task?id=100@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.launch.task (attempt 1)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LINK@Swarming task@https://example.swarmingserver.appspot.com/task?id=101@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "spawn-tasks",
+      "-server",
+      "https://example.swarmingserver.appspot.com",
+      "-json-input",
+      "{\"requests\": [{\"name\": \"task\", \"priority\": \"200\", \"service_account\": \"\", \"task_slices\": [{\"expiration_secs\": \"300\", \"properties\": {\"command\": [], \"containment\": {\"containment_type\": \"NONE\"}, \"dimensions\": [{\"key\": \"device_type\", \"value\": \"device_type\"}, {\"key\": \"pool\", \"value\": \"pool\"}], \"env\": [], \"env_prefixes\": [], \"execution_timeout_secs\": \"1200\", \"grace_period_secs\": \"30\", \"idempotent\": false, \"io_timeout_secs\": \"60\", \"outputs\": [], \"relative_cwd\": \"\"}, \"wait_for_capacity\": false}]}]}",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "launch/collect.0.launch.task (attempt 1).trigger",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"tasks\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"request\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"name\": \"task\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"101\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"resultdb_info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"invocation\": \"invocations/101\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@json.input@{@@@",
+      "@@@STEP_LOG_LINE@json.input@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@json.input@    {@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"name\": \"task\", @@@",
+      "@@@STEP_LOG_LINE@json.input@      \"priority\": \"200\", @@@",
+      "@@@STEP_LOG_LINE@json.input@      \"service_account\": \"\", @@@",
+      "@@@STEP_LOG_LINE@json.input@      \"task_slices\": [@@@",
+      "@@@STEP_LOG_LINE@json.input@        {@@@",
+      "@@@STEP_LOG_LINE@json.input@          \"expiration_secs\": \"300\", @@@",
+      "@@@STEP_LOG_LINE@json.input@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@json.input@            \"command\": [], @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"containment\": {@@@",
+      "@@@STEP_LOG_LINE@json.input@              \"containment_type\": \"NONE\"@@@",
+      "@@@STEP_LOG_LINE@json.input@            }, @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"dimensions\": [@@@",
+      "@@@STEP_LOG_LINE@json.input@              {@@@",
+      "@@@STEP_LOG_LINE@json.input@                \"key\": \"device_type\", @@@",
+      "@@@STEP_LOG_LINE@json.input@                \"value\": \"device_type\"@@@",
+      "@@@STEP_LOG_LINE@json.input@              }, @@@",
+      "@@@STEP_LOG_LINE@json.input@              {@@@",
+      "@@@STEP_LOG_LINE@json.input@                \"key\": \"pool\", @@@",
+      "@@@STEP_LOG_LINE@json.input@                \"value\": \"pool\"@@@",
+      "@@@STEP_LOG_LINE@json.input@              }@@@",
+      "@@@STEP_LOG_LINE@json.input@            ], @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"env\": [], @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"env_prefixes\": [], @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"execution_timeout_secs\": \"1200\", @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"grace_period_secs\": \"30\", @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"idempotent\": false, @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"io_timeout_secs\": \"60\", @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"outputs\": [], @@@",
+      "@@@STEP_LOG_LINE@json.input@            \"relative_cwd\": \"\"@@@",
+      "@@@STEP_LOG_LINE@json.input@          }, @@@",
+      "@@@STEP_LOG_LINE@json.input@          \"wait_for_capacity\": false@@@",
+      "@@@STEP_LOG_LINE@json.input@        }@@@",
+      "@@@STEP_LOG_LINE@json.input@      ]@@@",
+      "@@@STEP_LOG_LINE@json.input@    }@@@",
+      "@@@STEP_LOG_LINE@json.input@  ]@@@",
+      "@@@STEP_LOG_LINE@json.input@}@@@",
+      "@@@STEP_LOG_END@json.input@@@",
+      "@@@STEP_LINK@task UI: task@https://example.swarmingserver.appspot.com/task?id=101@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "collect",
+      "-server",
+      "https://example.swarmingserver.appspot.com",
+      "-task-summary-json",
+      "/path/to/tmp/json",
+      "-task-output-stdout",
+      "json",
+      "-verbose",
+      "-eager",
+      "100",
+      "101"
+    ],
+    "cost": {
+      "cpu": 100,
+      "disk": 0,
+      "memory": 50,
+      "net": 0
+    },
+    "infra_step": true,
+    "name": "launch/collect.0.collect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"101\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"0\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"task\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"101\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@task stdout+stderr: task@hello world!@@@",
+      "@@@STEP_LOG_END@task stdout+stderr: task@@@",
+      "@@@STEP_LINK@task cas outputs: task@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.process results",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.process results.task",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.passed tasks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LINK@task (attempt 1)@https://example.swarmingserver.appspot.com/task?id=101@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.0.incomplete tasks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LINK@task (attempt 0)@https://example.swarmingserver.appspot.com/task?id=100@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_SUMMARY_TEXT@task failed, task failed after max attempts@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "collect",
+      "-server",
+      "https://example.swarmingserver.appspot.com",
+      "-task-summary-json",
+      "/path/to/tmp/json",
+      "-task-output-stdout",
+      "json",
+      "-verbose",
+      "-eager",
+      "100"
+    ],
+    "cost": {
+      "cpu": 100,
+      "disk": 0,
+      "memory": 50,
+      "net": 0
+    },
+    "infra_step": true,
+    "name": "launch/collect.1.collect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"100\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [], @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\", @@@",
+      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"1\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"task\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }, @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\", @@@",
+      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"100\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@task stdout+stderr: task@hello world!@@@",
+      "@@@STEP_LOG_END@task stdout+stderr: task@@@",
+      "@@@STEP_LINK@task cas outputs: task@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.process results",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.process results.task",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch/collect.1.failed tasks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LINK@task (attempt 0)@https://example.swarmingserver.appspot.com/task?id=100@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "passes",
+    "~followup_annotations": [
+      "@@@STEP_SUMMARY_TEXT@0 passed@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "flakes",
+    "~followup_annotations": [
+      "@@@STEP_SUMMARY_TEXT@1 flaked@@@",
+      "@@@STEP_FAILURE@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "flakes.task",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@attempt 0 (fail)@https://example.swarmingserver.appspot.com/task?id=100@@@",
+      "@@@STEP_LINK@vm-123@https://example.swarmingserver.appspot.com/bot?id=vm-123@@@",
+      "@@@STEP_LINK@attempt 1 (pass)@https://example.swarmingserver.appspot.com/task?id=101@@@",
+      "@@@STEP_FAILURE@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "failures",
+    "~followup_annotations": [
+      "@@@STEP_SUMMARY_TEXT@1 failed@@@",
+      "@@@STEP_FAILURE@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "failures.task",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@attempt 0 (fail)@https://example.swarmingserver.appspot.com/task?id=100@@@",
+      "@@@STEP_LINK@vm-123@https://example.swarmingserver.appspot.com/bot?id=vm-123@@@",
+      "@@@STEP_LINK@attempt 1 (pass)@https://example.swarmingserver.appspot.com/task?id=101@@@",
+      "@@@STEP_FAILURE@@@"
+    ]
+  },
+  {
+    "failure": {
+      "failure": {},
+      "humanReason": "1 task failed: task"
+    },
+    "name": "$result"
+  }
+]

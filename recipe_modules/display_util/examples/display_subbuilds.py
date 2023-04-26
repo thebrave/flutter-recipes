@@ -7,7 +7,6 @@ from RECIPE_MODULES.flutter.shard_util_v2.api import SubbuildResult
 
 DEPS = [
     "flutter/display_util",
-    "fuchsia/status_check",
     "recipe_engine/buildbucket",
 ]
 
@@ -92,8 +91,8 @@ def GenTests(api):
   )
 
   yield (
-      api.status_check.test(
-          "mixed_with_infra_failures", status="infra_failure") +
+      api.test(
+          "mixed_with_infra_failures", status="INFRA_FAILURE") +
       # Exercise all status colors.
       # Purple failures prioritized over red failures.
       api.buildbucket.simulated_collect_output([
@@ -104,8 +103,8 @@ def GenTests(api):
       ]))
 
   yield (
-      api.status_check.test(
-          "canceled_builds", status="infra_failure") +
+      api.test(
+          "canceled_builds", status="INFRA_FAILURE") +
       # Exercise all status colors.
       # Purple failures prioritized over red failures.
       api.buildbucket.simulated_collect_output([
@@ -115,7 +114,7 @@ def GenTests(api):
       ]))
 
   yield (
-      api.status_check.test("mixed_without_infra_failures", status="failure") +
+      api.test("mixed_without_infra_failures", status="FAILURE") +
       # With just red failures, raise red.
       api.buildbucket.simulated_collect_output([
           success_build,
@@ -125,7 +124,7 @@ def GenTests(api):
       ]))
 
   yield (
-      api.status_check.test("all_passed") +
+      api.test("all_passed") +
       # With just red failures, raise red.
       api.buildbucket.simulated_collect_output([
           success_build,

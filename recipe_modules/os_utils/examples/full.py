@@ -60,6 +60,7 @@ def GenTests(api):
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       ),
+      status='INFRA_FAILURE'
   )
   yield api.test(
       'linux_linux',

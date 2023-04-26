@@ -104,7 +104,7 @@ def RunSteps(api, properties, env_properties):
         builds, presentation, branch=current_branch
     )
   with api.step.nest('collect builds') as presentation:
-    build_results = api.shard_util_v2.collect(tasks, presentation)
+    build_results = api.shard_util_v2.collect(tasks)
 
   api.display_util.display_subbuilds(
       step_name='display builds',
@@ -156,7 +156,7 @@ def RunSteps(api, properties, env_properties):
     tasks = api.shard_util_v2.schedule_tests(tests, build_results, presentation)
 
   with api.step.nest('collect tests') as presentation:
-    test_results = api.shard_util_v2.collect(tasks, presentation)
+    test_results = api.shard_util_v2.collect(tasks)
 
   api.display_util.display_subbuilds(
       step_name='display tests',
@@ -296,7 +296,7 @@ def GenTests(api):
       ),
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_subbuild1],
-          launch_step="launch builds",
+          launch_step="launch builds.schedule",
           collect_step="collect builds",
       ),
       api.step_data(
@@ -321,7 +321,7 @@ def GenTests(api):
       ),
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_subbuild1],
-          launch_step="launch builds",
+          launch_step="launch builds.schedule",
           collect_step="collect builds",
       ),
   )
@@ -338,7 +338,7 @@ def GenTests(api):
       ),
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_subbuild1],
-          launch_step="launch builds",
+          launch_step="launch builds.schedule",
           collect_step="collect builds",
       ),
       api.step_data(
@@ -371,7 +371,7 @@ def GenTests(api):
       api.monorepo.try_build(),
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_subbuild1],
-          launch_step="launch builds",
+          launch_step="launch builds.schedule",
           collect_step="collect builds",
       ),
   )
@@ -383,7 +383,7 @@ def GenTests(api):
       api.monorepo.ci_build(),
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_subbuild1],
-          launch_step="launch builds",
+          launch_step="launch builds.schedule",
           collect_step="collect builds",
       ),
       api.step_data(
@@ -409,7 +409,7 @@ def GenTests(api):
       ),
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_subbuild1],
-          launch_step="launch builds",
+          launch_step="launch builds.schedule",
           collect_step="collect builds",
       ),
       api.step_data(
@@ -467,12 +467,12 @@ def GenTests(api):
       api.monorepo.ci_build(),
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_subbuild1],
-          launch_step="launch builds",
+          launch_step="launch builds.schedule",
           collect_step="collect builds",
       ),
       api.shard_util_v2.child_build_steps(
           subbuilds=[subtest1],
-          launch_step="launch tests",
+          launch_step="launch tests.schedule",
           collect_step="collect tests",
       ),
       api.step_data(

@@ -46,6 +46,8 @@ PASS_THROUGH_PROPERTIES = {
     # bundle and execute it. A led subbuild should use the same recipe bundle
     # version as its parent.
     "led_cas_recipe_bundle",
+    # Set by recipe_engine on buildbucket builds.
+    "$recipe_engine/buildbucket",
 }
 
 
@@ -171,9 +173,17 @@ class SubbuildApi(recipe_api.RecipeApi):
             if edit_cr_cl_arg:
                 led_data = led_data.then("edit-cr-cl", edit_cr_cl_arg)
             led_data = self.m.led.inject_input_recipes(led_data)
-            launch_res = led_data.then("launch", "-modernize")
-            task_id = launch_res.launch_result.task_id
-            build_url = f"https://ci.chromium.org/swarming/task/{task_id}?server={launch_res.launch_result.swarming_hostname}"
+            launch_res = led_data.then("launch", "-modernize", "-real-build")
+            task_id = launch_res.launch_result.task_id or launch_res.launch_result.build_id
+            build_url_swarming = 'https://ci.chromium.org/swarming/task/%s?server=%s' % (
+                task_id,
+                launch_res.launch_result.swarming_hostname,
+            )
+            build_url_bb = 'https://%s/build/%s' % (
+                launch_res.launch_result.buildbucket_hostname,
+                task_id
+            )
+            build_url = build_url_swarming if launch_res.launch_result.task_id else build_url_bb
             builds[builder_name] = SubbuildResult(
                 builder=builder_name, build_id=task_id, url=build_url
             )

@@ -23,11 +23,16 @@ def RunSteps(api):
 
 
 def GenTests(api):
-  yield (
-      api.test('passing') +
-      api.step_data('yaml.parse', api.json.output({'key': 'value'})) +
-      api.step_data('yaml.read',
-                    api.file.read_text(text_content=YAML_CONTENT)))
-  yield (
-      api.test('fail_to_read') +
-      api.step_data('yaml.read', retcode=1, stderr=api.raw_io.output_text('fail')))
+  yield api.test(
+     'passing',
+     api.step_data('yaml.parse',
+                   api.json.output({'key': 'value'})),
+     api.step_data('yaml.read',
+                    api.file.read_text(text_content=YAML_CONTENT))
+  )
+  yield api.test(
+      'fail_to_read',
+      api.step_data('yaml.read', retcode=1,
+                    stderr=api.raw_io.output_text('fail')),
+      status='INFRA_FAILURE'
+  )

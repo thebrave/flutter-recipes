@@ -4,7 +4,6 @@
 
 DEPS = [
     "flutter/tar",
-    "fuchsia/status_check",
     "recipe_engine/context",
     "recipe_engine/file",
     "recipe_engine/path",
@@ -48,4 +47,4 @@ def RunSteps(api):
 
 def GenTests(api):
     for platform in ("linux", "mac"):
-        yield api.status_check.test(platform) + api.platform.name(platform)
+        yield api.test(platform) + api.platform.name(platform)

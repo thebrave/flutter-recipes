@@ -88,7 +88,8 @@ def GenTests(api):
       api.properties(
           git_url='https://github.com/flutter/engine',
           git_ref='refs/pull/1/head'
-      )
+      ),
+      status='FAILURE'
   )
   yield api.test(
       'monorepo_release', api.repo_util.flutter_environment_data(),
@@ -128,36 +129,34 @@ def GenTests(api):
           )
       ) + api.repo_util.flutter_environment_data()
   )
-  yield (
-      api.test(
-          'first_bot_update_failed',
-          api.properties(
-              git_url='https://github.com/flutter/engine',
-              git_ref='refs/pull/1/head'
-          )
-      ) +
+  yield api.test(
+      'first_bot_update_failed',
+       api.properties(
+           git_url='https://github.com/flutter/engine',
+           git_ref='refs/pull/1/head'
+       ),
       # Next line force a fail condition for the bot update
       # first execution.
-      api.step_data("Checkout source code.bot_update", retcode=1) +
+      api.step_data("Checkout source code.bot_update", retcode=1),
       api.repo_util.flutter_environment_data()
   )
-  yield (
-      api.test(
-          'first_bot_update_revision_not_found',
-          api.properties(
-              git_url='https://github.com/flutter/engine',
-              git_ref='refs/pull/1/head'
-          )
-      ) +
+  yield api.test(
+      'first_bot_update_revision_not_found',
+      api.properties(
+          git_url='https://github.com/flutter/engine',
+          git_ref='refs/pull/1/head'
+      ),
       # Next line force a fail condition for the bot update
       # first execution.
-      api.path.exists(
-          api.path['cache'].join('git'), api.path['start_dir'].join('engine')
-      ) + api.override_step_data(
+      api.path.exists(api.path['cache'].join('git'),
+                      api.path['start_dir'].join('engine')
+      ),
+      api.override_step_data(
           "Checkout source code.bot_update",
           api.json.output({
               'properties': {'got_revision': 'BOT_UPDATE_NO_REV_FOUND'}
           }),
           retcode=0
-      ) + api.repo_util.flutter_environment_data()
+      ),
+      api.repo_util.flutter_environment_data()
   )

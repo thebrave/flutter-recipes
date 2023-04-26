@@ -6,7 +6,6 @@ from PB.recipe_modules.flutter.goma.properties import InputProperties
 
 DEPS = [
     "fuchsia/bqupload",
-    "fuchsia/daemonizer",
     "fuchsia/python3",
     "recipe_engine/buildbucket",
     "recipe_engine/cipd",

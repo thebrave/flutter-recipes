@@ -118,6 +118,7 @@ def GenTests(api):
               'osx_sdk/XCode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.0'
           ),
       ),
+      api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
       'flutter_engine', api.properties(local_engine_cas_hash='abceqwe/7',),

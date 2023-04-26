@@ -2096,6 +2096,7 @@ def GenTests(api):
           }
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      status='FAILURE'
   )
   yield api.test(
       'fail_android_aot_sharded_builds',
@@ -2131,4 +2132,5 @@ def GenTests(api):
           }
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      status='FAILURE'
   )

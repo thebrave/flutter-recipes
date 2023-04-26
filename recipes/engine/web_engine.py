@@ -105,7 +105,7 @@ def RunSteps(api, properties, env_properties):
       with api.step.nest('launch builds') as presentation:
         tasks = api.shard_util_v2.schedule(targets, presentation)
       with api.step.nest('collect builds') as presentation:
-        build_results = api.shard_util_v2.collect(tasks, presentation)
+        build_results = api.shard_util_v2.collect(tasks)
       api.display_util.display_subbuilds(
           step_name='display builds',
           subbuilds=build_results,

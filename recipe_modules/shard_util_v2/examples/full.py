@@ -32,7 +32,7 @@ def RunSteps(api):
   with api.step.nest("launch builds") as presentation:
     reqs = api.shard_util_v2.schedule_builds(build_configs, presentation)
   with api.step.nest("collect builds") as presentation:
-    builds = api.shard_util_v2.collect(reqs, presentation)
+    builds = api.shard_util_v2.collect(reqs)
     for build in builds.values():
       if build.build_proto.status != common_pb2.SUCCESS:
         raise api.step.StepFailure("build %s failed" % build.build_id)
@@ -67,6 +67,16 @@ def GenTests(api):
           'cas_output_hash': {'web_tests': 'abc', 'ios_debug': 'bcd'}
       },
       status='FAILURE',
+  )
+
+  led_try_subbuild1 = api.shard_util_v2.try_build_message(
+      build_id=87654321,
+      builder='ios_debug',
+      input_props={'task_name': 'mytask'},
+      output_props={
+          'cas_output_hash': {'web_tests': 'abc', 'ios_debug': 'bcd', 'full_build': '123'}
+      },
+      status='SUCCESS',
   )
 
   props = {
@@ -129,7 +139,7 @@ def GenTests(api):
           build_number=123
       ),
       api.shard_util_v2.child_led_steps(
-          subbuilds=[try_subbuild1, try_subbuild2],
+          subbuilds=[led_try_subbuild1],
           collect_step='collect builds',
       )
   )
@@ -141,17 +151,18 @@ def GenTests(api):
   presubmit_props_bb['no_goma'] = 'true'
 
   yield (
-      api.buildbucket_util.test('presubmit_bb', tryjob=True, status='failure') +
+      api.buildbucket_util.test('presubmit_bb', tryjob=True, status='FAILURE') +
       api.properties(**presubmit_props_bb) + api.platform.name('linux') +
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_failure],
-          launch_step='launch builds',
+          launch_step='launch builds.schedule',
           collect_step='collect builds',
       )
   )
 
   presubmit_props = copy.deepcopy(props)
   presubmit_props['builds'][0]['drone_builder_name'] = 'custom drone builder'
+
   yield api.test(
       'presubmit_led_subbuilds', api.properties(**presubmit_props),
       api.platform.name('linux'),
@@ -163,7 +174,7 @@ def GenTests(api):
           build_number=123
       ),
       api.shard_util_v2.child_led_steps(
-          subbuilds=[try_subbuild1, try_subbuild2],
+          subbuilds=[led_try_subbuild1],
           collect_step='collect builds',
       )
   )

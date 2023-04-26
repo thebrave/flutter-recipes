@@ -440,6 +440,7 @@ def GenTests(api):
           times_out_after=2,
           had_timeout=True,
       ), api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
+      status='FAILURE',
   )
   yield api.test(
       "xcode-chromium-mac",

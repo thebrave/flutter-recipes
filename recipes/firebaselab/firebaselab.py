@@ -148,20 +148,34 @@ def RunSteps(api):
 
 def GenTests(api):
   yield api.test(
-      'basic', api.repo_util.flutter_environment_data(),
-      api.properties(task_name='the_task')
+      'basic',
+      api.repo_util.flutter_environment_data(),
+      api.properties(task_name='the_task'),
+      # A return code of 1 from grep means not error messages were
+      # found in logcat and the only acceptable return code.
+      api.step_data(
+          'test_execution.analyze_logcat', retcode=1
+      ),
   )
-
-  yield api.test('failure 15',
-                 api.repo_util.flutter_environment_data()) + api.step_data(
-                     'test_execution.gcloud firebase', retcode=15
-                 ) + api.step_data(
-                     'test_execution.gcloud firebase (2)', retcode=15
-                 ) + api.step_data(
-                     'test_execution.gcloud firebase (3)', retcode=15
-                 )
-
-  yield api.test('failure 10',
-                 api.repo_util.flutter_environment_data()) + api.step_data(
-                     'test_execution.gcloud firebase', retcode=10
-                 )
+  yield api.test(
+      'succeed_on_infra_failure',
+      api.repo_util.flutter_environment_data(),
+      api.step_data(
+          'test_execution.gcloud firebase', retcode=15
+      ),
+      api.step_data(
+          'test_execution.gcloud firebase (2)', retcode=15
+      ),
+      api.step_data(
+          'test_execution.gcloud firebase (3)', retcode=15
+      ),
+      status='FAILURE'
+  )
+  yield api.test(
+      'failure 10',
+      api.repo_util.flutter_environment_data(),
+      api.step_data(
+          'test_execution.gcloud firebase', retcode=10
+      ),
+      status='FAILURE'
+  )

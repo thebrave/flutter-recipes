@@ -47,27 +47,29 @@ def RunSteps(api, max_attempts):
 
 
 def GenTests(api):
-  yield api.test('passing') + api.properties(max_attempts=1)
-  yield api.test('failing_step') + api.properties(max_attempts=1
-                                                 ) + api.step_data(
-                                                     'test: mytest', retcode=1
-                                                 )
-  yield api.test('failing_wrap') + api.properties(max_attempts=1
-                                                 ) + api.step_data(
-                                                     'test: mytest_func',
-                                                     retcode=1
-                                                 )
-  yield api.test('failing_basic_wrap') + api.properties(max_attempts=1
-                                                 ) + api.step_data(
-                                                     'test: mytest_func_basic',
-                                                     retcode=1
-                                                 )
-  yield api.test('pass_with_retries') + api.properties(
-      max_attempts=2
-  ) + api.step_data(
-      'test: mytest', retcode=1
-  ) + api.step_data(
-      'test: mytest_func', retcode=1
-  ) + api.step_data(
-      'test: mytest_func_basic', retcode=1
+  yield api.test('passing', api.properties(max_attempts=1))
+  yield api.test(
+      'failing_step',
+      api.properties(max_attempts=1),
+      api.step_data('test: mytest', retcode=1),
+      status='FAILURE'
+  )
+  yield api.test(
+      'failing_wrap',
+      api.properties(max_attempts=1),
+      api.step_data('test: mytest_func', retcode=1),
+      status='FAILURE'
+  )
+  yield api.test(
+      'failing_basic_wrap',
+      api.properties(max_attempts=1),
+      api.step_data('test: mytest_func_basic', retcode=1),
+      status='FAILURE'
+  )
+  yield api.test(
+      'pass_with_retries',
+      api.properties(max_attempts=2),
+      api.step_data('test: mytest', retcode=1),
+      api.step_data('test: mytest_func', retcode=1),
+      api.step_data('test: mytest_func_basic', retcode=1)
   )

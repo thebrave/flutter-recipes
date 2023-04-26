@@ -22,8 +22,9 @@ PLATFORM_TO_NAME = {'win': 'Windows', 'linux': 'Linux', 'mac': 'Mac'}
 
 # Internal properties that should be set for builds running on BuildBucket.
 PROPERTIES_TO_REMOVE = [
-    '$recipe_engine/buildbucket', '$recipe_engine/runtime.is_experimental',
-    'buildername', '$recipe_engine/runtime', 'is_experimental'
+    '$recipe_engine/buildbucket',
+    'buildername', '$recipe_engine/runtime',
+    'is_experimental'
 ]
 
 # Environments map to calculate the environment from the bucket.
@@ -228,6 +229,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
       )
       edit_args = []
       for k, v in sorted(drone_properties.items()):
+        if k in PROPERTIES_TO_REMOVE:
+          continue
         edit_args.extend(['-p', '%s=%s' % (k, self.m.json.dumps(v))])
       # led reduces the priority of tasks by 10 from their values in
       # buildbucket which we do not want.
@@ -241,12 +244,18 @@ class ShardUtilApi(recipe_api.RecipeApi):
       for k,v in ci_yaml_dimensions.items():
         led_data = led_data.then('edit', "-d", '%s=%s' % (k,v))
       led_data = self.m.led.inject_input_recipes(led_data)
-      launch_res = led_data.then('launch', '-modernize')
-      task_id = launch_res.launch_result.task_id
-      build_url = 'https://ci.chromium.org/swarming/task/%s?server=%s' % (
+      launch_res = led_data.then('launch', '-modernize', '-real-build')
+      # real-build is being used and only build_id is being populated
+      task_id = launch_res.launch_result.task_id or launch_res.launch_result.build_id
+      build_url_swarming = 'https://ci.chromium.org/swarming/task/%s?server=%s' % (
           task_id,
           launch_res.launch_result.swarming_hostname,
       )
+      build_url_bb = 'https://%s/build/%s' % (
+          launch_res.launch_result.buildbucket_hostname,
+          task_id
+      )
+      build_url = build_url_swarming if launch_res.launch_result.task_id else build_url_bb
       results[task_name] = SubbuildResult(
           builder=task_name,
           build_id=task_id,
@@ -343,57 +352,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       )
     return results
 
-  def collect(self, tasks, presentation):
-    """Collects builds for the provided tasks.
-
-    Args:
-      tasks (dict(int, SubbuildResult)): A dictionary with the subbuild
-        results and the build id as key.
-      presentation (StepPresentation): The presentation to add logs to.
-
-    Returns:
-      A map from build IDs to the corresponding SubbuildResult.
-    """
-    if self.m.led.launched_by_led:
-      builds = self._collect_from_led(tasks, presentation)
-    else:
-      builds = self._collect_from_bb(tasks)
-    return builds
-
-  def _collect_from_led(self, tasks, presentation):
-    """Waits for a list of builds to complete.
-
-    Args:
-      tasks (dict(int, SubbuildResult)): A dictionary with the subbuild
-        results and the build id as key.
-      presentation(StepPresentation): Used to add logs and logs to UI.
-
-    Returns:
-      A map from build IDs to the corresponding SubbuildResult.
-    """
-    task_ids = [build.build_id for build in tasks.values()]
-    swarming_results = self.m.swarming.collect(
-        "collect", task_ids, output_dir=self.m.path["cleanup"]
-      ) if task_ids else []
-    builds = {}
-    for result in swarming_results:
-      task_id = result.id
-      # Led launch ensures this file is present in the task root dir.
-      build_proto_path = result.output_dir.join("build.proto.json")
-      build_proto = self.m.file.read_proto(
-          "read build.proto.json", build_proto_path, build_pb2.Build, "JSONPB"
-      )
-      builds[task_id] = SubbuildResult(
-          builder=build_proto.builder.builder,
-          build_id=task_id,
-          build_proto=build_proto,
-          build_name=result.name,
-          url='https://%s/task?id=%s' % (build_proto.infra.swarming.hostname,
-                                         build_proto.infra.swarming.task_id)
-      )
-    return builds
-
-  def _collect_from_bb(self, tasks):
+  def collect(self, tasks):
     """Collects builds from build bucket services using the provided tasks.
 
     Args:

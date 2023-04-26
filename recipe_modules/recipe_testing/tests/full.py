@@ -220,6 +220,6 @@ def GenTests(api):  # pylint: disable=invalid-name
     )
 
     yield (
-        api.buildbucket_util.test("depth", status="infra_failure")
+        api.buildbucket_util.test("depth", status="INFRA_FAILURE")
         + api.properties(**{"$flutter/recipe_testing": {"recipe_depth": 2}})
     )

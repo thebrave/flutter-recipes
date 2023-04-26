@@ -117,7 +117,7 @@ def GenTests(api):
     )
 
     yield (
-        api.buildbucket_util.test("get_latest_failure", status="failure", git_repo=repo)
+        api.buildbucket_util.test("get_latest_failure", status="FAILURE", git_repo=repo)
         + api.properties(repo=repo, dry_run=False)
         + api.step_data(
             "load packer source image json",

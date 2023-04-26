@@ -62,12 +62,14 @@ def GenTests(api):
           'mytest',
           stdout=api.raw_io.output_text('#failure\nthis is a failure'),
           retcode=1
-      )
+      ),
+      status='FAILURE'
   )
   very_long_string = "xyz\n" * 1500
   yield api.test(
       'long_stdout',
       api.step_data(
           'mytest', stdout=api.raw_io.output_text(very_long_string), retcode=1
-      )
+      ),
+      status='FAILURE'
   )

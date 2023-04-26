@@ -420,7 +420,8 @@ def GenTests(api):
                 'path':
                     '/foo/bar/data/pbms/18411389924820269552/terminal.qemu-arm64/packages'
             }
-        }])
+        }]),
+        retcode=0
     )
 
   def ffx_repo_list_step_data_with_retries(base_step_name, retry_count):
@@ -493,6 +494,7 @@ def GenTests(api):
           'run FEMU test on x64.run v2_test', 'launch x64 emulator'
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      status='FAILURE'
   )
 
   yield api.test(
@@ -546,6 +548,7 @@ def GenTests(api):
           'ffx repository publish v2_test-123.far'
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      status='FAILURE'
   )
 
   yield api.test(
@@ -686,6 +689,7 @@ def GenTests(api):
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      status='FAILURE'
   )
 
   yield api.test(
@@ -931,6 +935,7 @@ def GenTests(api):
           'run FEMU test on x64.run v2_test', 'launch x64 emulator'
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      status='FAILURE'
   )
 
   yield api.test(
@@ -989,6 +994,7 @@ def GenTests(api):
           'run FEMU test on x64.run v2_test', 'launch x64 emulator'
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
+      status='FAILURE'
   )
 
   yield api.test(
@@ -1039,7 +1045,7 @@ def GenTests(api):
           retcode=1
       ),
       ffx_repo_list_step_data(
-          'run FEMU test on x64.run run-on-x64 (attempt #3).get repository information'
+          'run FEMU test on x64.run run-on-x64 (attempt #3).get repository information',
       ),
       api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
   )

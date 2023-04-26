@@ -4,7 +4,6 @@
 
 DEPS = [
     "flutter/display_util",
-    "fuchsia/status_check",
     "recipe_engine/file",
     "recipe_engine/path",
     "recipe_engine/swarming",
@@ -45,7 +44,7 @@ def RunSteps(api):
 
 def GenTests(api):
   yield (
-      api.status_check.test("Test_Infra_Failure", status="infra_failure") +
+      api.test("Test_Infra_Failure", status="INFRA_FAILURE") +
       api.step_data(
           "Trigger Tests", api.swarming.trigger(["task1", "task2"],
                                                 initial_id=0)
@@ -60,7 +59,7 @@ def GenTests(api):
       )
   )
   yield (
-      api.status_check.test("Test_Failure", status="failure") + api.step_data(
+      api.test("Test_Failure", status="FAILURE") + api.step_data(
           "Trigger Tests", api.swarming.trigger(["task1", "task2"],
                                                 initial_id=0)
       ) + api.step_data(
@@ -72,7 +71,7 @@ def GenTests(api):
       )
   )
   yield (
-      api.status_check.test("Test_Success", status="success") + api.step_data(
+      api.test("Test_Success", status="SUCCESS") + api.step_data(
           "Trigger Tests", api.swarming.trigger(["task1"], initial_id=0)
       ) + api.step_data(
           "collect",

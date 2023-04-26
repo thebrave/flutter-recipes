@@ -119,7 +119,7 @@ def GenTests(api):
     )
 
     yield (
-        api.buildbucket_util.test("missing_property", status="infra_failure")
+        api.buildbucket_util.test("missing_property", status="INFRA_FAILURE")
         + properties()
         + api.subbuild.child_build_steps(
             builds=[subbuild_missing_property],
@@ -159,7 +159,7 @@ def GenTests(api):
     )
 
     yield (
-        api.buildbucket_util.test("failed_subbuild", tryjob=True, status="failure")
+        api.buildbucket_util.test("failed_subbuild", tryjob=True, status="FAILURE")
         + properties()
         + api.subbuild.child_build_steps(
             builds=[failed_subbuild],

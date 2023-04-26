@@ -3,8 +3,8 @@
     "cmd": [],
     "name": "launch builds",
     "~followup_annotations": [
-      "@@@STEP_LINK@fuchsia/ci/builder-subbuild1@https://ci.chromium.org/swarming/task/fake-task-id-1?server=example.swarmingserver.appspot.com@@@",
-      "@@@STEP_LINK@builder-subbuild2@https://ci.chromium.org/swarming/task/fake-task-id-2?server=example.swarmingserver.appspot.com@@@"
+      "@@@STEP_LINK@fuchsia/ci/builder-subbuild1@https://buildbucket@appspot.com/build/8945511751514863184@@@",
+      "@@@STEP_LINK@builder-subbuild2@https://buildbucket@appspot.com/build/8945511751514863185@@@"
     ]
   },
   {
@@ -77,6 +77,8 @@
       "led",
       "edit",
       "-p",
+      "$recipe_engine/buildbucket={\"build\": {\"builder\": {\"bucket\": \"ci\", \"builder\": \"builder\", \"project\": \"fuchsia\"}, \"createTime\": \"2018-05-25T23:50:17Z\", \"createdBy\": \"user:luci-scheduler@appspot.gserviceaccount.com\", \"executionTimeout\": \"36000s\", \"id\": \"8945511751514863184\", \"infra\": {\"resultdb\": {\"invocation\": \"invocations/build:8945511751514863184\"}, \"swarming\": {\"priority\": 30}}, \"input\": {\"gitilesCommit\": {\"host\": \"fuchsia.googlesource.com\", \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", \"project\": \"fuchsia\", \"ref\": \"refs/heads/main\"}}}}",
+      "-p",
       "integration_base_revision=\"abc123\"",
       "-p",
       "parent_id=\"parentid\""
@@ -126,6 +128,35 @@
       "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
       "@@@STEP_LOG_LINE@proto.output@          },@@@",
       "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"$recipe_engine/buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"bucket\": \"ci\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"builder\": \"builder\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"project\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@                },@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"createTime\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"createdBy\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"executionTimeout\": \"36000s\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  },@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"priority\": 30.0@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@                },@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"gitilesCommit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"host\": \"fuchsia.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"project\": \"fuchsia\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@                }@@@",
+      "@@@STEP_LOG_LINE@proto.output@              }@@@",
+      "@@@STEP_LOG_LINE@proto.output@            },@@@",
       "@@@STEP_LOG_LINE@proto.output@            \"integration_base_revision\": \"abc123\",@@@",
       "@@@STEP_LOG_LINE@proto.output@            \"parent_id\": \"parentid\"@@@",
       "@@@STEP_LOG_LINE@proto.output@          }@@@",
@@ -147,7 +178,8 @@
     "cmd": [
       "led",
       "launch",
-      "-modernize"
+      "-modernize",
+      "-real-build"
     ],
     "luci_context": {
       "realm": {
@@ -162,17 +194,17 @@
       }
     },
     "name": "launch builds.led launch",
-    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"ci\",\n          \"builder\": \"builder-subbuild1\",\n          \"project\": \"fuchsia\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 30,\n            \"task_id\": \"fake-task-id-1\"\n          }\n        },\n        \"input\": {\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"fuchsia\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"integration_base_revision\": \"abc123\",\n            \"parent_id\": \"parentid\"\n          }\n        },\n        \"output\": {\n          \"properties\": {\n            \"test_orchestration_inputs_hash\": \"abc\"\n          }\n        },\n        \"status\": \"SUCCESS\"\n      }\n    }\n  }\n}",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"ci\",\n          \"builder\": \"builder-subbuild1\",\n          \"project\": \"fuchsia\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863184\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863184\"\n          },\n          \"swarming\": {\n            \"priority\": 30,\n            \"task_id\": \"fake-task-id-1\"\n          }\n        },\n        \"input\": {\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"fuchsia\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"$recipe_engine/buildbucket\": {\n              \"build\": {\n                \"builder\": {\n                  \"bucket\": \"ci\",\n                  \"builder\": \"builder\",\n                  \"project\": \"fuchsia\"\n                },\n                \"createTime\": \"2018-05-25T23:50:17Z\",\n                \"createdBy\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n                \"executionTimeout\": \"36000s\",\n                \"id\": \"8945511751514863184\",\n                \"infra\": {\n                  \"resultdb\": {\n                    \"invocation\": \"invocations/build:8945511751514863184\"\n                  },\n                  \"swarming\": {\n                    \"priority\": 30.0\n                  }\n                },\n                \"input\": {\n                  \"gitilesCommit\": {\n                    \"host\": \"fuchsia.googlesource.com\",\n                    \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n                    \"project\": \"fuchsia\",\n                    \"ref\": \"refs/heads/main\"\n                  }\n                }\n              }\n            },\n            \"integration_base_revision\": \"abc123\",\n            \"parent_id\": \"parentid\"\n          }\n        },\n        \"output\": {\n          \"properties\": {\n            \"test_orchestration_inputs_hash\": \"abc\"\n          }\n        },\n        \"status\": \"SUCCESS\"\n      }\n    }\n  }\n}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"swarming\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"host_name\": \"example.swarmingserver.appspot.com\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"task_id\": \"fake-task-id-1\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"build_id\": 8945511751514863184, @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"host_name\": \"buildbucket@appspot.com\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@Swarming task@https://example.swarmingserver.appspot.com/task?id=fake-task-id-1@@@"
+      "@@@STEP_LINK@Build@https://ci.chromium.org/b/8945511751514863184@@@"
     ]
   },
   {
@@ -245,6 +277,8 @@
       "led",
       "edit",
       "-p",
+      "$recipe_engine/buildbucket={\"build\": {\"builder\": {\"bucket\": \"ci\", \"builder\": \"builder\", \"project\": \"fuchsia\"}, \"createTime\": \"2018-05-25T23:50:17Z\", \"createdBy\": \"user:luci-scheduler@appspot.gserviceaccount.com\", \"executionTimeout\": \"36000s\", \"id\": \"8945511751514863184\", \"infra\": {\"resultdb\": {\"invocation\": \"invocations/build:8945511751514863184\"}, \"swarming\": {\"priority\": 30}}, \"input\": {\"gitilesCommit\": {\"host\": \"fuchsia.googlesource.com\", \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", \"project\": \"fuchsia\", \"ref\": \"refs/heads/main\"}}}}",
+      "-p",
       "integration_base_revision=\"abc123\"",
       "-p",
       "parent_id=\"parentid\""
@@ -294,6 +328,35 @@
       "@@@STEP_LOG_LINE@proto.output@            \"ref\": \"refs/heads/main\"@@@",
       "@@@STEP_LOG_LINE@proto.output@          },@@@",
       "@@@STEP_LOG_LINE@proto.output@          \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@            \"$recipe_engine/buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@              \"build\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"bucket\": \"ci\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"builder\": \"builder\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"project\": \"fuchsia\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@                },@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"createTime\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"createdBy\": \"user:luci-scheduler@appspot.gserviceaccount.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"executionTimeout\": \"36000s\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"id\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"invocation\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  },@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"priority\": 30.0@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@                },@@@",
+      "@@@STEP_LOG_LINE@proto.output@                \"input\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  \"gitilesCommit\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"host\": \"fuchsia.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"project\": \"fuchsia\",@@@",
+      "@@@STEP_LOG_LINE@proto.output@                    \"ref\": \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@                  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@                }@@@",
+      "@@@STEP_LOG_LINE@proto.output@              }@@@",
+      "@@@STEP_LOG_LINE@proto.output@            },@@@",
       "@@@STEP_LOG_LINE@proto.output@            \"integration_base_revision\": \"abc123\",@@@",
       "@@@STEP_LOG_LINE@proto.output@            \"parent_id\": \"parentid\"@@@",
       "@@@STEP_LOG_LINE@proto.output@          }@@@",
@@ -315,7 +378,8 @@
     "cmd": [
       "led",
       "launch",
-      "-modernize"
+      "-modernize",
+      "-real-build"
     ],
     "luci_context": {
       "realm": {
@@ -330,17 +394,17 @@
       }
     },
     "name": "launch builds.led launch (2)",
-    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"ci\",\n          \"builder\": \"builder-subbuild2\",\n          \"project\": \"fuchsia\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863185\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863185\"\n          },\n          \"swarming\": {\n            \"priority\": 30,\n            \"task_id\": \"fake-task-id-2\"\n          }\n        },\n        \"input\": {\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"fuchsia\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"integration_base_revision\": \"abc123\",\n            \"parent_id\": \"parentid\"\n          }\n        },\n        \"output\": {\n          \"properties\": {\n            \"test_orchestration_inputs_hash\": \"abc\"\n          }\n        },\n        \"status\": \"SUCCESS\"\n      }\n    }\n  }\n}",
+    "stdin": "{\n  \"buildbucket\": {\n    \"bbagent_args\": {\n      \"build\": {\n        \"builder\": {\n          \"bucket\": \"ci\",\n          \"builder\": \"builder-subbuild2\",\n          \"project\": \"fuchsia\"\n        },\n        \"create_time\": \"2018-05-25T23:50:17Z\",\n        \"created_by\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n        \"id\": \"8945511751514863185\",\n        \"infra\": {\n          \"resultdb\": {\n            \"invocation\": \"invocations/build:8945511751514863185\"\n          },\n          \"swarming\": {\n            \"priority\": 30,\n            \"task_id\": \"fake-task-id-2\"\n          }\n        },\n        \"input\": {\n          \"gitiles_commit\": {\n            \"host\": \"chromium.googlesource.com\",\n            \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n            \"project\": \"fuchsia\",\n            \"ref\": \"refs/heads/main\"\n          },\n          \"properties\": {\n            \"$recipe_engine/buildbucket\": {\n              \"build\": {\n                \"builder\": {\n                  \"bucket\": \"ci\",\n                  \"builder\": \"builder\",\n                  \"project\": \"fuchsia\"\n                },\n                \"createTime\": \"2018-05-25T23:50:17Z\",\n                \"createdBy\": \"user:luci-scheduler@appspot.gserviceaccount.com\",\n                \"executionTimeout\": \"36000s\",\n                \"id\": \"8945511751514863184\",\n                \"infra\": {\n                  \"resultdb\": {\n                    \"invocation\": \"invocations/build:8945511751514863184\"\n                  },\n                  \"swarming\": {\n                    \"priority\": 30.0\n                  }\n                },\n                \"input\": {\n                  \"gitilesCommit\": {\n                    \"host\": \"fuchsia.googlesource.com\",\n                    \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\",\n                    \"project\": \"fuchsia\",\n                    \"ref\": \"refs/heads/main\"\n                  }\n                }\n              }\n            },\n            \"integration_base_revision\": \"abc123\",\n            \"parent_id\": \"parentid\"\n          }\n        },\n        \"output\": {\n          \"properties\": {\n            \"test_orchestration_inputs_hash\": \"abc\"\n          }\n        },\n        \"status\": \"SUCCESS\"\n      }\n    }\n  }\n}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"swarming\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"host_name\": \"example.swarmingserver.appspot.com\", @@@",
-      "@@@STEP_LOG_LINE@json.output@    \"task_id\": \"fake-task-id-2\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"buildbucket\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"build_id\": 8945511751514863185, @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"host_name\": \"buildbucket@appspot.com\"@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@Swarming task@https://example.swarmingserver.appspot.com/task?id=fake-task-id-2@@@"
+      "@@@STEP_LINK@Build@https://ci.chromium.org/b/8945511751514863185@@@"
     ]
   },
   {
@@ -438,8 +502,8 @@
       "json",
       "-output-dir",
       "[CLEANUP]",
-      "fake-task-id-1",
-      "fake-task-id-2"
+      "8945511751514863184",
+      "8945511751514863185"
     ],
     "cost": {
       "cpu": 100,

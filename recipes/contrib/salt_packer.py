@@ -168,7 +168,7 @@ def GenTests(api):
 
     repo = "https://dash-internal.googlesource.com/salt"
     yield (
-        api.buildbucket_util.test("ci_failure", status="failure", git_repo=repo)
+        api.buildbucket_util.test("ci_failure", status="FAILURE", git_repo=repo)
         + api.properties(repo=repo, dry_run=False)
         + api.step_data(
             "find packer templates",
@@ -202,7 +202,7 @@ def GenTests(api):
     )
 
     yield (
-        api.buildbucket_util.test("try_failure", status="failure", git_repo=repo)
+        api.buildbucket_util.test("try_failure", status="FAILURE", git_repo=repo)
         + api.properties(repo=repo, dry_run=True)
         + api.step_data(
             "find packer templates",

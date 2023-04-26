@@ -94,10 +94,17 @@ class GomaApi(recipe_api.RecipeApi):
 
         with self.m.step.nest("ensure goma"), self.m.context(infra_steps=True):
             self._goma_dir = self.m.path["cache"].join("goma", "client")
+            if self.m.platform.is_mac:
+                # On mac always use x64 package.
+                # TODO(godofredoc): Remove this workaround and unfork once fuchsia has an arm package.
+                package_path = "fuchsia/third_party/goma/client/mac-amd64"
+            else:
+                package_path = "fuchsia/third_party/goma/client/${platform}"
+
             self.m.cipd.ensure(
                 self._goma_dir,
                 self.m.cipd.EnsureFile().add_package(
-                    "flutter/third_party/goma/client/${platform}", "integration"
+                    package_path, "integration"
                 ),
             )
 

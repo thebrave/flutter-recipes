@@ -14,39 +14,23 @@ class GCloudApi(recipe_api.RecipeApi):
 
     @property
     def _gcloud_executable(self):
-        gcloud_path = self.m.path.mkdtemp()
-        gcloud = self.m.cipd.EnsureFile()
-        gcloud.add_package(
-                'infra/3pp/tools/gcloud/${platform}',
-                'version:2@427.0.0.chromium.3')
-        self.m.cipd.ensure(gcloud_path, gcloud)
-        self.m.file.listdir('list', gcloud_path, True)
-        gcloud_name = 'gcloud.ps1' if self.m.platform.is_win else 'gcloud'
-        return gcloud_path.join('bin', gcloud_name)
-
+        with self.m.step.nest('ensure gcloud'):
+            gcloud_dir = self.m.path['start_dir'].join('gcloud')
+            gcloud_package = 'infra/3pp/tools/gcloud/${platform}'
+            gcloud = self.m.cipd.EnsureFile().add_package(
+                    gcloud_package, "version:2@428.0.0.chromium.3")
+            self.m.cipd.ensure(
+                gcloud_dir,
+                gcloud
+            )
+            tool_name = 'gcloud.cmd' if self.m.platform.is_win else 'gcloud'
+            return gcloud_dir.join('bin', tool_name)
 
     def __call__(self, *args, **kwargs):
         """Executes specified gcloud command."""
         step_name = kwargs.pop("step_name", f"gcloud {args[0]}")
-        interpreter = 'powershell' if self.m.platform.is_win else 'bash'
-        cmd = [interpreter, self._gcloud_executable] + list(args)
+        cmd = [self._gcloud_executable] + list(args)
         return self.m.step(step_name, cmd, **kwargs)
-
-
-    def publish_message(self, step_name, topic, input_path):
-        """Sends a pubsub message."""
-        resource_name = 'pubsub.ps1' if self.m.platform.is_win else 'pubsub.sh' 
-        resource = self.resource(resource_name)
-        interpreter = 'powershell' if self.m.platform.is_win else 'bash'
-        cmd = [
-            interpreter,
-            resource,
-            self._gcloud_executable,
-            topic,
-            input_path
-        ]
-        return self.m.step(step_name, cmd)
-
 
     def container_image_exists(self, image):
         step_result = self(
@@ -67,7 +51,7 @@ class GCloudApi(recipe_api.RecipeApi):
             return
         gcloud_path = self.m.path.join(
             self.m.path.dirname(self.m.path.dirname(self._gcloud_executable)),
-            "bin/gcloud",
+            "bin", "gcloud",
         )
         self.m.file.remove("remove gcloud wrapper", gcloud_path)
         self.m.file.copy(

@@ -127,7 +127,7 @@ def CasRoot(api):
   sdk_version = GetFuchsiaBuildId(api)
   checkout = GetCheckoutPath(api)
   root_dir = api.path.mkdtemp('femu_runfiles_')
-  cas_tree = api.cas_util.tree(root=root_dir)
+  cas_tree = api.file.symlink_tree(root=root_dir)
   test_suites = []
 
   def add(src, name_rel_to_root):

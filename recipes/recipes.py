@@ -70,8 +70,6 @@ COMMIT_QUEUE_CFG = """
         tryjob: <
           builders: <
             name: "flutter/try/flutter-baz"
-            location_regexp: ".*"
-            location_regexp_exclude: ".+/[+]/.*\\.md"
           >
         >
       >
@@ -92,15 +90,9 @@ COMMIT_QUEUE_CFG = """
         tryjob: <
           builders: <
             name: "flutter/try/flutter-bar"
-            location_regexp: ".*"
-            location_regexp_exclude: ".+/[+]/.*\\.md"
-            location_regexp_exclude: ".+/[+].*/docs/.+"
           >
           builders: <
             name: "flutter/try/flutter-foo"
-            location_regexp: ".*"
-            location_regexp_exclude: ".+/[+]/.*\\.md"
-            location_regexp_exclude: ".+/[+].*/docs/.+"
           >
         >
       >

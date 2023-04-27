@@ -2,19 +2,40 @@
   {
     "cmd": [
       "echo",
-      "[CACHE]/osx_sdk/xcode_12a7209"
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime"
     ],
     "infra_step": true,
-    "name": "xcode not installed"
+    "name": "iOS.simruntime does not exists"
+  },
+  {
+    "cmd": [
+      "echo",
+      "xcode is installed without runtime"
+    ],
+    "infra_step": true,
+    "name": "cache polluted due to missing runtime"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CACHE]/osx_sdk/xcode_deadbeef"
+    ],
+    "infra_step": true,
+    "name": "Cleaning up Xcode cache"
   },
   {
     "cmd": [
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/osx_sdk/xcode_12a7209",
+      "[CACHE]/osx_sdk/xcode_deadbeef",
       "-ensure-file",
-      "infra/tools/mac_toolchain/${platform} latest",
+      "infra/tools/mac_toolchain/${platform} 123abc",
       "-max-threads",
       "0",
       "-json-output",
@@ -27,7 +48,7 @@
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-123abc----------\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
@@ -38,14 +59,14 @@
   },
   {
     "cmd": [
-      "[CACHE]/osx_sdk/xcode_12a7209/mac_toolchain",
+      "[CACHE]/osx_sdk/xcode_deadbeef/mac_toolchain",
       "install",
       "-kind",
       "mac",
       "-xcode-version",
-      "12a7209",
+      "deadbeef",
       "-output-dir",
-      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app",
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
       "-cipd-package-prefix",
       "flutter_internal/ios/xcode",
       "-with-runtime=True"
@@ -67,7 +88,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app"
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
     ],
     "infra_step": true,
     "name": "select XCode"

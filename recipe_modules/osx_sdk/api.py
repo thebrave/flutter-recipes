@@ -49,12 +49,6 @@ class OSXSDKApi(recipe_api.RecipeApi):
     self._tool_ver = 'latest'
     self._cleanup_cache = False
 
-  def _clean_cache(self):
-    # TODO(keyonghan): ideally we can cleanup a specific version of xcode cache.
-    # https://github.com/flutter/flutter/issues/117541
-    if self._cleanup_cache:
-      self.m.file.rmtree('Cleaning up Xcode cache', self.m.path['cache'].join('osx_sdk'))
-
   def initialize(self):
     """Initializes xcode, and ios versions.
 
@@ -71,7 +65,11 @@ class OSXSDKApi(recipe_api.RecipeApi):
       self._tool_ver = self._sdk_properties['toolchain_ver'].lower()
 
     if 'runtime_versions' in self._sdk_properties:
-      self._runtime_versions = self._sdk_properties['runtime_versions']
+      # Sorts the runtime versions to make xcode cache path deterministic, without
+      # being affected by how user orders the runtime versions.
+      runtime_versions = self._sdk_properties['runtime_versions']
+      runtime_versions.sort(reverse=True)
+      self._runtime_versions = runtime_versions
 
     if 'sdk_version' in self._sdk_properties:
       self._sdk_version = self._sdk_properties['sdk_version'].lower()
@@ -142,19 +140,20 @@ class OSXSDKApi(recipe_api.RecipeApi):
     finally:
       with self.m.context(infra_steps=True):
         self.m.step('reset XCode', ['sudo', 'xcode-select', '--reset'])
-        self._clean_cache()
+
+  def _clean_cache(self):
+    """Cleans up cache when specified or polluted.
+
+    Cleans up only corresponding versioned xcode instead of the whole `osx_sdk`.
+    """
+    if self._cleanup_cache or self._cache_polluted():
+      self.m.file.rmtree('Cleaning up Xcode cache', self._cache_dir())
 
   def _ensure_sdk(self, kind):
-    """Ensures the mac_toolchain tool and OS X SDK packages are installed.
+    """Ensures the mac_toolchain tool and OSX SDK packages are installed.
 
     Returns Path to the installed sdk app bundle."""
-    runtime_version = None
-    sdk_version = 'xcode_' + self._sdk_version
-    if self._runtime_versions:
-      runtime_version = "_".join(self._runtime_versions)
-      sdk_version = sdk_version + '_runtime_' + runtime_version
-    cache_dir = self.m.path['cache'].join(_XCODE_CACHE_PATH).join(sdk_version)
-
+    cache_dir = self._cache_dir()
     ef = self.m.cipd.EnsureFile()
     ef.add_package(self._tool_pkg, self._tool_ver)
     self.m.cipd.ensure(cache_dir, ef)
@@ -208,3 +207,68 @@ class OSXSDKApi(recipe_api.RecipeApi):
           source = path_with_version if self.m.path.exists(path_with_version) else runtime_cache_dir.join('iOS.simruntime')
           self.m.file.copytree('Copy runtime to %s' % dest, source, dest, symlinks=True)
     return sdk_app
+
+  def _cache_polluted(self):
+    """Checks if cache is polluted.
+
+    CIPD ensures package whenever called, but just checks on some levels, like
+    `.xcode_versions` and `.cipd`. It misses the case where the `xcode` and runtime
+    are finished installing, but the files are not finished copying over to destination.
+
+    The above case causes cache polluted where xcode is installed incompletely:
+    the xcode path exists but no runtime exists.
+
+    All installed xcode contains runtime, either the default one or the extra
+    specified runtimes by tests.
+
+    This is a workaround to detect incomplete xcode installation as cipd is not
+    able to detect some incomplete installation cases and reinstall.
+    """
+    cache_polluted = False
+    sdk_app_dir = self._cache_dir()
+    if not self.m.path.exists(sdk_app_dir):
+      self.m.step('xcode not installed', ['echo', sdk_app_dir])
+      return cache_polluted
+    if not self._runtime_exists():
+      cache_polluted = True
+      self.m.step('cache polluted due to missing runtime', ['echo', 'xcode is installed without runtime'])
+    return cache_polluted
+
+  def _cache_dir(self):
+    """Returns xcode cache dir.
+
+    For an xcode without runtime, the path looks like
+        xcode_<xcode-version>
+
+    For an xcode with runtimes, the path looks like
+        xcode_<xcode-version>_runtime1_<runtime1-version>_..._runtimeN_<runtimeN-version>
+    """
+    runtime_version = None
+    sdk_version = 'xcode_' + self._sdk_version
+    if self._runtime_versions:
+      runtime_version = "_".join(self._runtime_versions)
+      sdk_version = sdk_version + '_runtime_' + runtime_version
+    return self.m.path['cache'].join(_XCODE_CACHE_PATH).join(sdk_version)
+
+  def _runtime_exists(self):
+    """Checks runtime existence in the installed xcode.
+
+    Checks `iOS.simruntime` for default runtime.
+    Checks each specific runtime version for specified ones.
+    """
+    runtime_exists = True
+    sdk_app_dir = self._cache_dir().join('XCode.app')
+    if self._runtime_versions:
+      for version in self._runtime_versions:
+        runtime_name = 'iOS %s.simruntime' % version.lower().replace('ios-', '').replace('-', '.')
+        runtime_path = sdk_app_dir.join(*_RUNTIMESPATH).join(runtime_name)
+        if not self.m.path.exists(runtime_path):
+          runtime_exists = False
+          self.m.step('runtime: %s does not exist' % runtime_name, ['echo', runtime_path])
+          break
+    else:
+      runtime_path = sdk_app_dir.join(*_RUNTIMESPATH).join('iOS.simruntime')
+      if not self.m.path.exists(runtime_path):
+        runtime_exists = False
+        self.m.step('iOS.simruntime does not exists', ['echo', runtime_path])
+    return runtime_exists

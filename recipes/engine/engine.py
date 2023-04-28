@@ -16,7 +16,6 @@ DEPS = [
     'depot_tools/gsutil',
     'flutter/archives',
     'flutter/bucket_util',
-    'flutter/build_util',
     'flutter/display_util',
     'flutter/flutter_bcid',
     'flutter/flutter_deps',
@@ -29,7 +28,6 @@ DEPS = [
     'flutter/shard_util_v2',
     'flutter/test_utils',
     'flutter/zip',
-    'fuchsia/gcloud',
     'recipe_engine/buildbucket',
     'recipe_engine/cas',
     'recipe_engine/cipd',
@@ -39,7 +37,6 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
-    'recipe_engine/raw_io',
     'recipe_engine/runtime',
     'recipe_engine/step',
     'recipe_engine/swarming',
@@ -314,30 +311,6 @@ def UploadArtifacts(
       return
 
     api.bucket_util.safe_upload(local_zip, remote_zip)
-
-
-def UploadSkyEngineToCIPD(api, package_name):
-  git_rev = api.buildbucket.gitiles_commit.id or 'HEAD'
-  package_dir = 'src/out/android_debug/dist/packages'
-  parent_dir = api.path['cache'].join('builder', package_dir)
-  folder_path = parent_dir.join(package_name)
-  with api.os_utils.make_temp_directory(package_name) as temp_dir:
-    zip_path = temp_dir.join('%s.zip' % package_name)
-    cipd_package_name = 'flutter/%s' % package_name
-    api.cipd.build(
-        folder_path, zip_path, cipd_package_name, install_mode='copy'
-    )
-    if api.bucket_util.should_upload_packages():
-      api.cipd.register(
-          cipd_package_name,
-          zip_path,
-          refs=['latest'],
-          tags={'git_revision': git_rev}
-      )
-
-
-def UploadSkyEngineDartPackage(api):
-  UploadSkyEngineToCIPD(api, 'sky_engine')
 
 
 def VerifyExportedSymbols(api):
@@ -948,10 +921,6 @@ def BuildLinuxAndroid(api, swarming_task_id):
         platform='',
         artifact_name='android-javadoc.zip'
     )
-
-    # Upload to CIPD.
-    # TODO(godofredoc): Validate if this can be removed.
-    UploadSkyEngineDartPackage(api)
 
   if api.properties.get('build_android_aot', True):
     BuildLinuxAndroidAOT(api, swarming_task_id)

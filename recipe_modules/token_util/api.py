@@ -45,4 +45,3 @@ class TokenUtilApi(recipe_api.RecipeApi):
         include_log=False
     )
     return cocoon_access_token_path
-

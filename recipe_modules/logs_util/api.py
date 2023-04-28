@@ -85,14 +85,14 @@ class LogUtilsApi(recipe_api.RecipeApi):
         return
       uuid = self.m.uuid.random()
       self.m.gsutil.upload(
-        bucket='flutter_logs',
-        source=file_path,
-        dest='flutter/%s/%s/%s' % (git_hash, task_name, uuid),
-        link_name='archive logs',
-        args=['-r'],
-        multithreaded=True,
-        name='upload logs %s' % git_hash,
-        unauthenticated_url=True
+          bucket='flutter_logs',
+          source=file_path,
+          dest='flutter/%s/%s/%s' % (git_hash, task_name, uuid),
+          link_name='archive logs',
+          args=['-r'],
+          multithreaded=True,
+          name='upload logs %s' % git_hash,
+          unauthenticated_url=True
       )
 
   def show_logs_stdout(self, file_path):

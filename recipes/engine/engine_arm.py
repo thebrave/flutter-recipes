@@ -37,8 +37,7 @@ DRONE_TIMEOUT_SECS = 7200
 BUCKET_NAME = 'flutter_infra_release'
 MAVEN_BUCKET_NAME = 'download.flutter.io'
 ICU_DATA_PATH = 'third_party/icu/flutter/icudtl.dat'
-GIT_REPO = (
-    'https://flutter.googlesource.com/mirrors/engine')
+GIT_REPO = ('https://flutter.googlesource.com/mirrors/engine')
 IMPELLERC_SHADER_LIB_PATH = 'shader_lib'
 
 PROPERTIES = InputProperties
@@ -80,60 +79,78 @@ def RunGN(api, *args):
 
 def UploadArtifact(api, config, platform, artifact_name):
   path = GetCheckoutPath(api).join(
-      'out',
-      config,
-      'zip_archives',
-      platform,
-      artifact_name
+      'out', config, 'zip_archives', platform, artifact_name
   )
   api.path.mock_add_file(path)
   assert api.path.exists(path), '%s does not exist' % str(path)
   if not api.flutter_bcid.is_prod_build():
     return
   dst = '%s/%s' % (platform, artifact_name) if platform else artifact_name
-  api.bucket_util.safe_upload(
-      path,
-      GetCloudPath(api, dst)
-  )
+  api.bucket_util.safe_upload(path, GetCloudPath(api, dst))
 
 
 def BuildLinux(api):
-  RunGN(api, '--runtime-mode', 'debug', '--target-os=linux',
-        '--linux-cpu=arm64', '--prebuilt-dart-sdk')
-  Build(api, 'linux_debug_arm64',
-        'flutter/build/archives:artifacts',
-        'flutter/build/archives:dart_sdk_archive',
-        'flutter/tools/font-subset',
-        'flutter/shell/platform/linux:flutter_gtk')
-
-  RunGN(api, '--runtime-mode', 'profile', '--no-lto', '--target-os=linux',
-        '--linux-cpu=arm64', '--prebuilt-dart-sdk')
+  RunGN(
+      api, '--runtime-mode', 'debug', '--target-os=linux', '--linux-cpu=arm64',
+      '--prebuilt-dart-sdk'
+  )
   Build(
-      api, 'linux_profile_arm64',
-      'flutter/shell/platform/linux:flutter_gtk')
+      api, 'linux_debug_arm64', 'flutter/build/archives:artifacts',
+      'flutter/build/archives:dart_sdk_archive', 'flutter/tools/font-subset',
+      'flutter/shell/platform/linux:flutter_gtk'
+  )
 
-  RunGN(api, '--runtime-mode', 'release', '--target-os=linux',
-        '--linux-cpu=arm64', '--prebuilt-dart-sdk')
-  Build(api, 'linux_release_arm64',
-        'flutter/shell/platform/linux:flutter_gtk')
+  RunGN(
+      api, '--runtime-mode', 'profile', '--no-lto', '--target-os=linux',
+      '--linux-cpu=arm64', '--prebuilt-dart-sdk'
+  )
+  Build(api, 'linux_profile_arm64', 'flutter/shell/platform/linux:flutter_gtk')
 
+  RunGN(
+      api, '--runtime-mode', 'release', '--target-os=linux',
+      '--linux-cpu=arm64', '--prebuilt-dart-sdk'
+  )
+  Build(api, 'linux_release_arm64', 'flutter/shell/platform/linux:flutter_gtk')
 
   # linux_debug_arm64
-  UploadArtifact(api, config='linux_debug_arm64', platform='linux-arm64',
-                   artifact_name='artifacts.zip')
-  UploadArtifact(api, config='linux_debug_arm64', platform='linux-arm64',
-                 artifact_name='font-subset.zip')
-  UploadArtifact(api, config='linux_debug_arm64', platform='',
-                 artifact_name='dart-sdk-linux-arm64.zip')
-
+  UploadArtifact(
+      api,
+      config='linux_debug_arm64',
+      platform='linux-arm64',
+      artifact_name='artifacts.zip'
+  )
+  UploadArtifact(
+      api,
+      config='linux_debug_arm64',
+      platform='linux-arm64',
+      artifact_name='font-subset.zip'
+  )
+  UploadArtifact(
+      api,
+      config='linux_debug_arm64',
+      platform='',
+      artifact_name='dart-sdk-linux-arm64.zip'
+  )
 
   # Desktop embedding.
-  UploadArtifact(api, config='linux_debug_arm64', platform='linux-arm64-debug',
-                 artifact_name='linux-arm64-flutter-gtk.zip')
-  UploadArtifact(api, config='linux_profile_arm64', platform='linux-arm64-profile',
-                 artifact_name='linux-arm64-flutter-gtk.zip')
-  UploadArtifact(api, config='linux_release_arm64', platform='linux-arm64-release',
-                 artifact_name='linux-arm64-flutter-gtk.zip')
+  UploadArtifact(
+      api,
+      config='linux_debug_arm64',
+      platform='linux-arm64-debug',
+      artifact_name='linux-arm64-flutter-gtk.zip'
+  )
+  UploadArtifact(
+      api,
+      config='linux_profile_arm64',
+      platform='linux-arm64-profile',
+      artifact_name='linux-arm64-flutter-gtk.zip'
+  )
+  UploadArtifact(
+      api,
+      config='linux_release_arm64',
+      platform='linux-arm64-release',
+      artifact_name='linux-arm64-flutter-gtk.zip'
+  )
 
 
 def RunSteps(api, properties, env_properties):
@@ -146,14 +163,15 @@ def RunSteps(api, properties, env_properties):
   api.file.rmtree('Clobber build output', checkout.join('out'))
 
   api.file.ensure_directory('Ensure checkout cache', cache_root)
-  dart_bin = checkout.join('third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
-                           'bin')
+  dart_bin = checkout.join(
+      'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
+  )
 
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
 
   env = {
-    'ANDROID_HOME': str(android_home),
-    'FLUTTER_PREBUILT_DART_SDK': 'True',
+      'ANDROID_HOME': str(android_home),
+      'FLUTTER_PREBUILT_DART_SDK': 'True',
   }
   env_prefixes = {}
 
@@ -163,9 +181,8 @@ def RunSteps(api, properties, env_properties):
   api.os_utils.clean_derived_data()
 
   # Various scripts we run assume access to depot_tools on path for `ninja`.
-  with api.context(
-      cwd=cache_root, env=env,
-      env_prefixes=env_prefixes), api.depot_tools.on_path():
+  with api.context(cwd=cache_root, env=env,
+                   env_prefixes=env_prefixes), api.depot_tools.on_path():
 
     api.gclient.runhooks()
 
@@ -193,10 +210,19 @@ def GenTests(api):
   git_revision = 'abcd1234'
   for platform in ('mac', 'linux', 'win'):
     for should_upload in (True, False):
-      for bucket in ('prod', 'staging',):
-        for experimental in (True, False,):
+      for bucket in (
+          'prod',
+          'staging',
+      ):
+        for experimental in (
+            True,
+            False,
+        ):
           test = api.test(
-              '%s%s_%s_%s' % (platform, '_upload' if should_upload else '', bucket, experimental),
+              '%s%s_%s_%s' % (
+                  platform, '_upload' if should_upload else '', bucket,
+                  experimental
+              ),
               api.platform(platform, 64),
               api.buildbucket.ci_build(
                   builder='%s Engine' % platform.capitalize(),
@@ -217,9 +243,11 @@ def GenTests(api):
                       build_android_debug=True,
                       upload_packages=should_upload,
                       force_upload=True,
-                  ),),
+                  ),
+              ),
               api.properties.environ(
-                  EnvProperties(SWARMING_TASK_ID='deadbeef')),
+                  EnvProperties(SWARMING_TASK_ID='deadbeef')
+              ),
               status='FAILURE' if platform in ['mac', 'win'] else 'SUCCESS'
           )
           yield test
@@ -240,14 +268,16 @@ def GenTests(api):
                 android_sdk_license='android_sdk_hash',
                 android_sdk_preview_license='android_sdk_preview_hash',
                 upload_packages=should_upload,
-            )),
+            )
+        ),
     )
   yield api.test(
       'clobber',
       api.buildbucket.ci_build(
           builder='Linux Host Engine',
           git_repo='https://github.com/flutter/engine',
-          project='flutter'),
+          project='flutter'
+      ),
       api.runtime(is_experimental=True),
       api.properties(
           InputProperties(
@@ -261,14 +291,17 @@ def GenTests(api):
               build_android_aot=True,
               build_android_debug=True,
               android_sdk_license='android_sdk_hash',
-              android_sdk_preview_license='android_sdk_preview_hash')),
+              android_sdk_preview_license='android_sdk_preview_hash'
+          )
+      ),
   )
   yield api.test(
       'pull_request',
       api.buildbucket.ci_build(
           builder='Linux Host Engine',
           git_repo='https://github.com/flutter/engine',
-          project='flutter'),
+          project='flutter'
+      ),
       api.runtime(is_experimental=True),
       api.properties(
           InputProperties(
@@ -282,5 +315,7 @@ def GenTests(api):
               build_android_aot=True,
               build_android_debug=True,
               android_sdk_license='android_sdk_hash',
-              android_sdk_preview_license='android_sdk_preview_hash')),
+              android_sdk_preview_license='android_sdk_preview_hash'
+          )
+      ),
   )

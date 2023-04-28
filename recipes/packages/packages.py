@@ -71,12 +71,13 @@ def RunSteps(api):
       if 'xcode' in dep_list:
         with api.osx_sdk('ios'):
           api.flutter_deps.gems(
-            env, env_prefixes, flutter_checkout_path.join('dev', 'ci', 'mac')
+              env, env_prefixes, flutter_checkout_path.join('dev', 'ci', 'mac')
           )
           with api.context(env=env, env_prefixes=env_prefixes):
             run_test(api, result, packages_checkout_path, env)
       else:
         run_test(api, result, packages_checkout_path, env)
+
 
 def run_test(api, result, packages_checkout_path, env):
   """Run tests sequentially following the script"""
@@ -93,22 +94,22 @@ def run_test(api, result, packages_checkout_path, env):
     finally:
       api.logs_util.upload_logs(task['name'])
 
+
 def GenTests(api):
   flutter_path = api.path['start_dir'].join('flutter')
-  tasks_dict = {'tasks': [{'name': 'one', 'script': 'myscript', 'args': ['arg1', 'arg2']}]}
+  tasks_dict = {
+      'tasks': [{'name': 'one', 'script': 'myscript', 'args': ['arg1', 'arg2']}]
+  }
   yield api.test(
       'master_channel', api.repo_util.flutter_environment_data(flutter_path),
       api.properties(
           channel='master',
           version_file='flutter_master.version',
-      ),
-      api.step_data('read yaml.parse', api.json.output(tasks_dict))
+      ), api.step_data('read yaml.parse', api.json.output(tasks_dict))
   )
   yield api.test(
       'stable_channel', api.repo_util.flutter_environment_data(flutter_path),
-      api.properties(
-          channel='stable',
-      ),
+      api.properties(channel='stable',),
       api.step_data('read yaml.parse', api.json.output(tasks_dict))
   )
   yield api.test(
@@ -117,6 +118,5 @@ def GenTests(api):
           channel='master',
           version_file='flutter_master.version',
           dependencies=[{'dependency': 'xcode'}],
-      ),
-      api.step_data('read yaml.parse', api.json.output(tasks_dict))
+      ), api.step_data('read yaml.parse', api.json.output(tasks_dict))
   )

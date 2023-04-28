@@ -71,6 +71,7 @@ DEPS = [
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
+
 def run_tests(api, test, checkout, env, env_prefixes):
   """Runs sub-build tests."""
   # Install dependencies.
@@ -81,11 +82,7 @@ def run_tests(api, test, checkout, env, env_prefixes):
   # Download build dependencies.
   for dep in test.get('resolved_deps', []):
     out_hash = dep.get('full_build')
-    api.cas.download(
-        f'Download {out_hash}',
-        out_hash,
-        out_path
-    )
+    api.cas.download(f'Download {out_hash}', out_hash, out_path)
   for task in test.get('tasks', []):
     command = [task.get('language')] if task.get('language') else []
     # Ideally local tests should be completely hermetic and in theory we can run
@@ -124,7 +121,9 @@ def RunSteps(api, properties, env_properties):
   api.file.rmtree('Clobber build output', checkout.join('out'))
   cache_root = api.path['cache'].join('builder')
   api.file.ensure_directory('Ensure checkout cache', cache_root)
-  env, env_prefixes = api.repo_util.engine_environment(api.path['cache'].join('builder'))
+  env, env_prefixes = api.repo_util.engine_environment(
+      api.path['cache'].join('builder')
+  )
   # Engine path is used inconsistently across the engine repo. We'll start
   # with [cache]/builder and will adjust it to start using it consistently.
   env['ENGINE_PATH'] = api.path['cache'].join('builder')
@@ -134,31 +133,19 @@ def RunSteps(api, properties, env_properties):
 
 def GenTests(api):
   build = {
-      "test_dependencies": [
-          {
-              "dependency": "chrome_and_driver", "version": "version:111.0"
-          }
-      ],
-      "resolved_deps": [
-          {
-              "full_build": "f5b9de6cc9f4b05833aa128717d3112c133e2363e4303df9a1951540c79e72a3/87"
-          },
-          {
-              "full_build": "32b40edba8bfbf7729374eaa4aa44bf0d89c385f080f64b56c9fbce7172e4a71/84"
-          }
-      ],
-      'tasks': [
-          {
-              'language': 'dart',
-              'name': 'felt test: chrome-unit-linux',
-              'parameters': [
-                  'test',
-                  '--browser=chrome',
-                  '--require-skia-gold'
-              ],
-              'script': 'flutter/lib/web_ui/dev/felt'
-          }
-      ]
+      "test_dependencies": [{
+          "dependency": "chrome_and_driver", "version": "version:111.0"
+      }], "resolved_deps": [{
+          "full_build":
+              "f5b9de6cc9f4b05833aa128717d3112c133e2363e4303df9a1951540c79e72a3/87"
+      }, {
+          "full_build":
+              "32b40edba8bfbf7729374eaa4aa44bf0d89c385f080f64b56c9fbce7172e4a71/84"
+      }], 'tasks': [{
+          'language': 'dart', 'name': 'felt test: chrome-unit-linux',
+          'parameters': ['test', '--browser=chrome', '--require-skia-gold'],
+          'script': 'flutter/lib/web_ui/dev/felt'
+      }]
   }
   yield api.test(
       'basic',

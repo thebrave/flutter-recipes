@@ -76,7 +76,8 @@ class BuildUtilApi(recipe_api.RecipeApi):
       targets(list): A list of string with the ninja targets to build.
     """
     build_dir = checkout_path.join('out/%s' % config)
-    concurrent_jobs = self.m.properties.get('concurrent_jobs') or self._calculate_j_value()
+    concurrent_jobs = self.m.properties.get('concurrent_jobs'
+                                           ) or self._calculate_j_value()
     ninja_args = [tool, '-C', build_dir, '-j', concurrent_jobs]
     ninja_args.extend(targets)
     with self.m.depot_tools.on_path():

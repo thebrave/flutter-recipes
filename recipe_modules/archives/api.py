@@ -35,7 +35,6 @@ MOCK_POM_PATH = (
     'x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
 )
 
-
 # Bucket + initial prefix for artifact destination.
 LUCI_TO_GCS_PREFIX = {
     'flutter': 'flutter_infra_release',
@@ -48,21 +47,15 @@ LUCI_TO_GCS_PREFIX = {
 
 # Bucket + initial prefix for artifact destination.
 LUCI_TO_ANDROID_GCS_PREFIX = {
-    'flutter': '',
-    MONOREPO: 'flutter_archives_v2/monorepo',
-    'prod': '',
-    'staging': 'flutter_archives_v2',
-    'try': 'flutter_archives_v2',
+    'flutter': '', MONOREPO: 'flutter_archives_v2/monorepo', 'prod': '',
+    'staging': 'flutter_archives_v2', 'try': 'flutter_archives_v2',
     'try.shadow': 'flutter_archives_v2'
 }
 
 # Subpath for realms. A realm is used to separate file destinations
 # within the same configuration. E.g. production environment with
 # an experimental realm and production environment with a production realm.
-REALM_TO_PATH = {
-    'production': '',
-    'experimental': 'experimental'
-}
+REALM_TO_PATH = {'production': '', 'experimental': 'experimental'}
 
 
 class ArchivesApi(recipe_api.RecipeApi):
@@ -82,19 +75,19 @@ class ArchivesApi(recipe_api.RecipeApi):
     """
     results = []
     self.m.path.mock_add_paths(
-        self.m.path['start_dir'].join(
-            'out/android_profile/zip_archives/download.flutter.io'),
-        DIRECTORY
+        self.m.path['start_dir']
+        .join('out/android_profile/zip_archives/download.flutter.io'), DIRECTORY
     )
     for include_path in archive_config.get('include_paths', []):
       full_include_path = self.m.path.abspath(checkout.join(include_path))
       if self.m.path.isdir(full_include_path):
-        test_data = [
-
-        ]
+        test_data = []
         paths = self.m.file.listdir(
-                'Expand directory', checkout.join(include_path),
-                recursive=True, test_data=(MOCK_JAR_PATH, MOCK_POM_PATH))
+            'Expand directory',
+            checkout.join(include_path),
+            recursive=True,
+            test_data=(MOCK_JAR_PATH, MOCK_POM_PATH)
+        )
         paths = [self.m.path.abspath(p) for p in paths]
         results.extend(paths)
       else:
@@ -149,9 +142,7 @@ class ArchivesApi(recipe_api.RecipeApi):
       dst: A string with the local destination for the file.
     """
     bucket, path = self._split_dst_parts(src)
-    self.m.gsutil.download(
-        bucket, path, dst, name="download %s" % src
-    )
+    self.m.gsutil.download(bucket, path, dst, name="download %s" % src)
 
   def engine_v2_gcs_paths(self, checkout, archive_config):
     """Calculates engine v2 GCS paths from an archive config.
@@ -168,7 +159,9 @@ class ArchivesApi(recipe_api.RecipeApi):
     # Artifacts bucket is calculated using the LUCI bucket but we also use the realm to upload
     # artifacts to the same bucket but different path when the build configurations use an experimental
     # realm. Defaults to experimental.
-    artifact_realm = REALM_TO_PATH.get(archive_config.get('realm', ''), 'experimental')
+    artifact_realm = REALM_TO_PATH.get(
+        archive_config.get('realm', ''), 'experimental'
+    )
     # Do not archive if this is a monorepo try build.
     if self.m.monorepo.is_monorepo_try_build:
       return results
@@ -185,7 +178,9 @@ class ArchivesApi(recipe_api.RecipeApi):
     for include_path in file_list:
       is_android_artifact = ANDROID_ARTIFACTS_BUCKET in include_path
       dir_part = self.m.path.dirname(include_path)
-      full_base_path = self.m.path.abspath(checkout.join(archive_config.get('base_path','')))
+      full_base_path = self.m.path.abspath(
+          checkout.join(archive_config.get('base_path', ''))
+      )
       rel_path = self.m.path.relpath(dir_part, full_base_path)
       rel_path = '' if rel_path == '.' else rel_path
       base_name = self.m.path.basename(include_path)
@@ -196,23 +191,29 @@ class ArchivesApi(recipe_api.RecipeApi):
         artifact_path = '%s/%s' % (rel_path, base_name)
         # Replace ANDROID_ARTIFACTS_BUCKET to include the realm.
         old_location = '/'.join([ANDROID_ARTIFACTS_BUCKET, 'io', 'flutter'])
-        new_location = '/'.join(filter(
-            bool,
-            [ANDROID_ARTIFACTS_BUCKET, 'io', 'flutter', artifact_realm])
+        new_location = '/'.join(
+            filter(
+                bool,
+                [ANDROID_ARTIFACTS_BUCKET, 'io', 'flutter', artifact_realm]
+            )
         )
         artifact_path = artifact_path.replace(old_location, new_location)
         bucket_and_prefix = LUCI_TO_ANDROID_GCS_PREFIX.get(bucket)
-        artifact_path = '/'.join(filter(bool, [bucket_and_prefix, artifact_path]))
+        artifact_path = '/'.join(
+            filter(bool, [bucket_and_prefix, artifact_path])
+        )
       else:
         bucket_and_prefix = LUCI_TO_GCS_PREFIX.get(bucket)
-        artifact_path = '/'.join(filter(bool, [bucket_and_prefix, 'flutter', artifact_realm, commit, rel_path, base_name]))
+        artifact_path = '/'.join(
+            filter(
+                bool, [
+                    bucket_and_prefix, 'flutter', artifact_realm, commit,
+                    rel_path, base_name
+                ]
+            )
+        )
 
-      results.append(
-          ArchivePaths(
-              include_path,
-              'gs://%s' % artifact_path
-          )
-      )
+      results.append(ArchivePaths(include_path, 'gs://%s' % artifact_path))
     return results
 
   def global_generator_paths(self, checkout, archives):
@@ -246,12 +247,16 @@ class ArchivesApi(recipe_api.RecipeApi):
       # Artifacts bucket is calculated using the LUCI bucket but we also use the realm to upload
       # artifacts to the same bucket but different path when the build configurations use an
       # experimental realm. Defaults to experimental.
-      artifact_realm = REALM_TO_PATH.get(archive.get('realm', ''), 'experimental')
+      artifact_realm = REALM_TO_PATH.get(
+          archive.get('realm', ''), 'experimental'
+      )
       source = checkout.join(archive.get('source'))
       artifact_path = '/'.join(
           filter(
-              bool, [bucket_and_prefix, 'flutter', artifact_realm, commit,
-                        archive.get('destination')]
+              bool, [
+                  bucket_and_prefix, 'flutter', artifact_realm, commit,
+                  archive.get('destination')
+              ]
           )
       )
       dst = 'gs://%s' % artifact_path

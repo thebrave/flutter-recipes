@@ -10,6 +10,7 @@ from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
 TIMEOUT_PROPERTY = 'ios_debug_symbol_doctor_timeout_seconds'
 
+
 class OsUtilsApi(recipe_api.RecipeApi):
   """Operating system utilities."""
 
@@ -108,7 +109,6 @@ class OsUtilsApi(recipe_api.RecipeApi):
           infra_step=True,
       )
 
-
   def kill_simulators(self):
     """Kills any open simulators.
 
@@ -116,7 +116,8 @@ class OsUtilsApi(recipe_api.RecipeApi):
     """
     if self.m.platform.is_mac:
       self.m.step(
-          'kill dart', ['killall', '-9', 'com.apple.CoreSimulator.CoreSimulatorDevice'],
+          'kill dart',
+          ['killall', '-9', 'com.apple.CoreSimulator.CoreSimulatorDevice'],
           ok_ret='any',
           infra_step=True
       )
@@ -232,9 +233,9 @@ class OsUtilsApi(recipe_api.RecipeApi):
 
   def _get_initial_timeout(self):
     return self.m.properties.get(
-      # This is not set by the builder config, but can be provided via LED
-      TIMEOUT_PROPERTY,
-      120, # 2 minutes
+        # This is not set by the builder config, but can be provided via LED
+        TIMEOUT_PROPERTY,
+        120,  # 2 minutes
     )
 
   def ios_debug_symbol_doctor(self, diagnose_first=True):
@@ -260,39 +261,41 @@ class OsUtilsApi(recipe_api.RecipeApi):
       # timeout of 16 minutes
       retry_count = 4
       with self.m.context(cwd=cocoon_path.join('device_doctor'),
-              infra_steps=True):
-          self.m.step(
-              'pub get device_doctor',
-              ['dart', 'pub', 'get'],
+                          infra_steps=True):
+        self.m.step(
+            'pub get device_doctor',
+            ['dart', 'pub', 'get'],
+        )
+        if diagnose_first:
+          clean_results = self._diagnose_debug_symbols(
+              entrypoint, timeout, cocoon_path
           )
-          if diagnose_first:
-              clean_results = self._diagnose_debug_symbols(entrypoint, timeout, cocoon_path)
-              if clean_results:
-                  # It doesn't appear debug symbols need to be sync'd, we are finished
-                  return
-          for _ in range(retry_count):
-              self._recover_debug_symbols(entrypoint, timeout, cocoon_path)
-              result = self._diagnose_debug_symbols(entrypoint, timeout, cocoon_path)
-              if result:
-                  # attached devices don't have errors
-                  return
-              # Try for twice as long next time
-              timeout *= 2
+          if clean_results:
+            # It doesn't appear debug symbols need to be sync'd, we are finished
+            return
+        for _ in range(retry_count):
+          self._recover_debug_symbols(entrypoint, timeout, cocoon_path)
+          result = self._diagnose_debug_symbols(
+              entrypoint, timeout, cocoon_path
+          )
+          if result:
+            # attached devices don't have errors
+            return
+          # Try for twice as long next time
+          timeout *= 2
 
-          message = '''
+        message = '''
 The ios_debug_symbol_doctor is detecting phones attached with errors and failed
 to recover this bot with a timeout of %s seconds.
 
 See https://github.com/flutter/flutter/issues/103511 for more context.
 ''' % timeout
-          # raise purple
-          self.m.step.empty(
-              'Recovery failed after %s attempts' % retry_count,
-              status=self.m.step.INFRA_FAILURE,
-              step_text=message,
-          )
-
-
+        # raise purple
+        self.m.step.empty(
+            'Recovery failed after %s attempts' % retry_count,
+            status=self.m.step.INFRA_FAILURE,
+            step_text=message,
+        )
 
   def dismiss_dialogs(self):
     """Dismisses iOS dialogs to avoid problems.
@@ -324,9 +327,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
   def _checkout_cocoon(self):
     """Checkout cocoon at HEAD to the cache and return the path."""
     cocoon_path = self.m.path['cache'].join('cocoon')
-    self.m.repo_util.checkout(
-        'cocoon', cocoon_path, ref='refs/heads/main'
-    )
+    self.m.repo_util.checkout('cocoon', cocoon_path, ref='refs/heads/main')
     return cocoon_path
 
   def _diagnose_debug_symbols(self, entrypoint, timeout, cocoon_path):
@@ -339,13 +340,13 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     Returns a boolean for whether or not the initial diagnose succeeded.
     """
     try:
-        self.m.step(
-            'diagnose',
-            ['dart', entrypoint, 'diagnose'],
-        )
-        return True
+      self.m.step(
+          'diagnose',
+          ['dart', entrypoint, 'diagnose'],
+      )
+      return True
     except self.m.step.StepFailure as e:
-        return False
+      return False
 
   def _recover_debug_symbols(self, entrypoint, timeout, cocoon_path):
     self.m.step(

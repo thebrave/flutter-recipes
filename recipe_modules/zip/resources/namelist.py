@@ -7,6 +7,7 @@ import os
 import sys
 import zipfile
 
+
 def main():
   # See zip/api.py, def unzip(...) for format of |data|.
   data = json.load(sys.stdin)
@@ -19,6 +20,7 @@ def main():
   with zipfile.ZipFile(zip_file) as artifact_zip:
     sys.stdout.write(json.dumps(artifact_zip.namelist()))
   return 0
+
 
 if __name__ == '__main__':
   sys.exit(main())

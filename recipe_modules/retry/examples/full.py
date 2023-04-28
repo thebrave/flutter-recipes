@@ -41,7 +41,9 @@ def RunSteps(api, max_attempts):
   def func2():
     api.step('test: mytest_func_basic', ['ls', '-a'])
 
-  api.retry.wrap(func1, step_name='test: mytest_func', max_attempts=max_attempts)
+  api.retry.wrap(
+      func1, step_name='test: mytest_func', max_attempts=max_attempts
+  )
   api.retry.basic_wrap(func2, max_attempts=max_attempts)
   api.retry.run_flutter_doctor()
 
@@ -67,8 +69,7 @@ def GenTests(api):
       status='FAILURE'
   )
   yield api.test(
-      'pass_with_retries',
-      api.properties(max_attempts=2),
+      'pass_with_retries', api.properties(max_attempts=2),
       api.step_data('test: mytest', retcode=1),
       api.step_data('test: mytest_func', retcode=1),
       api.step_data('test: mytest_func_basic', retcode=1)

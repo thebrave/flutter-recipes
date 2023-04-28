@@ -22,20 +22,23 @@ FAILURE_BUILD_ID_2 = 112233445566778890
 SCHEDULED_BUILD_ID = 199887766554433221
 CANCELED_BUILD_ID = 987654321098765433
 
+
 def RunSteps(api, raise_on_failure):
   # Collect current build status using the buildbucket API. The build ids
   # list passed to the API is to limit the query to only the build ids that
   # we are interested on. This API return a Build oject only if the build
   # exists in buildbucket.
-  builds = api.buildbucket.collect_builds(build_ids=[
-      # Builds with the following ids are mocked in the GenTests section
-      # with different properties and status depending on the test.
-      SUCCESS_BUILD_ID,
-      INFRA_FAILURE_BUILD_ID,
-      FAILURE_BUILD_ID,
-      SCHEDULED_BUILD_ID,
-      CANCELED_BUILD_ID,
-  ])
+  builds = api.buildbucket.collect_builds(
+      build_ids=[
+          # Builds with the following ids are mocked in the GenTests section
+          # with different properties and status depending on the test.
+          SUCCESS_BUILD_ID,
+          INFRA_FAILURE_BUILD_ID,
+          FAILURE_BUILD_ID,
+          SCHEDULED_BUILD_ID,
+          CANCELED_BUILD_ID,
+      ]
+  )
   final_builds = {}
   for key in builds:
     build = builds[key]
@@ -54,21 +57,22 @@ def RunSteps(api, raise_on_failure):
 
 
 def GenTests(api):
+
   def build(summary_markdown=None, **kwargs):
-      b = api.buildbucket.ci_build_message(**kwargs)
-      if summary_markdown:
-          b.summary_markdown = summary_markdown
-      return b
+    b = api.buildbucket.ci_build_message(**kwargs)
+    if summary_markdown:
+      b.summary_markdown = summary_markdown
+    return b
 
   # Mock builds injected in the different tests.
   success_build = build(
-     build_id=SUCCESS_BUILD_ID,
-     status="SUCCESS",
+      build_id=SUCCESS_BUILD_ID,
+      status="SUCCESS",
   )
   infra_failure_build = build(
-     build_id=INFRA_FAILURE_BUILD_ID,
-     status="INFRA_FAILURE",
-     summary_markdown="something failed related to infra",
+      build_id=INFRA_FAILURE_BUILD_ID,
+      status="INFRA_FAILURE",
+      summary_markdown="something failed related to infra",
   )
   failure_build = build(
       build_id=FAILURE_BUILD_ID,
@@ -91,8 +95,7 @@ def GenTests(api):
   )
 
   yield (
-      api.test(
-          "mixed_with_infra_failures", status="INFRA_FAILURE") +
+      api.test("mixed_with_infra_failures", status="INFRA_FAILURE") +
       # Exercise all status colors.
       # Purple failures prioritized over red failures.
       api.buildbucket.simulated_collect_output([
@@ -100,18 +103,19 @@ def GenTests(api):
           infra_failure_build,
           failure_build,
           scheduled_build,
-      ]))
+      ])
+  )
 
   yield (
-      api.test(
-          "canceled_builds", status="INFRA_FAILURE") +
+      api.test("canceled_builds", status="INFRA_FAILURE") +
       # Exercise all status colors.
       # Purple failures prioritized over red failures.
       api.buildbucket.simulated_collect_output([
           success_build,
           canceled_build,
           scheduled_build,
-      ]))
+      ])
+  )
 
   yield (
       api.test("mixed_without_infra_failures", status="FAILURE") +
@@ -121,11 +125,13 @@ def GenTests(api):
           failure_build,
           failure_build_2,
           scheduled_build,
-      ]))
+      ])
+  )
 
   yield (
       api.test("all_passed") +
       # With just red failures, raise red.
       api.buildbucket.simulated_collect_output([
           success_build,
-      ]))
+      ])
+  )

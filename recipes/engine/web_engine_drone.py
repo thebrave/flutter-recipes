@@ -77,15 +77,15 @@ def RunSteps(api, properties, env_properties):
     # Download local CanvasKit build.
     wasm_cas_hash = build.get('wasm_release_cas_hash')
     out_dir = checkout.join('out')
-    api.cas.download('Download CanvasKit build from CAS', wasm_cas_hash, out_dir)
+    api.cas.download(
+        'Download CanvasKit build from CAS', wasm_cas_hash, out_dir
+    )
 
     command_args = build.get('command_args', ['test'])
     command_name = build.get('command_name', 'test')
 
     felt_name = 'felt.bat' if api.platform.is_win else 'felt'
-    felt_cmd = [
-         checkout.join('flutter', 'lib', 'web_ui', 'dev', felt_name)
-    ]
+    felt_cmd = [checkout.join('flutter', 'lib', 'web_ui', 'dev', felt_name)]
     felt_cmd.extend(command_args)
 
     with api.context(cwd=cache_root, env=env,
@@ -100,18 +100,18 @@ def RunSteps(api, properties, env_properties):
 
 def GenTests(api):
   build = {
-      'command_args': ['test', '--browser=chrome', '--require-skia-gold'],
-      'command_name': 'chrome-unit-linux',
-      'git_ref': 'refs/heads/master',
-      'inherited_dependencies': [
-          {'dependency': 'chrome_and_driver'},
-          {'dependency': 'firefox'},
-          {'dependency': 'goldctl'},
-          {'dependency': 'open_jdk'},
-          {'dependency': 'gradle_cache'}
-      ],
-      'name': 'chrome-unit-linux',
-      'wasm_release_cas_hash': '7a4348cb77de16aac05401c635950c2a75566e3f268fd60e7113b0c70cd4fbcb/87',
+      'command_args': ['test', '--browser=chrome',
+                       '--require-skia-gold'], 'command_name':
+                           'chrome-unit-linux', 'git_ref':
+                               'refs/heads/master',
+      'inherited_dependencies': [{'dependency': 'chrome_and_driver'},
+                                 {'dependency': 'firefox'},
+                                 {'dependency': 'goldctl'},
+                                 {'dependency': 'open_jdk'},
+                                 {'dependency': 'gradle_cache'}], 'name':
+                                     'chrome-unit-linux',
+      'wasm_release_cas_hash':
+          '7a4348cb77de16aac05401c635950c2a75566e3f268fd60e7113b0c70cd4fbcb/87',
       'web_dependencies': ['chrome']
   }
   yield api.test(

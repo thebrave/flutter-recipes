@@ -20,10 +20,11 @@ DEPS = [
 def RunSteps(api):
   checkout = api.path['start_dir']
   config = {
-      "name": "android_profile",
-      "type": "gcs",
-      "base_path": "out/android_profile/zip_archives/",
-      "realm": "production",
+      "name":
+          "android_profile", "type":
+              "gcs", "base_path":
+                  "out/android_profile/zip_archives/", "realm":
+                      "production",
       "include_paths": [
           "out/android_profile/zip_archives/artifact1.zip",
           "out/android_profile/zip_archives/android-arm-profile/artifacts.zip",
@@ -36,68 +37,119 @@ def RunSteps(api):
   results = api.archives.engine_v2_gcs_paths(checkout, config)
   expected_prod_results = [
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/artifact1.zip')),
+          local=str(
+              api.path['start_dir']
+              .join('out/android_profile/zip_archives/artifact1.zip')
+          ),
           remote='gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/artifact1.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/android-arm-profile/artifacts.zip')),
+          local=str(
+              api.path['start_dir'].join(
+                  'out/android_profile/zip_archives/android-arm-profile/artifacts.zip'
+              )
+          ),
           remote='gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile/artifacts.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/android-arm-profile/linux-x64.zip')),
+          local=str(
+              api.path['start_dir'].join(
+                  'out/android_profile/zip_archives/android-arm-profile/linux-x64.zip'
+              )
+          ),
           remote='gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile/linux-x64.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/android-arm-profile/symbols.zip')),
+          local=str(
+              api.path['start_dir'].join(
+                  'out/android_profile/zip_archives/android-arm-profile/symbols.zip'
+              )
+          ),
           remote='gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile/symbols.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar')),
+          local=str(
+              api.path['start_dir'].join(
+                  'out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar'
+              )
+          ),
           remote='gs://download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom')),
+          local=str(
+              api.path['start_dir'].join(
+                  'out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
+              )
+          ),
           remote='gs://download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/sky_engine.zip')),
+          local=str(
+              api.path['start_dir']
+              .join('out/android_profile/zip_archives/sky_engine.zip')
+          ),
           remote='gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/sky_engine.zip'
       )
   ]
   expected_try_results = [
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/artifact1.zip')),
+          local=str(
+              api.path['start_dir']
+              .join('out/android_profile/zip_archives/artifact1.zip')
+          ),
           remote='gs://flutter_archives_v2/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/artifact1.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/android-arm-profile/artifacts.zip')),
+          local=str(
+              api.path['start_dir'].join(
+                  'out/android_profile/zip_archives/android-arm-profile/artifacts.zip'
+              )
+          ),
           remote='gs://flutter_archives_v2/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile/artifacts.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/android-arm-profile/linux-x64.zip')),
+          local=str(
+              api.path['start_dir'].join(
+                  'out/android_profile/zip_archives/android-arm-profile/linux-x64.zip'
+              )
+          ),
           remote='gs://flutter_archives_v2/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile/linux-x64.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/android-arm-profile/symbols.zip')),
+          local=str(
+              api.path['start_dir'].join(
+                  'out/android_profile/zip_archives/android-arm-profile/symbols.zip'
+              )
+          ),
           remote='gs://flutter_archives_v2/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile/symbols.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar')),
+          local=str(
+              api.path['start_dir'].join(
+                  'out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar'
+              )
+          ),
           remote='gs://flutter_archives_v2/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom')),
+          local=str(
+              api.path['start_dir'].join(
+                  'out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
+              )
+          ),
           remote='gs://flutter_archives_v2/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('out/android_profile/zip_archives/sky_engine.zip')),
+          local=str(
+              api.path['start_dir']
+              .join('out/android_profile/zip_archives/sky_engine.zip')
+          ),
           remote='gs://flutter_archives_v2/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/sky_engine.zip'
       )
   ]
   config = api.properties.get('config')
   expected_results = {
-      'prod': expected_prod_results,
-      'try': expected_try_results
+      'prod': expected_prod_results, 'try': expected_try_results
   }
   api.assertions.assertListEqual(expected_results[config], results)
 
@@ -110,8 +162,7 @@ def GenTests(api):
           bucket='prod',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           git_ref='refs/heads/main'
-      ),
-      api.properties(config='prod'),
+      ), api.properties(config='prod'),
       api.step_data(
           'git rev-parse',
           stdout=api.raw_io
@@ -125,8 +176,7 @@ def GenTests(api):
           bucket='try',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           git_ref='refs/heads/main'
-      ),
-      api.properties(config='try'),
+      ), api.properties(config='try'),
       api.step_data(
           'git rev-parse',
           stdout=api.raw_io

@@ -48,20 +48,20 @@ def Build(api, config, *targets):
   api.build_util.build(config, checkout, targets)
 
 
-def RunTests(api, out_dir, android_out_dir=None, ios_out_dir=None, types='all', suppress_sanitizers=False):
+def RunTests(
+    api,
+    out_dir,
+    android_out_dir=None,
+    ios_out_dir=None,
+    types='all',
+    suppress_sanitizers=False
+):
   script_path = GetCheckoutPath(api).join('flutter', 'testing', 'run_tests.py')
   # TODO(godofredoc): use .vpython from engine when file are available.
   venv_path = api.depot_tools.root.join('.vpython3')
   args = [
-      'vpython3',
-      '-vpython-spec',
-      venv_path,
-      script_path,
-      '--variant',
-      out_dir,
-      '--type',
-      types,
-      '--engine-capture-core-dump'
+      'vpython3', '-vpython-spec', venv_path, script_path, '--variant', out_dir,
+      '--type', types, '--engine-capture-core-dump'
   ]
   if android_out_dir:
     args.extend(['--android-variant', android_out_dir])
@@ -112,15 +112,10 @@ def RunMaliocDiff(api, out_dir):
   # TODO(godofredoc): use .vpython from engine when file are available.
   venv_path = api.depot_tools.root.join('.vpython3')
   args = [
-      'vpython3',
-      '-vpython-spec',
-      venv_path,
-      script_path,
-      '--before',
+      'vpython3', '-vpython-spec', venv_path, script_path, '--before',
       GetCheckoutPath(api).join('flutter', 'impeller', 'tools', 'malioc.json'),
       '--after',
-      GetCheckoutPath(api).join('out', out_dir, 'gen', 'malioc'),
-      '--print-diff'
+      GetCheckoutPath(api).join('out', out_dir, 'gen', 'malioc'), '--print-diff'
   ]
   api.step('malioc diff', args)
 
@@ -128,15 +123,14 @@ def RunMaliocDiff(api, out_dir):
 def BuildLinuxAndroid(api, env, swarming_task_id):
   # Build Android Unopt and run tests
   RunGN(
-      api,
-      '--android',
-      '--unoptimized',
-      '--malioc-path',
+      api, '--android', '--unoptimized', '--malioc-path',
       api.path.join(env['ARM_TOOLS'], 'mali_offline_compiler', 'malioc')
   )
-  Build(api, 'android_debug_unopt',
-    'flutter/shell/platform/android:robolectric_tests',
-    'flutter/impeller',
+  Build(
+      api,
+      'android_debug_unopt',
+      'flutter/shell/platform/android:robolectric_tests',
+      'flutter/impeller',
   )
   RunTests(
       api,
@@ -149,17 +143,13 @@ def BuildLinuxAndroid(api, env, swarming_task_id):
 
 def BuildLinux(api):
   RunGN(
-      api,
-      '--runtime-mode',
-      'debug',
-      '--unoptimized',
-      '--prebuilt-dart-sdk',
-      '--asan',
-      '--lsan',
-      '--dart-debug'
+      api, '--runtime-mode', 'debug', '--unoptimized', '--prebuilt-dart-sdk',
+      '--asan', '--lsan', '--dart-debug'
   )
   Build(api, 'host_debug_unopt')
-  RunTests(api, 'host_debug_unopt', types='dart,engine', suppress_sanitizers=True)
+  RunTests(
+      api, 'host_debug_unopt', types='dart,engine', suppress_sanitizers=True
+  )
 
 
 def TestObservatory(api):
@@ -185,7 +175,10 @@ def SetupXcode(api):
 
 
 def BuildMac(api):
-  RunGN(api, '--runtime-mode', 'debug', '--unoptimized', '--no-lto', '--prebuilt-dart-sdk')
+  RunGN(
+      api, '--runtime-mode', 'debug', '--unoptimized', '--no-lto',
+      '--prebuilt-dart-sdk'
+  )
   Build(api, 'host_debug_unopt')
   RunTests(api, 'host_debug_unopt', types='dart,engine')
 
@@ -234,8 +227,8 @@ def RunSteps(api, properties, env_properties):
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
 
   env = {
-    'ANDROID_HOME': str(android_home),
-    'FLUTTER_PREBUILT_DART_SDK': 'True',
+      'ANDROID_HOME': str(android_home),
+      'FLUTTER_PREBUILT_DART_SDK': 'True',
   }
   env_prefixes = {'PATH': [dart_bin]}
 
@@ -302,14 +295,10 @@ def GenTests(api):
               project='flutter',
           ),
           api.runtime(is_experimental=False),
-          api.properties(
-              InputProperties(
-                  goma_jobs='1024',
-                  no_lto=no_lto,
-              ),
-          ),
-          api.properties.environ(
-              EnvProperties(SWARMING_TASK_ID='deadbeef')
-          ),
+          api.properties(InputProperties(
+              goma_jobs='1024',
+              no_lto=no_lto,
+          ),),
+          api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
       )
       yield test

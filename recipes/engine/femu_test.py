@@ -74,15 +74,25 @@ def GetFlutterFuchsiaBuildTargets(product, include_test_targets=False):
 def BuildAndTestFuchsia(api, build_script, git_rev):
   arch = GetEmulatorArch(api)
   # Prepares build files for debug/JIT Fuchsia
-  RunGN(api, '--fuchsia', '--fuchsia-cpu', arch, '--runtime-mode', 'debug',
-        '--no-lto')
+  RunGN(
+      api, '--fuchsia', '--fuchsia-cpu', arch, '--runtime-mode', 'debug',
+      '--no-lto'
+  )
   # Prepares build files for profile/AOT Fuchsia
-  RunGN(api, '--fuchsia', '--fuchsia-cpu', arch, '--runtime-mode', 'profile',
-        '--no-lto')
+  RunGN(
+      api, '--fuchsia', '--fuchsia-cpu', arch, '--runtime-mode', 'profile',
+      '--no-lto'
+  )
   # Builds debug/JIT Fuchsia
-  Build(api, 'fuchsia_debug_%s' % arch, *GetFlutterFuchsiaBuildTargets(False, True))
+  Build(
+      api, 'fuchsia_debug_%s' % arch,
+      *GetFlutterFuchsiaBuildTargets(False, True)
+  )
   # Builds profile/AOT Fuchsia
-  Build(api, 'fuchsia_profile_%s' % arch, *GetFlutterFuchsiaBuildTargets(False, True))
+  Build(
+      api, 'fuchsia_profile_%s' % arch,
+      *GetFlutterFuchsiaBuildTargets(False, True)
+  )
 
   # Package the build artifacts.
   #
@@ -92,8 +102,15 @@ def BuildAndTestFuchsia(api, build_script, git_rev):
   #
   # TODO(akbiggs): Clean this up if we feel brave.
   fuchsia_debug_package_cmd = [
-      'python3', build_script, '--engine-version', git_rev, '--skip-build',
-      '--archs', arch, '--runtime-mode', 'debug',
+      'python3',
+      build_script,
+      '--engine-version',
+      git_rev,
+      '--skip-build',
+      '--archs',
+      arch,
+      '--runtime-mode',
+      'debug',
   ]
   fuchsia_profile_package_cmd = [
       'python3', build_script, '--engine-version', git_rev, '--skip-build',
@@ -116,8 +133,9 @@ def RunGN(api, *args):
 
 def GetFuchsiaBuildId(api):
   checkout = GetCheckoutPath(api)
-  manifest_path = checkout.join('fuchsia', 'sdk', 'linux', 'meta',
-                                'manifest.json')
+  manifest_path = checkout.join(
+      'fuchsia', 'sdk', 'linux', 'meta', 'manifest.json'
+  )
   manifest_data = api.file.read_json('read manifest', manifest_path)
   return manifest_data['id']
 
@@ -140,13 +158,17 @@ def CasRoot(api):
   def addFlutterTests():
     arch = GetEmulatorArch(api)
     add(
-        checkout.join('out', 'fuchsia_bucket', 'flutter', arch, 'debug', 'aot',
-                      'flutter_aot_runner-0.far'), 'flutter_aot_runner-0.far')
+        checkout.join(
+            'out', 'fuchsia_bucket', 'flutter', arch, 'debug', 'aot',
+            'flutter_aot_runner-0.far'
+        ), 'flutter_aot_runner-0.far'
+    )
     test_suites_file = checkout.join(
-      'flutter', 'testing', 'fuchsia', 'test_suites.yaml')
+        'flutter', 'testing', 'fuchsia', 'test_suites.yaml'
+    )
 
-    for suite in api.yaml.read('retrieve list of test suites',
-                      test_suites_file, api.json.output()).json.output:
+    for suite in api.yaml.read('retrieve list of test suites', test_suites_file,
+                               api.json.output()).json.output:
       # Default behavior is to run all tests on x64 if "emulator_arch" isn't present
       # If "emulator_arch" is present, we run based on the emulator_arch specified
       # x64 - femu_test.py
@@ -156,16 +178,22 @@ def CasRoot(api):
 
       # Ensure command is well-formed.
       # See https://fuchsia.dev/fuchsia-src/concepts/packages/package_url.
-      match = re.match(r'^(test run) (?P<test_far_file>fuchsia-pkg://[0-9a-z\-_\.]+/(?P<name>[0-9a-z\-_\.]+)#meta/[0-9a-z\-_\.]+(\.cm|\.cmx))( +[0-9a-zA-Z\-_*\.: =]+)?$', suite['test_command'])
+      match = re.match(
+          r'^(test run) (?P<test_far_file>fuchsia-pkg://[0-9a-z\-_\.]+/(?P<name>[0-9a-z\-_\.]+)#meta/[0-9a-z\-_\.]+(\.cm|\.cmx))( +[0-9a-zA-Z\-_*\.: =]+)?$',
+          suite['test_command']
+      )
       if not match:
-        raise api.step.StepFailure('Invalid test command: %s' % suite['test_command'])
+        raise api.step.StepFailure(
+            'Invalid test command: %s' % suite['test_command']
+        )
 
       suite['name'] = match.group('name')
-      suite['run_with_dart_aot'] = 'run_with_dart_aot' in suite and suite['run_with_dart_aot'] == 'true'
+      suite['run_with_dart_aot'] = 'run_with_dart_aot' in suite and suite[
+          'run_with_dart_aot'] == 'true'
       suite['test_far_file'] = match.group('test_far_file')
 
       if 'packages' not in suite:
-        suite['packages'] = [ suite['package'] ]
+        suite['packages'] = [suite['package']]
       suite['package_basenames'] = []
       for path in suite['packages']:
         # Captures the FAR name (long/path/to/far/file/actual_far.far would output actual_far.far)
@@ -180,7 +208,9 @@ def CasRoot(api):
   addFlutterTests()
 
   cas_tree.create_links("create tree of runfiles")
-  cas_hash = api.cas_util.upload(cas_tree.root, step_name='archive FEMU Run Files')
+  cas_hash = api.cas_util.upload(
+      cas_tree.root, step_name='archive FEMU Run Files'
+  )
   return test_suites, root_dir, cas_hash
 
 
@@ -370,7 +400,8 @@ def BuildFuchsia(api):
   """
   checkout = GetCheckoutPath(api)
   build_script = str(
-      checkout.join('flutter/tools/fuchsia/build_fuchsia_artifacts.py'))
+      checkout.join('flutter/tools/fuchsia/build_fuchsia_artifacts.py')
+  )
   git_rev = api.buildbucket.gitiles_commit.id or 'HEAD'
   BuildAndTestFuchsia(api, build_script, git_rev)
 
@@ -380,22 +411,22 @@ def RunSteps(api, properties, env_properties):
   checkout = GetCheckoutPath(api)
   api.file.rmtree('clobber build output', checkout.join('out'))
   api.file.ensure_directory('ensure checkout cache', cache_root)
-  dart_bin = checkout.join('third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
-                           'bin')
+  dart_bin = checkout.join(
+      'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
+  )
 
   ffx_isolate_dir = api.path.mkdtemp('ffx_isolate_files')
 
   env = {
-    'FFX_ISOLATE_DIR': ffx_isolate_dir,
+      'FFX_ISOLATE_DIR': ffx_isolate_dir,
   }
   env_prefixes = {'PATH': [dart_bin]}
 
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
 
   # Various scripts we run assume access to depot_tools on path for `ninja`.
-  with api.context(
-      cwd=cache_root, env=env,
-      env_prefixes=env_prefixes), api.depot_tools.on_path():
+  with api.context(cwd=cache_root, env=env,
+                   env_prefixes=env_prefixes), api.depot_tools.on_path():
     if api.platform.is_linux and api.properties.get('build_fuchsia', True):
       BuildFuchsia(api)
 
@@ -407,7 +438,8 @@ def GenTests(api):
   output_props = struct_pb2.Struct()
   output_props['cas_output_hash'] = 'deadbeef'
   build = api.buildbucket.try_build_message(
-      builder='FEMU Test', project='flutter')
+      builder='FEMU Test', project='flutter'
+  )
   build.output.CopyFrom(build_pb2.Build.Output(properties=output_props))
 
   def ffx_repo_list_step_data(step_name):
@@ -655,26 +687,35 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               clobber=False,
-          ), clobber=False,),
+          ),
+          clobber=False,
+      ),
       api.step_data(
           'retrieve list of test suites.parse',
           api.json.output([{
-            'package': 'ordinary_package1.far',
-            'test_command': 'suspicious command'
+              'package': 'ordinary_package1.far',
+              'test_command': 'suspicious command'
           }, {
-            'package': 'ordinary_package2.far',
-            'test_command': 'test run fuchsia-pkg://fuchsia.com/ordinary_package2#meta/ordinary_package2.cmx; suspicious command'
+              'package':
+                  'ordinary_package2.far',
+              'test_command':
+                  'test run fuchsia-pkg://fuchsia.com/ordinary_package2#meta/ordinary_package2.cmx; suspicious command'
           }, {
-            'package': 'ordinary_package3.far',
-            'test_command': 'test run fuchsia-pkg://fuchsia.com/ordinary_package3#meta/ordinary_package3.cmx $(suspicious command)'
+              'package':
+                  'ordinary_package3.far',
+              'test_command':
+                  'test run fuchsia-pkg://fuchsia.com/ordinary_package3#meta/ordinary_package3.cmx $(suspicious command)'
           }, {
-            'package': 'ordinary_package4.far',
-            'test_command': 'test run fuchsia-pkg://fuchsia.com/ordinary_package4#meta/ordinary_package4.cmx `suspicious command`'
+              'package':
+                  'ordinary_package4.far',
+              'test_command':
+                  'test run fuchsia-pkg://fuchsia.com/ordinary_package4#meta/ordinary_package4.cmx `suspicious command`'
           }])
       ),
       api.step_data(
           'retrieve list of test suites.read',
-          api.file.read_text('''
+          api.file.read_text(
+              '''
 - package: ordinary_package1.far
   test_command: suspicious command
 - package: ordinary_package2.far
@@ -682,7 +723,8 @@ def GenTests(api):
 - package: ordinary_package3.far
   test_command: test run fuchsia-pkg://fuchsia.com/ordinary_package3#meta/ordinary_package3.cmx $(suspicious command)
 - package: ordinary_package4.far
-  test_command: test run fuchsia-pkg://fuchsia.com/ordinary_package4#meta/ordinary_package4.cmx `suspicious command`''')
+  test_command: test run fuchsia-pkg://fuchsia.com/ordinary_package4#meta/ordinary_package4.cmx `suspicious command`'''
+          )
       ),
       api.step_data(
           'read manifest',

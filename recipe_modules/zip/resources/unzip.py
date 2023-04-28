@@ -33,9 +33,7 @@ def unzip_with_subprocess(zip_file, output, quiet):
     args += ['-q']
   args += [zip_file]
 
-  return subprocess.call(
-      args=args,
-      cwd=output)
+  return subprocess.call(args=args, cwd=output)
 
 
 def unzip_with_python(zip_file, output):

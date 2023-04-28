@@ -17,6 +17,7 @@ DEPS = [
     'recipe_engine/step',
 ]
 
+
 # This recipe builds the cosign CIPD package.
 def RunSteps(api):
   env = {}
@@ -50,34 +51,35 @@ def GetLatestCosignDownloadUris(api):
   Args:
     api: luci api object.
   """
-  cosign_releases_raw_response = api.step('Get cosign releases from github',
-        cmd=['curl', 'https://api.github.com/repos/sigstore/cosign/releases'],
-        stdout=api.raw_io.output_text()
-        ).stdout
+  cosign_releases_raw_response = api.step(
+      'Get cosign releases from github',
+      cmd=['curl', 'https://api.github.com/repos/sigstore/cosign/releases'],
+      stdout=api.raw_io.output_text()
+  ).stdout
   cosign_releases = json.loads(cosign_releases_raw_response)
 
   latest_release = max(
-    cosign_releases,
-    key=lambda release: datetime.strptime(
-      release.get('published_at'), '%Y-%m-%dT%H:%M:%SZ')
+      cosign_releases,
+      key=lambda release: datetime.
+      strptime(release.get('published_at'), '%Y-%m-%dT%H:%M:%SZ')
   ).get('url')
 
   release_artifacts_raw_response = api.step(
-        'Get artifacts from sigstore/cosign for a specific release version',
-        cmd=['curl', latest_release],
-        stdout=api.raw_io.output_text()
-        ).stdout
+      'Get artifacts from sigstore/cosign for a specific release version',
+      cmd=['curl', latest_release],
+      stdout=api.raw_io.output_text()
+  ).stdout
   release_artifacts = json.loads(release_artifacts_raw_response)
 
   release_artifacts_download_uris = list(
-    map(
-      lambda asset:
-      asset.get('browser_download_url'),
-      release_artifacts.get('assets')
-    )
+      map(
+          lambda asset: asset.get('browser_download_url'),
+          release_artifacts.get('assets')
+      )
   )
 
   return release_artifacts_download_uris
+
 
 def DownloadCosignArtifacts(api, cosign_dir, platform, cosign_download_uris):
   """Downloads the latest cosign binary, certificate, and signature.
@@ -99,67 +101,54 @@ def DownloadCosignArtifacts(api, cosign_dir, platform, cosign_download_uris):
   cosign_base_name = 'cosign-%s-amd64%s' % (platform, exe)
 
   cosign_binary_download_uri = next(
-    filter(
-      lambda uri:
-      uri.endswith(cosign_base_name),
-      cosign_download_uris
-    )
+      filter(lambda uri: uri.endswith(cosign_base_name), cosign_download_uris)
   )
 
   cosign_certificate_download_uri = next(
-    filter(
-      lambda uri:
-      uri.endswith('%s-keyless.pem' % cosign_base_name),
-      cosign_download_uris
-    )
+      filter(
+          lambda uri: uri.endswith('%s-keyless.pem' % cosign_base_name),
+          cosign_download_uris
+      )
   )
 
   cosign_signature_download_uri = next(
-    filter(
-      lambda uri:
-      uri.endswith('%s-keyless.sig' % cosign_base_name),
-      cosign_download_uris
-    )
+      filter(
+          lambda uri: uri.endswith('%s-keyless.sig' % cosign_base_name),
+          cosign_download_uris
+      )
   )
 
   api.step(
-    'Download %s cosign binary' % platform,
-    [
-      'curl', '-L', cosign_binary_download_uri,
-      '-o', cosign_dir.join('bin', 'cosign%s' % exe),
-      '--create-dirs'
-    ],
-    infra_step=True
+      'Download %s cosign binary' % platform, [
+          'curl', '-L', cosign_binary_download_uri, '-o',
+          cosign_dir.join('bin', 'cosign%s' % exe), '--create-dirs'
+      ],
+      infra_step=True
   )
 
   api.step(
-    'Download %s cosign certificate' % platform,
-    [
-      'curl', '-L', cosign_certificate_download_uri,
-      '-o', cosign_dir.join("certificate", "cosign-cert%s.pem" % exe),
-      '--create-dirs'
-    ],
-    infra_step=True
+      'Download %s cosign certificate' % platform, [
+          'curl', '-L', cosign_certificate_download_uri, '-o',
+          cosign_dir.join("certificate", "cosign-cert%s.pem" % exe),
+          '--create-dirs'
+      ],
+      infra_step=True
   )
 
   api.step(
-    'Download %s cosign signature' % platform,
-    [
-      'curl', '-L', cosign_signature_download_uri,
-      '-o', cosign_dir.join("certificate", "cosign-sig%s.sig" % exe),
-      '--create-dirs'
-    ],
-    infra_step=True
+      'Download %s cosign signature' % platform, [
+          'curl', '-L', cosign_signature_download_uri, '-o',
+          cosign_dir.join("certificate", "cosign-sig%s.sig" % exe),
+          '--create-dirs'
+      ],
+      infra_step=True
   )
 
   if platform == 'linux' or platform == 'darwin':
     api.step(
-      'Make %s cosign binary executable' % platform,
-      [
-        'chmod',
-        '755',
-        cosign_dir.join('bin', 'cosign%s' % exe)
-      ]
+        'Make %s cosign binary executable' % platform,
+        ['chmod', '755',
+         cosign_dir.join('bin', 'cosign%s' % exe)]
     )
 
 
@@ -179,16 +168,13 @@ def VerifyCosignArtifactSignature(api, cosign_dir, platform):
   exe = '.exe' if platform == 'windows' else ''
 
   api.step(
-    'Verify %s cosign binary is legitimate' % platform,
-    [
-      'cosign',
-      'verify-blob',
-      '--cert',
-      cosign_dir.join("certificate", "cosign-cert%s.pem" % exe),
-      '--signature',
-      cosign_dir.join("certificate", "cosign-sig%s.sig" % exe),
-      cosign_dir.join("bin", "cosign%s" % exe)
-    ]
+      'Verify %s cosign binary is legitimate' % platform, [
+          'cosign', 'verify-blob', '--cert',
+          cosign_dir.join("certificate", "cosign-cert%s.pem" % exe),
+          '--signature',
+          cosign_dir.join("certificate", "cosign-sig%s.sig" % exe),
+          cosign_dir.join("bin", "cosign%s" % exe)
+      ]
   )
 
 
@@ -213,12 +199,12 @@ def UploadCosignToCipd(api, cosign_dir, platform):
 
 def GenTests(api):
   yield api.test(
-    'cosign',
-    api.properties(cosign_version='v1.0'),
-    api.platform('linux', 64),
-    api.step_data(
-        'Get cosign releases from github',
-        stdout=api.raw_io.output_text('''
+      'cosign', api.properties(cosign_version='v1.0'),
+      api.platform('linux', 64),
+      api.step_data(
+          'Get cosign releases from github',
+          stdout=api.raw_io.output_text(
+              '''
         [
           {
             "url": "https://api.github.com/releases/1",
@@ -229,11 +215,12 @@ def GenTests(api):
             "published_at": "2022-06-02T14:08:35Z"
           }
         ]
-        ''')
-    ) +
-    api.step_data(
-        'Get artifacts from sigstore/cosign for a specific release version',
-        stdout=api.raw_io.output_text('''
+        '''
+          )
+      ) + api.step_data(
+          'Get artifacts from sigstore/cosign for a specific release version',
+          stdout=api.raw_io.output_text(
+              '''
         {
           "assets":[
             {
@@ -268,6 +255,7 @@ def GenTests(api):
             }
           ]
         }
-        ''')
+        '''
+          )
       )
-    )
+  )

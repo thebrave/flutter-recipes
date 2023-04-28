@@ -49,13 +49,13 @@ class ZipApi(recipe_api.RecipeApi):
       zip_file: path to a zip file to get its namelist, should exist.
     """
     script_input = {
-      'zip_file': str(zip_file),
+        'zip_file': str(zip_file),
     }
     names_step = self.m.step(
-      step_name,
-      [ 'python3', self.resource('namelist.py') ],
-      stdin=self.m.json.input(script_input),
-      stdout=self.m.json.output(),
+        step_name,
+        ['python3', self.resource('namelist.py')],
+        stdin=self.m.json.input(script_input),
+        stdout=self.m.json.output(),
     )
     return names_step.stdout or []
 
@@ -76,14 +76,13 @@ class ZipApi(recipe_api.RecipeApi):
     """
     # TODO(vadimsh): Use 7zip on Windows if available?
     script_input = {
-      'output': str(output),
-      'zip_file': str(zip_file),
-      'quiet': quiet,
+        'output': str(output),
+        'zip_file': str(zip_file),
+        'quiet': quiet,
     }
     self.m.step(
-      step_name,
-      [ 'python3', self.resource('unzip.py') ],
-      stdin=self.m.json.input(script_input)
+        step_name, ['python3', self.resource('unzip.py')],
+        stdin=self.m.json.input(script_input)
     )
 
 
@@ -113,9 +112,7 @@ class ZipPackage(object):
     """
     assert self._root.is_parent_of(path), path
     self._entries.append({
-      'type': 'file',
-      'path': str(path),
-      'archive_name': archive_name
+        'type': 'file', 'path': str(path), 'archive_name': archive_name
     })
 
   def add_directory(self, path):
@@ -127,20 +124,20 @@ class ZipPackage(object):
     # TODO(vadimsh): Implement 'exclude' filter.
     assert self._root.is_parent_of(path) or path == self._root, path
     self._entries.append({
-      'type': 'dir',
-      'path': str(path),
+        'type': 'dir',
+        'path': str(path),
     })
 
   def zip(self, step_name):
     """Step to zip all staged files."""
     script_input = {
-      'entries': self._entries,
-      'output': str(self._output),
-      'root': str(self._root),
+        'entries': self._entries,
+        'output': str(self._output),
+        'root': str(self._root),
     }
     step_result = self._api.step(
-        step_name,
-        [ 'python3', self._api.zip.resource('zip.py') ],
-        stdin=self._api.json.input(script_input))
+        step_name, ['python3', self._api.zip.resource('zip.py')],
+        stdin=self._api.json.input(script_input)
+    )
     self._api.path.mock_add_paths(self._output)
     return step_result

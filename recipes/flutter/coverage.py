@@ -48,18 +48,15 @@ def RunSteps(api):
     )
     lcov_path = packages_path.join('coverage', 'lcov.info')
     api.gsutil.upload(
-          bucket='flutter_infra_release',
-          source=lcov_path,
-          dest='flutter/coverage/lcov.info',
-          link_name='lcov.info',
-          multithreaded=True,
-          name='upload lcov.info',
-          unauthenticated_url=True
-      )
+        bucket='flutter_infra_release',
+        source=lcov_path,
+        dest='flutter/coverage/lcov.info',
+        link_name='lcov.info',
+        multithreaded=True,
+        name='upload lcov.info',
+        unauthenticated_url=True
+    )
 
 
 def GenTests(api):
-  yield api.test(
-      'coverage',
-      api.repo_util.flutter_environment_data()
-  )
+  yield api.test('coverage', api.repo_util.flutter_environment_data())

@@ -10,12 +10,12 @@ from recipe_engine import recipe_api
 
 class BcidStage(Enum):
   """Enum representing valid bcis stages."""
-  START='start'
-  FETCH='fetch'
-  COMPILE='compile'
-  UPLOAD='upload'
-  UPLOAD_COMPLETE='upload-complete'
-  TEST='test'
+  START = 'start'
+  FETCH = 'fetch'
+  COMPILE = 'compile'
+  UPLOAD = 'upload'
+  UPLOAD_COMPLETE = 'upload-complete'
+  TEST = 'test'
 
 
 class FlutterBcidApi(recipe_api.RecipeApi):
@@ -46,8 +46,4 @@ class FlutterBcidApi(recipe_api.RecipeApi):
     """
     if self.is_official_build():
       sha256 = self.m.file.file_hash(local_artifact_path)
-      self.m.bcid_reporter.report_gcs(
-          sha256,
-          remote_artifact_path
-      )
-
+      self.m.bcid_reporter.report_gcs(sha256, remote_artifact_path)

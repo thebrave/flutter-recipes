@@ -11,7 +11,6 @@ from contextlib import contextmanager
 
 from recipe_engine import recipe_api
 
-
 # Rationalized from https://en.wikipedia.org/wiki/Xcode.
 #
 # Maps from OS version to the maximum supported version of Xcode for that OS.
@@ -21,18 +20,10 @@ _DEFAULT_VERSION_MAP = [('10.12.6', '9c40b'), ('10.13.2', '9f2000'),
                         ('10.13.6', '10b61'), ('10.14.3', '10g8'),
                         ('10.14.4', '11b52'), ('10.15.4', '12a7209')]
 
-
 _RUNTIMESPATH = [
-        'Contents',
-        'Developer',
-        'Platforms',
-        'iPhoneOS.platform',
-        'Library',
-        'Developer',
-        'CoreSimulator',
-        'Profiles',
-        'Runtimes'
-        ]
+    'Contents', 'Developer', 'Platforms', 'iPhoneOS.platform', 'Library',
+    'Developer', 'CoreSimulator', 'Profiles', 'Runtimes'
+]
 
 _XCODE_CACHE_PATH = 'osx_sdk'
 
@@ -162,16 +153,9 @@ class OSXSDKApi(recipe_api.RecipeApi):
     self.m.step(
         'install xcode',
         [
-            cache_dir.join('mac_toolchain'),
-            'install',
-            '-kind',
-            kind,
-            '-xcode-version',
-            self._sdk_version,
-            '-output-dir',
-            sdk_app,
-            '-cipd-package-prefix',
-            'flutter_internal/ios/xcode',
+            cache_dir.join('mac_toolchain'), 'install', '-kind', kind,
+            '-xcode-version', self._sdk_version, '-output-dir', sdk_app,
+            '-cipd-package-prefix', 'flutter_internal/ios/xcode',
             '-with-runtime=%s' % (not bool(self._runtime_versions))
         ],
     )
@@ -179,9 +163,12 @@ class OSXSDKApi(recipe_api.RecipeApi):
     # installs each runtime version under `osx_sdk` for cache sharing,
     # and then copies over to the destination.
     if self._runtime_versions:
-      self.m.file.ensure_directory('Ensuring runtimes directory', sdk_app.join(*_RUNTIMESPATH))
+      self.m.file.ensure_directory(
+          'Ensuring runtimes directory', sdk_app.join(*_RUNTIMESPATH)
+      )
       for version in self._runtime_versions:
-        runtime_name = 'iOS %s.simruntime' % version.lower().replace('ios-', '').replace('-', '.')
+        runtime_name = 'iOS %s.simruntime' % version.lower(
+        ).replace('ios-', '').replace('-', '.')
         dest = sdk_app.join(*_RUNTIMESPATH).join(runtime_name)
         if not self.m.path.exists(dest):
           runtime_cache_dir = self.m.path['cache'].join(_XCODE_CACHE_PATH).join(
@@ -204,8 +191,12 @@ class OSXSDKApi(recipe_api.RecipeApi):
           path_with_version = runtime_cache_dir.join(runtime_name)
           # If the runtime was the default for xcode the cipd bundle contains a directory called iOS.simruntime otherwise
           # it contains a folder called "iOS <version>.simruntime".
-          source = path_with_version if self.m.path.exists(path_with_version) else runtime_cache_dir.join('iOS.simruntime')
-          self.m.file.copytree('Copy runtime to %s' % dest, source, dest, symlinks=True)
+          source = path_with_version if self.m.path.exists(
+              path_with_version
+          ) else runtime_cache_dir.join('iOS.simruntime')
+          self.m.file.copytree(
+              'Copy runtime to %s' % dest, source, dest, symlinks=True
+          )
     return sdk_app
 
   def _cache_polluted(self):
@@ -231,7 +222,10 @@ class OSXSDKApi(recipe_api.RecipeApi):
       return cache_polluted
     if not self._runtime_exists():
       cache_polluted = True
-      self.m.step('cache polluted due to missing runtime', ['echo', 'xcode is installed without runtime'])
+      self.m.step(
+          'cache polluted due to missing runtime',
+          ['echo', 'xcode is installed without runtime']
+      )
     return cache_polluted
 
   def _cache_dir(self):
@@ -260,11 +254,15 @@ class OSXSDKApi(recipe_api.RecipeApi):
     sdk_app_dir = self._cache_dir().join('XCode.app')
     if self._runtime_versions:
       for version in self._runtime_versions:
-        runtime_name = 'iOS %s.simruntime' % version.lower().replace('ios-', '').replace('-', '.')
+        runtime_name = 'iOS %s.simruntime' % version.lower(
+        ).replace('ios-', '').replace('-', '.')
         runtime_path = sdk_app_dir.join(*_RUNTIMESPATH).join(runtime_name)
         if not self.m.path.exists(runtime_path):
           runtime_exists = False
-          self.m.step('runtime: %s does not exist' % runtime_name, ['echo', runtime_path])
+          self.m.step(
+              'runtime: %s does not exist' % runtime_name,
+              ['echo', runtime_path]
+          )
           break
     else:
       runtime_path = sdk_app_dir.join(*_RUNTIMESPATH).join('iOS.simruntime')

@@ -34,7 +34,7 @@ def RunSteps(api, properties, env_properties):
   cache_root = api.path['cache'].join('builder')
   api.file.ensure_directory('Ensure checkout cache', cache_root)
   env = {
-    'FLUTTER_PREBUILT_DART_SDK': 'True',
+      'FLUTTER_PREBUILT_DART_SDK': 'True',
   }
   env_prefixes = {}
 

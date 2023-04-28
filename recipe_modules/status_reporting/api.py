@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
 from recipe_engine import recipe_api
 from google.protobuf import json_format
 
@@ -24,9 +23,10 @@ class StatusReportingApi(recipe_api.RecipeApi):
     return json_format.MessageToJson(build)
 
   def publish_builds(
-    self,
-    subbuilds,
-    topic='projects/flutter-dashboard/topics/luci-builds-prod'):
+      self,
+      subbuilds,
+      topic='projects/flutter-dashboard/topics/luci-builds-prod'
+  ):
     """Publish builds to a pubsub topic.
 
     Args:

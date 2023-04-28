@@ -23,10 +23,12 @@ DEPS = [
 stableTagRegex = r'^(\d+)\.(\d+)\.(\d+)$'
 betaTagRegex = r'^(\d+)\.(\d+)\.(\d+)-(\d+)\.(\d+)\.pre$'
 
+
 def isValidTag(tag):
   stable = re.search(stableTagRegex, tag)
   development = re.search(betaTagRegex, tag)
   return stable or development
+
 
 """
 This recipe executes the tag and publishing stages of a flutter release.
@@ -41,12 +43,16 @@ to the recipe.
 The recipe will tag and push to github unless triggered
 from an experimental run.
 """
+
+
 def RunSteps(api):
   git_branch = api.properties.get('git_branch')
   tag = api.properties.get('tag')
   release_channel = api.properties.get('release_channel')
   # default to False force push
-  force = False if api.runtime.is_experimental else api.properties.get('force', False)
+  force = False if api.runtime.is_experimental else api.properties.get(
+      'force', False
+  )
   assert git_branch and tag and release_channel in ('stable', 'beta')
 
   flutter_checkout = api.path['start_dir'].join('flutter')
@@ -63,21 +69,25 @@ def RunSteps(api):
 
   with api.step.nest('checkout flutter release branch'):
     flutter_rel_hash = api.repo_util.checkout(
-      'flutter',
-      flutter_checkout,
-      url=flutter_git_url,
-      ref="refs/heads/%s" % git_branch,
+        'flutter',
+        flutter_checkout,
+        url=flutter_git_url,
+        ref="refs/heads/%s" % git_branch,
     )
   with api.step.nest('checkout engine release branch'):
     api.repo_util.checkout(
-      'engine',
-      api.path['start_dir'].join('engine'),
-      url=engine_git_url,
-      ref='refs/heads/%s' % git_branch,
+        'engine',
+        api.path['start_dir'].join('engine'),
+        url=engine_git_url,
+        ref='refs/heads/%s' % git_branch,
     )
 
-  env_flutter, env_flutter_prefixes = api.repo_util.flutter_environment(flutter_checkout)
-  env_engine, env_engine_prefixes = api.repo_util.engine_environment(engine_checkout)
+  env_flutter, env_flutter_prefixes = api.repo_util.flutter_environment(
+      flutter_checkout
+  )
+  env_engine, env_engine_prefixes = api.repo_util.engine_environment(
+      engine_checkout
+  )
   api.flutter_deps.required_deps(
       env_flutter,
       env_flutter_prefixes,
@@ -97,22 +107,28 @@ def RunSteps(api):
   )
 
   for repo in ('flutter', 'engine'):
-    env = env_flutter if repo=='flutter' else env_engine
-    env_prefixes = env_flutter_prefixes if repo=='flutter' else env_engine_prefixes
-    checkout = flutter_checkout if repo=='flutter' else engine_checkout
-    rel_hash = flutter_rel_hash if repo=='flutter' else GetEngineVersion(api, flutter_checkout)
+    env = env_flutter if repo == 'flutter' else env_engine
+    env_prefixes = env_flutter_prefixes if repo == 'flutter' else env_engine_prefixes
+    checkout = flutter_checkout if repo == 'flutter' else engine_checkout
+    rel_hash = flutter_rel_hash if repo == 'flutter' else GetEngineVersion(
+        api, flutter_checkout
+    )
     with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout):
       token_decrypted = api.path['cleanup'].join('token.txt')
-      api.kms.get_secret('flutter-release-github-token.encrypted', token_decrypted)
+      api.kms.get_secret(
+          'flutter-release-github-token.encrypted', token_decrypted
+      )
 
-      env['FORCE_FLAG'] = '--force-with-lease=%s:%s' % (release_channel, rel_hash) if force else ''
+      env['FORCE_FLAG'] = '--force-with-lease=%s:%s' % (
+          release_channel, rel_hash
+      ) if force else ''
       env['TOKEN_PATH'] = token_decrypted
       env['TAG'] = tag
       env['REL_HASH'] = rel_hash
       env['RELEASE_CHANNEL'] = release_channel
       env['GIT_BRANCH'] = git_branch
       env['GITHUB_USER'] = 'fluttergithubbot'
-      env['REPO'] = 'flutter' if repo=='flutter' else 'engine'
+      env['REPO'] = 'flutter' if repo == 'flutter' else 'engine'
 
       # Run script within a new context to use the new env variables.
       # Tag and push flutter/flutter first, then use hash found in
@@ -120,32 +136,38 @@ def RunSteps(api):
       with api.context(env=env, env_prefixes=env_prefixes):
         api.step('Tag and push release on flutter/%s' % repo, [resource_name])
 
+
 def GetEngineVersion(api, flutter_checkout):
-  return api.file.read_text('read engine hash', str(flutter_checkout)+'/bin/internal/engine.version').strip()
+  return api.file.read_text(
+      'read engine hash',
+      str(flutter_checkout) + '/bin/internal/engine.version'
+  ).strip()
+
 
 def GenTests(api):
-    checkout_path = api.path['start_dir'].join('flutter')
-    for tag in ('1.2.3-4.5.pre', '1.2.3'):
-      for release_channel in ('stable', 'beta'):
-        for force in ('True', 'False'):
-          test = api.test(
-              '%s_%s_%s%s' % (
-                  'flutter-2.8-candidate.9',
-                  tag,
-                  release_channel,
-                  '_force' if force=='True' else 'False'
-              ), api.platform('linux', 64),
-              api.properties(
-                  git_branch='flutter-2.8-candidate.9',
-                  tag=tag,
-                  release_channel=release_channel,
-                  force=force
-              ),
-              api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-              api.post_process(post_process.MustRun,
-                'Tag and push release on flutter/flutter'),
-              api.post_process(post_process.MustRun,
-                'Tag and push release on flutter/engine'),
-              api.post_process(post_process.StatusSuccess),
-          )
-          yield test
+  checkout_path = api.path['start_dir'].join('flutter')
+  for tag in ('1.2.3-4.5.pre', '1.2.3'):
+    for release_channel in ('stable', 'beta'):
+      for force in ('True', 'False'):
+        test = api.test(
+            '%s_%s_%s%s' % (
+                'flutter-2.8-candidate.9', tag, release_channel,
+                '_force' if force == 'True' else 'False'
+            ),
+            api.platform('linux', 64),
+            api.properties(
+                git_branch='flutter-2.8-candidate.9',
+                tag=tag,
+                release_channel=release_channel,
+                force=force
+            ),
+            api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+            api.post_process(
+                post_process.MustRun, 'Tag and push release on flutter/flutter'
+            ),
+            api.post_process(
+                post_process.MustRun, 'Tag and push release on flutter/engine'
+            ),
+            api.post_process(post_process.StatusSuccess),
+        )
+        yield test

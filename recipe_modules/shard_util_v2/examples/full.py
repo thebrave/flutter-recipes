@@ -20,13 +20,14 @@ DEPS = [
 def RunSteps(api):
   build_configs = api.properties.get('builds', [])
   test_configs = api.properties.get('tests', [])
-  props = api.shard_util_v2.pre_process_properties(
-          {'properties': {
-              '$flutter/osx_sdk': '{"cleanup_cache": true, "sdk_version": "14a5294e"}',
-              'validation': 'docs'
-              }
-           }
-  )
+  props = api.shard_util_v2.pre_process_properties({
+      'properties': {
+          '$flutter/osx_sdk':
+              '{"cleanup_cache": true, "sdk_version": "14a5294e"}',
+          'validation':
+              'docs'
+      }
+  })
   assert isinstance(props['properties']['$flutter/osx_sdk'], dict)
   assert props['properties']['validation'] == 'docs'
   with api.step.nest("launch builds") as presentation:
@@ -36,8 +37,12 @@ def RunSteps(api):
     for build in builds.values():
       if build.build_proto.status != common_pb2.SUCCESS:
         raise api.step.StepFailure("build %s failed" % build.build_id)
-    api.shard_util_v2.archive_full_build(api.path['start_dir'].join('out', 'host_debug'), 'host_debug')
-    api.shard_util_v2.download_full_builds(builds, api.path['cleanup'].join('out'))
+    api.shard_util_v2.archive_full_build(
+        api.path['start_dir'].join('out', 'host_debug'), 'host_debug'
+    )
+    api.shard_util_v2.download_full_builds(
+        builds, api.path['cleanup'].join('out')
+    )
   with api.step.nest("launch builds") as presentation:
     reqs = api.shard_util_v2.schedule_tests(test_configs, builds, presentation)
 
@@ -48,7 +53,9 @@ def GenTests(api):
       builder='ios_debug',
       input_props={'task_name': 'mytask'},
       output_props={
-          'cas_output_hash': {'web_tests': 'abc', 'ios_debug': 'bcd', 'full_build': '123'}
+          'cas_output_hash': {
+              'web_tests': 'abc', 'ios_debug': 'bcd', 'full_build': '123'
+          }
       },
       status='SUCCESS',
   )
@@ -74,7 +81,9 @@ def GenTests(api):
       builder='ios_debug',
       input_props={'task_name': 'mytask'},
       output_props={
-          'cas_output_hash': {'web_tests': 'abc', 'ios_debug': 'bcd', 'full_build': '123'}
+          'cas_output_hash': {
+              'web_tests': 'abc', 'ios_debug': 'bcd', 'full_build': '123'
+          }
       },
       status='SUCCESS',
   )
@@ -110,8 +119,7 @@ def GenTests(api):
   }
   props_bb = {
       'task_name': 'mytask', 'builds': [{
-          'name': 'ios_debug', 'gn': ['--ios'],
-          'dimensions': {'cpu': 'arm64'},
+          'name': 'ios_debug', 'gn': ['--ios'], 'dimensions': {'cpu': 'arm64'},
           'ninja': {'config': 'ios_debug',
                     'targets': []}, 'drone_dimensions': ['dimension1=abc'],
           'generators': [{'name': 'generator1', 'script': 'script1.sh'}]

@@ -26,11 +26,7 @@ DEPS = [
 
 PACKAGED_REF_RE = re.compile(r'^refs/heads/(.+)$')
 
-PLATFORMS_MAP = {
-    'win': 'windows',
-    'mac': 'macos',
-    'linux': 'linux'
-}
+PLATFORMS_MAP = {'win': 'windows', 'mac': 'macos', 'linux': 'linux'}
 
 
 @contextmanager
@@ -61,7 +57,9 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
   dart_executable = 'dart' if not api.platform.is_win else 'dart.exe'
   work_dir = api.path['start_dir'].join('archive')
   api.step('flutter doctor', [flutter_executable, 'doctor'])
-  api.step('download dependencies', [flutter_executable, 'update-packages', '-v'])
+  api.step(
+      'download dependencies', [flutter_executable, 'update-packages', '-v']
+  )
   api.flutter_bcid.report_stage(BcidStage.COMPILE.value)
   api.file.rmtree('clean archive work directory', work_dir)
   api.file.ensure_directory('(re)create archive work directory', work_dir)
@@ -94,15 +92,20 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
         # latency between publishing a release and it being available on the
         # site.
         headers = {'Cache-Control': 'max-age=60'}
-        api.archives.upload_artifact(metadata_absolute_path, metadata_gs_path, metadata=headers)
+        api.archives.upload_artifact(
+            metadata_absolute_path, metadata_gs_path, metadata=headers
+        )
       else:
         # add experimental subpath if branch is not beta or stable
         pkg_gs_path = '%s/%s/%s' % (dest_gs, 'experimental', file_name)
       # Do not upload on presubmit.
-      if ((not api.runtime.is_experimental) and (api.flutter_bcid.is_official_build() or
-          api.flutter_bcid.is_prod_build())):
+      if ((not api.runtime.is_experimental) and
+          (api.flutter_bcid.is_official_build() or
+           api.flutter_bcid.is_prod_build())):
         api.archives.upload_artifact(flutter_pkg_absolute_path, pkg_gs_path)
-        api.flutter_bcid.upload_provenance(flutter_pkg_absolute_path, pkg_gs_path)
+        api.flutter_bcid.upload_provenance(
+            flutter_pkg_absolute_path, pkg_gs_path
+        )
       api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
 
 
@@ -116,9 +119,14 @@ def GetFlutterPackageAbsolutePath(api, work_dir):
     str: Fully qualified path to flutter package directory.
   """
   suffix = 'tar.xz' if api.platform.is_linux else 'zip'
-  files = api.file.glob_paths('get flutter archive file name', work_dir,
-                              '*flutter*.%s' % suffix, test_data=['flutter-archive-package.%s' % suffix])
+  files = api.file.glob_paths(
+      'get flutter archive file name',
+      work_dir,
+      '*flutter*.%s' % suffix,
+      test_data=['flutter-archive-package.%s' % suffix]
+  )
   return files[0] if len(files) == 1 else None
+
 
 def GetFlutterMetadataAbsolutePath(api, work_dir):
   """Gets local metadata absolute path.
@@ -133,9 +141,14 @@ def GetFlutterMetadataAbsolutePath(api, work_dir):
     metadata_filename += "macos.json"
   elif api.platform.is_win:
     metadata_filename += "windows.json"
-  files = api.file.glob_paths('get flutter archive file name', work_dir,
-                            metadata_filename, test_data=['releases_linux.json'])
+  files = api.file.glob_paths(
+      'get flutter archive file name',
+      work_dir,
+      metadata_filename,
+      test_data=['releases_linux.json']
+  )
   return files[0] if len(files) == 1 else None
+
 
 def RunSteps(api):
   api.flutter_bcid.report_stage(BcidStage.START.value)
@@ -144,7 +157,9 @@ def RunSteps(api):
 
   api.flutter_bcid.report_stage(BcidStage.FETCH.value)
   checkout_path = api.path['start_dir'].join('flutter')
-  git_url = api.properties.get('git_url') or 'https://flutter.googlesource.com/mirrors/flutter'
+  git_url = api.properties.get(
+      'git_url'
+  ) or 'https://flutter.googlesource.com/mirrors/flutter'
   # Call this just to obtain release_git_hash so the script knows which commit
   # to release
   with api.step.nest('determine release revision'):
@@ -169,15 +184,15 @@ def RunSteps(api):
       env, env_prefixes, api.properties.get('dependencies', [])
   )
 
-  packaging_script = checkout_path.join(
-      'dev', 'bots', 'prepare_package.dart'
-  )
+  packaging_script = checkout_path.join('dev', 'bots', 'prepare_package.dart')
   with api.context(env=env, env_prefixes=env_prefixes):
     with api.depot_tools.on_path():
       match = PACKAGED_REF_RE.match(git_ref)
       if match and not api.runtime.is_experimental:
         branch = match.group(1)
-        CreateAndUploadFlutterPackage(api, release_git_hash, branch, packaging_script)
+        CreateAndUploadFlutterPackage(
+            api, release_git_hash, branch, packaging_script
+        )
         # Nothing left to do on a packaging branch.
         return
       api.step('Running on test mode - no uploads will happen', [])
@@ -188,27 +203,22 @@ def GenTests(api):
     for should_upload in (True, False):
       for platform in ('mac', 'linux', 'win'):
         for branch in ('master', 'beta', 'stable', 'flutter-release-test'):
-            for bucket in ('prod', 'staging', 'flutter'):
-              for git_ref in ('refs/heads/' + branch,
-                'invalid' + branch):
-                  test = api.test(
-                      '%s_%s%s%s_%s' % (
-                          platform,
-                          git_ref,
-                          '_experimental' if experimental else '',
-                          '_upload' if should_upload else '',
-                          bucket
-                      ), api.platform(platform, 64),
-                      api.buildbucket.ci_build(
-                          git_ref=git_ref,
-                          revision=None,
-                          bucket=bucket
-                      ), api.properties(
-                          shard='tests',
-                          fuchsia_ctl_version='version:0.0.2',
-                          upload_packages=should_upload,
-                          gold_tryjob=not should_upload,
-                      ), api.runtime(is_experimental=experimental),
-                      api.repo_util.flutter_environment_data()
-                  )
-                  yield test
+          for bucket in ('prod', 'staging', 'flutter'):
+            for git_ref in ('refs/heads/' + branch, 'invalid' + branch):
+              test = api.test(
+                  '%s_%s%s%s_%s' % (
+                      platform, git_ref, '_experimental' if experimental else
+                      '', '_upload' if should_upload else '', bucket
+                  ), api.platform(platform, 64),
+                  api.buildbucket.ci_build(
+                      git_ref=git_ref, revision=None, bucket=bucket
+                  ),
+                  api.properties(
+                      shard='tests',
+                      fuchsia_ctl_version='version:0.0.2',
+                      upload_packages=should_upload,
+                      gold_tryjob=not should_upload,
+                  ), api.runtime(is_experimental=experimental),
+                  api.repo_util.flutter_environment_data()
+              )
+              yield test

@@ -26,7 +26,5 @@ def RunSteps(api):
 
 def GenTests(api):
   yield api.test('basic', api.properties(no_lto=True))
-  yield api.test('win', api.properties(no_lto=True),
-                 api.platform('win', 64))
-  yield api.test('mac', api.properties(no_lto=True),
-                 api.platform('mac', 64))
+  yield api.test('win', api.properties(no_lto=True), api.platform('win', 64))
+  yield api.test('mac', api.properties(no_lto=True), api.platform('mac', 64))

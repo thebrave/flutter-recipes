@@ -34,9 +34,9 @@ DEPS = [
     'recipe_engine/step',
 ]
 
-
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
+
 
 def GetCheckoutPath(api):
   return api.path['cache'].join('builder', 'src')
@@ -77,21 +77,20 @@ def RunSteps(api, properties, env_properties):
   )
 
   with api.context(cwd=cache_root, env=env,
-                    env_prefixes=env_prefixes), api.depot_tools.on_path():
+                   env_prefixes=env_prefixes), api.depot_tools.on_path():
     felt_name = 'felt.bat' if api.platform.is_win else 'felt'
-    felt_cmd = [
-        checkout.join('flutter', 'lib', 'web_ui', 'dev', felt_name)
-    ]
+    felt_cmd = [checkout.join('flutter', 'lib', 'web_ui', 'dev', felt_name)]
 
     cas_hash = ''
     builds = []
     if api.platform.is_linux:
-      api.build_util.run_gn(['--build-canvaskit', '--web', '--runtime-mode=release', '--no-goma'],
-                            checkout)
+      api.build_util.run_gn([
+          '--build-canvaskit', '--web', '--runtime-mode=release', '--no-goma'
+      ], checkout)
       api.build_util.build('wasm_release', checkout, [])
       wasm_cas_hash = api.shard_util_v2.archive_full_build(
-              checkout.join('out', 'wasm_release'),
-              'wasm_release')
+          checkout.join('out', 'wasm_release'), 'wasm_release'
+      )
       targets = generate_targets(api, cas_hash, wasm_cas_hash)
 
     # Update dart packages and run tests.
@@ -119,7 +118,8 @@ def RunSteps(api, properties, env_properties):
         felt_test.append('--require-skia-gold')
         felt_test.append('--browser=safari')
         api.step(
-            api.test_utils.test_step_name('Run tests on macOS Safari'), felt_test
+            api.test_utils.test_step_name('Run tests on macOS Safari'),
+            felt_test
         )
         CleanUpProcesses(api)
     else:
@@ -148,7 +148,9 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
   properties['command_name'] = 'chrome-unit-linux'
   properties['name'] = properties['command_name']
   # These are the felt commands which will be used.
-  properties['command_args'] = ['test', '--browser=chrome', '--require-skia-gold']
+  properties['command_args'] = [
+      'test', '--browser=chrome', '--require-skia-gold'
+  ]
   properties['recipe'] = 'engine/web_engine_drone'
   targets.append(properties)
 
@@ -158,8 +160,7 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
   properties['name'] = properties['command_name']
   # These are the felt commands which will be used.
   properties['command_args'] = [
-      'test', '--browser=chrome', '--require-skia-gold',
-      '--use-local-canvaskit'
+      'test', '--browser=chrome', '--require-skia-gold', '--use-local-canvaskit'
   ]
   properties['recipe'] = 'engine/web_engine_drone'
   targets.append(properties)
@@ -170,8 +171,7 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
   properties['name'] = properties['command_name']
   # These are the felt commands which will be used.
   properties['command_args'] = [
-      'test', '--browser=chrome', '--require-skia-gold',
-      '--wasm'
+      'test', '--browser=chrome', '--require-skia-gold', '--wasm'
   ]
   properties['recipe'] = 'engine/web_engine_drone'
   targets.append(properties)
@@ -189,43 +189,42 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
 
 def GenTests(api):
   yield api.test(
-     'basic',
-     api.properties(clobber=True),
-     api.buildbucket.try_build(
+      'basic',
+      api.properties(clobber=True),
+      api.buildbucket.try_build(
           project='proj',
           builder='try-builder',
           bucket='try',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           revision='a' * 40,
           build_number=123,
-     ),
+      ),
   )
   yield api.test(
-     'mac-post-submit',
-     api.properties(goma_jobs='200', gclient_variables={'download_emsdk': True}),
-     api.platform('mac', 64),
-     api.runtime(is_experimental=False),
-     api.buildbucket.try_build(
+      'mac-post-submit',
+      api.properties(
+          goma_jobs='200', gclient_variables={'download_emsdk': True}
+      ),
+      api.platform('mac', 64),
+      api.runtime(is_experimental=False),
+      api.buildbucket.try_build(
           project='proj',
           builder='try-builder',
           bucket='try',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           revision='a' * 40,
           build_number=123,
-     ),
+      ),
   )
   yield api.test(
-     'windows-post-submit',
-     api.properties(
-        gclient_variables={'download_emsdk': True}
-     ),
-     api.platform('win', 64),
-     api.runtime(is_experimental=False),
-     api.buildbucket.ci_build(
+      'windows-post-submit',
+      api.properties(gclient_variables={'download_emsdk': True}),
+      api.platform('win', 64),
+      api.runtime(is_experimental=False),
+      api.buildbucket.ci_build(
           project='flutter',
           bucket='prod',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           git_ref='refs/heads/main'
-     ),
+      ),
   )
-

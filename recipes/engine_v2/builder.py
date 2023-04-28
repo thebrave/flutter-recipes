@@ -65,7 +65,6 @@ PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 ANDROID_ARTIFACTS_BUCKET = 'download.flutter.io'
 
-
 # Relative paths used to mock paths for testing.
 MOCK_JAR_PATH = (
     'io/flutter/x86_debug/'
@@ -86,12 +85,8 @@ def run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes):
   """Runs sub-builds generators."""
   # Run pub on all of the pub_dirs.
   for pub in pub_dirs:
-    pub_dir = api.path.abs_to_path(
-        api.path.dirname(
-            checkout.join(pub))
-    )
-    with api.context(env=env, env_prefixes=env_prefixes,
-                     cwd=pub_dir):
+    pub_dir = api.path.abs_to_path(api.path.dirname(checkout.join(pub)))
+    with api.context(env=env, env_prefixes=env_prefixes, cwd=pub_dir):
       api.step('dart pub get', ['dart', 'pub', 'get'])
   for generator_task in generator_tasks:
     # Generators must run from inside flutter folder.
@@ -141,8 +136,8 @@ def Build(api, checkout, env, env_prefixes, outputs):
   # of files.
   api.path.mock_add_paths(
       api.path['cache'].join(
-          'builder/src/out/android_jit_release_x86/zip_archives/download.flutter.io'),
-      DIRECTORY
+          'builder/src/out/android_jit_release_x86/zip_archives/download.flutter.io'
+      ), DIRECTORY
   )
 
   ninja_tool = {
@@ -156,10 +151,8 @@ def Build(api, checkout, env, env_prefixes, outputs):
   if gn:
     api.build_util.run_gn(build.get('gn'), checkout)
     ninja = build.get('ninja')
-    ninja_tool[ninja.get('tool', 'ninja')](
-            ninja.get('config'),
-            checkout,
-            ninja.get('targets', []))
+    ninja_tool[ninja.get('tool', 'ninja')
+              ](ninja.get('config'), checkout, ninja.get('targets', []))
   generator_tasks = build.get('generators', {}).get('tasks', [])
   pub_dirs = build.get('generators', {}).get('pub_dirs', [])
   archives = build.get('archives', [])
@@ -175,11 +168,12 @@ def Build(api, checkout, env, env_prefixes, outputs):
     api.flutter_bcid.report_stage('upload-complete')
   # Archive full build. This is inneficient but necessary for global generators.
   full_build_hash = api.shard_util_v2.archive_full_build(
-          checkout.join('out', build.get('name')), build.get('name'))
+      checkout.join('out', build.get('name')), build.get('name')
+  )
   outputs['full_build'] = full_build_hash
 
 
-def Archive(api, checkout,  archive_config):
+def Archive(api, checkout, archive_config):
   paths = api.archives.engine_v2_gcs_paths(checkout, archive_config)
   # Sign artifacts if running on mac and a release candidate branch.
   is_release_branch = api.repo_util.is_release_candidate_branch(
@@ -187,16 +181,15 @@ def Archive(api, checkout,  archive_config):
   )
   if api.platform.is_mac and is_release_branch:
     signing_paths = [
-        path.local for path in paths
+        path.local
+        for path in paths
         if api.signing.requires_signing(path.local)
     ]
     api.signing.code_sign(signing_paths)
   for path in paths:
     api.archives.upload_artifact(path.local, path.remote)
-    api.flutter_bcid.upload_provenance(
-        path.local,
-        path.remote
-    )
+    api.flutter_bcid.upload_provenance(path.local, path.remote)
+
 
 def RunSteps(api, properties, env_properties):
   api.flutter_bcid.report_stage('start')
@@ -207,7 +200,9 @@ def RunSteps(api, properties, env_properties):
 
   # Enable long path support on Windows.
   api.os_utils.enable_long_paths()
-  env, env_prefixes = api.repo_util.engine_environment(api.path['cache'].join('builder'))
+  env, env_prefixes = api.repo_util.engine_environment(
+      api.path['cache'].join('builder')
+  )
 
   # Engine path is used inconsistently across the engine repo. We'll start
   # with [cache]/builder and will adjust it to start using it consistently.
@@ -231,35 +226,26 @@ def RunSteps(api, properties, env_properties):
 
 def GenTests(api):
   build = {
-      "archives": [
-                {
-                    "name": "android_jit_release_x86",
-                    "type": "gcs",
-                    "realm": "production",
-                    "base_path": "out/android_jit_release_x86/zip_archives/",
-                    "include_paths": [
-                        "out/android_jit_release_x86/zip_archives/android-x86-jit-release/artifacts.zip",
-                        "out/android_jit_release_x86/zip_archives/download.flutter.io"
-                    ]
-                }
-      ],
-      "gn": ["--ios"], "ninja": {"config": "ios_debug", "targets": []},
-      "generators": {
-          "pub_dirs": ["dev"],
-          "tasks": [
-              {
-                  "name": "generator1",
-                  "scripts": ["script1.sh", "dev/felt.dart"],
-                  "parameters": ["--argument1"]
-              }
+      "archives": [{
+          "name":
+              "android_jit_release_x86", "type":
+                  "gcs", "realm":
+                      "production", "base_path":
+                          "out/android_jit_release_x86/zip_archives/",
+          "include_paths": [
+              "out/android_jit_release_x86/zip_archives/android-x86-jit-release/artifacts.zip",
+              "out/android_jit_release_x86/zip_archives/download.flutter.io"
           ]
-      },
-      "tests": [
-          {
-               "name": "mytest", "script": "myscript.sh",
-               "parameters": ["param1", "param2"], "type": "local"
-          }
-      ]
+      }], "gn": ["--ios"], "ninja": {"config": "ios_debug", "targets": []},
+      "generators": {
+          "pub_dirs": ["dev"], "tasks": [{
+              "name": "generator1", "scripts": ["script1.sh", "dev/felt.dart"],
+              "parameters": ["--argument1"]
+          }]
+      }, "tests": [{
+          "name": "mytest", "script": "myscript.sh",
+          "parameters": ["param1", "param2"], "type": "local"
+      }]
   }
   yield api.test(
       'basic',
@@ -290,9 +276,8 @@ def GenTests(api):
       api.step_data(
           'Identify branches.git branch',
           stdout=api.raw_io
-              .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
       ),
-
   )
   yield api.test(
       'monorepo',
@@ -309,7 +294,8 @@ def GenTests(api):
   build_custom["gclient_variables"] = {"example_custom_var": True}
   build_custom["tests"] = []
   yield api.test(
-      'dart-internal-flutter', api.properties(build=build, no_goma=True),
+      'dart-internal-flutter',
+      api.properties(build=build, no_goma=True),
       api.buildbucket.ci_build(
           project='dart-internal',
           bucket='flutter',

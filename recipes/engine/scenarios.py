@@ -52,16 +52,22 @@ def RunGN(api, *args):
   with api.context(env=env):
     api.step('gn %s' % ' '.join(args), gn_cmd)
 
+
 def RunAndroidUnitTests(api, env, env_prefixes):
   """Runs the unit tests for the Android embedder on a x64 Android Emulator."""
   engine_checkout = GetCheckoutPath(api)
   test_dir = engine_checkout.join('flutter', 'testing')
-  exe_path = engine_checkout.join('out', 'android_debug_x64', 'flutter_shell_native_unittests')
+  exe_path = engine_checkout.join(
+      'out', 'android_debug_x64', 'flutter_shell_native_unittests'
+  )
   with api.context(cwd=test_dir, env=env, env_prefixes=env_prefixes):
     result = api.step(
-        'Android Unit Tests',
-        ['./run_tests.py', '--android-variant', 'android_debug_x64', '--type', 'android', '--adb-path', env['ADB_PATH']]
+        'Android Unit Tests', [
+            './run_tests.py', '--android-variant', 'android_debug_x64',
+            '--type', 'android', '--adb-path', env['ADB_PATH']
+        ]
     )
+
 
 def RunAndroidScenarioTests(api, env, env_prefixes):
   """Runs the scenario test app on a x64 Android emulator.
@@ -78,12 +84,14 @@ def RunAndroidScenarioTests(api, env, env_prefixes):
   # file containing the python scripts.
   gradle_home_bin_dir = scenario_app_tests.join('android', 'gradle-home', 'bin')
   with api.context(cwd=scenario_app_tests,
-                   env_prefixes={'PATH': [gradle_home_bin_dir]}), api.step.defer_results():
+                   env_prefixes={'PATH': [gradle_home_bin_dir]
+                                }), api.step.defer_results():
 
     result = api.step(
         'Scenario App Integration Tests',
         ['./run_android_tests.sh', 'android_debug_x64'],
     )
+
 
 def RunSteps(api, properties, env_properties):
   # Collect memory/cpu/process after task execution.
@@ -100,8 +108,8 @@ def RunSteps(api, properties, env_properties):
   )
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
   env = {
-    'ANDROID_HOME': str(android_home),
-    'FLUTTER_PREBUILT_DART_SDK': 'True',
+      'ANDROID_HOME': str(android_home),
+      'FLUTTER_PREBUILT_DART_SDK': 'True',
   }
   env_prefixes = {'PATH': [dart_bin]}
 
@@ -115,7 +123,10 @@ def RunSteps(api, properties, env_properties):
   with api.context(cwd=cache_root, env=env,
                    env_prefixes=env_prefixes), api.depot_tools.on_path():
     RunGN(api, '--android', '--android-cpu=x64', '--no-lto')
-    Build(api, 'android_debug_x64', 'scenario_app', 'flutter_shell_native_unittests')
+    Build(
+        api, 'android_debug_x64', 'scenario_app',
+        'flutter_shell_native_unittests'
+    )
 
     RunAndroidUnitTests(api, env, env_prefixes)
     RunAndroidScenarioTests(api, env, env_prefixes)
@@ -134,27 +145,24 @@ def GenTests(api):
   )
   avd_api_version = '31'
   yield api.test(
-    'without_failure_upload',
-    api.properties(
-        dependencies=[
-            {'dependency':'android_virtual_device', 'version':'31'},
-        ]
-    ),
-    api.buildbucket.ci_build(
-        builder='Linux Engine',
-        git_repo='https://flutter.googlesource.com/mirrors/engine',
-        project='flutter',
-        revision='abcd1234',
-    ),
-    api.properties(
-        InputProperties(
-            goma_jobs='1024',
-        ),
-    ),
-    api.step_data(
-        'start avd.Start Android emulator (API level %s)' % avd_api_version,
-        stdout=api.raw_io.output_text(
-            'android_' + avd_api_version + '_google_apis_x86|emulator-5554 started (pid: 17687)'
-        )
-    ),
+      'without_failure_upload',
+      api.properties(
+          dependencies=[
+              {'dependency': 'android_virtual_device', 'version': '31'},
+          ]
+      ),
+      api.buildbucket.ci_build(
+          builder='Linux Engine',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          project='flutter',
+          revision='abcd1234',
+      ),
+      api.properties(InputProperties(goma_jobs='1024',),),
+      api.step_data(
+          'start avd.Start Android emulator (API level %s)' % avd_api_version,
+          stdout=api.raw_io.output_text(
+              'android_' + avd_api_version +
+              '_google_apis_x86|emulator-5554 started (pid: 17687)'
+          )
+      ),
   )

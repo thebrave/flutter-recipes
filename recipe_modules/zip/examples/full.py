@@ -3,14 +3,15 @@
 # found in the LICENSE file.
 
 DEPS = [
-  'flutter/zip',
-  'recipe_engine/context',
-  'recipe_engine/file',
-  'recipe_engine/path',
-  'recipe_engine/platform',
-  'recipe_engine/step',
-  'recipe_engine/json',
+    'flutter/zip',
+    'recipe_engine/context',
+    'recipe_engine/file',
+    'recipe_engine/path',
+    'recipe_engine/platform',
+    'recipe_engine/step',
+    'recipe_engine/json',
 ]
+
 
 def RunSteps(api):
   # Prepare files.
@@ -34,8 +35,9 @@ def RunSteps(api):
   api.step('report', ['echo', package.output])
 
   # Unzip the package.
-  api.zip.unzip('unzipping', temp.join('output.zip'), temp.join('output'),
-                quiet=True)
+  api.zip.unzip(
+      'unzipping', temp.join('output.zip'), temp.join('output'), quiet=True
+  )
   # List unzipped content.
   with api.context(cwd=temp.join('output')):
     api.step('listing', ['find'])
@@ -52,7 +54,6 @@ def RunSteps(api):
 def GenTests(api):
   for platform in ('linux', 'win', 'mac'):
     yield api.test(
-        platform,
-        api.platform.name(platform),
+        platform, api.platform.name(platform),
         api.zip.namelist('namelist', ['/a/b/c.txt'])
     )

@@ -23,17 +23,19 @@ def RunSteps(api):
   for result in results:
     if result.remote not in expected_destinations:
       assert False, 'Unexpected file generated %s' % result.remote
-  if not results: return
+  if not results:
+    return
   api.archives.upload_artifact(results[0].local, results[0].remote)
   api.archives.download(results[0].remote, results[0].local)
 
 
 def GenTests(api):
   archive_config = {
-      "name": "android_profile",
-      "type": "gcs",
-      "realm": "production",
-      "base_path": "out/android_profile/zip_archives/",
+      "name":
+          "android_profile", "type":
+              "gcs", "realm":
+                  "production", "base_path":
+                      "out/android_profile/zip_archives/",
       "include_paths": [
           "out/android_profile/zip_archives/android-arm-profile/artifacts.zip",
           "out/android_profile/zip_archives/android-arm-profile/linux-x64.zip",
@@ -52,7 +54,10 @@ def GenTests(api):
   ]
   yield api.test(
       'try_pool_production_realm',
-      api.properties(config=archive_config, expected_destinations=try_pool_production_realm),
+      api.properties(
+          config=archive_config,
+          expected_destinations=try_pool_production_realm
+      ),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='try',
@@ -78,7 +83,10 @@ def GenTests(api):
   try_pool_experimental_realm_config['realm'] = 'experimental'
   yield api.test(
       'try_pool_experimental_realm',
-      api.properties(config=try_pool_experimental_realm_config, expected_destinations=try_pool_experimental_realm),
+      api.properties(
+          config=try_pool_experimental_realm_config,
+          expected_destinations=try_pool_experimental_realm
+      ),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='try',
@@ -102,7 +110,10 @@ def GenTests(api):
   ]
   yield api.test(
       'prod_pool_production_realm',
-      api.properties(config=archive_config, expected_destinations=prod_pool_production_realm),
+      api.properties(
+          config=archive_config,
+          expected_destinations=prod_pool_production_realm
+      ),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='prod',
@@ -128,7 +139,10 @@ def GenTests(api):
   prod_pool_experimental_realm_config['realm'] = 'experimental'
   yield api.test(
       'prod_pool_experimental_realm',
-      api.properties(config=prod_pool_experimental_realm_config, expected_destinations=prod_pool_experimental_realm),
+      api.properties(
+          config=prod_pool_experimental_realm_config,
+          expected_destinations=prod_pool_experimental_realm
+      ),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='prod',
@@ -152,7 +166,10 @@ def GenTests(api):
   ]
   yield api.test(
       'flutter_pool_production_realm',
-      api.properties(config=archive_config, expected_destinations=flutter_pool_production_realm),
+      api.properties(
+          config=archive_config,
+          expected_destinations=flutter_pool_production_realm
+      ),
       api.buildbucket.ci_build(
           project='dart-internal',
           bucket='flutter',
@@ -178,7 +195,10 @@ def GenTests(api):
   flutter_pool_experimental_realm_config['realm'] = 'experimental'
   yield api.test(
       'flutter_pool_experimental_realm',
-      api.properties(config=flutter_pool_experimental_realm_config, expected_destinations=flutter_pool_production_realm),
+      api.properties(
+          config=flutter_pool_experimental_realm_config,
+          expected_destinations=flutter_pool_production_realm
+      ),
       api.buildbucket.ci_build(
           project='dart-internal',
           bucket='flutter',
@@ -202,7 +222,10 @@ def GenTests(api):
   ]
   yield api.test(
       'staging_pool_production_realm',
-      api.properties(config=archive_config, expected_destinations=staging_pool_production_realm),
+      api.properties(
+          config=archive_config,
+          expected_destinations=staging_pool_production_realm
+      ),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='staging',
@@ -228,7 +251,10 @@ def GenTests(api):
   staging_pool_experimental_realm_config['realm'] = 'experimental'
   yield api.test(
       'staging_pool_experimental_realm',
-      api.properties(config=staging_pool_experimental_realm_config, expected_destinations=staging_pool_production_realm),
+      api.properties(
+          config=staging_pool_experimental_realm_config,
+          expected_destinations=staging_pool_production_realm
+      ),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='staging',
@@ -252,7 +278,10 @@ def GenTests(api):
   ]
   yield api.test(
       'monorepo_ci', api.monorepo.ci_build(),
-      api.properties(config=archive_config, expected_destinations=monorepo_production_realm),
+      api.properties(
+          config=archive_config,
+          expected_destinations=monorepo_production_realm
+      ),
       api.step_data(
           'git rev-parse',
           stdout=api.raw_io
@@ -272,7 +301,10 @@ def GenTests(api):
   ]
   yield api.test(
       'monorepo_ci_experimental_realm', api.monorepo.ci_build(),
-      api.properties(config=monorepo_experimental_realm_config, expected_destinations=monorepo_experimental_realm),
+      api.properties(
+          config=monorepo_experimental_realm_config,
+          expected_destinations=monorepo_experimental_realm
+      ),
       api.step_data(
           'git rev-parse',
           stdout=api.raw_io
@@ -281,28 +313,32 @@ def GenTests(api):
   )
 
   # Monorepo try with "production" realm in build configuration file.
-  monorepo_try_realm = [
-  ]
+  monorepo_try_realm = []
   yield api.test(
       'monorepo_try_production_realm',
-      api.properties(config=archive_config, expected_destinations=monorepo_try_realm),
+      api.properties(
+          config=archive_config, expected_destinations=monorepo_try_realm
+      ),
       api.monorepo.try_build(),
   )
 
   # Monorepo try with "experimental" realm in build configuration file.
-  monorepo_try_realm = [
-  ]
+  monorepo_try_realm = []
   monorepo_experimental_realm_config = copy.deepcopy(archive_config)
   monorepo_experimental_realm_config['realm'] = 'experimental'
   yield api.test(
       'monorepo_try_experimental_realm',
-      api.properties(config=archive_config, expected_destinations=monorepo_try_realm),
+      api.properties(
+          config=archive_config, expected_destinations=monorepo_try_realm
+      ),
       api.monorepo.try_build(),
   )
 
   yield api.test(
       'failure',
-      api.properties(config=archive_config, expected_destinations=['/abc/cde.zip']),
+      api.properties(
+          config=archive_config, expected_destinations=['/abc/cde.zip']
+      ),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='try',
@@ -312,8 +348,7 @@ def GenTests(api):
       api.step_data(
           'git rev-parse',
           stdout=api.raw_io
-              .output_text('12345abcde12345abcde12345abcde12345abcde\n')
-      ),
-      api.expect_exception('AssertionError'),
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      ), api.expect_exception('AssertionError'),
       api.post_process(StatusException)
   )

@@ -55,31 +55,34 @@ def zip_with_subprocess(root, output, entries):
   proc = subprocess.Popen(
       args=['zip', '-1', '--recurse-paths', '--symlinks', '-@', output],
       stdin=subprocess.PIPE,
-      cwd=root)
+      cwd=root
+  )
   items_to_zip_bytes = []
   for item in items_to_zip:
-    items_to_zip_bytes.append(item if isinstance(item, bytes) else bytes(item, 'UTF-8')) 
-  
+    items_to_zip_bytes.append(
+        item if isinstance(item, bytes) else bytes(item, 'UTF-8')
+    )
+
   proc.communicate(b'\n'.join(items_to_zip_bytes))
   return proc.returncode
 
 
 def walk_dir_and_do(directory_path, callback):
-    for cur, _, files in os.walk(directory_path):
-      for name in files:
-        callback(os.path.join(cur, name))
+  for cur, _, files in os.walk(directory_path):
+    for name in files:
+      callback(os.path.join(cur, name))
 
 
 def hash_file(file_path):
-    BUFFER_SIZE = 1 << 16 # 64kb
-    sha = hashlib.sha256()
-    with open(file_path, 'rb') as f:
-        data = f.read(BUFFER_SIZE)
-        while data:
-            sha.update(data)
-            data = f.read(BUFFER_SIZE)
-    digest = sha.hexdigest()
-    print('sha256 digest for %s is:\n%s\n' % (file_path, digest))
+  BUFFER_SIZE = 1 << 16  # 64kb
+  sha = hashlib.sha256()
+  with open(file_path, 'rb') as f:
+    data = f.read(BUFFER_SIZE)
+    while data:
+      sha.update(data)
+      data = f.read(BUFFER_SIZE)
+  digest = sha.hexdigest()
+  print('sha256 digest for %s is:\n%s\n' % (file_path, digest))
 
 
 def zip_with_python(root, output, entries):
@@ -97,6 +100,7 @@ def zip_with_python(root, output, entries):
   """
   with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED,
                        allowZip64=True) as zip_file:
+
     def add(path, archive_name):
       assert path.startswith(root), path
       # Do not add itself to archive.

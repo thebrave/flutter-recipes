@@ -21,17 +21,14 @@ def RunSteps(api):
 
 def GenTests(api):
   yield api.test(
-     'non_mac',
-     api.platform.name('linux'),
-     api.properties(expected_result=False)
+      'non_mac', api.platform.name('linux'),
+      api.properties(expected_result=False)
   )
   yield api.test(
-     'mac_require_signing',
-     api.platform.name('mac'),
-     api.properties(expected_result=True)
+      'mac_require_signing', api.platform.name('mac'),
+      api.properties(expected_result=True)
   )
   yield api.test(
-     'no_signing_identity',
-     api.platform.name('mac'),
-     api.properties(expected_result=False)
+      'no_signing_identity', api.platform.name('mac'),
+      api.properties(expected_result=False)
   )

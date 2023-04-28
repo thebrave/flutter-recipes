@@ -57,8 +57,8 @@ def RunShard(api, env, env_prefixes, checkout_path):
       )
       api.logs_util.show_logs_stdout(checkout_path.join('error.log'))
       api.logs_util.upload_test_metrics(
-          checkout_path.join('test_results.json'),
-          '%s_%s' % (api.properties.get('shard'), api.properties.get('subshard'))
+          checkout_path.join('test_results.json'), '%s_%s' %
+          (api.properties.get('shard'), api.properties.get('subshard'))
       )
 
 
@@ -127,11 +127,13 @@ def RunSteps(api):
 def GenTests(api):
   for should_run_reduced in (True, False):
     yield api.test(
-        'no_requirements%s' % ( '_reduced' if should_run_reduced else ''), api.repo_util.flutter_environment_data(),
+        'no_requirements%s' % ('_reduced' if should_run_reduced else ''),
+        api.repo_util.flutter_environment_data(),
         api.properties(reduced_test_set=should_run_reduced)
     )
     yield api.test(
-        'android_sdk%s' % ( '_reduced' if should_run_reduced else ''), api.repo_util.flutter_environment_data(),
+        'android_sdk%s' % ('_reduced' if should_run_reduced else ''),
+        api.repo_util.flutter_environment_data(),
         api.properties(
             dependencies=[{'dependency': 'android_sdk'}],
             android_sdk=True,
@@ -141,13 +143,18 @@ def GenTests(api):
         )
     )
     yield api.test(
-        'web_engine%s' % ( '_reduced' if should_run_reduced else ''), api.repo_util.flutter_environment_data(),
+        'web_engine%s' % ('_reduced' if should_run_reduced else ''),
+        api.repo_util.flutter_environment_data(),
         api.properties(
-        local_web_sdk_cas_hash='abceqwe',
-        reduced_test_set=should_run_reduced
+            local_web_sdk_cas_hash='abceqwe',
+            reduced_test_set=should_run_reduced
         )
     )
     yield api.test(
-        'xcode%s' % ( '_reduced' if should_run_reduced else ''), api.repo_util.flutter_environment_data(),
-        api.properties(dependencies=[{'dependency': 'xcode'}], reduced_test_set=should_run_reduced)
+        'xcode%s' % ('_reduced' if should_run_reduced else ''),
+        api.repo_util.flutter_environment_data(),
+        api.properties(
+            dependencies=[{'dependency': 'xcode'}],
+            reduced_test_set=should_run_reduced
+        )
     )

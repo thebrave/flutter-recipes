@@ -61,7 +61,7 @@ def RunSteps(api):
 
     api.cipd.build(project_path.join('build'), cipd_zip_path, cipd_full_name)
     if api.buildbucket.build.builder.bucket == 'prod' and should_upload:
-      api.cipd.register(cipd_full_name, cipd_zip_path, refs = ["latest"])
+      api.cipd.register(cipd_full_name, cipd_zip_path, refs=["latest"])
 
 
 def GenTests(api):

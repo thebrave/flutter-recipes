@@ -8,4 +8,4 @@ from recipe_engine import recipe_api
 
 
 class StatusCheckApi(recipe_api.RecipeApi):
-    pass
+  pass

@@ -12,7 +12,7 @@ from RECIPE_MODULES.flutter.shard_util_v2.api import SubbuildResult
 
 
 class ShardUtilTestApi(recipe_test_api.RecipeTestApi):
-  
+
   def try_build_message(
       self, builder, input_props=None, output_props=None, **kwargs
   ):
@@ -37,7 +37,8 @@ class ShardUtilTestApi(recipe_test_api.RecipeTestApi):
         builder=msg.builder.builder,
         build_id=msg.id,
         build_name=builder,
-        build_proto= msg)
+        build_proto=msg
+    )
     return subbuild
 
   def child_build_steps(
@@ -51,7 +52,11 @@ class ShardUtilTestApi(recipe_test_api.RecipeTestApi):
     responses = []
     for subbuild in subbuilds:
       responses.append(
-          dict(schedule_build=dict(id=subbuild.build_id, builder=subbuild.build_proto.builder))
+          dict(
+              schedule_build=dict(
+                  id=subbuild.build_id, builder=subbuild.build_proto.builder
+              )
+          )
       )
     mock_schedule_data = self.m.buildbucket.simulated_schedule_output(
         step_name="%s" % launch_step,

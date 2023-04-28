@@ -8,20 +8,20 @@ import contextlib
 from PB.recipes.flutter.engine.engine_builder import InputProperties, EngineBuild
 
 DEPS = [
-  'depot_tools/depot_tools',
-  'flutter/goma',
-  'flutter/os_utils',
-  'flutter/osx_sdk',
-  'flutter/repo_util',
-  'flutter/shard_util_v2',
-  'recipe_engine/buildbucket',
-  'recipe_engine/cas',
-  'recipe_engine/context',
-  'recipe_engine/file',
-  'recipe_engine/path',
-  'recipe_engine/platform',
-  'recipe_engine/properties',
-  'recipe_engine/step',
+    'depot_tools/depot_tools',
+    'flutter/goma',
+    'flutter/os_utils',
+    'flutter/osx_sdk',
+    'flutter/repo_util',
+    'flutter/shard_util_v2',
+    'recipe_engine/buildbucket',
+    'recipe_engine/cas',
+    'recipe_engine/context',
+    'recipe_engine/file',
+    'recipe_engine/path',
+    'recipe_engine/platform',
+    'recipe_engine/properties',
+    'recipe_engine/step',
 ]
 
 GIT_REPO = \
@@ -39,7 +39,7 @@ def Build(api, config, disable_goma, *targets):
     ninja_args = [ninja_path, '-C', build_dir]
     ninja_args.extend(targets)
     with api.goma():
-      name='build %s' % ' '.join([config] + list(targets))
+      name = 'build %s' % ' '.join([config] + list(targets))
       api.step(name, ninja_args)
   else:
     ninja_args = [ninja_path, '-C', build_dir]
@@ -58,7 +58,6 @@ def RunGN(api, disable_goma, *args):
     env = {'GOMA_DIR': api.goma.goma_dir.get_result()}
     with api.context(env=env):
       api.step('gn %s' % ' '.join(args), gn_cmd)
-
 
 
 def CasOutputs(api, output_files, output_dirs):
@@ -89,10 +88,12 @@ def RunSteps(api, properties):
           Build(api, build.dir, build.disable_goma, *build.targets)
           for output_file in build.output_files:
             output_files.append(
-                cache_root.join('src', 'out', build.dir, output_file))
+                cache_root.join('src', 'out', build.dir, output_file)
+            )
           for output_dir in build.output_dirs:
             output_dirs.append(
-                cache_root.join('src', 'out', build.dir, output_dir))
+                cache_root.join('src', 'out', build.dir, output_dir)
+            )
       # This is to clean up leaked processes.
       api.os_utils.kill_processes()
       # Collect memory/cpu/process after task execution.
@@ -127,7 +128,8 @@ def GenTests(api):
                       disable_goma=False,
                       gn_args=['--unoptimized'],
                       dir='host_debug_unopt',
-                      output_files=['shell_unittests'])
+                      output_files=['shell_unittests']
+                  )
               ]
           )
       )

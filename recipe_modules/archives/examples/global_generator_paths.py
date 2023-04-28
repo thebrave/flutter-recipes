@@ -19,31 +19,31 @@ DEPS = [
 
 def RunSteps(api):
   checkout = api.path['start_dir'].join('src')
-  archives = [
-      {
-        "source": "out/debug/artifacts.zip",
-        "destination": "ios/artifacts.zip"
-      },
-      {
-        "source": "out/release-nobitcode/Flutter.dSYM.zip",
-        "destination": "ios-release-nobitcode/Flutter.dSYM.zip"
-      },
-      {
-        "source": "out/release/Flutter.dSYM.zip",
-        "destination": "ios-release/Flutter.dSYM.zip"
-      }
-  ]
+  archives = [{
+      "source": "out/debug/artifacts.zip", "destination": "ios/artifacts.zip"
+  }, {
+      "source": "out/release-nobitcode/Flutter.dSYM.zip",
+      "destination": "ios-release-nobitcode/Flutter.dSYM.zip"
+  }, {
+      "source": "out/release/Flutter.dSYM.zip",
+      "destination": "ios-release/Flutter.dSYM.zip"
+  }]
   expected_results = [
       ArchivePaths(
           local=str(api.path['start_dir'].join('src/out/debug/artifacts.zip')),
           remote='gs://flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios/artifacts.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('src/out/release-nobitcode/Flutter.dSYM.zip')),
+          local=str(
+              api.path['start_dir']
+              .join('src/out/release-nobitcode/Flutter.dSYM.zip')
+          ),
           remote='gs://flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release-nobitcode/Flutter.dSYM.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('src/out/release/Flutter.dSYM.zip')),
+          local=str(
+              api.path['start_dir'].join('src/out/release/Flutter.dSYM.zip')
+          ),
           remote='gs://flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release/Flutter.dSYM.zip'
       )
   ]
@@ -53,11 +53,16 @@ def RunSteps(api):
           remote='gs://flutter_archives_v2/monorepo/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios/artifacts.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('src/out/release-nobitcode/Flutter.dSYM.zip')),
+          local=str(
+              api.path['start_dir']
+              .join('src/out/release-nobitcode/Flutter.dSYM.zip')
+          ),
           remote='gs://flutter_archives_v2/monorepo/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release-nobitcode/Flutter.dSYM.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('src/out/release/Flutter.dSYM.zip')),
+          local=str(
+              api.path['start_dir'].join('src/out/release/Flutter.dSYM.zip')
+          ),
           remote='gs://flutter_archives_v2/monorepo/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release/Flutter.dSYM.zip'
       )
   ]
@@ -67,19 +72,22 @@ def RunSteps(api):
           remote='gs://flutter_archives_v2/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios/artifacts.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('src/out/release-nobitcode/Flutter.dSYM.zip')),
+          local=str(
+              api.path['start_dir']
+              .join('src/out/release-nobitcode/Flutter.dSYM.zip')
+          ),
           remote='gs://flutter_archives_v2/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release-nobitcode/Flutter.dSYM.zip'
       ),
       ArchivePaths(
-          local=str(api.path['start_dir'].join('src/out/release/Flutter.dSYM.zip')),
+          local=str(
+              api.path['start_dir'].join('src/out/release/Flutter.dSYM.zip')
+          ),
           remote='gs://flutter_archives_v2/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release/Flutter.dSYM.zip'
       )
   ]
   env_to_results = {
-      'production': expected_results,
-      'monorepo': expected_monorepo_results,
-      'monorepo_try': [],
-      'try': expected_try_results
+      'production': expected_results, 'monorepo': expected_monorepo_results,
+      'monorepo_try': [], 'try': expected_try_results
   }
   config = api.properties.get('config')
   results = api.archives.global_generator_paths(checkout, archives)
@@ -88,8 +96,7 @@ def RunSteps(api):
 
 def GenTests(api):
   yield api.test(
-      'basic',
-      api.properties(config='production'),
+      'basic', api.properties(config='production'),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='prod',
@@ -113,8 +120,7 @@ def GenTests(api):
       api.monorepo.try_build(),
   )
   yield api.test(
-      'try',
-      api.properties(config='try'),
+      'try', api.properties(config='try'),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='try',

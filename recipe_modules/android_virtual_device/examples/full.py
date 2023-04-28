@@ -8,51 +8,45 @@ DEPS = [
     'recipe_engine/raw_io',
 ]
 
+
 def RunSteps(api):
-  env = {
-    'USE_EMULATOR': True
-  }
+  env = {'USE_EMULATOR': True}
   env_prefixes = {}
   avd_root = api.path['cache'].join('builder', 'avd')
   api.android_virtual_device.download(
-      avd_root=avd_root,
-      env=env,
-      env_prefixes=env_prefixes,
-      version='31'
+      avd_root=avd_root, env=env, env_prefixes=env_prefixes, version='31'
   )
   api.android_virtual_device.start_if_requested(
       env=env,
       env_prefixes=env_prefixes,
       version='31',
   )
-  api.android_virtual_device.stop_if_requested(
-    env=env,
-  )
+  api.android_virtual_device.stop_if_requested(env=env,)
 
 
 def GenTests(api):
   avd_api_version = '31'
   yield api.test(
-    'demo',
-    api.step_data(
-        'start avd.Start Android emulator (API level %s)' % avd_api_version,
-        stdout=api.raw_io.output_text(
-            'android_' + avd_api_version + '_google_apis_x86|emulator-5554 started (pid: 17687)'
-        )
-    ),
+      'demo',
+      api.step_data(
+          'start avd.Start Android emulator (API level %s)' % avd_api_version,
+          stdout=api.raw_io.output_text(
+              'android_' + avd_api_version +
+              '_google_apis_x86|emulator-5554 started (pid: 17687)'
+          )
+      ),
   )
   yield api.test(
-    'demo zombie processes',
-    api.step_data(
-        'start avd.Start Android emulator (API level %s)' % avd_api_version,
-        stdout=api.raw_io.output_text(
-            'android_' + avd_api_version + '_google_apis_x86|emulator-5554 started (pid: 17687)'
-        )
-    ),
-    api.step_data(
-          'kill and cleanup avd.list processes',
+      'demo zombie processes',
+      api.step_data(
+          'start avd.Start Android emulator (API level %s)' % avd_api_version,
           stdout=api.raw_io.output_text(
-              '12345 qemu-system blah'
+              'android_' + avd_api_version +
+              '_google_apis_x86|emulator-5554 started (pid: 17687)'
           )
+      ),
+      api.step_data(
+          'kill and cleanup avd.list processes',
+          stdout=api.raw_io.output_text('12345 qemu-system blah')
       ),
   )

@@ -79,8 +79,12 @@ def DoLints(api):
   elif api.platform.is_mac:
     with api.osx_sdk('ios'):
       cpu = api.properties.get('cpu', 'x86')
-      ios_command = ['--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto']
-      host_command = ['--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--no-lto']
+      ios_command = [
+          '--ios', '--runtime-mode', 'debug', '--simulator', '--no-lto'
+      ]
+      host_command = [
+          '--runtime-mode', 'debug', '--prebuilt-dart-sdk', '--no-lto'
+      ]
       if (cpu == 'arm64'):
         ios_command += ['--force-mac-arm64']
         host_command += ['--force-mac-arm64']
@@ -112,8 +116,8 @@ def RunSteps(api, properties, env_properties):
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
 
   env = {
-    'ANDROID_HOME': str(android_home),
-    'FLUTTER_PREBUILT_DART_SDK': 'True',
+      'ANDROID_HOME': str(android_home),
+      'FLUTTER_PREBUILT_DART_SDK': 'True',
   }
   env_prefixes = {'PATH': [dart_bin]}
 
@@ -162,7 +166,9 @@ def GenTests(api):
           continue
         test = api.test(
             '%s %s %s' % (
-                platform, lint_target, lint_set,
+                platform,
+                lint_target,
+                lint_set,
             ),
             api.platform(platform, 64),
             api.buildbucket.ci_build(
@@ -181,9 +187,7 @@ def GenTests(api):
                     lint_ios=lint_target == 'ios',
                 ),
             ),
-            api.properties.environ(
-                EnvProperties(SWARMING_TASK_ID='deadbeef')
-            ),
+            api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
         )
         yield test
 
@@ -191,18 +195,18 @@ def GenTests(api):
     for cpu in ('arm64', 'x86'):
       yield api.test(
           '%s arch %s' % (
-              lint_target, cpu,
+              lint_target,
+              cpu,
           ),
           api.platform('mac', 64),
           api.runtime(is_experimental=False),
           api.properties(
-                cpu='%s' % cpu,
-                goma_jobs='1024',
-                lint_all=False,
-                lint_head=False,
-                lint_host=lint_target == 'host',
-                lint_android=False,
-                lint_ios=lint_target == 'ios',
+              cpu='%s' % cpu,
+              goma_jobs='1024',
+              lint_all=False,
+              lint_head=False,
+              lint_host=lint_target == 'host',
+              lint_android=False,
+              lint_ios=lint_target == 'ios',
           ),
       )
-

@@ -79,7 +79,9 @@ class BucketUtilApi(recipe_api.RecipeApi):
       local_zip = temp_dir.join(zip_name)
       remote_zip = self.get_cloud_path(remote_name)
       if isinstance(parent_directory, str):
-        parent_directory = self.m.path['cache'].join('builder', parent_directory)
+        parent_directory = self.m.path['cache'].join(
+            'builder', parent_directory
+        )
       pkg = self.m.zip.make_package(parent_directory, local_zip)
       pkg.add_directory(parent_directory.join(folder_name))
 
@@ -89,7 +91,6 @@ class BucketUtilApi(recipe_api.RecipeApi):
       pkg.zip('Zip %s' % folder_name)
       if self.should_upload_packages():
         return self.safe_upload(local_zip, remote_zip, bucket_name=bucket_name)
-         
 
   def safe_upload(
       self,
@@ -129,7 +130,9 @@ class BucketUtilApi(recipe_api.RecipeApi):
     if not self.m.path.exists(local_path):
       with self.m.step.nest('%s not found' % local_path) as presentation:
         parent_dir = self.m.path.abs_to_path(self.m.path.dirname(local_path))
-        self.m.file.listdir('Files in parent directory of safe_upload request', parent_dir)
+        self.m.file.listdir(
+            'Files in parent directory of safe_upload request', parent_dir
+        )
         presentation.status = self.m.step.FAILURE
         raise AssertionError('File not found %s' % local_path)
 

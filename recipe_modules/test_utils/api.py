@@ -101,7 +101,14 @@ class TestUtilsApi(recipe_api.RecipeApi):
         str(self.m.swarming.bot_id).startswith('flutter-win')
     )
 
-  def run_test(self, step_name, command_list, timeout_secs=TIMEOUT_SECS, infra_step=False, suppress_log=False):
+  def run_test(
+      self,
+      step_name,
+      command_list,
+      timeout_secs=TIMEOUT_SECS,
+      infra_step=False,
+      suppress_log=False
+  ):
     """Recipe's step wrapper to collect stdout and add it to step_summary.
 
     Args:
@@ -132,8 +139,8 @@ class TestUtilsApi(recipe_api.RecipeApi):
       # Truncate stderr
       stderr = self._truncateString(result.stderr)
       raise self.m.step.StepFailure(
-        '\n\n```%s```\n' % (stdout or stderr),
-        result=result,
+          '\n\n```%s```\n' % (stdout or stderr),
+          result=result,
       )
     finally:
       if not suppress_log:

@@ -92,6 +92,7 @@ def RunSteps(api, properties, env_properties):
          flutter.join('dev', 'bots', 'test.dart')]
     )
 
+
 def GenTests(api):
   build = {'shard': 'framework_coverage'}
   yield api.test(
@@ -149,8 +150,9 @@ def GenTests(api):
           'framework_tests',
       'subshard':
           'slow',
-      'test_dependencies': [{"dependency": "android_sdk",
-                        "version": "version:33v6"}],
+      'test_dependencies': [{
+          "dependency": "android_sdk", "version": "version:33v6"
+      }],
   }
 
   yield api.test(

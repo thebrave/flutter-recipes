@@ -28,6 +28,7 @@ DEPS = [
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
+
 def RunSteps(api, properties, env_properties):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
@@ -74,18 +75,17 @@ def RunSteps(api, properties, env_properties):
           ['flutter', 'update-packages', '-v'],
           infra_step=True,
       )
-  views_test_dir = checkout_path.join('dev', 'integration_tests', 'android_views')
-  with api.context(env=env, env_prefixes=env_prefixes, cwd=views_test_dir), api.step.defer_results():
+  views_test_dir = checkout_path.join(
+      'dev', 'integration_tests', 'android_views'
+  )
+  with api.context(env=env, env_prefixes=env_prefixes,
+                   cwd=views_test_dir), api.step.defer_results():
     api.step(
         'Android Views Integration Tests',
         [
-          'flutter',
-          'drive',
-          '--browser-name=android-chrome',
-          '--android-emulator',
-          '--no-start-paused',
-          '--purge-persistent-cache',
-          '--device-timeout=30'
+            'flutter', 'drive', '--browser-name=android-chrome',
+            '--android-emulator', '--no-start-paused',
+            '--purge-persistent-cache', '--device-timeout=30'
         ],
         timeout=700,
     )
@@ -95,46 +95,43 @@ def RunSteps(api, properties, env_properties):
     # Collect memory/cpu/process after task execution.
     api.os_utils.collect_os_info()
 
+
 def GenTests(api):
   checkout_path = api.path['start_dir'].join('flutter sdk')
   avd_api_version = '31'
   yield api.test(
       'flutter_drive_clean_exit',
       api.properties(
-          dependencies=[
-            {'dependency':'android_sdk'},
-            {'dependency':'android_virtual_device', 'version':'31'},
-            {'dependency':'curl'}
-          ]
+          dependencies=[{'dependency': 'android_sdk'}, {
+              'dependency': 'android_virtual_device', 'version': '31'
+          }, {'dependency': 'curl'}]
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
           'start avd.Start Android emulator (API level %s)' % avd_api_version,
           stdout=api.raw_io.output_text(
-              'android_' + avd_api_version + '_google_apis_x86|emulator-5554 started (pid: 17687)'
+              'android_' + avd_api_version +
+              '_google_apis_x86|emulator-5554 started (pid: 17687)'
           )
       ),
   )
   yield api.test(
       'flutter_drive_zombie_process',
       api.properties(
-          dependencies=[
-            {'dependency':'android_sdk'},
-            {'dependency':'android_virtual_device', 'version':'31'},
-            {'dependency':'curl'}
-          ]
+          dependencies=[{'dependency': 'android_sdk'}, {
+              'dependency': 'android_virtual_device', 'version': '31'
+          }, {'dependency': 'curl'}]
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
           'start avd.Start Android emulator (API level %s)' % avd_api_version,
           stdout=api.raw_io.output_text(
-              'android_' + avd_api_version + '_google_apis_x86|emulator-5554 started (pid: 17687)'
+              'android_' + avd_api_version +
+              '_google_apis_x86|emulator-5554 started (pid: 17687)'
           )
       ),
       api.step_data(
           'kill and cleanup avd.list processes',
-          stdout=api.raw_io.output_text(
-              '12345 qemu-system blah'
-          )
+          stdout=api.raw_io.output_text('12345 qemu-system blah')
       ),
   )

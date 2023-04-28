@@ -52,13 +52,14 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_path)
   )
   yield api.test(
-      'docs', api.platform.name('linux'),
-      api.properties(firebase_project='myproject',
-                     git_branch=''),
+      'docs',
+      api.platform.name('linux'),
+      api.properties(firebase_project='myproject', git_branch=''),
       api.repo_util.flutter_environment_data(checkout_path),
       api.step_data(
           'Docs.Identify branches.git branch',
-          stdout=api.raw_io.output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+          stdout=api.raw_io
+          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
       ),
       api.buildbucket.ci_build(
           project='flutter',

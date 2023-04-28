@@ -61,8 +61,8 @@ def RunSteps(api, properties, env_properties):
   android_home = checkout.join('third_party', 'android_tools', 'sdk')
 
   env = {
-    'ANDROID_HOME': str(android_home),
-    'FLUTTER_PREBUILT_DART_SDK': 'True',
+      'ANDROID_HOME': str(android_home),
+      'FLUTTER_PREBUILT_DART_SDK': 'True',
   }
   env_prefixes = {'PATH': [dart_bin]}
 
@@ -109,13 +109,7 @@ def GenTests(api):
             project='flutter',
         ),
         api.runtime(is_experimental=False),
-        api.properties(
-            InputProperties(
-                goma_jobs='1024',
-            ),
-        ),
-        api.properties.environ(
-            EnvProperties(SWARMING_TASK_ID='deadbeef')
-        ),
+        api.properties(InputProperties(goma_jobs='1024',),),
+        api.properties.environ(EnvProperties(SWARMING_TASK_ID='deadbeef')),
     )
     yield test

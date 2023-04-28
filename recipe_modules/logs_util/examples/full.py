@@ -5,11 +5,7 @@
 from PB.recipe_modules.recipe_engine.swarming import properties
 from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 
-DEPS = [
-    'flutter/logs_util',
-    'recipe_engine/path',
-    'recipe_engine/file'
-]
+DEPS = ['flutter/logs_util', 'recipe_engine/path', 'recipe_engine/file']
 
 
 def RunSteps(api):

@@ -22,16 +22,13 @@ PLATFORM_TO_NAME = {'win': 'Windows', 'linux': 'Linux', 'mac': 'Mac'}
 
 # Internal properties that should be set for builds running on BuildBucket.
 PROPERTIES_TO_REMOVE = [
-    '$recipe_engine/buildbucket',
-    'buildername', '$recipe_engine/runtime',
+    '$recipe_engine/buildbucket', 'buildername', '$recipe_engine/runtime',
     'is_experimental'
 ]
 
 # Environments map to calculate the environment from the bucket.
 ENVIRONMENTS_MAP = {
-    'try': '',
-    'staging': 'Staging ',
-    'flutter': 'Production ',
+    'try': '', 'staging': 'Staging ', 'flutter': 'Production ',
     'prod': 'Production '
 }
 
@@ -90,7 +87,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       properties = target.get('properties')
       new_props = {}
       for k, v in properties.items():
-        if isinstance(v,str) and (v.startswith('[') or v.startswith('{')):
+        if isinstance(v, str) and (v.startswith('[') or v.startswith('{')):
           new_props[k] = json.loads(v)
         else:
           new_props[k] = v
@@ -126,8 +123,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       build = self.unfreeze_dict(b)
       build['recipe'] = build.get('recipe') or 'engine_v2/builder'
       updated_builds.append(build)
-    return self.schedule(updated_builds, presentation,
-                         branch=branch)
+    return self.schedule(updated_builds, presentation, branch=branch)
 
   def schedule_tests(self, tests, build_results, presentation):
     """Schedule tests using build_results for dependencies.
@@ -205,7 +201,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
       # Buildbucket properties are not propagated to sub-builds when running with
       # led. Copy the properties bb gitiles_commit to git_ref and git_url if not
       # set already.
-      if not (drone_properties.get('git_ref') or drone_properties.get('git_url')):
+      if not (drone_properties.get('git_ref') or
+              drone_properties.get('git_url')):
         host = self.m.buildbucket.gitiles_commit.host
         project = self.m.buildbucket.gitiles_commit.project
         drone_properties['git_url'] = f'https://{host}/{project}'
@@ -217,7 +214,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
       environment = ENVIRONMENTS_MAP.get(bucket, '')
       builder_name = build.get(
           'drone_builder_name',
-          '%s %sEngine Drone' % (platform_name, environment))
+          '%s %sEngine Drone' % (platform_name, environment)
+      )
       suffix = drone_properties.get('builder_name_suffix')
       if suffix:
         builder_name = '%s%s' % (builder_name, suffix)
@@ -241,8 +239,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
       led_data = led_data.then('edit', '-r', build['recipe'])
       for d in drone_dimensions:
         led_data = led_data.then('edit', '-d', d)
-      for k,v in ci_yaml_dimensions.items():
-        led_data = led_data.then('edit', "-d", '%s=%s' % (k,v))
+      for k, v in ci_yaml_dimensions.items():
+        led_data = led_data.then('edit', "-d", '%s=%s' % (k, v))
       led_data = self.m.led.inject_input_recipes(led_data)
       launch_res = led_data.then('launch', '-modernize', '-real-build')
       # real-build is being used and only build_id is being populated
@@ -252,8 +250,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
           launch_res.launch_result.swarming_hostname,
       )
       build_url_bb = 'https://%s/build/%s' % (
-          launch_res.launch_result.buildbucket_hostname,
-          task_id
+          launch_res.launch_result.buildbucket_hostname, task_id
       )
       build_url = build_url_swarming if launch_res.launch_result.task_id else build_url_bb
       results[task_name] = SubbuildResult(
@@ -296,7 +293,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
       environment = ENVIRONMENTS_MAP.get(bucket, '')
       builder_name = build.get(
           'drone_builder_name',
-          '%s %sEngine Drone' % (platform_name, environment))
+          '%s %sEngine Drone' % (platform_name, environment)
+      )
       suffix = drone_properties.get('builder_name_suffix')
       if suffix:
         builder_name = '%s%s' % (builder_name, suffix)
@@ -305,7 +303,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       for d in drone_dimensions:
         k, v = d.split('=')
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
-      for k,v in ci_yaml_dimensions.items():
+      for k, v in ci_yaml_dimensions.items():
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
       # Override recipe.
       drone_properties['recipe'] = build['recipe']
@@ -332,8 +330,9 @@ class ShardUtilApi(recipe_api.RecipeApi):
           # Set priority to be same of main build temporily to help triage
           # https://github.com/flutter/flutter/issues/124155
           priority=30,
-          exe_cipd_version=self.m.properties.get('exe_cipd_version',
-                                                 'refs/heads/%s' % branch)
+          exe_cipd_version=self.m.properties.get(
+              'exe_cipd_version', 'refs/heads/%s' % branch
+          )
       )
       # Increase timeout if no_goma, since the runtime is going to
       # be much longer.
@@ -446,8 +445,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
         if 'full_build' in cas_out_dict:
           self.m.cas.download(
               'Download for build %s and cas key %s' % (build_id, build_name),
-              cas_out_dict['full_build'],
-              out_build_paths
+              cas_out_dict['full_build'], out_build_paths
           )
 
   def archive_full_build(self, build_dir, target):
@@ -465,7 +463,9 @@ class ShardUtilApi(recipe_api.RecipeApi):
     self.m.file.copytree('Copy host_debug_unopt', build_dir, cas_engine)
 
     def _upload():
-      return self.m.cas_util.upload(cas_dir, step_name='Archive full build for %s' % target)
+      return self.m.cas_util.upload(
+          cas_dir, step_name='Archive full build for %s' % target
+      )
 
     # Windows CAS upload is flaky, hashes are calculated before files are fully synced to disk.
     return self.m.retry.basic_wrap(

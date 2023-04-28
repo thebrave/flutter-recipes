@@ -35,8 +35,8 @@ def RunSteps(api):
   api.assertions.assertEqual(
       env_prefixes.get('PATH'), [
           api.path['cache'].join('chrome', 'chrome'),
-          api.path['cache'].join('chrome', 'drivers'),
-          api.path['cache'].join('firefox')
+          api.path['cache'].join('chrome',
+                                 'drivers'), api.path['cache'].join('firefox')
       ]
   )
   api.flutter_deps.go_sdk(env, env_prefixes, 'v4')
@@ -56,7 +56,9 @@ def RunSteps(api):
   api.flutter_deps.gradle_cache(env, env_prefixes, '')
   api.flutter_deps.flutter_engine(env, env_prefixes)
   api.flutter_deps.firebase(env, env_prefixes)
-  api.flutter_deps.cmake(env, env_prefixes, version='build_id:8787856497187628321')
+  api.flutter_deps.cmake(
+      env, env_prefixes, version='build_id:8787856497187628321'
+  )
   api.flutter_deps.codesign(env, env_prefixes, 'latest')
   api.flutter_deps.cosign(env, env_prefixes)
   api.flutter_deps.ninja(env, env_prefixes)
@@ -92,12 +94,16 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
-      'with-gems', api.properties(dependencies=[{"dependency": "gems", "version": "v3.1.3"}]),
+      'with-gems',
+      api.properties(
+          dependencies=[{"dependency": "gems", "version": "v3.1.3"}]
+      ),
       api.repo_util.flutter_environment_data(checkout_path),
   )
 
   yield api.test(
-      'with-arm64ruby', api.properties(dependencies=[{"dependency": "gems"}]),
+      'with-arm64ruby',
+      api.properties(dependencies=[{"dependency": "gems"}]),
       api.repo_util.flutter_environment_data(checkout_path),
       api.platform.arch('arm'),
   )
@@ -121,17 +127,22 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
-      'flutter_engine', api.properties(local_engine_cas_hash='abceqwe/7',),
+      'flutter_engine',
+      api.properties(local_engine_cas_hash='abceqwe/7',),
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
-      'local_engine_cas', api.properties(local_engine_cas_hash='abceqwe/7',
-                                         local_engine='host-release'),
+      'local_engine_cas',
+      api.properties(
+          local_engine_cas_hash='abceqwe/7', local_engine='host-release'
+      ),
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
-      'local_web_sdk_cas', api.properties(local_web_sdk_cas_hash='abceqwe/7',
-                                          local_web_sdk='wasm-release'),
+      'local_web_sdk_cas',
+      api.properties(
+          local_web_sdk_cas_hash='abceqwe/7', local_web_sdk='wasm-release'
+      ),
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
@@ -140,7 +151,8 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
-      'windows', api.properties(gold_tryjob=True, git_ref='refs/pull/1/head'),
+      'windows',
+      api.properties(gold_tryjob=True, git_ref='refs/pull/1/head'),
       api.repo_util.flutter_environment_data(checkout_path),
       api.platform.name('win'),
   )

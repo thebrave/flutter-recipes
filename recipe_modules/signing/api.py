@@ -71,12 +71,14 @@ class CodeSignApi(recipe_api.RecipeApi):
   def _codesign_environment(self, env, env_prefixes):
     with self.m.step.nest('Setup codesign environment'):
       secrets_dict = {
-          'FLUTTER_P12': 'flutter_p12.encrypted',
-          'FLUTTER_P12_PASSWORD': 'p12_password.encrypted',
-          'CODESIGN_TEAM_ID': 'codesign_team_id.encrypted',
+          'FLUTTER_P12':
+              'flutter_p12.encrypted', 'FLUTTER_P12_PASSWORD':
+                  'p12_password.encrypted', 'CODESIGN_TEAM_ID':
+                      'codesign_team_id.encrypted',
           'CODESIGN_APP_SPECIFIC_PASSWORD':
               'codesign_app_specific_password.encrypted',
-          'CODESIGN_APP_STORE_ID': 'codesign_app_store_id.encrypted'
+          'CODESIGN_APP_STORE_ID':
+              'codesign_app_store_id.encrypted'
       }
       self.m.kms.decrypt_secrets(env, secrets_dict)
       env['CODESIGN_PATH'] = self.codesign_binary

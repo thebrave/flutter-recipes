@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 DEPS = [
-  'flutter/devicelab_osx_sdk',
-  'recipe_engine/platform',
-  'recipe_engine/properties',
-  'recipe_engine/step',
+    'flutter/devicelab_osx_sdk',
+    'recipe_engine/platform',
+    'recipe_engine/properties',
+    'recipe_engine/step',
 ]
 
 
@@ -18,16 +18,15 @@ def RunSteps(api):
 
 def GenTests(api):
   for platform in ('linux', 'mac', 'win'):
-    yield (api.test(platform) +
-           api.platform.name(platform) +
-           api.properties(**{'$flutter/devicelab_osx_sdk': {
-              'sdk_version': 'deadbeef',
-           }}))
+    yield (
+        api.test(platform) + api.platform.name(platform) + api.properties(
+            **{'$flutter/devicelab_osx_sdk': {'sdk_version': 'deadbeef',}}
+        )
+    )
 
   yield api.test(
-      'explicit_version',
-      api.platform.name('mac'),
-      api.properties(**{'$flutter/devicelab_osx_sdk': {
-        'sdk_version': 'deadbeef',
-      }})
+      'explicit_version', api.platform.name('mac'),
+      api.properties(
+          **{'$flutter/devicelab_osx_sdk': {'sdk_version': 'deadbeef',}}
+      )
   )

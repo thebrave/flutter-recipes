@@ -49,7 +49,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
     clobber = self.m.properties.get('clobber', False)
     # Grab any gclient custom variables passed as properties.
     local_custom_vars = self.m.shard_util_v2.unfreeze_dict(
-            self.m.properties.get('gclient_variables', {}))
+        self.m.properties.get('gclient_variables', {})
+    )
     # Pass a special gclient variable to identify release candidate branch checkouts. This
     # is required to prevent trying to download experimental dependencies on release candidate
     # branches.
@@ -120,8 +121,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         max_attempts=4
     )
 
-  def monorepo_checkout(
-      self, checkout_path, env, env_prefixes):
+  def monorepo_checkout(self, checkout_path, env, env_prefixes):
     """Checkout code using gclient.
 
     Args:
@@ -137,7 +137,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
     # Pass a special gclient variable to identify release candidate branch checkouts. This
     # is required to prevent trying to download experimental dependencies on release candidate
     # branches.
-    local_custom_vars = self.m.shard_util_v2.unfreeze_dict(self.m.properties.get('gclient_variables', {}))
+    local_custom_vars = self.m.shard_util_v2.unfreeze_dict(
+        self.m.properties.get('gclient_variables', {})
+    )
     if (self.m.properties.get('git_branch', '').startswith('flutter-') or
         self.m.properties.get('git_branch', '') in ['beta', 'stable']):
       local_custom_vars['release_candidate'] = True
@@ -209,7 +211,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
         max_attempts=4
     )
 
-  def checkout(self, name, checkout_path, url=None, ref=None, override_sha=False):
+  def checkout(
+      self, name, checkout_path, url=None, ref=None, override_sha=False
+  ):
     """Checks out a repo and returns sha1 of checked out revision.
 
     The supported repository names and their urls are defined in the global
@@ -237,9 +241,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
         # the flutter repo. This just allows us to override that and use the original ref which for
         # the coming change is just the tot master branch.
         git_ref = ref if override_sha else (
-              self.m.buildbucket.gitiles_commit.id or
-              self.m.buildbucket.gitiles_commit.ref or ref
-          )
+            self.m.buildbucket.gitiles_commit.id or
+            self.m.buildbucket.gitiles_commit.ref or ref
+        )
       else:
         git_ref = (
             ref or self.m.buildbucket.gitiles_commit.id or
@@ -276,10 +280,13 @@ class RepoUtilApi(recipe_api.RecipeApi):
 
   def get_commit(self, checkout_path):
     with self.m.context(cwd=checkout_path):
-      step_test_data=lambda: self.m.raw_io.test_api.stream_output_text(
-            '12345abcde12345abcde12345abcde12345abcde\n')
+      step_test_data = lambda: self.m.raw_io.test_api.stream_output_text(
+          '12345abcde12345abcde12345abcde12345abcde\n'
+      )
       commit = self.m.git(
-          'rev-parse', 'HEAD', stdout=self.m.raw_io.output_text(),
+          'rev-parse',
+          'HEAD',
+          stdout=self.m.raw_io.output_text(),
           step_test_data=step_test_data
       ).stdout.strip()
       return commit
@@ -386,7 +393,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
     )
     git_ref = self.m.properties.get('git_ref', '')
-    android_home = checkout_path.join('src', 'third_party', 'android_tools', 'sdk')
+    android_home = checkout_path.join(
+        'src', 'third_party', 'android_tools', 'sdk'
+    )
     env = {
         # Windows Packaging script assumes this is set.
         'DEPOT_TOOLS':
@@ -417,10 +426,13 @@ class RepoUtilApi(recipe_api.RecipeApi):
   def monorepo_environment(self, checkout_path):
     """Returns env and env_prefixes of a monorepo command environment."""
     dart_bin = checkout_path.join(
-        'engine', 'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
+        'engine', 'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
+        'bin'
     )
     git_ref = self.m.properties.get('git_ref', '')
-    android_home = checkout_path.join('engine', 'src', 'third_party', 'android_tools', 'sdk')
+    android_home = checkout_path.join(
+        'engine', 'src', 'third_party', 'android_tools', 'sdk'
+    )
     env = {
         # Windows Packaging script assumes this is set.
         'DEPOT_TOOLS':

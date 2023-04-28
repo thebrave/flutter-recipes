@@ -11,8 +11,8 @@ DEPS = [
 
 
 def RunSteps(api):
-    del api  # Unused.
+  del api  # Unused.
 
 
 def GenTests(api):
-    yield api.status_check.test("basic", status="success")
+  yield api.status_check.test("basic", status="success")

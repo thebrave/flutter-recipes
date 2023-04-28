@@ -1,3 +1,1 @@
-DEPS = [
-    'depot_tools/gerrit'
-]
+DEPS = ['depot_tools/gerrit']

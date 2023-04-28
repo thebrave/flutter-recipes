@@ -24,6 +24,6 @@ def GenTests(api):
           api.path['cache'].join('builder/ssh/ssh_host_key.pub'),
           api.path['cache'].join('builder/ssh/ssh_host_key'),
       )
-   )
+  )
 
   yield api.test('ssh_paths_missing', status='FAILURE')

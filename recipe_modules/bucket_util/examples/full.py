@@ -16,25 +16,28 @@ DEPS = [
 
 def RunSteps(api):
   api.bucket_util.upload_folder(
-      'Upload test.zip', # dir_label
-      'src', # parent_directory
-      'build', # folder_name
-      'test1.zip') # zip_name
+      'Upload test.zip',  # dir_label
+      'src',  # parent_directory
+      'build',  # folder_name
+      'test1.zip'
+  )  # zip_name
 
   api.bucket_util.upload_folder_and_files(
-      'Upload test.zip', # dir_label
-      'src', # parent_directory
-      'build', # folder_name
+      'Upload test.zip',  # dir_label
+      'src',  # parent_directory
+      'build',  # folder_name
       'test2.zip',  # zip_name
-      file_paths=['a.txt'])
+      file_paths=['a.txt']
+  )
 
   api.bucket_util.upload_folder_and_files(
-      'Upload test.zip', # dir_label
-      'src', # parent_directory
-      'build', # folder_name
-      'test3.zip', # zip_name
+      'Upload test.zip',  # dir_label
+      'src',  # parent_directory
+      'build',  # folder_name
+      'test3.zip',  # zip_name
       platform='parent_directory',
-      file_paths=['a.txt'])
+      file_paths=['a.txt']
+  )
 
   # Prepare files.
   temp = api.path.mkdtemp('bucketutil-example')
@@ -48,24 +51,24 @@ def RunSteps(api):
   package.zip('zipping')
 
   api.bucket_util.safe_upload(
-      local_zip, # local_path
-      "foo", # remote_path
-      skip_on_duplicate=True)
+      local_zip,  # local_path
+      "foo",  # remote_path
+      skip_on_duplicate=True
+  )
 
   if api.properties.get('try_bad_file', False):
     api.bucket_util.safe_upload(
-        temp.join('A_file_that_does_not_exist'), # local_path
-        'bar', # remote_path
+        temp.join('A_file_that_does_not_exist'),  # local_path
+        'bar',  # remote_path
         skip_on_duplicate=True,
-        add_mock=False)
+        add_mock=False
+    )
 
 
 def GenTests(api):
   yield api.test(
       'basic',
-      api.properties(
-          upload_packages=False,
-      ),
+      api.properties(upload_packages=False,),
   )
   yield api.test(
       'basic with fail',
@@ -73,7 +76,7 @@ def GenTests(api):
           upload_packages=False,
           try_bad_file=True,
       ),
-      api.expect_exception('AssertionError'), # the non-existent file
+      api.expect_exception('AssertionError'),  # the non-existent file
       # Expectation file would contain a brittle stack trace.
       # TODO: Re-enable the expectation file after Python 2 support is no longer
       # required.
@@ -81,9 +84,7 @@ def GenTests(api):
   )
   yield api.test(
       'upload_packages',
-      api.properties(
-          upload_packages=True,
-      ),
+      api.properties(upload_packages=True,),
       # These ids are UUIDs derivated from a fixed seed.
       # To get new ids, just run the test and use the ids generated
       # by the uuid module.
@@ -106,12 +107,11 @@ def GenTests(api):
   )
   yield api.test(
       'upload_packages_if_commit_is_present',
-      api.properties(
-          upload_packages=True,
-      ),
+      api.properties(upload_packages=True,),
       api.buildbucket.ci_build(
           git_repo='github.com/flutter/engine',
-          revision='8b3cd40a25a512033cc8c0797e41de9ecfc2432c'),
+          revision='8b3cd40a25a512033cc8c0797e41de9ecfc2432c'
+      ),
       api.step_data(
           'Ensure flutter/8b3cd40a25a512033cc8c0797e41de9ecfc2432c/test1.zip '
           'does not already exist on cloud storage',
@@ -131,9 +131,7 @@ def GenTests(api):
   )
   yield api.test(
       'upload_packages_tiggers_exception_and_package_exists',
-      api.properties(
-          upload_packages=True,
-      ),
+      api.properties(upload_packages=True,),
       api.expect_exception('AssertionError'),
       # Expectation file would contain a brittle stack trace.
       # TODO: Re-enable the expectation file after Python 2 support is no longer
@@ -143,7 +141,5 @@ def GenTests(api):
   yield api.test(
       'upload_packages_experimental_runtime',
       api.runtime(is_experimental=True),
-      api.properties(
-          upload_packages=True,
-      ),
+      api.properties(upload_packages=True,),
   )

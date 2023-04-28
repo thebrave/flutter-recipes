@@ -33,6 +33,7 @@ DEPS = [
 
 MAX_DEFAULT_TIMEOUT_SECS = 30 * 60
 
+
 def RunSteps(api):
   api.flutter_bcid.report_stage(BcidStage.START.value)
   # Collect memory/cpu/process before task execution.
@@ -53,7 +54,9 @@ def RunSteps(api):
       api.properties.get('git_ref'),
   )
 
-  test_timeout_secs = api.properties.get('test_timeout_secs', MAX_DEFAULT_TIMEOUT_SECS)
+  test_timeout_secs = api.properties.get(
+      'test_timeout_secs', MAX_DEFAULT_TIMEOUT_SECS
+  )
 
   with api.context(cwd=flutter_path):
     commit_time = api.git(
@@ -91,7 +94,9 @@ def RunSteps(api):
     api.flutter_deps.required_deps(env, env_prefixes, deps)
 
   target_tags = api.properties.get('tags', [])
-  device_tags = api.test_utils.collect_benchmark_tags(env, env_prefixes, target_tags)
+  device_tags = api.test_utils.collect_benchmark_tags(
+      env, env_prefixes, target_tags
+  )
   benchmark_tags = api.json.dumps(device_tags)
 
   # Check to see if an emulator has been requested.
@@ -129,20 +134,21 @@ def RunSteps(api):
       if str(api.swarming.bot_id).startswith('flutter-devicelab'):
         with api.devicelab_osx_sdk('ios'):
           test_status = mac_test(
-              api, env, env_prefixes, flutter_path, task_name, runner_params, suppress_log, test_timeout_secs
+              api, env, env_prefixes, flutter_path, task_name, runner_params,
+              suppress_log, test_timeout_secs
           )
       else:
         with api.osx_sdk('ios'):
           test_status = mac_test(
-              api, env, env_prefixes, flutter_path, task_name, runner_params, suppress_log, test_timeout_secs
+              api, env, env_prefixes, flutter_path, task_name, runner_params,
+              suppress_log, test_timeout_secs
           )
     else:
       with api.context(env=env, env_prefixes=env_prefixes):
         # Start an emulator if it is requested, it must be started before the doctor to avoid issues.
         emulator_commands, emulator_pid = api.android_virtual_device.start_if_requested(
-            env,
-            env_prefixes,
-            dep_list.get('android_virtual_device', None))
+            env, env_prefixes, dep_list.get('android_virtual_device', None)
+        )
 
         api.retry.step(
             'flutter doctor',
@@ -173,9 +179,17 @@ def RunSteps(api):
           api.test_utils.flaky_step('run %s' % task_name)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadResults(
-        api, env, env_prefixes, results_path, test_status == 'flaky',
-        git_branch, api.properties.get('buildername'), commit_time,
-        task_name, benchmark_tags, suppress_log=suppress_log
+        api,
+        env,
+        env_prefixes,
+        results_path,
+        test_status == 'flaky',
+        git_branch,
+        api.properties.get('buildername'),
+        commit_time,
+        task_name,
+        benchmark_tags,
+        suppress_log=suppress_log
     )
     uploadMetricsToCas(api, results_path)
 
@@ -189,7 +203,10 @@ def debug_after_failure(api, task_name):
   api.os_utils.collect_os_info()
 
 
-def mac_test(api, env, env_prefixes, flutter_path, task_name, runner_params, suppress_log, test_timeout_secs):
+def mac_test(
+    api, env, env_prefixes, flutter_path, task_name, runner_params,
+    suppress_log, test_timeout_secs
+):
   """Runs a devicelab mac test."""
   api.flutter_deps.gems(
       env, env_prefixes, flutter_path.join('dev', 'ci', 'mac')
@@ -238,6 +255,7 @@ def shouldNotUpdate(api, git_branch):
     return True
   else:
     return False
+
 
 def uploadResults(
     api,
@@ -345,14 +363,13 @@ def GenTests(api):
   yield api.test(
       "basic",
       api.properties(
-        buildername='Linux abc',
-        task_name='abc',
-        git_branch='master',
-        openpay=True,
-        dependencies=[{
-          "dependency": "android_virtual_device",
-          "version": "31"
-        }],
+          buildername='Linux abc',
+          task_name='abc',
+          git_branch='master',
+          openpay=True,
+          dependencies=[{
+              "dependency": "android_virtual_device", "version": "31"
+          }],
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -367,30 +384,27 @@ def GenTests(api):
       api.runtime(is_experimental=True),
   )
   yield api.test(
-    "emulator-test",
-    api.properties(
-      buildername='Linux abc',
-      task_name='abc',
-      git_branch='master',
-      use_emulator="true",
-      dependencies=[{
-        "dependency": "android_virtual_device",
-        "version": "31"
-      }],
-    ),
-    api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-    api.step_data(
-        'run abc',
-        stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
-        retcode=0
-    ),
-    api.step_data(
-        'start avd.Start Android emulator (API level 31)',
-        stdout=api.raw_io.output_text(
-            'android_31_google_apis_x86|emulator-5554 started (pid: 17687)'
-        )
-    ),
-    api.runtime(is_experimental=True)
+      "emulator-test",
+      api.properties(
+          buildername='Linux abc',
+          task_name='abc',
+          git_branch='master',
+          use_emulator="true",
+          dependencies=[{
+              "dependency": "android_virtual_device", "version": "31"
+          }],
+      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.step_data(
+          'run abc',
+          stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
+          retcode=0
+      ),
+      api.step_data(
+          'start avd.Start Android emulator (API level 31)',
+          stdout=api.raw_io.output_text(
+              'android_31_google_apis_x86|emulator-5554 started (pid: 17687)'
+          )
+      ), api.runtime(is_experimental=True)
   )
   yield api.test(
       "xcode-devicelab",
@@ -400,9 +414,7 @@ def GenTests(api):
           tags=['ios'],
           dependencies=[{'dependency': 'xcode'}],
           git_branch='master',
-          **{'$flutter/devicelab_osx_sdk': {
-              'sdk_version': 'deadbeef',
-          }}
+          **{'$flutter/devicelab_osx_sdk': {'sdk_version': 'deadbeef',}}
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.platform.name('mac'),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
@@ -425,10 +437,9 @@ def GenTests(api):
           dependencies=[{'dependency': 'xcode'}],
           test_timeout_secs=1,
           git_branch='master',
-          **{'$flutter/devicelab_osx_sdk': {
-              'sdk_version': 'deadbeef',
-          }}
-      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+          **{'$flutter/devicelab_osx_sdk': {'sdk_version': 'deadbeef',}}
+      ),
+      api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.platform.name('mac'),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.step_data(
@@ -439,7 +450,8 @@ def GenTests(api):
           'run abc',
           times_out_after=2,
           had_timeout=True,
-      ), api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
+      ),
+      api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
       status='FAILURE',
   )
   yield api.test(
@@ -467,8 +479,7 @@ def GenTests(api):
           upload_metrics=True,
           git_branch='master',
           dependencies=[{
-            "dependency": "android_virtual_device",
-            "version": "31"
+              "dependency": "android_virtual_device", "version": "31"
           }],
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
@@ -504,8 +515,7 @@ def GenTests(api):
           upload_metrics_to_cas=True,
           git_branch='master',
           dependencies=[{
-            "dependency": "android_virtual_device",
-            "version": "31"
+              "dependency": "android_virtual_device", "version": "31"
           }],
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
@@ -522,8 +532,7 @@ def GenTests(api):
           git_branch='master',
           xvfb=1,
           dependencies=[{
-            "dependency": "android_virtual_device",
-            "version": "31"
+              "dependency": "android_virtual_device", "version": "31"
           }],
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
@@ -541,8 +550,7 @@ def GenTests(api):
           git_branch='master',
           openpay=True,
           dependencies=[{
-            "dependency": "android_virtual_device",
-            "version": "31"
+              "dependency": "android_virtual_device", "version": "31"
           }],
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
@@ -559,8 +567,7 @@ def GenTests(api):
           local_engine='host-release',
           git_branch='master',
           dependencies=[{
-            "dependency": "android_virtual_device",
-            "version": "31"
+              "dependency": "android_virtual_device", "version": "31"
           }],
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(

@@ -96,7 +96,9 @@ def RunSteps(api, properties, env_properties):
     # Create new enviromenent variables for Framework.
     # Note that the `dart binary` location is not the same for Framework and the
     # engine.
-    f_env, f_env_prefix = api.repo_util.flutter_environment(flutter_checkout_path)
+    f_env, f_env_prefix = api.repo_util.flutter_environment(
+        flutter_checkout_path
+    )
     f_env['FLUTTER_CLONE_REPO_PATH'] = flutter_checkout_path
 
     deps = api.properties.get('dependencies', [])
@@ -121,13 +123,13 @@ def RunSteps(api, properties, env_properties):
     # side is kept in `ref`.
     targets = generate_targets(api, cas_hash, ref.strip(), url, deps)
     with api.step.nest('launch builds') as presentation:
-       tasks = api.shard_util_v2.schedule(targets, presentation)
+      tasks = api.shard_util_v2.schedule(targets, presentation)
     with api.step.nest('collect builds') as presentation:
-       build_results = api.shard_util_v2.collect(tasks)
+      build_results = api.shard_util_v2.collect(tasks)
     api.display_util.display_subbuilds(
-      step_name='display builds',
-      subbuilds=build_results,
-      raise_on_failure=True,
+        step_name='display builds',
+        subbuilds=build_results,
+        raise_on_failure=True,
     )
 
 
@@ -147,14 +149,12 @@ def generate_targets(api, cas_hash, ref, url, deps):
     }
     drone_props['git_url'] = url
     drone_props['git_ref'] = ref
-    targets.append(
-        {
-            'name': task_name,
-            'properties': drone_props,
-            'recipe': 'flutter/flutter_drone',
-            'drone_dimensions': api.properties.get('drone_dimensions', []),
-        }
-    )
+    targets.append({
+        'name': task_name,
+        'properties': drone_props,
+        'recipe': 'flutter/flutter_drone',
+        'drone_dimensions': api.properties.get('drone_dimensions', []),
+    })
   return targets
 
 
@@ -163,7 +163,9 @@ def GenTests(api):
       'linux-pre-submit',
       api.repo_util.flutter_environment_data(api.path['cache'].join('flutter')),
       api.properties(
-          dependencies=[{'dependency': 'chrome_and_driver', 'version': 'version:96.2'}],
+          dependencies=[{
+              'dependency': 'chrome_and_driver', 'version': 'version:96.2'
+          }],
           shard='web_tests',
           subshards=['0', '1_last'],
           goma_jobs='200',

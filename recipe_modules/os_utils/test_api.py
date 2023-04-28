@@ -4,6 +4,7 @@
 
 from recipe_engine import recipe_test_api
 
+
 class OsUtilsTestApi(recipe_test_api.RecipeTestApi):
 
   @recipe_test_api.mod_test_data

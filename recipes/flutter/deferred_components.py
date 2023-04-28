@@ -34,6 +34,7 @@ DEPS = [
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
+
 def RunSteps(api, properties, env_properties):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
@@ -52,7 +53,7 @@ def RunSteps(api, properties, env_properties):
         ref=api.properties.get('git_ref'),
     )
 
-  avd_api_version = '31' # 31 is the first version that supports x86_64
+  avd_api_version = '31'  # 31 is the first version that supports x86_64
   for dep in api.properties.get('dependencies', []):
     if dep['dependency'] == 'android_virtual_device':
       avd_api_version = dep['version']
@@ -95,18 +96,18 @@ def RunSteps(api, properties, env_properties):
               '0xeDa85nRhdQfi3iN2dK8PPluwI73z9San_Afuj3CfgC'
           )
       )
-  test_dir = checkout_path.join('dev', 'integration_tests', 'deferred_components_test')
-  with api.context(env=env, env_prefixes=env_prefixes, cwd=test_dir), api.step.defer_results():
+  test_dir = checkout_path.join(
+      'dev', 'integration_tests', 'deferred_components_test'
+  )
+  with api.context(env=env, env_prefixes=env_prefixes,
+                   cwd=test_dir), api.step.defer_results():
     # These assets are not allowed to be checked into the repo,
     # so they are downloaded separately here.
     api.step('download assets script', ['./download_assets.sh'])
     api.step(
         'Deferred components release tests',
-        [
-          './run_release_test.sh',
-          str(bundletool_jar),
-          env['ADB_PATH']
-        ],
+        ['./run_release_test.sh',
+         str(bundletool_jar), env['ADB_PATH']],
         timeout=700,
     )
     # TODO(garyq): add flutter drive tests after https://github.com/flutter/flutter/issues/88906 is resolved
@@ -124,40 +125,36 @@ def GenTests(api):
   yield api.test(
       'flutter_release_clean_exit',
       api.properties(
-          dependencies=[
-            {'dependency':'android_sdk'},
-            {'dependency':'android_virtual_device', 'version':'31'},
-            {'dependency':'curl'}
-          ]
+          dependencies=[{'dependency': 'android_sdk'}, {
+              'dependency': 'android_virtual_device', 'version': '31'
+          }, {'dependency': 'curl'}]
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
           'start avd.Start Android emulator (API level %s)' % avd_api_version,
           stdout=api.raw_io.output_text(
-              'android_' + avd_api_version + '_google_apis_x86|emulator-5554 started (pid: 17687)'
+              'android_' + avd_api_version +
+              '_google_apis_x86|emulator-5554 started (pid: 17687)'
           )
       ),
   )
   yield api.test(
       'flutter_release_zombie_process',
       api.properties(
-          dependencies=[
-            {'dependency':'android_sdk'},
-            {'dependency':'android_virtual_device', 'version':'31'},
-            {'dependency':'curl'}
-          ]
+          dependencies=[{'dependency': 'android_sdk'}, {
+              'dependency': 'android_virtual_device', 'version': '31'
+          }, {'dependency': 'curl'}]
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
           'start avd.Start Android emulator (API level %s)' % avd_api_version,
           stdout=api.raw_io.output_text(
-              'android_' + avd_api_version + '_google_apis_x86|emulator-5554 started (pid: 17687)'
+              'android_' + avd_api_version +
+              '_google_apis_x86|emulator-5554 started (pid: 17687)'
           )
       ),
       api.step_data(
           'kill and cleanup avd.list processes',
-          stdout=api.raw_io.output_text(
-              '12345 qemu-system blah'
-          )
+          stdout=api.raw_io.output_text('12345 qemu-system blah')
       ),
   )

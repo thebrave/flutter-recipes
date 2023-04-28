@@ -23,7 +23,8 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
     self.version = version
     with self.m.step.nest('download avd package'):
       self.m.file.ensure_directory('Ensure avd cache', self.avd_root)
-      with self.m.context(env=env, env_prefixes=env_prefixes, cwd=self.avd_root), self.m.depot_tools.on_path():
+      with self.m.context(env=env, env_prefixes=env_prefixes,
+                          cwd=self.avd_root), self.m.depot_tools.on_path():
         # Download and install AVD
         self.m.cipd.ensure(
             self.avd_root,
@@ -70,21 +71,28 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
     self.version = version or self.version or '31'
     self.emulator_pid = ''
     with self.m.step.nest('start avd'):
-      with self.m.context(env=env, env_prefixes=env_prefixes, cwd=self.avd_root), self.m.depot_tools.on_path():
+      with self.m.context(env=env, env_prefixes=env_prefixes,
+                          cwd=self.avd_root), self.m.depot_tools.on_path():
         avd_script_path = self.avd_root.join(
             'src', 'tools', 'android', 'avd', 'avd.py'
         )
         avd_config = self.avd_root.join(
-            'src', 'tools', 'android', 'avd', 'proto', 'generic_android%s.textpb' % self.version
+            'src', 'tools', 'android', 'avd', 'proto',
+            'generic_android%s.textpb' % self.version
         )
         self.m.step(
-            'Install Android emulator (API level %s)' % self.version,
-            ['vpython3', avd_script_path, 'install', '--avd-config', avd_config],
+            'Install Android emulator (API level %s)' % self.version, [
+                'vpython3', avd_script_path, 'install', '--avd-config',
+                avd_config
+            ],
             stdout=self.m.raw_io.output_text(add_output_log=True)
         )
         output = self.m.step(
-            'Start Android emulator (API level %s)' % self.version,
-            ['vpython3', avd_script_path, 'start', '--no-read-only', '--wipe-data', '--writable-system', '--debug-tags', 'all', '--avd-config', avd_config],
+            'Start Android emulator (API level %s)' % self.version, [
+                'vpython3', avd_script_path, 'start', '--no-read-only',
+                '--wipe-data', '--writable-system', '--debug-tags', 'all',
+                '--avd-config', avd_config
+            ],
             stdout=self.m.raw_io.output_text(add_output_log=True)
         ).stdout
 
@@ -102,7 +110,8 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
     """
     with self.m.step.nest('avd setup'):
-      with self.m.context(env=env, env_prefixes=env_prefixes, cwd=self.avd_root):
+      with self.m.context(env=env, env_prefixes=env_prefixes,
+                          cwd=self.avd_root):
         # Only supported on linux. Do not run this on other platforms.
         resource_name = self.resource('avd_setup.sh')
         self.m.step(
@@ -110,7 +119,10 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             ['chmod', '755', resource_name],
             infra_step=True,
         )
-        self.m.test_utils.run_test('avd_setup.sh', [resource_name, str(self.adb_path)], infra_step=True)
+        self.m.test_utils.run_test(
+            'avd_setup.sh', [resource_name, str(self.adb_path)],
+            infra_step=True
+        )
 
   def stop_if_requested(self, env, emulator_pid=None):
     """Stops the emulator and cleans up any zombie QEMU processes.
@@ -136,10 +148,11 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       self.m.step('Kill emulator cleanup', ['kill', '-9', pid_to_kill])
 
       # Kill zombie processes left over by QEMU on the host.
-      step_result = self.m.step('list processes',
-          ['ps', '-axww'],
+      step_result = self.m.step(
+          'list processes', ['ps', '-axww'],
           stdout=self.m.raw_io.output_text(add_output_log=True),
-          stderr=self.m.raw_io.output_text(add_output_log=True))
+          stderr=self.m.raw_io.output_text(add_output_log=True)
+      )
       zombieList = ['qemu-system']
       killCommand = ['kill', '-9']
       for line in step_result.stdout.splitlines():

@@ -71,15 +71,18 @@ def GenTests(api):
           ),
           api.step_data(
               'Identify branches.git branch',
-              stdout=api.raw_io.output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+              stdout=api.raw_io
+              .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
           ),
           api.step_data(
               'Identify branches (2).git branch',
-              stdout=api.raw_io.output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+              stdout=api.raw_io
+              .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
           ),
           api.step_data(
               'Identify branches (3).git branch',
-              stdout=api.raw_io.output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+              stdout=api.raw_io
+              .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
           )
       )
   )
@@ -131,10 +134,10 @@ def GenTests(api):
   )
   yield api.test(
       'first_bot_update_failed',
-       api.properties(
-           git_url='https://github.com/flutter/engine',
-           git_ref='refs/pull/1/head'
-       ),
+      api.properties(
+          git_url='https://github.com/flutter/engine',
+          git_ref='refs/pull/1/head'
+      ),
       # Next line force a fail condition for the bot update
       # first execution.
       api.step_data("Checkout source code.bot_update", retcode=1),
@@ -148,8 +151,8 @@ def GenTests(api):
       ),
       # Next line force a fail condition for the bot update
       # first execution.
-      api.path.exists(api.path['cache'].join('git'),
-                      api.path['start_dir'].join('engine')
+      api.path.exists(
+          api.path['cache'].join('git'), api.path['start_dir'].join('engine')
       ),
       api.override_step_data(
           "Checkout source code.bot_update",

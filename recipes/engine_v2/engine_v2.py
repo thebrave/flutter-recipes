@@ -118,9 +118,13 @@ def RunSteps(api, properties, env_properties):
       api.repo_util.is_release_candidate_branch(checkout_path)):
     # Generators, archives and codesign require a full engine checkout.
     full_engine_checkout = api.path['cache'].join('builder')
-    api.file.ensure_directory('Ensure full engine checkout folder', full_engine_checkout)
+    api.file.ensure_directory(
+        'Ensure full engine checkout folder', full_engine_checkout
+    )
     if api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
-      env, env_prefixes = api.repo_util.monorepo_environment(full_engine_checkout)
+      env, env_prefixes = api.repo_util.monorepo_environment(
+          full_engine_checkout
+      )
       api.repo_util.monorepo_checkout(full_engine_checkout, env, env_prefixes)
       full_engine_checkout = full_engine_checkout.join('engine')
     else:
@@ -129,7 +133,9 @@ def RunSteps(api, properties, env_properties):
       # The checkouts are using cache which may have some old artifacts in the out
       # directory. We are cleaning out the folder to ensure we start from an empty
       # out folder.
-      api.file.rmtree('Clobber build output', full_engine_checkout.join('src', 'out'))
+      api.file.rmtree(
+          'Clobber build output', full_engine_checkout.join('src', 'out')
+      )
 
   if generators:
     # Download sub-builds
@@ -181,19 +187,22 @@ def _archive(api, archives, full_engine_checkout):
   # release, debug or profile depending on the runtime mode.
   # So far we are uploading files only.
   files_to_archive = api.archives.global_generator_paths(
-      full_engine_checkout.join('src'), archives)
+      full_engine_checkout.join('src'), archives
+  )
 
   # Sign artifacts if running in mac.
   is_release_candidate = api.repo_util.is_release_candidate_branch(
       full_engine_checkout.join('src', 'flutter')
   )
   signing_paths = [
-        path.local for path in files_to_archive
-        if api.signing.requires_signing(path.local)
+      path.local
+      for path in files_to_archive
+      if api.signing.requires_signing(path.local)
   ]
   if api.platform.is_mac and is_release_candidate:
     signing_paths = [
-        path.local for path in files_to_archive
+        path.local
+        for path in files_to_archive
         if api.signing.requires_signing(path.local)
     ]
     api.signing.code_sign(signing_paths)
@@ -223,9 +232,15 @@ def _run_global_generators(
   for generator_task in generators['tasks']:
     # Generators must run from inside flutter folder.
     # If platform is mac we need to run the generator from an xcode context.
-    with api.context(env=env, env_prefixes=env_prefixes, cwd=full_engine_checkout):
-      cmd = [generator_task.get('language')] if generator_task.get('language') else []
-      api.file.listdir('List checkout', full_engine_checkout.join('src', 'out'), recursive=True)
+    with api.context(env=env, env_prefixes=env_prefixes,
+                     cwd=full_engine_checkout):
+      cmd = [generator_task.get('language')
+            ] if generator_task.get('language') else []
+      api.file.listdir(
+          'List checkout',
+          full_engine_checkout.join('src', 'out'),
+          recursive=True
+      )
       script = generator_task.get('script')
       full_path_script = full_engine_checkout.join('src', script)
       cmd.append(full_path_script)
@@ -256,22 +271,14 @@ def GenTests(api):
       "generators": [{"name": "generator1", "script": "script1.sh"}]
   }]
   generators = {
-          "tasks":
-              [
-                  {
-                    "language": "python3",
-                    "name": "Debug-FlutterMacOS.framework",
-                    "parameters": [
-                        "--variant",
-                        "host_profile",
-                        "--type",
-                        "engine",
-                        "--engine-capture-core-dump"
-                    ],
-                    "script": "flutter/sky/tools/create_macos_framework.py",
-                    "type": "local"
-                  }
-              ]
+      "tasks": [{
+          "language": "python3", "name": "Debug-FlutterMacOS.framework",
+          "parameters": [
+              "--variant", "host_profile", "--type", "engine",
+              "--engine-capture-core-dump"
+          ], "script": "flutter/sky/tools/create_macos_framework.py",
+          "type": "local"
+      }]
   }
   archives = [{
       'source': '/a/b/c.txt', 'destination': 'bucket/c.txt', 'name': 'c.txt'
@@ -414,13 +421,9 @@ def GenTests(api):
       ),
       api.step_data(
           'Read build config file',
-          api.file.read_json(
-              {
-                  'builds': builds,
-                  'archives': archives,
-                  'generators': generators
-              }
-          )
+          api.file.read_json({
+              'builds': builds, 'archives': archives, 'generators': generators
+          })
       ),
       api.step_data(
           'Identify branches.git rev-parse',
@@ -476,8 +479,11 @@ def GenTests(api):
           collect_step="collect tests",
       ),
       api.step_data(
-          'Read build config file', api.file.read_json({'builds': builds,
-          'tests': tests, 'generators': generators, 'archives': archives})
+          'Read build config file',
+          api.file.read_json({
+              'builds': builds, 'tests': tests, 'generators': generators,
+              'archives': archives
+          })
       ),
       api.step_data(
           'Identify branches.git branch',

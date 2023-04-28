@@ -96,14 +96,9 @@ class RetryApi(recipe_api.RecipeApi):
         sleep *= backoff_factor
 
   def basic_wrap(
-        self,
-        func,
-        max_attempts=3,
-        sleep=5.0,
-        backoff_factor=1.5,
-        **kwargs
-    ):
-      """Retry basic wrapped function without step support.
+      self, func, max_attempts=3, sleep=5.0, backoff_factor=1.5, **kwargs
+  ):
+    """Retry basic wrapped function without step support.
       Args:
           func (callable): A function that performs the action that should be
             retried on failure. If it raises a `StepFailure`, it will be retried.
@@ -115,15 +110,15 @@ class RetryApi(recipe_api.RecipeApi):
       Returns:
         The result of executing func.
       """
-      for attempt in range(max_attempts):
-        try:
-          result = func()
-          return result
-        except self.m.step.StepFailure:
-          if attempt == max_attempts - 1:
-            raise
-          self.m.time.sleep(sleep)
-          sleep *= backoff_factor
+    for attempt in range(max_attempts):
+      try:
+        result = func()
+        return result
+      except self.m.step.StepFailure:
+        if attempt == max_attempts - 1:
+          raise
+        self.m.time.sleep(sleep)
+        sleep *= backoff_factor
 
   def run_flutter_doctor(self):
     self.step(

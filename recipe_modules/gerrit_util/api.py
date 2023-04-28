@@ -16,9 +16,10 @@ class GerritUtilApi(recipe_api.RecipeApi):
       cl_number: The CL number of the requested CL
     """
     cl_information = self.m.gerrit.call_raw_api(
-          'https://%s' % host,
-          '/changes/%s' % cl_number,
-          accept_statuses=[200],
-          name='get cl info %s' % cl_number)
+        'https://%s' % host,
+        '/changes/%s' % cl_number,
+        accept_statuses=[200],
+        name='get cl info %s' % cl_number
+    )
 
     return cl_information

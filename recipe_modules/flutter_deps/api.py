@@ -39,8 +39,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         self.m.cas.download(
             'Download engine from CAS', cas_hash, checkout_engine
         )
-      local_engine = checkout_engine.join(
-          local_engine or 'host_debug_unopt')
+      local_engine = checkout_engine.join(local_engine or 'host_debug_unopt')
       dart_bin = local_engine.join('dart-sdk', 'bin')
       paths = env_prefixes.get('PATH', [])
       paths.insert(0, dart_bin)
@@ -54,9 +53,10 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       self.m.cas.download(
           'Download web sdk from CAS', web_sdk_cas_hash, checkout_src
       )
-      local_web_sdk = checkout_src.join(
-          'out', local_web_sdk or 'wasm_release')
-      dart_bin = checkout_src.join('flutter', 'prebuilts', '${platform}', 'dart-sdk', 'bin')
+      local_web_sdk = checkout_src.join('out', local_web_sdk or 'wasm_release')
+      dart_bin = checkout_src.join(
+          'flutter', 'prebuilts', '${platform}', 'dart-sdk', 'bin'
+      )
       paths = env_prefixes.get('PATH', [])
       paths.insert(0, dart_bin)
       env_prefixes['PATH'] = paths
@@ -92,7 +92,9 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'go_sdk': self.go_sdk,
         'goldctl': self.goldctl,
         'gradle_cache': self.gradle_cache,
-        'ios_signing': self.apple_signing, # TODO(drewroen): Remove this line once ios_signing is not being referenced
+        'ios_signing':
+            self.
+            apple_signing,  # TODO(drewroen): Remove this line once ios_signing is not being referenced
         'jazzy': self.jazzy,
         'ninja': self.ninja,
         'open_jdk': self.open_jdk,
@@ -157,14 +159,16 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     with self.m.step.nest('Arm Tools dependency'):
       arm_tools_cache_dir = self.m.path['cache'].join('arm-tools')
       self.m.cipd.ensure(
-        self.m.path['cache'],
-        self.m.cipd.EnsureFile().add_package(
-            'flutter_internal/tools/arm-tools', version
-        )
+          self.m.path['cache'],
+          self.m.cipd.EnsureFile().add_package(
+              'flutter_internal/tools/arm-tools', version
+          )
       )
       self.m.file.listdir('arm-tools contents', arm_tools_cache_dir)
-      self.m.file.listdir('arm-tools malioc contents',
-        arm_tools_cache_dir.join('mali_offline_compiler'))
+      self.m.file.listdir(
+          'arm-tools malioc contents',
+          arm_tools_cache_dir.join('mali_offline_compiler')
+      )
       env['ARM_TOOLS'] = arm_tools_cache_dir
 
   def goldctl(self, env, env_prefixes, version):
@@ -290,7 +294,8 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     with self.m.context(env=env, env_prefixes=env_prefixes):
       self.m.step(
           'Install dashing',
-          ['go', 'install', 'github.com/technosophos/dashing@%s' % version],
+          ['go', 'install',
+           'github.com/technosophos/dashing@%s' % version],
           infra_step=True,
       )
 
@@ -317,7 +322,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         ),
     )
     # Setup environment variables
-    if (version == 'version:29.0'): # Handle the legacy case
+    if (version == 'version:29.0'):  # Handle the legacy case
       env['ANDROID_SDK_ROOT'] = sdk_root
       env['ANDROID_HOME'] = sdk_root
       env['ANDROID_NDK_PATH'] = sdk_root.join('ndk-bundle')
@@ -365,12 +370,13 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       gemfile_dir(Path): The path to the location of the repository gemfile.
     """
     deps_list = self.m.properties.get('dependencies', [])
-    deps = {d['dependency']:d.get('version') for d in deps_list}
+    deps = {d['dependency']: d.get('version') for d in deps_list}
     if 'gems' not in deps.keys():
       # Noop if gems property is not set.
       return
     version = deps['gems']
-    gemfile_dir = gem_dir or self.m.repo_util.sdk_checkout_path().join('dev', 'ci', 'mac')
+    gemfile_dir = gem_dir or self.m.repo_util.sdk_checkout_path(
+    ).join('dev', 'ci', 'mac')
     gem_destination = self.m.path['start_dir'].join('gems')
     env['GEM_HOME'] = gem_destination
     self._install_ruby(env, env_prefixes, version)
@@ -390,16 +396,19 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         lib_path = self.m.path['cache'].join('ruby')
         self.m.step(
             'Set ffi build flags',
-            ['bundle', 'config',
-             'build.ffi', '--with-opt-dir=%s/gmp:%s' % (opt_path, lib_path)],
+            [
+                'bundle', 'config', 'build.ffi',
+                '--with-opt-dir=%s/gmp:%s' % (opt_path, lib_path)
+            ],
             infra_step=True,
         )
         self.m.step('install gems', ['bundler', 'install'], infra_step=True)
       # Find major/minor ruby version
       ruby_version = self.m.step(
-              'Ruby version', ['ruby', '-e', 'puts RUBY_VERSION'],
-              stdout=self.m.raw_io.output_text(), ok_ret='any'
-              ).stdout.rstrip()
+          'Ruby version', ['ruby', '-e', 'puts RUBY_VERSION'],
+          stdout=self.m.raw_io.output_text(),
+          ok_ret='any'
+      ).stdout.rstrip()
       parts = ruby_version.split('.')
       parts[-1] = '0'
       ruby_version = '.'.join(parts)
@@ -613,11 +622,15 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         version = version or 'latest'
         mobileprovision_path = self.m.path.mkdtemp().join('mobileprovision')
         mobileprovision = self.m.cipd.EnsureFile()
-        mobileprovision.add_package('flutter_internal/mac/mobileprovision/${platform}', version)
+        mobileprovision.add_package(
+            'flutter_internal/mac/mobileprovision/${platform}', version
+        )
         with self.m.step.nest('Installing Mac mobileprovision'):
           self.m.cipd.ensure(mobileprovision_path, mobileprovision)
 
-        mobileprovision_profile = mobileprovision_path.join('development.mobileprovision')
+        mobileprovision_profile = mobileprovision_path.join(
+            'development.mobileprovision'
+        )
         copy_script = self.resource('copy_mobileprovisioning_profile.sh')
         self.m.step('Set execute permission', ['chmod', '755', copy_script])
         self.m.step(
@@ -647,7 +660,8 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       with self.m.context(env=env, env_prefixes=env_prefixes):
         ruby_version = self.m.step(
             'Ruby version', ['ruby', '-e', 'puts RUBY_VERSION'],
-            stdout=self.m.raw_io.output_text(), ok_ret='any'
+            stdout=self.m.raw_io.output_text(),
+            ok_ret='any'
         ).stdout.rstrip()
       parts = ruby_version.split('.')
       parts[-1] = '0'

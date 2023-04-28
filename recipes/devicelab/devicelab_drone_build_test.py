@@ -97,20 +97,17 @@ def test(api, task_name, deps, artifact):
   test_props = {
       'dependencies': [api.shard_util_v2.unfreeze_dict(dep) for dep in deps],
       'task_name': task_name,
-      'parent_builder': api.properties.get('buildername'),
-      'artifact': artifact,
-      'git_branch': api.properties.get('git_branch'),
-      'tags': tags,
-      '$flutter/devicelab_osx_sdk': {'sdk_version': api.properties.get('xcode')}
-  }
-  reqs.append(
-      {
-          'name': task_name,
-          'properties': test_props,
-          'drone_dimensions': api.properties.get('drone_dimensions', []),
-          'recipe': 'devicelab/devicelab_test_drone'
+      'parent_builder': api.properties.get('buildername'), 'artifact': artifact,
+      'git_branch': api.properties.get('git_branch'), 'tags': tags,
+      '$flutter/devicelab_osx_sdk': {
+          'sdk_version': api.properties.get('xcode')
       }
-  )
+  }
+  reqs.append({
+      'name': task_name, 'properties': test_props,
+      'drone_dimensions': api.properties.get('drone_dimensions', []),
+      'recipe': 'devicelab/devicelab_test_drone'
+  })
   return reqs
 
 
@@ -271,9 +268,7 @@ def GenTests(api):
           tags=['ios'],
           dependencies=[{'dependency': 'xcode'}],
           git_branch='master',
-          **{'$flutter/osx_sdk': {
-              'sdk_version': 'deadbeef',
-          }}
+          **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.platform.name('mac'),
       api.buildbucket.ci_build(git_ref='refs/heads/master',)

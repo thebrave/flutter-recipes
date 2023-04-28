@@ -125,10 +125,10 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     uploadResults(
         api, env, env_prefixes, results_path, test_status == 'flaky',
-        git_branch, parent_builder, commit_time, task_name,
-        benchmark_tags
+        git_branch, parent_builder, commit_time, task_name, benchmark_tags
     )
     uploadMetricsToCas(api, results_path)
+
 
 def run_test(api, task_name, runner_params):
   '''Run the devicelab test.'''
@@ -137,14 +137,15 @@ def run_test(api, task_name, runner_params):
   test_runner_command.extend(runner_params)
   try:
     test_status = api.test_utils.run_test(
-          'run %s' % task_name,
-          test_runner_command,
-          timeout_secs=MAX_TIMEOUT_SECS
+        'run %s' % task_name,
+        test_runner_command,
+        timeout_secs=MAX_TIMEOUT_SECS
     )
   finally:
     debug_after_failure(api, task_name)
     if test_status == 'flaky':
       api.test_utils.flaky_step('run %s' % task_name)
+
 
 def download_artifact(api, artifact, artifact_destination_dir):
   '''Download pre-build artifact.'''
@@ -378,9 +379,7 @@ def GenTests(api):
           tags=['ios'],
           dependencies=[{'dependency': 'xcode'}],
           git_branch='master',
-          **{'$flutter/devicelab_osx_sdk': {
-              'sdk_version': 'deadbeef',
-          }},
+          **{'$flutter/devicelab_osx_sdk': {'sdk_version': 'deadbeef',}},
           artifact='def',
           parent_builder='ghi'
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),

@@ -6,7 +6,8 @@ import json
 
 from recipe_engine import recipe_test_api
 
-class ZipTestApi(recipe_test_api.RecipeTestApi): # pragma: no cover
+
+class ZipTestApi(recipe_test_api.RecipeTestApi):  # pragma: no cover
   """Test api for zip module."""
 
   def namelist(self, name, output):
@@ -18,8 +19,5 @@ class ZipTestApi(recipe_test_api.RecipeTestApi): # pragma: no cover
         inside the zip file.
     """
     return self.override_step_data(
-        name,
-        stdout=self.m.json.output(output),
-        retcode=0
+        name, stdout=self.m.json.output(output), retcode=0
     )
-

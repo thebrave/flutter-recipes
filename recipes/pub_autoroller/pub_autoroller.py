@@ -46,14 +46,17 @@ def roll_packages(api, conductor_dir):
   # This should be an https url an ssh url cannot be authenticated via an
   # access token
   mirror_remote = api.properties.get(
-      'mirror_remote', 'https://github.com/fluttergithubbot/flutter.git')
-  api.step('run roll-packages script', [
-      autoroll_script,
-      '--token',
-      token_file,
-      '--mirror-remote',
-      mirror_remote,
-  ])
+      'mirror_remote', 'https://github.com/fluttergithubbot/flutter.git'
+  )
+  api.step(
+      'run roll-packages script', [
+          autoroll_script,
+          '--token',
+          token_file,
+          '--mirror-remote',
+          mirror_remote,
+      ]
+  )
 
 
 def GenTests(api):

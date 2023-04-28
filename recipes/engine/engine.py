@@ -1020,44 +1020,6 @@ def BuildLinux(api):
       artifact_name='dart-sdk-linux-x64.zip'
   )
 
-  # Rebuild with fontconfig support enabled for the desktop embedding, since it
-  # should be on for libflutter_linux_gtk.so, but not libflutter_engine.so.
-  RunGN(
-      api, '--runtime-mode', 'debug', '--enable-fontconfig',
-      '--prebuilt-dart-sdk'
-  )
-  RunGN(
-      api, '--runtime-mode', 'profile', '--no-lto', '--enable-fontconfig',
-      '--prebuilt-dart-sdk'
-  )
-  RunGN(
-      api, '--runtime-mode', 'release', '--enable-fontconfig',
-      '--prebuilt-dart-sdk'
-  )
-
-  Build(api, 'host_debug', 'flutter/shell/platform/linux:flutter_gtk')
-  Build(api, 'host_profile', 'flutter/shell/platform/linux:flutter_gtk')
-  Build(api, 'host_release', 'flutter/shell/platform/linux:flutter_gtk')
-
-  UploadArtifact(
-      api,
-      config='host_debug',
-      platform='linux-x64-debug',
-      artifact_name='linux-x64-flutter-gtk.zip'
-  )
-  UploadArtifact(
-      api,
-      config='host_profile',
-      platform='linux-x64-profile',
-      artifact_name='linux-x64-flutter-gtk.zip'
-  )
-  UploadArtifact(
-      api,
-      config='host_release',
-      platform='linux-x64-release',
-      artifact_name='linux-x64-flutter-gtk.zip'
-  )
-
 
 def GetRemoteFileName(exec_path):
   # An example of exec_path is:

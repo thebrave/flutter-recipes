@@ -11,10 +11,8 @@
 # This little shell hack is a triple-quoted noop in python, but in sh it
 # evaluates to re-exec'ing this script in unbuffered mode.
 # pylint: disable=pointless-string-statement
-
 ''''exec python3 -u -- "$0" ${1+"$@"} # '''
 # vi: syntax=python
-
 """Bootstrap script to clone and forward to the recipe engine tool.
 
 *******************
@@ -81,9 +79,8 @@ def parse(repo_root, recipes_cfg_path):
 
   try:
     if pb['api_version'] != 2:
-      raise MalformedRecipesCfg(
-          'unknown version %d' % pb['api_version'], recipes_cfg_path
-      )
+      raise MalformedRecipesCfg('unknown version %d' % pb['api_version'],
+                                recipes_cfg_path)
 
     # If we're running ./recipes.py from the recipe_engine repo itself, then
     # return None to signal that there's no EngineDep.
@@ -98,8 +95,7 @@ def parse(repo_root, recipes_cfg_path):
     if 'url' not in engine:
       raise MalformedRecipesCfg(
           'Required field "url" in dependency "recipe_engine" not found',
-          recipes_cfg_path
-      )
+          recipes_cfg_path)
 
     engine.setdefault('revision', '')
     engine.setdefault('branch', 'refs/heads/main')
@@ -109,9 +105,8 @@ def parse(repo_root, recipes_cfg_path):
     if not engine['branch'].startswith('refs/'):
       engine['branch'] = 'refs/heads/' + engine['branch']
 
-    recipes_path = os.path.join(
-        repo_root, recipes_path.replace('/', os.path.sep)
-    )
+    recipes_path = os.path.join(repo_root,
+                                recipes_path.replace('/', os.path.sep))
     return EngineDep(**engine), recipes_path, py3_only
   except KeyError as ex:
     raise MalformedRecipesCfg(str(ex), recipes_cfg_path)
@@ -218,9 +213,8 @@ def checkout_engine(engine_path, repo_root, recipes_cfg_path):
         os.remove(index_lock)
       except OSError as exc:
         if exc.errno != errno.ENOENT:
-          logging.warn(
-              'failed to remove %r, reset will fail: %s', index_lock, exc
-          )
+          logging.warn('failed to remove %r, reset will fail: %s', index_lock,
+                       exc)
       _git_check_call(['reset', '-q', '--hard', revision], cwd=engine_path)
 
     # If the engine has refactored/moved modules we need to clean all .pyc files
@@ -244,20 +238,16 @@ def main():
   if recipes_cfg_path:
     # calculate repo_root from recipes_cfg_path
     repo_root = os.path.dirname(
-        os.path.dirname(os.path.dirname(recipes_cfg_path))
-    )
+        os.path.dirname(os.path.dirname(recipes_cfg_path)))
   else:
     # find repo_root with git and calculate recipes_cfg_path
     repo_root = (
         _git_output(['rev-parse', '--show-toplevel'],
-                    cwd=os.path.abspath(os.path.dirname(__file__))).strip()
-    )
+                    cwd=os.path.abspath(os.path.dirname(__file__))).strip())
     repo_root = os.path.abspath(repo_root).decode()
     recipes_cfg_path = os.path.join(repo_root, 'infra', 'config', 'recipes.cfg')
     args = ['--package', recipes_cfg_path] + args
-  engine_path, py3_only = checkout_engine(
-      engine_override, repo_root, recipes_cfg_path
-  )
+  engine_path, py3_only = checkout_engine(engine_override, repo_root, recipes_cfg_path)
 
   using_py3 = py3_only or os.getenv('RECIPES_USE_PY3') == 'true'
   vpython = ('vpython' + ('3' if using_py3 else '') + _BAT)
@@ -265,9 +255,7 @@ def main():
     return 'Required binary is not found on PATH: %s' % vpython
 
   argv = ([
-      vpython,
-      '-u',
-      os.path.join(engine_path, 'recipe_engine', 'main.py'),
+    vpython, '-u', os.path.join(engine_path, 'recipe_engine', 'main.py'),
   ] + args)
 
   if IS_WIN:

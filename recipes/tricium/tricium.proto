@@ -1,0 +1,43 @@
+// Copyright 2022 The Fuchsia Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package recipes.flutter.tricium.tricium;
+
+message InputProperties {
+  // Jiri manifest to use.
+  string manifest = 1;
+
+  // Manifest project remote.
+  string remote = 2;
+
+  // Analyzers to run.
+  repeated string analyses = 3;
+
+  // Names of 'legacy' analyzers to run from the recipe engine's tricium recipe
+  // module.
+  repeated string luci_analyzers = 4;
+
+  message CIPDPackage {
+    // Name of this CIPD package.
+    string name = 1;
+
+    // CIPD package version.
+    string version = 2;
+
+    // Language subdirectory (e.g. clang) in which to put the package.
+    // The Tricium modules assume a Fuchsia prebuilts-like layout.
+    string subdir = 3;
+  }
+
+  // CIPD packages containing necessary binaries.
+  repeated CIPDPackage cipd_packages = 5;
+
+  // Path to a fint params file.
+  string fint_params_path = 6;
+
+  // Whether or not to build incrementally.
+  bool incremental_build = 7;
+}

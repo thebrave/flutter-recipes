@@ -119,9 +119,7 @@ def RunSteps(api):
           'flutter-release-github-token.encrypted', token_decrypted
       )
 
-      env['FORCE_FLAG'] = '--force-with-lease=%s:%s' % (
-          release_channel, rel_hash
-      ) if force else ''
+      env['FORCE_FLAG'] = '--force' if force else ''
       env['TOKEN_PATH'] = token_decrypted
       env['TAG'] = tag
       env['REL_HASH'] = rel_hash

@@ -7,6 +7,7 @@ from contextlib import contextmanager
 from PB.recipes.flutter.engine.engine import InputProperties
 from PB.recipes.flutter.engine.engine import EnvProperties
 
+from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from google.protobuf import struct_pb2, json_format
 
@@ -159,11 +160,12 @@ def RunTests(api, out_dir, android_out_dir=None, types='all'):
   api.retry.wrap(run_test, step_name=step_name)
 
 
-def ScheduleBuilds(api, builder_name, drone_props):
+def ScheduleBuilds(api, builder_name, drone_props, drone_dimensions):
   req = api.buildbucket.schedule_request(
       swarming_parent_run_id=api.swarming.task_id,
       builder=builder_name,
       properties=drone_props,
+      dimensions=drone_dimensions,
       # Having main build and subbuilds with the same priority can lead
       # to a deadlock situation when there are limited resources. For example
       # if we have only 7 mac bots and we get more than 7 new build requests the
@@ -554,7 +556,10 @@ def BuildLinuxAndroidAOT(api, swarming_task_id):
       props['git_ref'] = api.properties['git_ref']
 
     with api.step.nest('Schedule build %s' % build_out_dir):
-      builds += ScheduleBuilds(api, 'Linux Engine Drone', props)
+      builds += ScheduleBuilds(
+          api, 'Linux Engine Drone', props,
+          [common_pb2.RequestedDimension(key="device_type", value="none")]
+      )
 
   checkout = GetCheckoutPath(api)
   git_rev = api.buildbucket.gitiles_commit.id or 'HEAD'
@@ -1167,7 +1172,10 @@ def BuildFuchsia(api, gclient_vars):
     if 'git_url' in api.properties and 'git_ref' in api.properties:
       props['git_url'] = api.properties['git_url']
       props['git_ref'] = api.properties['git_ref']
-    builds += ScheduleBuilds(api, 'Linux Engine Drone', props)
+    builds += ScheduleBuilds(
+        api, 'Linux Engine Drone', props,
+        [common_pb2.RequestedDimension(key="device_type", value="none")]
+    )
 
   checkout = GetCheckoutPath(api)
   build_script = str(

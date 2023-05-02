@@ -18,7 +18,10 @@ DRONE_TIMEOUT_SECS = 3600 * 3  # 3 hours.
 # Builder names use full platform name instead of short names. We need to
 # map short names to full platform names to be able to identify the drone
 # used to run the subshards.
-PLATFORM_TO_NAME = {'win': 'Windows', 'linux': 'Linux', 'mac': 'Mac'}
+PLATFORM_TO_NAME = {'os=win': 'Windows', 'os=lin': 'Linux', 'os=mac': 'Mac'}
+
+# Characters to use from the build configuration os dimension.
+OS_DIM_CHAR_SIZE = 6
 
 # Internal properties that should be set for builds running on BuildBucket.
 PROPERTIES_TO_REMOVE = [
@@ -210,12 +213,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
 
       # Override recipe.
       drone_properties['recipe'] = build['recipe']
-      bucket = self.m.buildbucket.build.builder.bucket
-      environment = ENVIRONMENTS_MAP.get(bucket, '')
-      builder_name = build.get(
-          'drone_builder_name',
-          '%s %sEngine Drone' % (platform_name, environment)
-      )
+      builder_name = self._drone_name(build)
       suffix = drone_properties.get('builder_name_suffix')
       if suffix:
         builder_name = '%s%s' % (builder_name, suffix)
@@ -261,6 +259,26 @@ class ShardUtilApi(recipe_api.RecipeApi):
       )
     return results
 
+  def _drone_name(self, build):
+    """Calculates the drone name to use for a build.
+
+    Args:
+      build: A build configuration dictionary.
+    """
+    dimensions = build.get('drone_dimensions', [])
+    platform_name = ''
+    for d in dimensions:
+      if d.startswith('os='):
+        platform_name = PLATFORM_TO_NAME.get((d[:OS_DIM_CHAR_SIZE]).lower())
+        break
+    platform_name = build.get('platform') or platform_name
+    bucket = self.m.buildbucket.build.builder.bucket
+    environment = ENVIRONMENTS_MAP.get(bucket, '')
+    return build.get(
+        'drone_builder_name',
+        '%s %sEngine Drone' % (platform_name, environment)
+    )
+
   def _schedule_with_bb(self, builds, branch='main'):
     """Schedules builds using builbbucket.
 
@@ -286,15 +304,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       # ci.yaml provided dimensions.
       ci_yaml_dimensions = build.get('dimensions', {})
       task_dimensions = []
-      platform_name = build.get('platform') or PLATFORM_TO_NAME.get(
-          self.m.platform.name
-      )
-      bucket = self.m.buildbucket.build.builder.bucket
-      environment = ENVIRONMENTS_MAP.get(bucket, '')
-      builder_name = build.get(
-          'drone_builder_name',
-          '%s %sEngine Drone' % (platform_name, environment)
-      )
+      builder_name = self._drone_name(build)
       suffix = drone_properties.get('builder_name_suffix')
       if suffix:
         builder_name = '%s%s' % (builder_name, suffix)

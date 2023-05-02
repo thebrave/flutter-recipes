@@ -183,6 +183,7 @@ def generate_targets(api, cas_hash, wasm_cas_hash):
   # These are the felt commands which will be used.
   properties['command_args'] = ['test', '--browser=firefox']
   properties['recipe'] = 'engine/web_engine_drone'
+  properties['drone_dimensions'] = ['os=Linux']
   targets.append(properties)
   return targets
 

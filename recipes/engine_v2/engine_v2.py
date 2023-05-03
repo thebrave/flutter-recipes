@@ -268,8 +268,7 @@ def GenTests(api):
           ], "name": "host_debug"
       }], "name": "ios_debug", "gn": ["--ios"],
       "ninja": {"config": "ios_debug", "targets": []},
-      "generators": [{"name": "generator1", "script": "script1.sh"}],
-      "drone_dimensions": ['os=Linux']
+      "generators": [{"name": "generator1", "script": "script1.sh"}]
   }]
   generators = {
       "tasks": [{

@@ -166,7 +166,6 @@ def GenTests(api):
           dependencies=[{
               'dependency': 'chrome_and_driver', 'version': 'version:96.2'
           }],
-          drone_dimensions=['os=Linux'],
           shard='web_tests',
           subshards=['0', '1_last'],
           goma_jobs='200',

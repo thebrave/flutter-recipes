@@ -170,6 +170,9 @@ class FlutterDepsApi(recipe_api.RecipeApi):
           arm_tools_cache_dir.join('mali_offline_compiler')
       )
       env['ARM_TOOLS'] = arm_tools_cache_dir
+      env['MALIOC_PATH'] = arm_tools_cache_dir.join(
+          'mali_offline_compiler', 'malioc'
+      )
 
   def goldctl(self, env, env_prefixes, version):
     """Downloads goldctl from CIPD and updates the environment variables.

@@ -201,6 +201,113 @@
     "name": "reset XCode"
   },
   {
+    "cmd": [
+      "echo",
+      "/opt/flutter/xcode/deadbeef"
+    ],
+    "infra_step": true,
+    "name": "xcode not installed"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CLEANUP]/tmp_tmp_1/osx_sdk",
+      "-ensure-file",
+      "infra/tools/mac_toolchain/${platform} 123abc",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "ensure_installed (2)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-123abc----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CLEANUP]/tmp_tmp_1/osx_sdk/mac_toolchain",
+      "install",
+      "-kind",
+      "mac",
+      "-xcode-version",
+      "deadbeef",
+      "-output-dir",
+      "/opt/flutter/xcode/deadbeef/XCode.app",
+      "-cipd-package-prefix",
+      "flutter_internal/ios/xcode",
+      "-with-runtime=False"
+    ],
+    "infra_step": true,
+    "name": "install xcode (2)"
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "com.apple.CoreSimulator.CoreSimulatorDevice"
+    ],
+    "infra_step": true,
+    "name": "kill dart (2)"
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--switch",
+      "/opt/flutter/xcode/deadbeef/XCode.app"
+    ],
+    "infra_step": true,
+    "name": "select XCode (2)"
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "simctl",
+      "list"
+    ],
+    "infra_step": true,
+    "name": "list simulators (2)"
+  },
+  {
+    "cmd": [
+      "gn",
+      "gen",
+      "out/Release"
+    ],
+    "name": "gn (2)"
+  },
+  {
+    "cmd": [
+      "ninja",
+      "-C",
+      "out/Release"
+    ],
+    "name": "ninja (2)"
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--reset"
+    ],
+    "infra_step": true,
+    "name": "reset XCode (2)"
+  },
+  {
     "name": "$result"
   }
 ]

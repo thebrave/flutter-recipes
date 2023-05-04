@@ -17,6 +17,9 @@ def RunSteps(api):
   with api.osx_sdk('mac'):
     api.step('gn', ['gn', 'gen', 'out/Release'])
     api.step('ninja', ['ninja', '-C', 'out/Release'])
+  with api.osx_sdk('mac', devicelab=True):
+    api.step('gn', ['gn', 'gen', 'out/Release'])
+    api.step('ninja', ['ninja', '-C', 'out/Release'])
 
 
 def GenTests(api):

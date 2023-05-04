@@ -74,7 +74,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
         self._sdk_version = _DEFAULT_VERSION_MAP[0][-1]
 
   @contextmanager
-  def __call__(self, kind):
+  def __call__(self, kind, devicelab=False):
     """Sets up the XCode SDK environment.
 
     Is a no-op on non-mac platforms.
@@ -111,6 +111,8 @@ class OSXSDKApi(recipe_api.RecipeApi):
       kind ('mac'|'ios'): How the SDK should be configured. iOS includes the
         base XCode distribution, as well as the iOS simulators (which can be
         quite large).
+      devicelab (bool): whether this is a devicelab tasks. The xcode for devicelab
+        is installed in a fixed location `/opt/flutter/xcode`.
 
     Raises:
         StepFailure or InfraFailure.
@@ -122,8 +124,9 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     try:
       with self.m.context(infra_steps=True):
-        self._clean_cache()
-        app = self._ensure_sdk(kind)
+        app = None
+        self._clean_cache(devicelab=devicelab)
+        app = self._ensure_sdk(kind, devicelab=devicelab)
         self.m.os_utils.kill_simulators()
         self.m.step('select XCode', ['sudo', 'xcode-select', '--switch', app])
         self.m.step('list simulators', ['xcrun', 'simctl', 'list'])
@@ -132,44 +135,58 @@ class OSXSDKApi(recipe_api.RecipeApi):
       with self.m.context(infra_steps=True):
         self.m.step('reset XCode', ['sudo', 'xcode-select', '--reset'])
 
-  def _clean_cache(self):
+  def _clean_cache(self, devicelab=False):
     """Cleans up cache when specified or polluted.
 
     Cleans up only corresponding versioned xcode instead of the whole `osx_sdk`.
     """
-    if self._cleanup_cache or self._cache_polluted():
-      self.m.file.rmtree('Cleaning up Xcode cache', self._cache_dir())
+    if self._cleanup_cache or self._cache_polluted(devicelab=devicelab):
+      self.m.file.rmtree(
+          'Cleaning up Xcode cache', self._xcode_dir(devicelab=devicelab)
+      )
 
-  def _ensure_sdk(self, kind):
-    """Ensures the mac_toolchain tool and OSX SDK packages are installed.
-
-    Returns Path to the installed sdk app bundle."""
-    cache_dir = self._cache_dir()
+  def _ensure_mac_toolchain(self, tool_dir):
     ef = self.m.cipd.EnsureFile()
     ef.add_package(self._tool_pkg, self._tool_ver)
-    self.m.cipd.ensure(cache_dir, ef)
+    self.m.cipd.ensure(tool_dir, ef)
 
-    sdk_app = cache_dir.join('XCode.app')
+  def _install_xcode(self, tool_dir, kind, app_dir):
+    """Installs xcode using mac_toolchain."""
     self.m.step(
         'install xcode',
         [
-            cache_dir.join('mac_toolchain'), 'install', '-kind', kind,
-            '-xcode-version', self._sdk_version, '-output-dir', sdk_app,
+            tool_dir.join('mac_toolchain'), 'install', '-kind', kind,
+            '-xcode-version', self._sdk_version, '-output-dir', app_dir,
             '-cipd-package-prefix', 'flutter_internal/ios/xcode',
             '-with-runtime=%s' % (not bool(self._runtime_versions))
         ],
     )
+
+  def _ensure_sdk(self, kind, devicelab=False):
+    """Ensures the mac_toolchain tool and OSX SDK packages are installed.
+
+    Returns Path to the installed sdk app bundle."""
+    app_dir = self._xcode_dir(devicelab=devicelab)
+    tool_dir = self.m.path.mkdtemp().join('osx_sdk') if devicelab else app_dir
+    self._ensure_mac_toolchain(tool_dir)
+    sdk_app = self.m.path.join(app_dir, 'XCode.app')
+    self._install_xcode(tool_dir, kind, sdk_app)
+
+    if devicelab:
+      return sdk_app
+
     # Skips runtime installation if it already exists. Otherwise,
     # installs each runtime version under `osx_sdk` for cache sharing,
     # and then copies over to the destination.
     if self._runtime_versions:
       self.m.file.ensure_directory(
-          'Ensuring runtimes directory', sdk_app.join(*_RUNTIMESPATH)
+          'Ensuring runtimes directory',
+          self.m.path.join(sdk_app, *_RUNTIMESPATH)
       )
       for version in self._runtime_versions:
         runtime_name = 'iOS %s.simruntime' % version.lower(
         ).replace('ios-', '').replace('-', '.')
-        dest = sdk_app.join(*_RUNTIMESPATH).join(runtime_name)
+        dest = self.m.path.join(sdk_app, *_RUNTIMESPATH, runtime_name)
         if not self.m.path.exists(dest):
           runtime_cache_dir = self.m.path['cache'].join(_XCODE_CACHE_PATH).join(
               'xcode_runtime_%s' % version.lower()
@@ -177,7 +194,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
           self.m.step(
               'install xcode runtime %s' % version.lower(),
               [
-                  cache_dir.join('mac_toolchain'),
+                  app_dir.join('mac_toolchain'),
                   'install-runtime',
                   '-cipd-package-prefix',
                   'flutter_internal/ios/xcode',
@@ -199,7 +216,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
           )
     return sdk_app
 
-  def _cache_polluted(self):
+  def _cache_polluted(self, devicelab=False):
     """Checks if cache is polluted.
 
     CIPD ensures package whenever called, but just checks on some levels, like
@@ -216,11 +233,11 @@ class OSXSDKApi(recipe_api.RecipeApi):
     able to detect some incomplete installation cases and reinstall.
     """
     cache_polluted = False
-    sdk_app_dir = self._cache_dir()
+    sdk_app_dir = self._xcode_dir(devicelab=devicelab)
     if not self.m.path.exists(sdk_app_dir):
       self.m.step('xcode not installed', ['echo', sdk_app_dir])
       return cache_polluted
-    if not self._runtime_exists():
+    if not self._runtime_exists(devicelab=devicelab):
       cache_polluted = True
       self.m.step(
           'cache polluted due to missing runtime',
@@ -228,15 +245,19 @@ class OSXSDKApi(recipe_api.RecipeApi):
       )
     return cache_polluted
 
-  def _cache_dir(self):
+  def _xcode_dir(self, devicelab=False):
     """Returns xcode cache dir.
 
-    For an xcode without runtime, the path looks like
-        xcode_<xcode-version>
+    For a devicelab task, the path is prefixed at `/opt/flutter/xcode`.
 
-    For an xcode with runtimes, the path looks like
+    For a host only task without runtime, the path looks like
+            xcode_<xcode-version>
+
+    a host only task with runtimes, the path looks like
         xcode_<xcode-version>_runtime1_<runtime1-version>_..._runtimeN_<runtimeN-version>
     """
+    if devicelab:
+      return '/opt/flutter/xcode/%s' % self._sdk_version
     runtime_version = None
     sdk_version = 'xcode_' + self._sdk_version
     if self._runtime_versions:
@@ -244,19 +265,23 @@ class OSXSDKApi(recipe_api.RecipeApi):
       sdk_version = sdk_version + '_runtime_' + runtime_version
     return self.m.path['cache'].join(_XCODE_CACHE_PATH).join(sdk_version)
 
-  def _runtime_exists(self):
+  def _runtime_exists(self, devicelab=False):
     """Checks runtime existence in the installed xcode.
 
     Checks `iOS.simruntime` for default runtime.
     Checks each specific runtime version for specified ones.
     """
     runtime_exists = True
-    sdk_app_dir = self._cache_dir().join('XCode.app')
+    sdk_app_dir = self.m.path.join(
+        self._xcode_dir(devicelab=devicelab), 'XCode.app'
+    )
     if self._runtime_versions:
       for version in self._runtime_versions:
         runtime_name = 'iOS %s.simruntime' % version.lower(
         ).replace('ios-', '').replace('-', '.')
-        runtime_path = sdk_app_dir.join(*_RUNTIMESPATH).join(runtime_name)
+        runtime_path = self.m.path.join(
+            sdk_app_dir, *_RUNTIMESPATH, runtime_name
+        )
         if not self.m.path.exists(runtime_path):
           runtime_exists = False
           self.m.step(
@@ -265,7 +290,9 @@ class OSXSDKApi(recipe_api.RecipeApi):
           )
           break
     else:
-      runtime_path = sdk_app_dir.join(*_RUNTIMESPATH).join('iOS.simruntime')
+      runtime_path = self.m.path.join(
+          sdk_app_dir, *_RUNTIMESPATH, 'iOS.simruntime'
+      )
       if not self.m.path.exists(runtime_path):
         runtime_exists = False
         self.m.step('iOS.simruntime does not exists', ['echo', runtime_path])

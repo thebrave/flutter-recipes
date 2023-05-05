@@ -132,7 +132,7 @@ def RunSteps(api):
     if 'xcode' in dep_list:
       api.os_utils.clean_derived_data()
       if str(api.swarming.bot_id).startswith('flutter-devicelab'):
-        with api.osx_sdk('ios', devicelab=True):
+        with api.devicelab_osx_sdk('ios'):
           test_status = mac_test(
               api, env, env_prefixes, flutter_path, task_name, runner_params,
               suppress_log, test_timeout_secs

@@ -6,7 +6,6 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
     'depot_tools/gsutil',
-    'flutter/devicelab_osx_sdk',
     'flutter/display_util',
     'flutter/flutter_deps',
     'flutter/logs_util',
@@ -99,9 +98,7 @@ def test(api, task_name, deps, artifact):
       'task_name': task_name,
       'parent_builder': api.properties.get('buildername'), 'artifact': artifact,
       'git_branch': api.properties.get('git_branch'), 'tags': tags,
-      '$flutter/devicelab_osx_sdk': {
-          'sdk_version': api.properties.get('xcode')
-      }
+      '$flutter/osx_sdk': {'sdk_version': api.properties.get('xcode')}
   }
   reqs.append({
       'name': task_name, 'properties': test_props,

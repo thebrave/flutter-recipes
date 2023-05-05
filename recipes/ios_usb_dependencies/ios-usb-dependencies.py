@@ -7,7 +7,7 @@ import re
 
 DEPS = [
     'depot_tools/gsutil',
-    'flutter/devicelab_osx_sdk',
+    'flutter/osx_sdk',
     'flutter/zip',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -295,7 +295,7 @@ def BuildPackage(
 
 
 def RunSteps(api):
-  with api.devicelab_osx_sdk('ios'):
+  with api.osx_sdk('ios', devicelab=True):
     env_prefixes = {'PATH': [], 'LIBRARY_PATH': []}
     env = {}
     BuildPackage(api, env, env_prefixes, 'ios-deploy', upload=True)

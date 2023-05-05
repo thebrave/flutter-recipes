@@ -7,7 +7,6 @@ from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 
 DEPS = [
     'flutter/android_virtual_device',
-    'flutter/devicelab_osx_sdk',
     'flutter/flutter_bcid',
     'flutter/flutter_deps',
     'flutter/logs_util',
@@ -131,18 +130,14 @@ def RunSteps(api):
     dep_list = {d['dependency']: d.get('version') for d in deps}
     if 'xcode' in dep_list:
       api.os_utils.clean_derived_data()
+      devicelab = False
       if str(api.swarming.bot_id).startswith('flutter-devicelab'):
-        with api.devicelab_osx_sdk('ios'):
-          test_status = mac_test(
-              api, env, env_prefixes, flutter_path, task_name, runner_params,
-              suppress_log, test_timeout_secs
-          )
-      else:
-        with api.osx_sdk('ios'):
-          test_status = mac_test(
-              api, env, env_prefixes, flutter_path, task_name, runner_params,
-              suppress_log, test_timeout_secs
-          )
+        devicelab = True
+      with api.osx_sdk('ios', devicelab=devicelab):
+        test_status = mac_test(
+            api, env, env_prefixes, flutter_path, task_name, runner_params,
+            suppress_log, test_timeout_secs
+        )
     else:
       with api.context(env=env, env_prefixes=env_prefixes):
         # Start an emulator if it is requested, it must be started before the doctor to avoid issues.
@@ -414,7 +409,7 @@ def GenTests(api):
           tags=['ios'],
           dependencies=[{'dependency': 'xcode'}],
           git_branch='master',
-          **{'$flutter/devicelab_osx_sdk': {'sdk_version': 'deadbeef',}}
+          **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.platform.name('mac'),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
@@ -437,7 +432,7 @@ def GenTests(api):
           dependencies=[{'dependency': 'xcode'}],
           test_timeout_secs=1,
           git_branch='master',
-          **{'$flutter/devicelab_osx_sdk': {'sdk_version': 'deadbeef',}}
+          **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.platform.name('mac'),

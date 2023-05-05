@@ -8,7 +8,6 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
     'depot_tools/gsutil',
-    'flutter/devicelab_osx_sdk',
     'flutter/flutter_deps',
     'flutter/logs_util',
     'flutter/os_utils',
@@ -118,7 +117,7 @@ def RunSteps(api):
     else:
       api.os_utils.clean_derived_data()
       if str(api.swarming.bot_id).startswith('flutter-devicelab'):
-        with api.devicelab_osx_sdk('ios'):
+        with api.osx_sdk('ios', devicelab=True):
           with api.context(env=env, env_prefixes=env_prefixes):
             run_test(api, task_name, runner_params)
 
@@ -379,7 +378,7 @@ def GenTests(api):
           tags=['ios'],
           dependencies=[{'dependency': 'xcode'}],
           git_branch='master',
-          **{'$flutter/devicelab_osx_sdk': {'sdk_version': 'deadbeef',}},
+          **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
           artifact='def',
           parent_builder='ghi'
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),

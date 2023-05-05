@@ -129,6 +129,18 @@ def run_tests(api, tests, checkout, env, env_prefixes):
       api.logs_util.upload_logs(test.get('name'))
 
 
+def ReadBuildConfig(api, checkout_path):
+  """Reads an standalone build configuration."""
+  config_name = api.properties.get('config_name')
+  config_path = checkout_path.join(
+      'flutter', 'ci', 'builders', 'standalone', '%s.json' % config_name
+  )
+  config = api.file.read_json(
+      'Read build config file', config_path, test_data={}
+  )
+  return config
+
+
 def Build(api, checkout, env, env_prefixes, outputs):
   """Builds a flavor identified as a set of gn and ninja configs."""
 
@@ -143,7 +155,7 @@ def Build(api, checkout, env, env_prefixes, outputs):
   ninja_tool = {
       "ninja": api.build_util.build,
   }
-  build = api.properties.get('build')
+  build = api.properties.get('build') or ReadBuildConfig(api, checkout)
   deps = build.get('dependencies', [])
   api.flutter_deps.required_deps(env, env_prefixes, deps)
   api.flutter_bcid.report_stage('compile')
@@ -251,6 +263,19 @@ def GenTests(api):
   yield api.test(
       'basic',
       api.properties(build=build, no_goma=True),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='linux-host',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          revision='abcd' * 10,
+          build_number=123,
+      ),
+  )
+  yield api.test(
+      'config_file',
+      api.properties(no_goma=True, config_name='abc'),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='prod',

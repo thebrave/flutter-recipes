@@ -101,7 +101,12 @@ class RepoUtilApi(recipe_api.RecipeApi):
             self.m.gclient.c = src_cfg
             self.m.gclient.c.got_revision_mapping['src/flutter'
                                                  ] = 'got_engine_revision'
-            step_result = self.m.bot_update.ensure_checkout()
+            # Timeout the checkout at 15 mins to fail fast in slow checkouts so we can
+            # retry.
+            TIMEOUT_SECS = 15 * 60  # 15 mins.
+            step_result = self.m.bot_update.ensure_checkout(
+                timeout=TIMEOUT_SECS
+            )
             if ('got_revision' in step_result.presentation.properties and
                 step_result.presentation.properties['got_revision']
                 == 'BOT_UPDATE_NO_REV_FOUND'):

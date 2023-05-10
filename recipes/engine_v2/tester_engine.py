@@ -55,6 +55,7 @@ from PB.recipes.flutter.engine.engine import EnvProperties
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 
 DEPS = [
+    'depot_tools/depot_tools',
     'flutter/flutter_deps',
     'flutter/logs_util',
     'flutter/repo_util',
@@ -111,7 +112,7 @@ def Test(api, checkout, env, env_prefixes):
   """Runs a global test using prebuilts."""
   test = api.properties.get('build')
   with api.context(env=env, env_prefixes=env_prefixes,
-                   cwd=checkout.join('flutter')):
+                   cwd=checkout.join('flutter')), api.depot_tools.on_path():
     run_tests(api, test, checkout, env, env_prefixes)
 
 

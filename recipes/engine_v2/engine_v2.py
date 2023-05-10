@@ -25,6 +25,7 @@ from PB.go.chromium.org.luci.buildbucket.proto \
 from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 
 DEPS = [
+    'depot_tools/depot_tools',
     'flutter/archives',
     'flutter/signing',
     'flutter/display_util',
@@ -233,7 +234,7 @@ def _run_global_generators(
     # Generators must run from inside flutter folder.
     # If platform is mac we need to run the generator from an xcode context.
     with api.context(env=env, env_prefixes=env_prefixes,
-                     cwd=full_engine_checkout):
+                     cwd=full_engine_checkout), api.depot_tools.on_path():
       cmd = [generator_task.get('language')
             ] if generator_task.get('language') else []
       api.file.listdir(

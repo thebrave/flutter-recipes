@@ -71,6 +71,15 @@ class ShardUtilApi(recipe_api.RecipeApi):
         result[k] = v
     return result
 
+  def get_base_bucket_name(self):
+    """Gets the base bucket name current build is running against.
+
+    Subbuilds triggered by an orchestrator build are appending `.shadow` to the
+    bucket. Trim the suffix to make the bucket name consistent for LED runs.
+    """
+    bucket = self.m.buildbucket.build.builder.bucket
+    return bucket.replace('.shadow', '')
+
   def pre_process_properties(self, target):
     """Converts json properties to dicts or lists.
 

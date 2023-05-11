@@ -45,6 +45,7 @@ def RunSteps(api):
     )
   with api.step.nest("launch builds") as presentation:
     reqs = api.shard_util_v2.schedule_tests(test_configs, builds, presentation)
+  api.shard_util_v2.get_base_bucket_name()
 
 
 def GenTests(api):

@@ -23,7 +23,15 @@ def RunSteps(api):
       url='https://123',
       build_proto=build
   )
-  api.status_reporting.publish_builds({'mybuild': result})
+  api.status_reporting.publish_builds(subbuilds={'mybuild': result})
+  api.status_reporting.publish_builds(
+      subbuilds={'mybuild': result}, topic='custom/pubsub/url'
+  )
+  api.status_reporting.publish_builds(
+      subbuilds={'mybuild': result},
+      topic='custom/pubsub/url',
+      only_publish_build_id=True
+  )
 
 
 def GenTests(api):

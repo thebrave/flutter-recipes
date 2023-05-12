@@ -25,7 +25,8 @@ class StatusReportingApi(recipe_api.RecipeApi):
   def publish_builds(
       self,
       subbuilds,
-      topic='projects/flutter-dashboard/topics/luci-builds-prod'
+      topic='projects/flutter-dashboard/topics/luci-builds-prod',
+      only_publish_build_id=False
   ):
     """Publish builds to a pubsub topic.
 
@@ -33,11 +34,18 @@ class StatusReportingApi(recipe_api.RecipeApi):
       subbuilds(dict): A dictionary with the build name as key and a value
         of shard_util_v2.SubbuildResult as a value.
       topic(str): (optional) gcloud topic to publish message to.
+      only_publish_build_id(bool): (optional) If True, only publish the build_id
+        of the shard_util_v2.SubbuildResult instead of the entire build json.
     """
     with self.m.step.nest('Publish results') as presentation:
       for id_name, build in subbuilds.items():
+        if only_publish_build_id is True:
+          message = build.build_id
+        else:
+          message = self.build_to_json(build.build_proto)
+
         cmd = [
             'pubsub', 'topics', 'publish', topic,
-            '--message=\'%s\'' % self.build_to_json(build.build_proto)
+            '--message=\'%s\'' % message
         ]
         self.m.gcloud(*cmd, infra_step=True)

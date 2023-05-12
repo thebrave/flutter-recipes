@@ -12,74 +12,26 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "RECIPE_MODULE[fuchsia::gcloud]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "name": "Publish results.ensure gcloud.read manifest",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gcloud\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Publish results.ensure gcloud.install path/to/gcloud",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[START_DIR]/cipd_tool/path/to/gcloud/version%3Apinned-version"
-    ],
-    "infra_step": true,
-    "name": "Publish results.ensure gcloud.install path/to/gcloud.ensure package directory",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
-    ]
-  },
-  {
-    "cmd": [
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/gcloud/version%3Apinned-version",
+      "[START_DIR]/gcloud",
       "-ensure-file",
-      "path/to/gcloud version:pinned-version",
+      "infra/3pp/tools/gcloud/${platform} version:2@428.0.0.chromium.3",
       "-max-threads",
       "0",
       "-json-output",
       "/path/to/tmp/json"
     ],
-    "infra_step": true,
-    "name": "Publish results.ensure gcloud.install path/to/gcloud.ensure_installed",
+    "name": "Publish results.ensure gcloud.ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\", @@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gcloud\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@428.0.\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/gcloud/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -89,7 +41,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gcloud/version%3Apinned-version/bin/gcloud",
+      "[START_DIR]/gcloud/bin/gcloud",
       "pubsub",
       "topics",
       "publish",
@@ -98,6 +50,116 @@
     ],
     "infra_step": true,
     "name": "Publish results.gcloud pubsub",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Publish results (2)"
+  },
+  {
+    "cmd": [],
+    "name": "Publish results (2).ensure gcloud",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/gcloud",
+      "-ensure-file",
+      "infra/3pp/tools/gcloud/${platform} version:2@428.0.0.chromium.3",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Publish results (2).ensure gcloud.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@428.0.\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/gcloud/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/gcloud/bin/gcloud",
+      "pubsub",
+      "topics",
+      "publish",
+      "custom/pubsub/url",
+      "--message='{\n  \"builder\": {\n    \"project\": \"flutter\",\n    \"bucket\": \"try\",\n    \"builder\": \"mybuild\"\n  }\n}'"
+    ],
+    "infra_step": true,
+    "name": "Publish results (2).gcloud pubsub",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Publish results (3)"
+  },
+  {
+    "cmd": [],
+    "name": "Publish results (3).ensure gcloud",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/gcloud",
+      "-ensure-file",
+      "infra/3pp/tools/gcloud/${platform} version:2@428.0.0.chromium.3",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "name": "Publish results (3).ensure gcloud.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@428.0.\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/gcloud/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/gcloud/bin/gcloud",
+      "pubsub",
+      "topics",
+      "publish",
+      "custom/pubsub/url",
+      "--message='123'"
+    ],
+    "infra_step": true,
+    "name": "Publish results (3).gcloud pubsub",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

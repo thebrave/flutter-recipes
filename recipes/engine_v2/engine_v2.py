@@ -33,6 +33,7 @@ DEPS = [
     'flutter/flutter_deps',
     'flutter/monorepo',
     'flutter/repo_util',
+    'flutter/status_reporting',
     'flutter/osx_sdk',
     'flutter/shard_util_v2',
     'recipe_engine/buildbucket',
@@ -43,11 +44,13 @@ DEPS = [
     'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
+    'recipe_engine/runtime',
     'recipe_engine/step',
 ]
 
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
+BUILD_RESULT_PUBSUB_ENDPOINT = 'projects/flutter-dashboard/topics/dart-internal-build-results'
 
 
 def RunSteps(api, properties, env_properties):
@@ -107,6 +110,11 @@ def RunSteps(api, properties, env_properties):
   with api.step.nest('collect builds') as presentation:
     build_results = api.shard_util_v2.collect(tasks)
 
+  if not api.runtime.is_experimental and api.flutter_bcid.is_prod_build():
+    api.status_reporting.publish_builds(
+        build_results, BUILD_RESULT_PUBSUB_ENDPOINT, True
+    )
+
   api.display_util.display_subbuilds(
       step_name='display builds',
       subbuilds=build_results,
@@ -164,6 +172,11 @@ def RunSteps(api, properties, env_properties):
 
   with api.step.nest('collect tests') as presentation:
     test_results = api.shard_util_v2.collect(tasks)
+
+  if not api.runtime.is_experimental and api.flutter_bcid.is_prod_build():
+    api.status_reporting.publish_builds(
+        test_results, BUILD_RESULT_PUBSUB_ENDPOINT, True
+    )
 
   api.display_util.display_subbuilds(
       step_name='display tests',

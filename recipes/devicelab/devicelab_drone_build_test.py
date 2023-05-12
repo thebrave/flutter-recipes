@@ -213,6 +213,7 @@ def GenTests(api):
       "artifact exists",
       api.properties(
           buildername='Linux abc',
+          drone_dimensions=['os=Linux'],
           task_name='abc',
           git_branch='master',
           artifact='def',
@@ -230,6 +231,7 @@ def GenTests(api):
       "artifact does not exist",
       api.properties(
           buildername='Linux abc',
+          drone_dimensions=['os=Linux'],
           task_name='abc',
           git_branch='master',
           artifact='def',
@@ -245,6 +247,7 @@ def GenTests(api):
       "local-engine",
       api.properties(
           buildername='Linux abc',
+          drone_dimensions=['os=Linux'],
           task_name='abc',
           artifact='def',
           local_engine_cas_hash='isolatehashlocalengine/22',
@@ -261,6 +264,7 @@ def GenTests(api):
       "xcode-mac",
       api.properties(
           buildername='Mac_ios abc',
+          drone_dimensions=['os=Mac'],
           task_name='abc',
           tags=['ios'],
           dependencies=[{'dependency': 'xcode'}],

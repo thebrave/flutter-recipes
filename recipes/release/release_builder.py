@@ -97,17 +97,16 @@ def GenTests(api):
   )
   tasks_dict = {
       'targets': [{
-          'name': 'linux one',
-          'recipe': 'engine/something',
-          'properties': {
+          'name': 'linux one', 'recipe': 'engine/something', 'properties': {
               'release_build': True,
               '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'
-          },
+          }, 'drone_dimensions': ['os=Linux']
       }, {
           'name': 'linux packaging one', 'recipe': 'release/something',
           'scheduler': 'release',
           'properties': {'$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'},
-          'enabled_branches': ['beta', 'main']
+          'enabled_branches': ['beta',
+                               'main'], 'drone_dimensions': ['os=Linux']
       }]
   }
   for git_ref in ['main', 'beta']:

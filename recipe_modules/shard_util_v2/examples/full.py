@@ -93,7 +93,7 @@ def GenTests(api):
       'builds': [{
           'name': 'ios_debug', 'gn': [], 'ninja': ['ios_debug'],
           'dimensions': {'cpu': 'arm64'},
-          'drone_dimensions': ['dimension1=abc']
+          'drone_dimensions': ['dimension1=abc', 'os=Linux']
       }],
       'tests': [{
           'name': 'felt_test', 'dependencies': ['ios_debug'],
@@ -121,8 +121,8 @@ def GenTests(api):
   props_bb = {
       'task_name': 'mytask', 'builds': [{
           'name': 'ios_debug', 'gn': ['--ios'], 'dimensions': {'cpu': 'arm64'},
-          'ninja': {'config': 'ios_debug',
-                    'targets': []}, 'drone_dimensions': ['dimension1=abc'],
+          'ninja': {'config': 'ios_debug', 'targets': []},
+          'drone_dimensions': ['dimension1=abc', 'os=Windows-10'],
           'generators': [{'name': 'generator1', 'script': 'script1.sh'}]
       }], 'tests': [{
           'name': 'felt_test', 'dependencies': ['ios_debug'],

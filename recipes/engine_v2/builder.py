@@ -163,7 +163,11 @@ def Build(api, checkout, env, env_prefixes, outputs):
   gn = build.get('gn')
   if gn:
     with api.context(env=env, env_prefixes=env_prefixes):
-      api.build_util.run_gn(build.get('gn'), checkout)
+      if api.flutter_bcid.is_official_build():
+        # Goma is not supported for official builds.
+        gn = list(gn)
+        gn.append('--no-goma')
+      api.build_util.run_gn(gn, checkout)
       ninja = build.get('ninja')
       ninja_tool[ninja.get('tool', 'ninja')
                 ](ninja.get('config'), checkout, ninja.get('targets', []))

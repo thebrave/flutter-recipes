@@ -333,6 +333,8 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env['ANDROID_SDK_ROOT'] = sdk_root.join('sdk')
       env['ANDROID_HOME'] = sdk_root.join('sdk')
       env['ANDROID_NDK_PATH'] = sdk_root.join('ndk')
+    # Set android home to a temp directory.
+    env['ANDROID_USER_HOME'] = self.m.path.mkdtemp()
     self.gradle_cache(env, env_prefixes, version)
 
   def gradle_cache(self, env, env_prefixes, version):

@@ -54,8 +54,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
     # Pass a special gclient variable to identify release candidate branch checkouts. This
     # is required to prevent trying to download experimental dependencies on release candidate
     # branches.
-    if (self.m.properties.get('git_branch', '').startswith('flutter-') or
-        self.m.properties.get('git_branch', '') in ['beta', 'stable']):
+    branch = self.m.properties.get('git_branch',
+                                   '') or self.get_branch(checkout_path)
+    if branch.startswith('flutter-') or branch in ['beta', 'stable']:
       local_custom_vars['release_candidate'] = True
     git_url = REPOS['engine']
     git_id = self.m.buildbucket.gitiles_commit.id

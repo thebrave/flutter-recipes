@@ -124,26 +124,39 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     try:
       with self.m.context(infra_steps=True):
-        app = None
-        self._clean_cache(devicelab=devicelab)
-        app = self._ensure_sdk(kind, devicelab=devicelab)
-        self.m.os_utils.kill_simulators()
-        self.m.step('select XCode', ['sudo', 'xcode-select', '--switch', app])
-        self.m.step('list simulators', ['xcrun', 'simctl', 'list'])
+        self._setup_osx_sdk(kind, devicelab)
+        runtime_simulators = self.m.step(
+            'list runtimes', ['xcrun', 'simctl', 'list', 'runtimes'],
+            stdout=self.m.raw_io.output_text()
+        ).stdout.splitlines()
+        #  If no runtime exists, we should do a fresh re-install of xcode.
+        #
+        #  Skips the Runtimes header when checking. Example of the output:
+        #    == Runtimes ==
+        #    iOS 16.4 (16.4 - 20E247) - com.apple.CoreSimulator.SimRuntime.iOS-16-4
+        if not runtime_simulators[1:]:
+          self._cleanup_cache = True
+          self._setup_osx_sdk(kind, devicelab)
       yield
     finally:
       with self.m.context(infra_steps=True):
         self.m.step('reset XCode', ['sudo', 'xcode-select', '--reset'])
 
-  def _clean_cache(self, devicelab=False):
+  def _setup_osx_sdk(self, kind, devicelab):
+    app = None
+    self._clean_cache(devicelab)
+    app = self._ensure_sdk(kind, devicelab)
+    self.m.os_utils.kill_simulators()
+    self.m.step('select XCode', ['sudo', 'xcode-select', '--switch', app])
+    self.m.step('list simulators', ['xcrun', 'simctl', 'list'])
+
+  def _clean_cache(self, devicelab):
     """Cleans up cache when specified or polluted.
 
     Cleans up only corresponding versioned xcode instead of the whole `osx_sdk`.
     """
-    if self._cleanup_cache or self._cache_polluted(devicelab=devicelab):
-      self.m.file.rmtree(
-          'Cleaning up Xcode cache', self._xcode_dir(devicelab=devicelab)
-      )
+    if self._cleanup_cache:
+      self.m.file.rmtree('Cleaning up Xcode cache', self._xcode_dir(devicelab))
 
   def _ensure_mac_toolchain(self, tool_dir):
     ef = self.m.cipd.EnsureFile()
@@ -162,11 +175,11 @@ class OSXSDKApi(recipe_api.RecipeApi):
         ],
     )
 
-  def _ensure_sdk(self, kind, devicelab=False):
+  def _ensure_sdk(self, kind, devicelab):
     """Ensures the mac_toolchain tool and OSX SDK packages are installed.
 
     Returns Path to the installed sdk app bundle."""
-    app_dir = self._xcode_dir(devicelab=devicelab)
+    app_dir = self._xcode_dir(devicelab)
     tool_dir = self.m.path.mkdtemp().join('osx_sdk') if devicelab else app_dir
     self._ensure_mac_toolchain(tool_dir)
     sdk_app = self.m.path.join(app_dir, 'XCode.app')
@@ -216,36 +229,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
           )
     return sdk_app
 
-  def _cache_polluted(self, devicelab=False):
-    """Checks if cache is polluted.
-
-    CIPD ensures package whenever called, but just checks on some levels, like
-    `.xcode_versions` and `.cipd`. It misses the case where the `xcode` and runtime
-    are finished installing, but the files are not finished copying over to destination.
-
-    The above case causes cache polluted where xcode is installed incompletely:
-    the xcode path exists but no runtime exists.
-
-    All installed xcode contains runtime, either the default one or the extra
-    specified runtimes by tests.
-
-    This is a workaround to detect incomplete xcode installation as cipd is not
-    able to detect some incomplete installation cases and reinstall.
-    """
-    cache_polluted = False
-    sdk_app_dir = self._xcode_dir(devicelab=devicelab)
-    if not self.m.path.exists(sdk_app_dir):
-      self.m.step('xcode not installed', ['echo', sdk_app_dir])
-      return cache_polluted
-    if not self._runtime_exists(devicelab=devicelab):
-      cache_polluted = True
-      self.m.step(
-          'cache polluted due to missing runtime',
-          ['echo', 'xcode is installed without runtime']
-      )
-    return cache_polluted
-
-  def _xcode_dir(self, devicelab=False):
+  def _xcode_dir(self, devicelab):
     """Returns xcode cache dir.
 
     For a devicelab task, the path is prefixed at `/opt/flutter/xcode`.
@@ -264,36 +248,3 @@ class OSXSDKApi(recipe_api.RecipeApi):
       runtime_version = "_".join(self._runtime_versions)
       sdk_version = sdk_version + '_runtime_' + runtime_version
     return self.m.path['cache'].join(_XCODE_CACHE_PATH).join(sdk_version)
-
-  def _runtime_exists(self, devicelab=False):
-    """Checks runtime existence in the installed xcode.
-
-    Checks `iOS.simruntime` for default runtime.
-    Checks each specific runtime version for specified ones.
-    """
-    runtime_exists = True
-    sdk_app_dir = self.m.path.join(
-        self._xcode_dir(devicelab=devicelab), 'XCode.app'
-    )
-    if self._runtime_versions:
-      for version in self._runtime_versions:
-        runtime_name = 'iOS %s.simruntime' % version.lower(
-        ).replace('ios-', '').replace('-', '.')
-        runtime_path = self.m.path.join(
-            sdk_app_dir, *_RUNTIMESPATH, runtime_name
-        )
-        if not self.m.path.exists(runtime_path):
-          runtime_exists = False
-          self.m.step(
-              'runtime: %s does not exist' % runtime_name,
-              ['echo', runtime_path]
-          )
-          break
-    else:
-      runtime_path = self.m.path.join(
-          sdk_app_dir, *_RUNTIMESPATH, 'iOS.simruntime'
-      )
-      if not self.m.path.exists(runtime_path):
-        runtime_exists = False
-        self.m.step('iOS.simruntime does not exists', ['echo', runtime_path])
-    return runtime_exists

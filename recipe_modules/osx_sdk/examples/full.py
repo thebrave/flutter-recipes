@@ -38,13 +38,6 @@ def GenTests(api):
       )
   )
 
-  runtime_path = api.path['cache'].join(
-      'osx_sdk', 'xcode_deadbeef_runtime_ios-14-0_ios-13-0', 'XCode.app',
-      'Contents', 'Developer', 'Platforms', 'iPhoneOS.platform', 'Library',
-      'Developer', 'CoreSimulator', 'Profiles', 'Runtimes',
-      'iOS 13.0.simruntime'
-  )
-
   sdk_app_path = api.path['cache'].join(
       'osx_sdk', 'xcode_deadbeef', 'XCode.app'
   )
@@ -61,13 +54,6 @@ def GenTests(api):
           }
       ),
       api.os_utils.is_symlink(False),
-      api.path.exists(runtime_path),
-  )
-
-  runtime_path = api.path['cache'].join(
-      'osx_sdk', 'xcode_deadbeef', 'XCode.app', 'Contents', 'Developer',
-      'Platforms', 'iPhoneOS.platform', 'Library', 'Developer', 'CoreSimulator',
-      'Profiles', 'Runtimes', 'iOS.simruntime'
   )
 
   yield api.test(
@@ -82,7 +68,6 @@ def GenTests(api):
           }
       ),
       api.os_utils.is_symlink(False),
-      api.path.exists(runtime_path),
       api.path.exists(sdk_app_path),
   )
 

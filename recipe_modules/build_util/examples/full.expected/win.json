@@ -515,46 +515,12 @@
     ]
   },
   {
-    "cmd": [],
-    "name": "setup goma (3)"
-  },
-  {
-    "cmd": [
-      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
-      "[CACHE]\\goma\\client\\goma_ctl.py",
-      "restart"
-    ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
-      "GOMA_CACHE_DIR": "[CACHE]\\goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "setup goma (3).start goma",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
     "cmd": [
       "python3",
       "[START_DIR]\\flutter/tools/gn",
       "--no-goma",
       "--no-lto"
     ],
-    "env": {
-      "GOMA_DIR": "[CACHE]\\goma\\client",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
-    },
     "env_suffixes": {
       "DEPOT_TOOLS_UPDATE": [
         "0"
@@ -564,134 +530,6 @@
       ]
     },
     "name": "gn --no-goma --no-lto"
-  },
-  {
-    "cmd": [],
-    "name": "teardown goma (3)"
-  },
-  {
-    "cmd": [
-      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
-      "[CACHE]\\goma\\client\\goma_ctl.py",
-      "jsonstatus",
-      "/path/to/tmp/json"
-    ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
-      "GOMA_CACHE_DIR": "[CACHE]\\goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "teardown goma (3).goma jsonstatus",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"foo\": \"bar\"@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
-      "[CACHE]\\goma\\client\\goma_ctl.py",
-      "stat"
-    ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
-      "GOMA_CACHE_DIR": "[CACHE]\\goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "teardown goma (3).goma stats",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]\\cipd_tool\\path\\to\\cpython3\\version%3Apinned-version\\bin\\python3.exe",
-      "[CACHE]\\goma\\client\\goma_ctl.py",
-      "stop"
-    ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_ARBITRARY_TOOLCHAIN_SUPPORT": "True",
-      "GOMA_CACHE_DIR": "[CACHE]\\goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]\\goma\\client\\goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]\\goma\\localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "teardown goma (3).stop goma",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CLEANUP]\\compiler_proxy.WARNING",
-      "/path/to/tmp/"
-    ],
-    "env": {
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "teardown goma (3).read goma_client warning log",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@compiler_proxy.WARNING@test log@@@",
-      "@@@STEP_LOG_END@compiler_proxy.WARNING@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CACHE]\\goma\\client\\goma_stats.json",
-      "/path/to/tmp/"
-    ],
-    "env": {
-      "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "teardown goma (3).read goma_stats.json",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
   },
   {
     "cmd": [

@@ -27,11 +27,15 @@ class BuildUtilApi(recipe_api.RecipeApi):
     if self.m.properties.get('no_lto', False) and '--no-lto' not in gn_args:
       gn_args += ('--no-lto',)
     gn_cmd.extend(gn_args)
-    env = {'GOMA_DIR': self.m.goma.goma_dir}
-    # Some gn configurations expect depot_tools in path. e.g. vs_studio
-    # tool_chain update script.
-    with self.m.goma(), self.m.context(env=env), self.m.depot_tools.on_path():
-      self.m.step('gn %s' % ' '.join(gn_args), gn_cmd)
+    if self.use_goma:
+      env = {'GOMA_DIR': self.m.goma.goma_dir}
+      # Some gn configurations expect depot_tools in path. e.g. vs_studio
+      # tool_chain update script.
+      with self.m.goma(), self.m.context(env=env), self.m.depot_tools.on_path():
+        self.m.step('gn %s' % ' '.join(gn_args), gn_cmd)
+    else:
+      with self.m.depot_tools.on_path():
+        self.m.step('gn %s' % ' '.join(gn_args), gn_cmd)
 
   def _calculate_j_value(self):
     """Calculates concurrent jobs value for the current machine."""

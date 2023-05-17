@@ -33,6 +33,9 @@ import copy
 import re
 from recipe_engine import recipe_api
 
+# Buildbucket bucket for official builds.
+OFFICIAL_BUILD_BUCKET = 'flutter'
+
 
 class RepoUtilApi(recipe_api.RecipeApi):
   """Provides utilities to work with flutter repos."""
@@ -56,7 +59,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
     # branches.
     branch = self.m.properties.get('git_branch',
                                    '') or self.get_branch(checkout_path)
-    if branch.startswith('flutter-') or branch in ['beta', 'stable']:
+    bucket = self.m.buildbucket.build.builder.bucket
+    if branch.startswith('flutter-') or branch in [
+        'beta', 'stable'
+    ] or bucket == OFFICIAL_BUILD_BUCKET:
       local_custom_vars['release_candidate'] = True
     git_url = REPOS['engine']
     git_id = self.m.buildbucket.gitiles_commit.id

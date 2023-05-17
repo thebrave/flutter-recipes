@@ -32,8 +32,8 @@ DEPS = [
     'flutter/flutter_bcid',
     'flutter/flutter_deps',
     'flutter/monorepo',
+    'flutter/pubsub',
     'flutter/repo_util',
-    'flutter/status_reporting',
     'flutter/osx_sdk',
     'flutter/shard_util_v2',
     'recipe_engine/buildbucket',
@@ -110,11 +110,6 @@ def RunSteps(api, properties, env_properties):
   with api.step.nest('collect builds') as presentation:
     build_results = api.shard_util_v2.collect(tasks)
 
-  if not api.runtime.is_experimental and api.flutter_bcid.is_prod_build():
-    api.status_reporting.publish_builds(
-        build_results, BUILD_RESULT_PUBSUB_ENDPOINT, True
-    )
-
   api.display_util.display_subbuilds(
       step_name='display builds',
       subbuilds=build_results,
@@ -173,16 +168,18 @@ def RunSteps(api, properties, env_properties):
   with api.step.nest('collect tests') as presentation:
     test_results = api.shard_util_v2.collect(tasks)
 
-  if not api.runtime.is_experimental and api.flutter_bcid.is_prod_build():
-    api.status_reporting.publish_builds(
-        test_results, BUILD_RESULT_PUBSUB_ENDPOINT, True
-    )
-
   api.display_util.display_subbuilds(
       step_name='display tests',
       subbuilds=test_results,
       raise_on_failure=True,
   )
+
+  not_experimental = not api.runtime.is_experimental and api.buildbucket.build.id != 0
+  prod_build = api.flutter_bcid.is_prod_build()
+  if not_experimental and prod_build:
+    api.pubsub.publish_message(
+        BUILD_RESULT_PUBSUB_ENDPOINT, api.buildbucket.build.id
+    )
 
 
 def _archive(api, archives, full_engine_checkout):

@@ -244,9 +244,15 @@ class ShardUtilApi(recipe_api.RecipeApi):
       led_data = led_data.then('edit', *edit_args)
       led_data = led_data.then('edit', '-name', task_name)
       led_data = led_data.then('edit', '-r', build['recipe'])
-      for d in drone_dimensions:
-        led_data = led_data.then('edit', '-d', d)
+      # Create a single dict of dimensions giving priority to drone dimensions
+      # and removing duplicates.
+      final_dimensions = {}
       for k, v in ci_yaml_dimensions.items():
+        final_dimensions[k] = v
+      for d in drone_dimensions:
+        k, v = d.split('=')
+        final_dimensions[k] = v
+      for k, v in final_dimensions.items():
         led_data = led_data.then('edit', "-d", '%s=%s' % (k, v))
       led_data = self.m.led.inject_input_recipes(led_data)
       launch_res = led_data.then('launch', '-modernize', '-real-build')
@@ -319,10 +325,16 @@ class ShardUtilApi(recipe_api.RecipeApi):
         builder_name = '%s%s' % (builder_name, suffix)
       # Delete builds property if it exists.
       drone_properties.pop('builds', None)
+
+      # Create a single dict of dimensions giving priority to drone dimensions
+      # and removing duplicates.
+      final_dimensions = {}
+      for k, v in ci_yaml_dimensions.items():
+        final_dimensions[k] = v
       for d in drone_dimensions:
         k, v = d.split('=')
-        task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
-      for k, v in ci_yaml_dimensions.items():
+        final_dimensions[k] = v
+      for k, v in final_dimensions.items():
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
       # Override recipe.
       drone_properties['recipe'] = build['recipe']

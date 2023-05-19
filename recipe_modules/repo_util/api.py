@@ -408,6 +408,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     android_home = checkout_path.join(
         'src', 'third_party', 'android_tools', 'sdk'
     )
+    android_tmp = self.m.path.mkdtemp()
     env = {
         # Windows Packaging script assumes this is set.
         'DEPOT_TOOLS':
@@ -427,6 +428,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
             ('darwin' if self.m.platform.name == 'mac' else 'win'),
         'ANDROID_HOME':
             str(android_home),
+        'ANDROID_SDK_HOME':
+            str(android_tmp),
+        'ANDROID_USER_HOME':
+            str(android_tmp.join('.android')),
         'LUCI_WORKDIR':
             str(self.m.path['start_dir']),
         'REVISION':
@@ -445,6 +450,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     android_home = checkout_path.join(
         'engine', 'src', 'third_party', 'android_tools', 'sdk'
     )
+    android_tmp = self.m.path.mkdtemp()
     env = {
         # Windows Packaging script assumes this is set.
         'DEPOT_TOOLS':
@@ -464,6 +470,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
             ('darwin' if self.m.platform.name == 'mac' else 'win'),
         'ANDROID_HOME':
             str(android_home),
+        'ANDROID_SDK_HOME':
+            str(android_tmp),
+        'ANDROID_USER_HOME':
+            str(android_tmp.join('.android')),
         'LUCI_WORKDIR':
             str(self.m.path['start_dir']),
         'REVISION':

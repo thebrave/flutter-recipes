@@ -162,17 +162,20 @@ def RunSteps(api, properties, env_properties):
           _archive(api, archives, full_engine_checkout)
 
   # Run tests
-  with api.step.nest('launch tests') as presentation:
-    tasks = api.shard_util_v2.schedule_tests(tests, build_results, presentation)
+  if not api.flutter_bcid.is_official_build():
+    with api.step.nest('launch tests') as presentation:
+      tasks = api.shard_util_v2.schedule_tests(
+          tests, build_results, presentation
+      )
 
-  with api.step.nest('collect tests') as presentation:
-    test_results = api.shard_util_v2.collect(tasks)
+    with api.step.nest('collect tests') as presentation:
+      test_results = api.shard_util_v2.collect(tasks)
 
-  api.display_util.display_subbuilds(
-      step_name='display tests',
-      subbuilds=test_results,
-      raise_on_failure=True,
-  )
+    api.display_util.display_subbuilds(
+        step_name='display tests',
+        subbuilds=test_results,
+        raise_on_failure=True,
+    )
 
   not_experimental = not api.runtime.is_experimental and api.buildbucket.build.id != 0
   prod_build = api.flutter_bcid.is_prod_build()

@@ -40,6 +40,11 @@ class BuildUtilApi(recipe_api.RecipeApi):
   def _calculate_j_value(self):
     """Calculates concurrent jobs value for the current machine."""
     cores = multiprocessing.cpu_count()
+
+    # For non goma builds, set -j to the number of cores.
+    if not self.use_goma:
+      return 5 if self._test_data.enabled else cores
+
     # Assume simultaneous multithreading and therefore half as many cores as
     # logical processors.
     cores //= 2

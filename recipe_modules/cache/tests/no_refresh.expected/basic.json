@@ -1,0 +1,35 @@
+[
+  {
+    "cmd": [
+      "python3",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "stat",
+      "gs://flutter_archives_v2/caches/builder-linux.json"
+    ],
+    "name": "builder exists"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cat",
+      "gs://flutter_archives_v2/caches/builder-linux.json"
+    ],
+    "infra_step": true,
+    "name": "gsutil cat",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"cache_ttl_microseconds\": 12960000, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"last_cache_ts_micro_seconds\": 1684900396429444@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 DEPS = [
+    'flutter/monorepo',
     'flutter/retry',
     'fuchsia/cas_util',
     'recipe_engine/buildbucket',

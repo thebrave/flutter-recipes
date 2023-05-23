@@ -6,7 +6,13 @@ import copy
 
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
+from recipe_engine.post_process import (
+    MustRun,
+    StepCommandContains,
+)
+
 DEPS = [
+    'flutter/monorepo',
     'flutter/shard_util_v2',
     'fuchsia/buildbucket_util',
     'recipe_engine/buildbucket',
@@ -100,7 +106,6 @@ def GenTests(api):
           'scripts': ['out/script.sh'], 'parameters': ['test']
       }],
       'environment': 'Staging',
-      'builder_name_suffix': '-try',
       'dependencies': [{'dependency': 'android_sdk'},
                        {'dependency': 'chrome_and_driver'}],
       '$recipe_engine/led': {
@@ -129,18 +134,17 @@ def GenTests(api):
           'scripts': ['out/script.sh'], 'parameters': ['test']
       }], 'dependencies': [{'dependency': 'android_sdk'},
                            {'dependency': 'chrome_and_driver'}],
-      'environment': 'Staging', 'builder_name_suffix': '-try'
+      'environment': 'Staging'
   }
 
   presubmit_props = copy.deepcopy(props)
   presubmit_props['git_url'] = 'http://abc'
-  presubmit_props['git_ref'] = 'refs/123/master'
-  presubmit_props['builds'][0]['drone_builder_name'] = 'custom drone builder'
+  presubmit_props['git_ref'] = 'refs/123/main'
 
   yield api.test(
       'presubmit_led', api.properties(**presubmit_props),
       api.platform.name('linux'),
-      api.buildbucket.try_build(
+      api.buildbucket.ci_build(
           project='proj',
           builder='try-builder',
           git_repo='https://github.com/repo/a',
@@ -155,13 +159,12 @@ def GenTests(api):
 
   presubmit_props_bb = copy.deepcopy(props_bb)
   presubmit_props_bb['git_url'] = 'http://abc'
-  presubmit_props_bb['git_ref'] = 'refs/123/master'
-  presubmit_props_bb['builds'][0]['drone_builder_name'] = 'custom drone builder'
+  presubmit_props_bb['git_ref'] = 'refs/123/main'
   presubmit_props_bb['no_goma'] = 'true'
 
   yield (
-      api.buildbucket_util.test('presubmit_bb', tryjob=True, status='FAILURE') +
-      api.properties(**presubmit_props_bb) + api.platform.name('linux') +
+      api.buildbucket_util.test('presubmit_bb', tryjob=False, status='FAILURE')
+      + api.properties(**presubmit_props_bb) + api.platform.name('linux') +
       api.shard_util_v2.child_build_steps(
           subbuilds=[try_failure],
           launch_step='launch builds.schedule',
@@ -169,13 +172,10 @@ def GenTests(api):
       )
   )
 
-  presubmit_props = copy.deepcopy(props)
-  presubmit_props['builds'][0]['drone_builder_name'] = 'custom drone builder'
-
   yield api.test(
-      'presubmit_led_subbuilds', api.properties(**presubmit_props),
+      'presubmit_led_subbuilds', api.properties(**props),
       api.platform.name('linux'),
-      api.buildbucket.try_build(
+      api.buildbucket.ci_build(
           project='proj',
           builder='try-builder',
           git_repo='https://github.com/repo/a',
@@ -186,4 +186,51 @@ def GenTests(api):
           subbuilds=[led_try_subbuild1],
           collect_step='collect builds',
       )
+  )
+
+  yield api.test(
+      'monorepo_bb_subbuilds', api.properties(**props_bb),
+      api.platform.name('linux'), api.monorepo.ci_build(),
+      api.shard_util_v2.child_build_steps(
+          subbuilds=[try_subbuild1],
+          launch_step='launch builds.schedule',
+          collect_step='collect builds',
+      )
+  )
+
+  yield api.test(
+      'monorepo_try_bb_subbuilds', api.properties(**props_bb),
+      api.platform.name('linux'), api.monorepo.try_build(),
+      api.shard_util_v2.child_build_steps(
+          subbuilds=[try_subbuild1],
+          launch_step='launch builds.schedule',
+          collect_step='collect builds',
+      )
+  )
+
+  yield api.test(
+      'monorepo_led_subbuilds', api.properties(**props),
+      api.platform.name('linux'), api.monorepo.ci_build(),
+      api.shard_util_v2.child_led_steps(
+          subbuilds=[led_try_subbuild1],
+          collect_step='collect builds',
+      )
+  )
+
+  yield api.test(
+      'monorepo_try_led_subbuilds',
+      api.properties(**props),
+      api.platform.name('linux'),
+      api.monorepo.try_build(),
+      api.shard_util_v2.child_led_steps(
+          subbuilds=[led_try_subbuild1],
+          collect_step='collect builds',
+      ),
+      api.post_process(MustRun, 'launch builds.led edit-cr-cl'),
+      api.post_process(
+          StepCommandContains, 'launch builds.led get-builder', [
+              'led', 'get-builder', '-real-build',
+              'dart/try.monorepo/flutter-linux-ios_debug-try'
+          ]
+      ),
   )

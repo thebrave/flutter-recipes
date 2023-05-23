@@ -23,6 +23,9 @@ PLATFORM_TO_NAME = {'os=win': 'Windows', 'os=lin': 'Linux', 'os=mac': 'Mac'}
 # Characters to use from the build configuration os dimension.
 OS_DIM_CHAR_SIZE = 6
 
+# Monorepo builder names use short names
+NAME_TO_PLATFORM = {'Windows': 'win', 'Linux': 'linux', 'Mac': 'mac'}
+
 # Internal properties that should be set for builds running on BuildBucket.
 PROPERTIES_TO_REMOVE = [
     '$recipe_engine/buildbucket', 'buildername', '$recipe_engine/runtime',
@@ -212,25 +215,24 @@ class ShardUtilApi(recipe_api.RecipeApi):
 
       # Buildbucket properties are not propagated to sub-builds when running with
       # led. Copy the properties bb gitiles_commit to git_ref and git_url if not
-      # set already.
+      # set already. Try jobs from a Gerrit CL have an empty gitiles_commit, they
+      # are handled in a later 'led edit-cr-cl' step.
       if not (drone_properties.get('git_ref') or
               drone_properties.get('git_url')):
         host = self.m.buildbucket.gitiles_commit.host
         project = self.m.buildbucket.gitiles_commit.project
-        drone_properties['git_url'] = f'https://{host}/{project}'
-        drone_properties['git_ref'] = self.m.buildbucket.gitiles_commit.id
+        if host:
+          drone_properties['git_url'] = f'https://{host}/{project}'
+          drone_properties['git_ref'] = self.m.buildbucket.gitiles_commit.id
 
       # Override recipe.
       drone_properties['recipe'] = build['recipe']
-      builder_name = self._drone_name(build)
-      suffix = drone_properties.get('builder_name_suffix')
-      if suffix:
-        builder_name = '%s%s' % (builder_name, suffix)
-      parent = self.m.buildbucket.build.builder
+      builder_name, bucket = self._drone_name(build)
+      parent = self.m.buildbucket.build
       led_data = self.m.led(
           'get-builder',
           '-real-build',
-          '%s/%s/%s' % (parent.project, parent.bucket, builder_name),
+          '%s/%s/%s' % (parent.builder.project, bucket, builder_name),
       )
       edit_args = []
       for k, v in sorted(drone_properties.items()):
@@ -253,8 +255,13 @@ class ShardUtilApi(recipe_api.RecipeApi):
         k, v = d.split('=')
         final_dimensions[k] = v
       for k, v in final_dimensions.items():
-        led_data = led_data.then('edit', "-d", '%s=%s' % (k, v))
+        led_data = led_data.then('edit', '-d', '%s=%s' % (k, v))
       led_data = self.m.led.inject_input_recipes(led_data)
+      if parent.input.gerrit_changes:
+        change = parent.input.gerrit_changes[0]
+        project_url = f'https://{change.host}/c/{change.project}'
+        change_url = f'{project_url}/+/{change.change}/{change.patchset}'
+        led_data = led_data.then('edit-cr-cl', change_url)
       launch_res = led_data.then('launch', '-modernize', '-real-build')
       # real-build is being used and only build_id is being populated
       task_id = launch_res.launch_result.task_id or launch_res.launch_result.build_id
@@ -281,18 +288,26 @@ class ShardUtilApi(recipe_api.RecipeApi):
       build: A build configuration dictionary.
     """
     dimensions = build.get('drone_dimensions', [])
+    task_name = build.get('name')
     platform_name = ''
     for d in dimensions:
       if d.startswith('os='):
         platform_name = PLATFORM_TO_NAME.get((d[:OS_DIM_CHAR_SIZE]).lower())
         break
     platform_name = build.get('platform') or platform_name
-    bucket = self.m.buildbucket.build.builder.bucket
-    environment = ENVIRONMENTS_MAP.get(bucket, '')
-    return build.get(
-        'drone_builder_name',
-        '%s %sEngine Drone' % (platform_name, environment)
-    )
+    platform = NAME_TO_PLATFORM.get(platform_name)
+
+    if self.m.monorepo.is_monorepo_ci_build:
+      bucket = 'ci.sandbox'
+      builder_name = f'flutter-{platform}-{task_name}'
+    elif self.m.monorepo.is_monorepo_try_build:
+      bucket = 'try.monorepo'
+      builder_name = f'flutter-{platform}-{task_name}-try'
+    else:
+      bucket = self.m.buildbucket.build.builder.bucket
+      environment = ENVIRONMENTS_MAP.get(bucket, '')
+      builder_name = f'{platform_name} {environment}Engine Drone'
+    return builder_name, bucket
 
   def _schedule_with_bb(self, builds, branch='main'):
     """Schedules builds using builbbucket.
@@ -319,10 +334,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       # ci.yaml provided dimensions.
       ci_yaml_dimensions = build.get('dimensions', {})
       task_dimensions = []
-      builder_name = self._drone_name(build)
-      suffix = drone_properties.get('builder_name_suffix')
-      if suffix:
-        builder_name = '%s%s' % (builder_name, suffix)
+      builder_name, bucket = self._drone_name(build)
       # Delete builds property if it exists.
       drone_properties.pop('builds', None)
 
@@ -346,6 +358,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       task_names.append(task_name)
       req = self.m.buildbucket.schedule_request(
           swarming_parent_run_id=self.m.swarming.task_id,
+          bucket=bucket,
           builder=builder_name,
           properties=properties,
           dimensions=task_dimensions or None,

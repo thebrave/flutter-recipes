@@ -3,6 +3,7 @@ DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/gclient',
     'depot_tools/git',
+    'flutter/cache',
     'flutter/retry',
     'flutter/shard_util_v2',
     'fuchsia/utils',

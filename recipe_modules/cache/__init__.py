@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 DEPS = [
-    'flutter/archives',
     'depot_tools/depot_tools',
     'depot_tools/gsutil',
     'recipe_engine/cas',

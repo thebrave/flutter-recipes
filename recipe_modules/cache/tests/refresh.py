@@ -22,17 +22,22 @@ def RunSteps(api):
 
 
 def GenTests(api):
-  metadata = {
-     'hashes': {'builder': 'hash1', 'git': 'hash2'}
-  }
+  metadata = {'hashes': {'builder': 'hash1', 'git': 'hash2'}}
   yield api.test(
-      'basic',
-      api.step_data('gsutil cat', stdout=api.json.output({}),),
-      api.step_data('gsutil cat (2)', stdout=api.json.output(metadata),)
-)
+      'basic', api.step_data(
+          'gsutil cat',
+          stdout=api.json.output({}),
+      ),
+      api.step_data(
+          'Mount caches.gsutil cat',
+          stdout=api.json.output(metadata),
+      )
+  )
   yield api.test(
       'no_cache_file',
       api.step_data('builder exists', stdout=api.json.output({}), retcode=1),
-      api.step_data('gsutil cat', stdout=api.json.output(metadata),)
-)
-
+      api.step_data(
+          'Mount caches.gsutil cat',
+          stdout=api.json.output(metadata),
+      )
+  )

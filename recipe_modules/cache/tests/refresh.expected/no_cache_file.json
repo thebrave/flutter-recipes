@@ -132,35 +132,6 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CLEANUP]/tmp_tmp_1/caches"
-    ],
-    "infra_step": true,
-    "name": "Ensure caches"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CLEANUP]/builder-linux.json",
-      "[CLEANUP]/tmp_tmp_1/caches"
-    ],
-    "infra_step": true,
-    "name": "Copy [CLEANUP]/builder-linux.json to tmp location"
-  },
-  {
-    "cmd": [
       "python3",
       "-u",
       "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
@@ -170,15 +141,18 @@
       "-h",
       "Cache-Control:max-age=60",
       "cp",
-      "-r",
-      "[CLEANUP]/tmp_tmp_1/*",
-      "gs://flutter_archives_v2/"
+      "[CLEANUP]/builder-linux.json",
+      "gs://flutter_archives_v2/caches/builder-linux.json"
     ],
     "infra_step": true,
     "name": "gsutil Upload [CLEANUP]/builder-linux.json to gs://flutter_archives_v2/caches/builder-linux.json",
     "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_archives_v2/@@@"
+      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_archives_v2/caches/builder-linux.json@@@"
     ]
+  },
+  {
+    "cmd": [],
+    "name": "Mount caches"
   },
   {
     "cmd": [
@@ -192,8 +166,9 @@
       "gs://flutter_archives_v2/caches/builder-linux.json"
     ],
     "infra_step": true,
-    "name": "gsutil cat",
+    "name": "Mount caches.gsutil cat",
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"hashes\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"builder\": \"hash1\", @@@",
@@ -205,6 +180,22 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CACHE]/builder"
+    ],
+    "infra_step": true,
+    "name": "Mount caches.Clobber local cache: builder",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
       "[START_DIR]/cipd_tool/infra/tools/luci/cas/git_revision%3Amock_infra_git_revision/cas",
       "download",
       "-cas-instance",
@@ -212,10 +203,29 @@
       "-digest",
       "hash1",
       "-dir",
-      "[CACHE]"
+      "[CACHE]/builder"
     ],
     "infra_step": true,
-    "name": "Mounting builder with hash hash1"
+    "name": "Mount caches.Mounting builder with hash hash1",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CACHE]/git"
+    ],
+    "infra_step": true,
+    "name": "Mount caches.Clobber local cache: git",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -226,10 +236,13 @@
       "-digest",
       "hash2",
       "-dir",
-      "[CACHE]"
+      "[CACHE]/git"
     ],
     "infra_step": true,
-    "name": "Mounting git with hash hash2"
+    "name": "Mount caches.Mounting git with hash hash2",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "name": "$result"

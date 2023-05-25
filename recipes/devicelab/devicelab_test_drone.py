@@ -135,6 +135,7 @@ def run_test(api, task_name, runner_params):
   api.retry.run_flutter_doctor()
   test_runner_command = ['dart', 'bin/test_runner.dart', 'test']
   test_runner_command.extend(runner_params)
+  test_status = ''
   try:
     test_status = api.test_utils.run_test(
         'run %s' % task_name,

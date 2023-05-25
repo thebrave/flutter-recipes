@@ -51,18 +51,14 @@ class RepoUtilApi(recipe_api.RecipeApi):
     # Calculate if we need to clean the source code cache.
     clobber = self.m.properties.get('clobber', False)
 
-    # Mount caches if clobber is false. The builder cache is composed of cache/git
-    # and cache/builder but cache/builder can not be trusted because is created
-    # in the recipes and it will most likely always exist.
-    mount_cache = (not self.m.path.exists(
+    # Calculate if we need to mount the cache and mount it if required.
+    mount_git = self.m.cache.should_force_mount(
         self.m.path['cache'].join('git')
-    )) or (
-        not bool(
-            self.m.file
-            .listdir('Empty cache/git', self.m.path['cache'].join('git'))
-        )
     )
-    if (not clobber) and mount_cache:
+    mount_builder = self.m.cache.should_force_mount(
+        self.m.path['cache'].join('builder')
+    )
+    if (not clobber) and (mount_git or mount_builder):
       self.m.cache.mount_cache('builder', force=True)
 
     # Grab any gclient custom variables passed as properties.

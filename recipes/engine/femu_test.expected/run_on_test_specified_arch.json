@@ -28,6 +28,22 @@
     "name": "ensure checkout cache"
   },
   {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder"
+    ],
+    "infra_step": true,
+    "name": "Empty [CACHE]/builder",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
     "cmd": [],
     "name": "Mount caches"
   },

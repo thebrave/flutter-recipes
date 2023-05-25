@@ -138,6 +138,34 @@
     "name": "snoop: report_stage (2)"
   },
   {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/builder"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Empty [CACHE]/builder",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
     "cmd": [],
     "name": "Mount caches"
   },

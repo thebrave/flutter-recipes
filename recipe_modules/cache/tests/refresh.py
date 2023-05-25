@@ -19,6 +19,7 @@ def RunSteps(api):
   ]
   api.cache.write('builder', paths, 60)
   api.cache.mount_cache('builder', api.path['cache'])
+  api.cache.should_force_mount(api.path['cache'].join('builder'))
 
 
 def GenTests(api):

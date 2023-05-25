@@ -121,3 +121,18 @@ class CacheApi(recipe_api.RecipeApi):
           self.m.cas.download(
               'Mounting %s with hash %s' % (k, v), v, cache_root.join(k)
           )
+
+  def should_force_mount(self, mount_path):
+    """Determines if a cache should be force mounted.
+
+    A path will be force mounted if it does not exist or if the directory is empty.
+
+    Args:
+      mount_path (Path): Path to validate.
+    """
+    return (
+        (not self.m.path.exists(mount_path)) or
+        # file.listdir returns a list if the list of Path, if the list is empty
+        # it means we need to recreate the cache.
+        (not bool(self.m.file.listdir('Empty %s' % mount_path, mount_path)))
+    )

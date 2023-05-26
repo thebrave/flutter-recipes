@@ -96,8 +96,7 @@ def RunSteps(api):
     env['TOKEN_PATH'] = api.token_util.metric_center_token()
     # Load local engine information if available.
     api.flutter_deps.flutter_engine(env, env_prefixes)
-    dep_list = [d['dependency'] for d in deps]
-    if 'xcode' in dep_list:
+    if api.properties.get('$flutter/osx_sdk'):
       with api.osx_sdk('ios'), api.step.defer_results():
         api.flutter_deps.gems(
             env, env_prefixes, checkout_path.join('dev', 'ci', 'mac')
@@ -154,7 +153,7 @@ def GenTests(api):
         'xcode%s' % ('_reduced' if should_run_reduced else ''),
         api.repo_util.flutter_environment_data(),
         api.properties(
-            dependencies=[{'dependency': 'xcode'}],
+            **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
             reduced_test_set=should_run_reduced
         )
     )

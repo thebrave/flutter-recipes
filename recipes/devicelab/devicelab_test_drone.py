@@ -111,8 +111,7 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
     api.retry.run_flutter_doctor()
     api.step('dart pub get', ['dart', 'pub', 'get'], infra_step=True)
-    dep_list = {d['dependency']: d.get('version') for d in deps}
-    if 'xcode' not in dep_list:
+    if not api.properties.get('$flutter/osx_sdk'):
       with api.context(env=env, env_prefixes=env_prefixes):
         run_test(api, task_name, runner_params)
     else:
@@ -379,7 +378,6 @@ def GenTests(api):
           buildername='Mac_ios abc',
           task_name='abc',
           tags=['ios'],
-          dependencies=[{'dependency': 'xcode'}],
           git_branch='master',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
           artifact='def',

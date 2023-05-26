@@ -95,10 +95,20 @@ def test(api, task_name, deps, artifact):
   # to test so they also install these dependencies.
   test_props = {
       'dependencies': [api.shard_util_v2.unfreeze_dict(dep) for dep in deps],
-      'task_name': task_name,
-      'parent_builder': api.properties.get('buildername'), 'artifact': artifact,
-      'git_branch': api.properties.get('git_branch'), 'tags': tags,
-      '$flutter/osx_sdk': {'sdk_version': api.properties.get('xcode')}
+      'task_name':
+          task_name,
+      'parent_builder':
+          api.properties.get('buildername'),
+      'artifact':
+          artifact,
+      'git_branch':
+          api.properties.get('git_branch'),
+      'tags':
+          tags,
+      '$flutter/osx_sdk':
+          api.shard_util_v2.unfreeze_dict(
+              api.properties.get('$flutter/osx_sdk', {})
+          ),
   }
   reqs.append({
       'name': task_name, 'properties': test_props,
@@ -156,8 +166,7 @@ def build(api, task_name, artifact, artifact_gcs_dir):
     deps = api.properties.get('dependencies', [])
     with api.context(env=env, env_prefixes=env_prefixes):
       api.step('dart pub get', ['dart', 'pub', 'get'], infra_step=True)
-      dep_list = {d['dependency']: d.get('version') for d in deps}
-      if 'xcode' in dep_list:
+      if api.properties.get('$flutter/osx_sdk'):
         with api.osx_sdk('ios'):
           api.flutter_deps.gems(
               env, env_prefixes, flutter_path.join('dev', 'ci', 'mac')
@@ -267,7 +276,6 @@ def GenTests(api):
           drone_dimensions=['os=Mac'],
           task_name='abc',
           tags=['ios'],
-          dependencies=[{'dependency': 'xcode'}],
           git_branch='master',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),

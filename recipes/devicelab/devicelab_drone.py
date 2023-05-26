@@ -128,7 +128,7 @@ def RunSteps(api):
     )
     api.step('dart pub get', ['dart', 'pub', 'get'], infra_step=True)
     dep_list = {d['dependency']: d.get('version') for d in deps}
-    if 'xcode' in dep_list:
+    if api.properties.get('$flutter/osx_sdk'):
       api.os_utils.clean_derived_data()
       devicelab = False
       if str(api.swarming.bot_id).startswith('flutter-devicelab'):
@@ -407,7 +407,6 @@ def GenTests(api):
           buildername='Mac_ios abc',
           task_name='abc',
           tags=['ios'],
-          dependencies=[{'dependency': 'xcode'}],
           git_branch='master',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
@@ -429,7 +428,6 @@ def GenTests(api):
           buildername='Mac_ios abc',
           task_name='abc',
           tags=['ios'],
-          dependencies=[{'dependency': 'xcode'}],
           test_timeout_secs=1,
           git_branch='master',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
@@ -455,7 +453,7 @@ def GenTests(api):
           buildername='Mac_ios abc',
           task_name='abc',
           tags=['ios'],
-          dependencies=[{'dependency': 'xcode'}],
+          **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
           git_branch='master',
       ),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
@@ -489,7 +487,7 @@ def GenTests(api):
       "upload-metrics-mac",
       api.properties(
           buildername='Mac_ios abc',
-          dependencies=[{'dependency': 'xcode'}],
+          **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
           tags=['ios'],
           task_name='abc',
           upload_metrics=True,

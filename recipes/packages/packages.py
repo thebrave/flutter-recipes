@@ -67,8 +67,7 @@ def RunSteps(api):
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=packages_checkout_path):
     with api.step.nest('Run package tests'):
-      dep_list = {d['dependency']: d.get('version') for d in deps}
-      if 'xcode' in dep_list:
+      if api.properties.get('$flutter/osx_sdk'):
         with api.osx_sdk('ios'):
           api.flutter_deps.gems(
               env, env_prefixes, flutter_checkout_path.join('dev', 'ci', 'mac')
@@ -117,6 +116,6 @@ def GenTests(api):
       api.properties(
           channel='master',
           version_file='flutter_master.version',
-          dependencies=[{'dependency': 'xcode'}],
+          **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
       ), api.step_data('read yaml.parse', api.json.output(tasks_dict))
   )

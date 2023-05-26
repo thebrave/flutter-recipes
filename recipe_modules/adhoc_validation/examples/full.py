@@ -39,7 +39,7 @@ def GenTests(api):
   )
   yield api.test(
       'mac', api.platform.name('mac'),
-      api.properties(dependencies=[{"dependency": "xcode"}]),
+      api.properties(**{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},),
       api.repo_util.flutter_environment_data(checkout_path)
   )
   yield api.test(

@@ -38,7 +38,6 @@ class AddhocValidationApi(recipe_api.RecipeApi):
     secrets = secrets or {}
     with self.m.step.nest(name):
       resource_name = ''
-      deps = self.m.properties.get('dependencies', [])
       self.m.kms.decrypt_secrets(env, secrets)
       if self.m.platform.is_linux or self.m.platform.is_mac:
         resource_name = self.resource('%s.sh' % validation)
@@ -49,9 +48,8 @@ class AddhocValidationApi(recipe_api.RecipeApi):
         )
       elif self.m.platform.is_win:
         resource_name = self.resource('%s.bat' % validation)
-      dep_list = [d['dependency'] for d in deps]
       checkout_path = self.m.repo_util.sdk_checkout_path()
-      if 'xcode' in dep_list:
+      if self.m.properties.get('$flutter/osx_sdk'):
         with self.m.osx_sdk('ios'):
           self.m.flutter_deps.gems(
               env, env_prefixes, checkout_path.join('dev', 'ci', 'mac')

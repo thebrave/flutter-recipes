@@ -10,7 +10,6 @@ DEPS = [
     'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/path',
-    'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
 ]
@@ -84,7 +83,7 @@ def GenTests(api):
               'Identify branches (3).git branch',
               stdout=api.raw_io
               .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
-          ), api.platform.name('win')
+          )
       )
   )
   yield api.test(

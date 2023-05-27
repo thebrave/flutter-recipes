@@ -36,6 +36,7 @@ def RunSteps(api, properties, env_properties):
   }
   env_prefixes = {'PATH': [dart_bin]}
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
+  env['ENGINE_PATH'] = cache_root
   with api.depot_tools.on_path(), api.context(env=env,
                                               env_prefixes=env_prefixes):
     api.build_util.run_gn(['--runtime-mode', 'release', '--prebuilt-dart-sdk'],

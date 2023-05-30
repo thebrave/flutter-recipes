@@ -38,6 +38,7 @@ def RunSteps(api):
   api.flutter_deps.required_deps(env, env_prefixes, deps)
   task_name = api.properties.get('task_name')
 
+  # Physical devices are treated as AND's.
   physical_devices = [
       # Physical devices - use only highly available devices to avoid timeouts.
       # Pixel 3
@@ -50,6 +51,9 @@ def RunSteps(api):
       # Moto Z XT1650
       '--device',
       'model=griffin,version=24',
+      # Pixel 6.
+      '--device',
+      'model=oriole,version=33',
   ]
 
   virtual_devices = [
@@ -68,10 +72,17 @@ def RunSteps(api):
       'model=Nexus6P,version=26',
       '--device',
       'model=Nexus6P,version=27',
-      # SDK 28 is run on a physical blueline/Pixel 3 above.
+      # While api 28 is not run on physical devices instead test on virtual devices.
+      '--device',
+      'model=NexusLowRes,version=28',
       '--device',
       'model=NexusLowRes,version=29',
-      # SDK 30 is run on a physical redfin/Pixel 5 above.
+      # SDK 30 is run on a physical redfin/Pixel 5 in [physical_devices].
+      '--device',
+      'model=SmallPhone.arm,version=31',
+      '--device',
+      'model=SmallPhone.arm,version=32',
+      # SDK 33 is run on a physical oriole/Pixel 6 in [physical_devices].
   ]
 
   test_configurations = (

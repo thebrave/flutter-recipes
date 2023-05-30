@@ -38,7 +38,7 @@ def RunSteps(api):
   api.flutter_deps.required_deps(env, env_prefixes, deps)
   task_name = api.properties.get('task_name')
 
-  physical_devices = [
+  default_physical_devices = [
       # Physical devices - use only highly available devices to avoid timeouts.
       # Pixel 3
       # Disable temporarily to unblock the rolls https://github.com/flutter/flutter/issues/118708
@@ -52,7 +52,7 @@ def RunSteps(api):
       'model=griffin,version=24',
   ]
 
-  virtual_devices = [
+  default_virtual_devices = [
       # SDK 20 not available virtually or physically.
       '--device',
       'model=Nexus5,version=21',
@@ -74,19 +74,27 @@ def RunSteps(api):
       # SDK 30 is run on a physical redfin/Pixel 5 above.
   ]
 
+  physical_devices = api.properties.get(
+      'physical_devices'
+  ) or default_physical_devices
+  virtual_devices = api.properties.get(
+      'virtual_devices'
+  ) or default_virtual_devices
+
   test_configurations = (
       (
           'Build appbundle', [
               'flutter', 'build', 'appbundle', '--target-platform',
               'android-arm,android-arm64'
           ], 'build/app/outputs/bundle/release/app-release.aab',
-          physical_devices
+          list(physical_devices)
       ),
       (
           'Build apk', [
               'flutter', 'build', 'apk', '--debug', '--target-platform',
               'android-x86'
-          ], 'build/app/outputs/flutter-apk/app-debug.apk', virtual_devices
+          ], 'build/app/outputs/flutter-apk/app-debug.apk',
+          list(virtual_devices)
       ),
   )
 

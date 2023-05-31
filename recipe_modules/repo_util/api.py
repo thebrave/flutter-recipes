@@ -48,6 +48,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
       env(dict): A dictionary with the environment variables to set.
       env_prefixes(dict): A dictionary with the paths to be added to environment variables.
     """
+    bucket = self.m.buildbucket.build.builder.bucket
     # Calculate if we need to clean the source code cache.
     clobber = self.m.properties.get('clobber', False)
 
@@ -58,7 +59,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
     mount_builder = self.m.cache.should_force_mount(
         self.m.path['cache'].join('builder')
     )
-    if (not clobber) and (mount_git or mount_builder):
+    if (not clobber) and (mount_git or
+                          mount_builder) and (bucket != OFFICIAL_BUILD_BUCKET):
       self.m.cache.mount_cache('builder', force=True)
 
     # Grab any gclient custom variables passed as properties.
@@ -70,7 +72,6 @@ class RepoUtilApi(recipe_api.RecipeApi):
     # branches.
     branch = self.m.properties.get('git_branch',
                                    '') or self.get_branch(checkout_path)
-    bucket = self.m.buildbucket.build.builder.bucket
     if branch.startswith('flutter-') or branch in [
         'beta', 'stable'
     ] or bucket == OFFICIAL_BUILD_BUCKET:

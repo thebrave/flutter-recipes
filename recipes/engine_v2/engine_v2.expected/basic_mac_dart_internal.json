@@ -1,5 +1,70 @@
 [
   {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/reporter",
+      "-ensure-file",
+      "infra/tools/security/provenance_broker/${platform} git_revision:d3cf3b0144447a77fd79c84fe8500dfe993ef602",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:d3c\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/security/provenance_broker/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/reporter/snoopy_broker",
+      "-report-stage",
+      "-stage",
+      "start",
+      "-recipe",
+      "engine_v2/engine_v2",
+      "-pid",
+      "12345"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "snoop: report_stage"
+  },
+  {
     "cmd": [],
     "name": "launch builds"
   },
@@ -13,7 +78,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -24,7 +89,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"prod\", \"builder\": \"Linux Production Engine Drone\", \"project\": \"flutter\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"archives\": [{\"destination\": \"bucket/c.txt\", \"name\": \"c.txt\", \"source\": \"/a/b/c.txt\"}], \"build\": {\"archives\": [{\"base_path\": \"out/host_debug/zip_archives/\", \"include_paths\": [\"out/host_debug/zip_archives/darwin-x64/artifacts.zip\", \"out/host_debug/zip_archives/darwin-x64/FlutterEmbedder.framework.zip\", \"out/host_debug/zip_archives/dart-sdk-darwin-x64.zip\", \"out/host_debug/zip_archives/flutter-web-sdk-darwin-x64.zip\"], \"name\": \"host_debug\", \"type\": \"gcs\"}], \"drone_dimensions\": [\"os=Linux\"], \"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}, \"recipe\": \"engine_v2/builder\"}, \"gclient_variables\": {}, \"generators\": {\"tasks\": [{\"language\": \"python3\", \"name\": \"Debug-FlutterMacOS.framework\", \"parameters\": [\"--variant\", \"host_profile\", \"--type\", \"engine\", \"--engine-capture-core-dump\"], \"script\": \"flutter/sky/tools/create_macos_framework.py\", \"type\": \"local\"}]}, \"recipe\": \"engine_v2/builder\", \"tests\": []}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"flutter\", \"builder\": \"Linux Production Engine Drone\", \"project\": \"dart-internal\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"archives\": [{\"destination\": \"bucket/c.txt\", \"name\": \"c.txt\", \"source\": \"/a/b/c.txt\"}], \"build\": {\"archives\": [{\"base_path\": \"out/host_debug/zip_archives/\", \"include_paths\": [\"out/host_debug/zip_archives/darwin-x64/artifacts.zip\", \"out/host_debug/zip_archives/darwin-x64/FlutterEmbedder.framework.zip\", \"out/host_debug/zip_archives/dart-sdk-darwin-x64.zip\", \"out/host_debug/zip_archives/flutter-web-sdk-darwin-x64.zip\"], \"name\": \"host_debug\", \"type\": \"gcs\"}], \"drone_dimensions\": [\"os=Linux\"], \"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}, \"recipe\": \"engine_v2/builder\"}, \"gclient_variables\": {}, \"generators\": {\"tasks\": [{\"language\": \"python3\", \"name\": \"Debug-FlutterMacOS.framework\", \"parameters\": [\"--variant\", \"host_profile\", \"--type\", \"engine\", \"--engine-capture-core-dump\"], \"script\": \"flutter/sky/tools/create_macos_framework.py\", \"type\": \"local\"}]}, \"recipe\": \"engine_v2/builder\", \"tests\": []}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -47,9 +112,9 @@
       "@@@STEP_LOG_LINE@request@    {@@@",
       "@@@STEP_LOG_LINE@request@      \"scheduleBuild\": {@@@",
       "@@@STEP_LOG_LINE@request@        \"builder\": {@@@",
-      "@@@STEP_LOG_LINE@request@          \"bucket\": \"prod\", @@@",
+      "@@@STEP_LOG_LINE@request@          \"bucket\": \"flutter\", @@@",
       "@@@STEP_LOG_LINE@request@          \"builder\": \"Linux Production Engine Drone\", @@@",
-      "@@@STEP_LOG_LINE@request@          \"project\": \"flutter\"@@@",
+      "@@@STEP_LOG_LINE@request@          \"project\": \"dart-internal\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"dimensions\": [@@@",
       "@@@STEP_LOG_LINE@request@          {@@@",
@@ -180,7 +245,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -206,7 +271,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -309,7 +374,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -334,7 +399,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -367,7 +432,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -395,7 +460,7 @@
       "-u",
       "RECIPE_MODULE[depot_tools::bot_update]/resources/bot_update.py",
       "--spec-path",
-      "cache_dir = '[CACHE]/git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': False, 'name': 'src/flutter', 'url': 'https://flutter.googlesource.com/mirrors/engine'}]",
+      "cache_dir = '[CACHE]/git'\nsolutions = [{'custom_vars': {'release_candidate': True}, 'deps_file': '.DEPS.git', 'managed': False, 'name': 'src/flutter', 'url': 'https://flutter.googlesource.com/mirrors/engine'}]",
       "--revision_mapping_file",
       "{\"got_engine_revision\": \"src/flutter\"}",
       "--git-cache-dir",
@@ -415,7 +480,7 @@
       "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
       "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "DEPOT_TOOLS_REPORT_BUILD": "flutter/prod/prod-builder/8945511751514863184",
+      "DEPOT_TOOLS_REPORT_BUILD": "dart-internal/flutter/prod-builder/8945511751514863184",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
       "GIT_BRANCH": "",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
@@ -445,7 +510,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -511,7 +576,7 @@
       "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
       "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "DEPOT_TOOLS_REPORT_BUILD": "flutter/prod/prod-builder/8945511751514863184",
+      "DEPOT_TOOLS_REPORT_BUILD": "dart-internal/flutter/prod-builder/8945511751514863184",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
@@ -537,7 +602,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -565,7 +630,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -590,7 +655,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -608,6 +673,30 @@
   },
   {
     "cmd": [
+      "[START_DIR]/reporter/snoopy_broker",
+      "-report-stage",
+      "-stage",
+      "compile"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.snoop: report_stage",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
       "cipd",
       "ensure",
       "-root",
@@ -622,7 +711,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -665,7 +754,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -689,7 +778,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -714,7 +803,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -738,7 +827,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -763,7 +852,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -791,7 +880,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -822,7 +911,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -865,7 +954,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -889,7 +978,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -914,7 +1003,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -938,7 +1027,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -995,7 +1084,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -1052,7 +1141,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -1069,6 +1158,30 @@
   },
   {
     "cmd": [
+      "[START_DIR]/reporter/snoopy_broker",
+      "-report-stage",
+      "-stage",
+      "upload"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.snoop: report_stage (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
       "git",
       "rev-parse",
       "HEAD"
@@ -1077,7 +1190,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -1109,7 +1222,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -1136,7 +1249,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -1158,7 +1271,7 @@
     ],
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -1192,7 +1305,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -1221,7 +1334,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -1252,7 +1365,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -1270,6 +1383,85 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "file_hash",
+      "/a/b/c.txt"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.Compute file hash",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@Hash calculated: fad0b8af5e6cfa27a7e36870911c7d0dc60d034df1e50a368882f5d34b88a6ee@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/reporter/snoopy_broker",
+      "-report-gcs",
+      "-digest",
+      "fad0b8af5e6cfa27a7e36870911c7d0dc60d034df1e50a368882f5d34b88a6ee",
+      "-gcs-uri",
+      "gs://flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket/c.txt"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.snoop: report_gcs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/reporter/snoopy_broker",
+      "-report-stage",
+      "-stage",
+      "upload-complete"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.snoop: report_stage (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
       "sudo",
       "xcode-select",
       "--reset"
@@ -1277,7 +1469,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "flutter:prod"
+        "name": "dart-internal:flutter"
       },
       "resultdb": {
         "current_invocation": {
@@ -1294,15 +1486,82 @@
   },
   {
     "cmd": [],
-    "name": "launch tests"
+    "name": "Publish build results"
   },
   {
     "cmd": [],
-    "name": "collect tests"
+    "name": "Publish build results.ensure gcloud",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
-    "cmd": [],
-    "name": "display tests"
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/gcloud",
+      "-ensure-file",
+      "infra/3pp/tools/gcloud/${platform} version:2@428.0.0.chromium.3",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Publish build results.ensure gcloud.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@428.0.\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/gcloud/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/gcloud/bin/gcloud",
+      "pubsub",
+      "topics",
+      "publish",
+      "projects/flutter-dashboard/topics/dart-internal-build-results",
+      "--message='8945511751514863184'"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Publish build results.gcloud pubsub",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "name": "$result"

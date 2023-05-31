@@ -178,10 +178,12 @@ def RunSteps(api, properties, env_properties):
     )
 
   not_experimental = not api.runtime.is_experimental and api.buildbucket.build.id != 0
-  prod_build = api.flutter_bcid.is_prod_build()
-  if not_experimental and prod_build:
+  dart_internal_build = api.flutter_bcid.is_official_build()
+  if not_experimental and dart_internal_build:
     api.pubsub.publish_message(
-        BUILD_RESULT_PUBSUB_ENDPOINT, api.buildbucket.build.id
+        BUILD_RESULT_PUBSUB_ENDPOINT,
+        api.buildbucket.build.id,
+        step_name='Publish build results'
     )
 
 
@@ -310,6 +312,35 @@ def GenTests(api):
       api.buildbucket.ci_build(
           project='flutter',
           bucket='prod',
+          builder='prod-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          revision='a' * 40,
+          build_number=123,
+      ),
+      api.shard_util_v2.child_build_steps(
+          subbuilds=[try_subbuild1],
+          launch_step="launch builds.schedule",
+          collect_step="collect builds",
+      ),
+      api.step_data(
+          'Global generators.git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
+  )
+
+  yield api.test(
+      'basic_mac_dart_internal', api.platform.name('mac'),
+      api.properties(
+          builds=builds,
+          tests=[],
+          generators=generators,
+          archives=archives,
+      ),
+      api.buildbucket.ci_build(
+          project='dart-internal',
+          bucket='flutter',
           builder='prod-builder',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           git_ref='refs/heads/main',

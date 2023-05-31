@@ -6,7 +6,7 @@ DEPS = ['flutter/pubsub']
 
 
 def RunSteps(api):
-  api.pubsub.publish_message('custom/pubsub/url', 'message')
+  api.pubsub.publish_message('custom/pubsub/url', 'message', 'Test step')
 
 
 def GenTests(api):

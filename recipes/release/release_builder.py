@@ -67,6 +67,11 @@ def RunSteps(api, properties, env_properties):
   ci_yaml_path = checkout_path.join('.ci.yaml')
   ci_yaml = api.yaml.read('read ci yaml', ci_yaml_path, api.json.output())
 
+  # Get release branch.
+  branches = api.repo_util.current_commit_branches(checkout_path)
+  branches = [b for b in branches if b.startswith('flutter')]
+  release_branch = branches[0] if branches else 'main'
+
   # Foreach target defined in .ci.yaml, if it contains
   # release_build: True, then spawn a subbuild.
   tasks = {}
@@ -75,9 +80,13 @@ def RunSteps(api, properties, env_properties):
     for target in ci_yaml.json.output['targets']:
       if ShouldRun(api, git_ref, target):
         target = api.shard_util_v2.pre_process_properties(target)
-        tasks.update(api.shard_util_v2.schedule([
-            target,
-        ], presentation))
+        tasks.update(
+            api.shard_util_v2.schedule([
+                target,
+            ],
+                                       presentation,
+                                       branch=release_branch)
+        )
   with api.step.nest('collect builds') as presentation:
     build_results = api.shard_util_v2.collect(tasks)
 

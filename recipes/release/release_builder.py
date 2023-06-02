@@ -7,7 +7,7 @@
 # This recipe reads <engine_checkout>/.ci_yaml, and for every target
 # marked with release_build: true, and spawens a subbuild.
 
-import json
+import re
 from contextlib import contextmanager
 
 from PB.recipes.flutter.release.release import InputProperties
@@ -27,6 +27,7 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/raw_io',
     'recipe_engine/step',
 ]
 
@@ -36,8 +37,19 @@ ENV_PROPERTIES = EnvProperties
 RELEASE_CHANNELS = ('refs/heads/beta', 'refs/heads/stable')
 
 
-def ShouldRun(api, git_ref, target):
+def ShouldRun(api, git_ref, target, release_branch):
   """Validates if a target should run based on platform, channel and repo."""
+  # Enabled for current branch
+  enabled_branches = target.get('enabled_branches', [])
+  if enabled_branches:
+    for r in enabled_branches:
+      # Enabled branches is a list of regex
+      if re.match(r, release_branch):
+        break
+    else:
+      # Current branch didn't match any of the enabled branches.
+      return False
+
   release_build = target.get('properties', {}).get('release_build', False)
   for_this_platform = target['name'].lower().startswith(api.platform.name)
   # Postsubmit for engine and flutter repositories.
@@ -78,7 +90,7 @@ def RunSteps(api, properties, env_properties):
   build_results = []
   with api.step.nest('launch builds') as presentation:
     for target in ci_yaml.json.output['targets']:
-      if ShouldRun(api, git_ref, target):
+      if ShouldRun(api, git_ref, target, release_branch):
         target = api.shard_util_v2.pre_process_properties(target)
         tasks.update(
             api.shard_util_v2.schedule([
@@ -120,7 +132,8 @@ def GenTests(api):
   }
   for git_ref in ['main', 'beta']:
     yield api.test(
-        'basic_linux_%s' % git_ref, api.platform.name('linux'),
+        'basic_linux_%s' % git_ref,
+        api.platform.name('linux'),
         api.properties(environment='Staging', repository='engine'),
         api.buildbucket.try_build(
             project='prod',
@@ -134,5 +147,25 @@ def GenTests(api):
             subbuilds=[try_subbuild1],
             launch_step="launch builds.schedule",
             collect_step="collect builds",
-        ), api.step_data('read ci yaml.parse', api.json.output(tasks_dict))
+        ),
+        api.step_data('read ci yaml.parse', api.json.output(tasks_dict)),
     )
+
+  yield api.test(
+      'filter_enabled_branches',
+      api.properties(environment='Staging', repository='engine'),
+      api.buildbucket.try_build(
+          project='prod',
+          builder='try-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          revision='a' * 40,
+          build_number=123,
+          git_ref='refs/heads/%s' % git_ref,
+      ),
+      api.step_data('read ci yaml.parse', api.json.output(tasks_dict)),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io
+          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+      ),
+  )

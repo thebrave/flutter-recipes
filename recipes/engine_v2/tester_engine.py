@@ -103,7 +103,11 @@ def run_tests(api, test, checkout, env, env_prefixes):
       # Run within another context to make the logs env variable available to
       # test scripts.
       with api.context(env=env, env_prefixes=env_prefixes):
-        api.retry.wrap(run_test, step_name=task.get('name'))
+        api.retry.wrap(
+            run_test,
+            step_name=task.get('name'),
+            max_attempts=task.get('max_attempts', 3)
+        )
     finally:
       api.logs_util.upload_logs(task.get('name'))
 

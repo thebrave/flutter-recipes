@@ -41,7 +41,7 @@ def ShouldRun(api, git_ref, target, release_branch):
   """Validates if a target should run based on platform, channel and repo."""
   # Enabled for current branch
   enabled_branches = target.get('enabled_branches', [])
-  if enabled_branches:
+  if enabled_branches and target.get('scheduler') != 'release':
     for r in enabled_branches:
       # Enabled branches is a list of regex
       if re.match(r, release_branch):
@@ -151,6 +151,26 @@ def GenTests(api):
         api.step_data('read ci yaml.parse', api.json.output(tasks_dict)),
     )
 
+  tasks_dict_scheduler = {
+      'targets': [
+          {
+              'name': 'linux packaging one',
+              'recipe': 'release/something',
+              #'scheduler': 'release',
+              'properties': {'$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'},
+              'enabled_branches': ['flutter-3.2-candidate.5'],
+              'drone_dimensions': ['os=Linux']
+          },
+          {
+              'name': 'linux packaging two',
+              'recipe': 'release/something',
+              #'scheduler': 'release',
+              'properties': {'$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'},
+              'enabled_branches': ['beta', 'main'],
+              'drone_dimensions': ['os=Linux']
+          }
+      ]
+  }
   yield api.test(
       'filter_enabled_branches',
       api.properties(environment='Staging', repository='engine'),
@@ -162,7 +182,9 @@ def GenTests(api):
           build_number=123,
           git_ref='refs/heads/%s' % git_ref,
       ),
-      api.step_data('read ci yaml.parse', api.json.output(tasks_dict)),
+      api.step_data(
+          'read ci yaml.parse', api.json.output(tasks_dict_scheduler)
+      ),
       api.step_data(
           'Identify branches.git branch',
           stdout=api.raw_io

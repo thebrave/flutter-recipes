@@ -59,14 +59,12 @@ def RunSteps(api, properties, env_properties):
   script_path = checkout_path.join(
       'flutter', 'testing', 'benchmark', 'upload_metrics.sh'
   )
-
-  env['TOKEN_PATH'] = api.token_util.metric_center_token()
-  env['GCP_PROJECT'] = 'flutter-cirrus'
-  with api.context(env=env, env_prefixes=env_prefixes, cwd=benchmark_path):
-    if properties.upload_metrics:
-      api.step('Upload metrics', ['bash', script_path])
-    else:
-      api.step('Upload metrics', ['bash', script_path, '--no-upload'])
+  with api.token_util.metric_center_token(env, env_prefixes):
+    with api.context(env=env, env_prefixes=env_prefixes, cwd=benchmark_path):
+      if properties.upload_metrics:
+        api.step('Upload metrics', ['bash', script_path])
+      else:
+        api.step('Upload metrics', ['bash', script_path, '--no-upload'])
 
 
 def GenTests(api):

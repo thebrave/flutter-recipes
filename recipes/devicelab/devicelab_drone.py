@@ -314,25 +314,24 @@ def uploadResults(
       ])
 
   with api.step.nest('Upload metrics'):
-    env['TOKEN_PATH'] = api.token_util.metric_center_token()
-    env['GCP_PROJECT'] = 'flutter-infra'
-    runner_params.extend([
-        '--service-account-token-file',
-        api.token_util.cocoon_token()
-    ])
-    upload_command = ['dart', 'bin/test_runner.dart', 'upload-metrics']
-    upload_command.extend(runner_params)
-    with api.context(env=env, env_prefixes=env_prefixes):
-      if suppress_log:
-        api.step(
-            'upload results',
-            upload_command,
-            infra_step=True,
-            stdout=api.raw_io.output_text(),
-            stderr=api.raw_io.output_text(),
-        )
-      else:
-        api.step('upload results', upload_command, infra_step=True)
+    with api.token_util.metric_center_token(env, env_prefixes):
+      runner_params.extend([
+          '--service-account-token-file',
+          api.token_util.cocoon_token()
+      ])
+      upload_command = ['dart', 'bin/test_runner.dart', 'upload-metrics']
+      upload_command.extend(runner_params)
+      with api.context(env=env, env_prefixes=env_prefixes):
+        if suppress_log:
+          api.step(
+              'upload results',
+              upload_command,
+              infra_step=True,
+              stdout=api.raw_io.output_text(),
+              stderr=api.raw_io.output_text(),
+          )
+        else:
+          api.step('upload results', upload_command, infra_step=True)
 
 
 def uploadMetricsToCas(api, results_path):

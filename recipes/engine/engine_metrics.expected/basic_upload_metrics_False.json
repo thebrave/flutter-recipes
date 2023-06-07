@@ -1131,7 +1131,7 @@
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
       "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "GCP_PROJECT": "flutter-cirrus",
+      "GCP_PROJECT": "flutter-infra-staging",
       "TOKEN_PATH": "[CLEANUP]/tmp_tmp_1"
     },
     "env_prefixes": {
@@ -1140,6 +1140,19 @@
       ]
     },
     "name": "Upload metrics"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "remove",
+      "[CLEANUP]/tmp_tmp_1"
+    ],
+    "infra_step": true,
+    "name": "delete metric center token"
   },
   {
     "name": "$result"

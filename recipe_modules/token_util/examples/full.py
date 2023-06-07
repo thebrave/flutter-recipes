@@ -10,7 +10,8 @@ DEPS = [
 
 
 def RunSteps(api):
-  api.token_util.metric_center_token()
+  with api.token_util.metric_center_token({}, {}):
+    pass
   api.token_util.cocoon_token()
 
 

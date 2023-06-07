@@ -93,34 +93,34 @@ def RunSteps(api):
         max_attempts=2,
         infra_step=True
     )
-    env['TOKEN_PATH'] = api.token_util.metric_center_token()
-    # Load local engine information if available.
-    api.flutter_deps.flutter_engine(env, env_prefixes)
-    if api.properties.get('$flutter/osx_sdk'):
-      with api.osx_sdk('ios'), api.step.defer_results():
-        api.flutter_deps.gems(
-            env, env_prefixes, checkout_path.join('dev', 'ci', 'mac')
-        )
-        api.step(
-            'flutter doctor',
-            ['flutter', 'doctor', '-v'],
-        )
-        RunShard(api, env, env_prefixes, checkout_path)
-        # This is to clean up leaked processes.
-        api.os_utils.kill_processes()
-        # Collect memory/cpu/process after task execution.
-        api.os_utils.collect_os_info()
-    else:
-      with api.step.defer_results():
-        api.step(
-            'flutter doctor',
-            ['flutter', 'doctor', '-v'],
-        )
-        RunShard(api, env, env_prefixes, checkout_path)
-        # This is to clean up leaked processes.
-        api.os_utils.kill_processes()
-        # Collect memory/cpu/process after task execution.
-        api.os_utils.collect_os_info()
+    with api.token_util.metric_center_token(env, env_prefixes):
+      # Load local engine information if available.
+      api.flutter_deps.flutter_engine(env, env_prefixes)
+      if api.properties.get('$flutter/osx_sdk'):
+        with api.osx_sdk('ios'), api.step.defer_results():
+          api.flutter_deps.gems(
+              env, env_prefixes, checkout_path.join('dev', 'ci', 'mac')
+          )
+          api.step(
+              'flutter doctor',
+              ['flutter', 'doctor', '-v'],
+          )
+          RunShard(api, env, env_prefixes, checkout_path)
+          # This is to clean up leaked processes.
+          api.os_utils.kill_processes()
+          # Collect memory/cpu/process after task execution.
+          api.os_utils.collect_os_info()
+      else:
+        with api.step.defer_results():
+          api.step(
+              'flutter doctor',
+              ['flutter', 'doctor', '-v'],
+          )
+          RunShard(api, env, env_prefixes, checkout_path)
+          # This is to clean up leaked processes.
+          api.os_utils.kill_processes()
+          # Collect memory/cpu/process after task execution.
+          api.os_utils.collect_os_info()
 
 
 def GenTests(api):

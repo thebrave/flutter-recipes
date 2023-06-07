@@ -1550,7 +1550,7 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GCP_PROJECT": "flutter-infra",
+      "GCP_PROJECT": "flutter-infra-staging",
       "GIT_BRANCH": "master",
       "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
       "LUCI_BRANCH": "",
@@ -1589,6 +1589,60 @@
       }
     },
     "name": "Upload metrics.upload results",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "remove",
+      "[CLEANUP]/tmp_tmp_2"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/host-release",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": null
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/builder/src/out/host-release/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "test:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Upload metrics.delete metric center token",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

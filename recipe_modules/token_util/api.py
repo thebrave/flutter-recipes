@@ -2,13 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
+
 from recipe_engine import recipe_api
 
 
 class TokenUtilApi(recipe_api.RecipeApi):
   """Utilities to generate tokens for communicating data."""
 
-  def metric_center_token(self):
+  @contextlib.contextmanager
+  def metric_center_token(self, env, _):
     """Generate a token to interact with GCS.
 
     Returns the path to the written token.
@@ -27,7 +30,12 @@ class TokenUtilApi(recipe_api.RecipeApi):
         metrics_center_access_token,
         include_log=False
     )
-    return metrics_center_token_path
+    env['TOKEN_PATH'] = metrics_center_token_path
+    env['GCP_PROJECT'] = 'flutter-infra-staging'
+    yield metrics_center_token_path
+    env.pop('TOKEN_PATH', '')
+    env.pop('GCP_PROJECT', '')
+    self.m.file.remove('delete metric center token', metrics_center_token_path)
 
   def cocoon_token(self):
     """Generate a token to interact with Cocoon backend APIs.

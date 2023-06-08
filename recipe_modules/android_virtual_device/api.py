@@ -5,13 +5,38 @@ import re
 from contextlib import contextmanager
 from recipe_engine import recipe_api
 
-
 # Supports 19 though api 33.
 AVD_CIPD_IDENTIFIER = 'thuLfk5G3GvTQU6BzYiS5IAWWwHP7I-NOPf9rO5CYIwC'
+
 
 class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
   """Installs and manages an Android AVD.
   """
+
+  def __init__(self, *args, **kwargs):
+    super(AndroidVirtualDeviceApi, self).__init__(*args, **kwargs)
+    self.env = {}
+    self.env_prefixes = {}
+    self.version = "31"
+    self.emulator_pid = -1
+    self.avd_root = None
+    self.adb_path = None
+
+  @contextmanager
+  def __call__(self, env, env_prefixes, version):
+    self.env = env
+    if not env.get('USE_EMULATOR'):
+      yield
+      return
+
+    try:
+      self.version = version
+      self.emulator_pid = self.start(self.env, self.env_prefixes, self.version)
+      env['EMULATOR_PID'] = self.emulator_pid
+      self.setup(self.env, self.env_prefixes)
+      yield
+    finally:
+      self.kill(self.emulator_pid)
 
   def download(self, avd_root, env, env_prefixes, version=None):
     """Installs the android avd emulator package.
@@ -32,8 +57,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
         self.m.cipd.ensure(
             self.avd_root,
             self.m.cipd.EnsureFile().add_package(
-                'chromium/tools/android/avd/linux-amd64',
-                AVD_CIPD_IDENTIFIER
+                'chromium/tools/android/avd/linux-amd64', AVD_CIPD_IDENTIFIER
             )
         )
 
@@ -46,22 +70,6 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       env_prefixes['PATH'] = paths
     env['AVD_ROOT'] = self.avd_root
     env['ADB_PATH'] = self.adb_path
-
-  def start_if_requested(self, env, env_prefixes, version=None):
-    """Starts an android avd emulator if emulation was requested.
-
-    Args:
-      env(dict): Current environment variables.
-      env_prefixes(dict):  Current environment prefixes variables.
-      version(string): The android API version of the emulator as a string.
-    """
-    emulator_commands = []
-    emulator_pid = -1
-    if env['USE_EMULATOR']:
-      emulator_commands = ['--use-emulator']
-      emulator_pid = self.start(env, env_prefixes, version)
-      self.setup(env, env_prefixes)
-    return emulator_commands, emulator_pid
 
   def start(self, env, env_prefixes, version=None):
     """Starts an android avd emulator.
@@ -126,18 +134,6 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             'avd_setup.sh', [resource_name, str(self.adb_path)],
             infra_step=True
         )
-
-  def stop_if_requested(self, env, emulator_pid=None):
-    """Stops the emulator and cleans up any zombie QEMU processes.
-
-    Args:
-      emulator_pid(string): The PID of the emulator process. An attempt to
-      collect the pid will be made if the emulator_pid passed in is None.
-    """
-    if emulator_pid is None:
-      emulator_pid = env['EMULATOR_PID']
-    if env['USE_EMULATOR']:
-      self.kill(emulator_pid)
 
   def kill(self, emulator_pid=None):
     """Kills the emulator and cleans up any zombie QEMU processes.

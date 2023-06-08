@@ -3,31 +3,31 @@
 # found in the LICENSE file.
 
 DEPS = [
-    'flutter/android_virtual_device',
-    'recipe_engine/path',
-    'recipe_engine/raw_io',
+    'flutter/android_virtual_device', 'recipe_engine/path',
+    'recipe_engine/raw_io', 'recipe_engine/step', 'recipe_engine/properties'
 ]
 
 
 def RunSteps(api):
-  env = {'USE_EMULATOR': True}
+  env = {'USE_EMULATOR': api.properties.get('use_emulator', False)}
   env_prefixes = {}
   avd_root = api.path['cache'].join('builder', 'avd')
   api.android_virtual_device.download(
       avd_root=avd_root, env=env, env_prefixes=env_prefixes, version='31'
   )
-  api.android_virtual_device.start_if_requested(
-      env=env,
-      env_prefixes=env_prefixes,
-      version='31',
-  )
-  api.android_virtual_device.stop_if_requested(env=env,)
+  with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
+                                  version="31"):
+    api.step('Do something', ['echo', 'hello'])
 
 
 def GenTests(api):
   avd_api_version = '31'
+
+  yield api.test('no emulator', api.step_data('Do something',))
+
   yield api.test(
-      'demo',
+      'emulator started',
+      api.properties(use_emulator="true"),
       api.step_data(
           'start avd.Start Android emulator (API level %s)' % avd_api_version,
           stdout=api.raw_io.output_text(
@@ -36,8 +36,10 @@ def GenTests(api):
           )
       ),
   )
+
   yield api.test(
-      'demo zombie processes',
+      'emulator started and stopped, processes killed',
+      api.properties(use_emulator="true"),
       api.step_data(
           'start avd.Start Android emulator (API level %s)' % avd_api_version,
           stdout=api.raw_io.output_text(

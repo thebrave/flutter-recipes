@@ -99,7 +99,7 @@ def RunSteps(api):
   benchmark_tags = api.json.dumps(device_tags)
 
   # Check to see if an emulator has been requested.
-  env['USE_EMULATOR'] = api.properties.get('use_emulator')
+  env['USE_EMULATOR'] = api.properties.get('use_emulator', False)
 
   devicelab_path = flutter_path.join('dev', 'devicelab')
   git_branch = api.properties.get('git_branch')
@@ -140,35 +140,33 @@ def RunSteps(api):
         )
     else:
       with api.context(env=env, env_prefixes=env_prefixes):
-        # Start an emulator if it is requested, it must be started before the doctor to avoid issues.
-        emulator_commands, emulator_pid = api.android_virtual_device.start_if_requested(
-            env, env_prefixes, dep_list.get('android_virtual_device', None)
-        )
-
         api.retry.step(
             'flutter doctor',
             ['flutter', 'doctor', '--verbose'],
             max_attempts=3,
             timeout=300,
         )
+
         test_runner_command = ['xvfb-run'] if api.properties.get('xvfb') else []
         test_runner_command.extend(['dart', 'bin/test_runner.dart', 'test'])
         test_runner_command.extend(runner_params)
-        # Send emulator flags if desired otherwise this appends nothing.
-        test_runner_command.extend(emulator_commands)
+
+        if env['USE_EMULATOR']:
+          test_runner_command.extend('--use-emulator')
 
         try:
-          test_status = api.test_utils.run_test(
-              'run %s' % task_name,
-              test_runner_command,
-              timeout_secs=test_timeout_secs,
-              suppress_log=suppress_log,
-          )
+          with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
+                                          version=dep_list.get(
+                                              'android_virtual_device', None)):
+            test_status = api.test_utils.run_test(
+                'run %s' % task_name,
+                test_runner_command,
+                timeout_secs=test_timeout_secs,
+                suppress_log=suppress_log,
+            )
         finally:
           if not suppress_log:
             debug_after_failure(api, task_name)
-          # Stop the emulator if it was requested
-          api.android_virtual_device.stop_if_requested(env, emulator_pid)
 
         if test_status == 'flaky':
           api.test_utils.flaky_step('run %s' % task_name)

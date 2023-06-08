@@ -25,10 +25,6 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
   @contextmanager
   def __call__(self, env, env_prefixes, version):
     self.env = env
-    if not env.get('USE_EMULATOR'):
-      yield
-      return
-
     try:
       self.version = version
       self.emulator_pid = self.start(self.env, self.env_prefixes, self.version)

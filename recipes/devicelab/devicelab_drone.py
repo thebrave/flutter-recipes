@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from recipe_engine.recipe_api import Property
+from contextlib import ExitStack
 from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 
 DEPS = [
@@ -151,13 +151,17 @@ def RunSteps(api):
         test_runner_command.extend(['dart', 'bin/test_runner.dart', 'test'])
         test_runner_command.extend(runner_params)
 
-        if env['USE_EMULATOR']:
-          test_runner_command.extend('--use-emulator')
-
         try:
-          with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
-                                          version=dep_list.get(
-                                              'android_virtual_device', None)):
+          with ExitStack() as stack:
+            if env['USE_EMULATOR']:
+              test_runner_command.extend('--use-emulator')
+              stack.enter_context(
+                  api.android_virtual_device(
+                      env=env,
+                      env_prefixes=env_prefixes,
+                      version=dep_list.get('android_virtual_device', None)
+                  )
+              )
             test_status = api.test_utils.run_test(
                 'run %s' % task_name,
                 test_runner_command,

@@ -23,8 +23,6 @@ def RunSteps(api):
 def GenTests(api):
   avd_api_version = '31'
 
-  yield api.test('no emulator', api.step_data('Do something',))
-
   yield api.test(
       'emulator started',
       api.properties(use_emulator="true"),

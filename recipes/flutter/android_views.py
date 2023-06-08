@@ -6,9 +6,6 @@
 # to validate stability of AVD in pre and post submit. Move this into the general recipe
 # once validated, stable, and no longer under heavy development.
 
-from contextlib import contextmanager
-import re
-
 from PB.recipes.flutter.engine.engine import InputProperties
 from PB.recipes.flutter.engine.engine import EnvProperties
 
@@ -52,48 +49,50 @@ def RunSteps(api, properties, env_properties):
       env, env_prefixes, api.properties.get('dependencies', [])
   )
 
-  api.android_virtual_device.start(env, env_prefixes)
-  api.android_virtual_device.setup(env, env_prefixes)
-
-  with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
-    with api.step.nest('prepare environment'), api.step.defer_results():
-      # This prevents junk analytics from being sent due to testing
-      api.step(
-          'flutter config --no-analytics',
-          ['flutter', 'config', '--no-analytics'],
-      )
-      api.step(
-          'flutter doctor',
-          ['flutter', 'doctor'],
-      )
-      api.step(
-          'flutter devices',
-          ['flutter', 'devices', '--device-timeout=40', '--verbose'],
-      )
-      api.step(
-          'download dependencies',
-          ['flutter', 'update-packages', '-v'],
-          infra_step=True,
-      )
-  views_test_dir = checkout_path.join(
-      'dev', 'integration_tests', 'android_views'
-  )
-  with api.context(env=env, env_prefixes=env_prefixes,
-                   cwd=views_test_dir), api.step.defer_results():
-    api.step(
-        'Android Views Integration Tests',
-        [
-            'flutter', 'drive', '--browser-name=android-chrome',
-            '--android-emulator', '--no-start-paused',
-            '--purge-persistent-cache', '--device-timeout=30'
-        ],
-        timeout=700,
+  deps = api.properties.get('dependencies', [])
+  dep_list = {d['dependency']: d.get('version') for d in deps}
+  with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
+                                  version=dep_list.get('android_virtual_device',
+                                                       None)):
+    with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
+      with api.step.nest('prepare environment'), api.step.defer_results():
+        # This prevents junk analytics from being sent due to testing
+        api.step(
+            'flutter config --no-analytics',
+            ['flutter', 'config', '--no-analytics'],
+        )
+        api.step(
+            'flutter doctor',
+            ['flutter', 'doctor'],
+        )
+        api.step(
+            'flutter devices',
+            ['flutter', 'devices', '--device-timeout=40', '--verbose'],
+        )
+        api.step(
+            'download dependencies',
+            ['flutter', 'update-packages', '-v'],
+            infra_step=True,
+        )
+    views_test_dir = checkout_path.join(
+        'dev', 'integration_tests', 'android_views'
     )
-    api.android_virtual_device.kill(env['EMULATOR_PID'])
-    # This is to clean up leaked processes.
-    api.os_utils.kill_processes()
-    # Collect memory/cpu/process after task execution.
-    api.os_utils.collect_os_info()
+    with api.context(env=env, env_prefixes=env_prefixes,
+                     cwd=views_test_dir), api.step.defer_results():
+      api.step(
+          'Android Views Integration Tests',
+          [
+              'flutter', 'drive', '--browser-name=android-chrome',
+              '--android-emulator', '--no-start-paused',
+              '--purge-persistent-cache', '--device-timeout=30'
+          ],
+          timeout=700,
+      )
+
+  # This is to clean up leaked processes.
+  api.os_utils.kill_processes()
+  # Collect memory/cpu/process after task execution.
+  api.os_utils.collect_os_info()
 
 
 def GenTests(api):

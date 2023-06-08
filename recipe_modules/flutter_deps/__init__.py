@@ -2,6 +2,7 @@ DEPS = [
     'flutter/android_virtual_device',
     'flutter/repo_util',
     'flutter/test_utils',
+    'flutter/token_util',
     'recipe_engine/cas',
     'recipe_engine/cipd',
     'recipe_engine/context',

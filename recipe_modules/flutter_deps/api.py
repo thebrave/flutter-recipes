@@ -694,3 +694,6 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     """
     avd_root = self.m.path['cache'].join('avd')
     self.m.android_virtual_device.download(avd_root, env, env_prefixes, version)
+
+  def contexts(self):
+    return {'metric_center_token': self.m.token_util.metric_center_token}

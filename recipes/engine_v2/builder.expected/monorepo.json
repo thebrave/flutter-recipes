@@ -1716,6 +1716,114 @@
     "name": "generator1"
   },
   {
+    "cmd": [
+      "luci-auth",
+      "token",
+      "-scopes",
+      "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/datastore",
+      "-lifetime",
+      "3m"
+    ],
+    "cwd": "[CACHE]/builder/engine/src/flutter",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get access token for default account"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "extra.secret.token.should.not.be.logged",
+      "[CLEANUP]/tmp_tmp_2"
+    ],
+    "cwd": "[CACHE]/builder/engine/src/flutter",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "write metric center token"
+  },
+  {
     "cmd": [],
     "name": "Initialize logs"
   },
@@ -1852,13 +1960,15 @@
       "ENGINE_PATH": "[CACHE]/builder",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GCP_PROJECT": "flutter-infra-staging",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
       "LUCI_WORKDIR": "[START_DIR]",
       "OS": "linux",
-      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_2"
     },
     "env_prefixes": {
       "PATH": [
@@ -2083,6 +2193,60 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "remove",
+      "[CLEANUP]/tmp_tmp_2"
+    ],
+    "cwd": "[CACHE]/builder/engine/src/flutter",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "delete metric center token"
+  },
+  {
+    "cmd": [
       "git",
       "rev-parse",
       "HEAD"
@@ -2253,7 +2417,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CLEANUP]/tmp_tmp_2/monorepo/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-x86-jit-release"
+      "[CLEANUP]/tmp_tmp_3/monorepo/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-x86-jit-release"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
@@ -2308,7 +2472,7 @@
       "/path/to/tmp/json",
       "copy",
       "[CACHE]/builder/engine/src/out/android_jit_release_x86/zip_archives/android-x86-jit-release/artifacts.zip",
-      "[CLEANUP]/tmp_tmp_2/monorepo/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-x86-jit-release"
+      "[CLEANUP]/tmp_tmp_3/monorepo/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-x86-jit-release"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
@@ -2364,7 +2528,7 @@
       "----",
       "cp",
       "-r",
-      "[CLEANUP]/tmp_tmp_2/*",
+      "[CLEANUP]/tmp_tmp_3/*",
       "gs://flutter_archives_v2/"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
@@ -2424,7 +2588,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[CLEANUP]/tmp_tmp_3/monorepo"
+      "[CLEANUP]/tmp_tmp_4/monorepo"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
@@ -2479,7 +2643,7 @@
       "/path/to/tmp/json",
       "copy",
       "[CACHE]/builder/engine/src/out/android_jit_release_x86/zip_archives/download.flutter.io",
-      "[CLEANUP]/tmp_tmp_3/monorepo"
+      "[CLEANUP]/tmp_tmp_4/monorepo"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
@@ -2535,7 +2699,7 @@
       "----",
       "cp",
       "-r",
-      "[CLEANUP]/tmp_tmp_3/*",
+      "[CLEANUP]/tmp_tmp_4/*",
       "gs://flutter_archives_v2/"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",

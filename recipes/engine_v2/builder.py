@@ -25,9 +25,8 @@ this recipe in the builds property:
     }
  }
 """
+import contextlib
 import copy
-
-from contextlib import contextmanager
 
 from google.protobuf import struct_pb2
 from PB.recipes.flutter.engine.engine import InputProperties
@@ -101,37 +100,42 @@ def run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes):
 
 def run_tests(api, tests, checkout, env, env_prefixes):
   """Runs sub-build tests."""
+  available_contexts = api.flutter_deps.contexts()
   # Run local tests in the builder to optimize resource usage.
   for test in tests:
-    command = [test.get('language')] if test.get('language') else []
-    # Ideally local tests should be completely hermetic and in theory we can run
-    # them in parallel using futures. I haven't found a flutter engine
-    # configuration with more than one local test but once we find it we
-    # should run the list of tests using parallelism.
-    # TODO(godofredoc): Optimize to run multiple local tests in parallel.
-    command.append(checkout.join(test.get('script')))
-    command.extend(test.get('parameters', []))
-    #api.step(test.get('name'), command)
-    step_name = api.test_utils.test_step_name(test.get('name'))
+    # Run tests within a exitStack context
+    with contextlib.ExitStack() as exit_stack:
+      for context in test.get('contexts', []):
+        exit_stack.enter_context(available_contexts[context](env, env_prefixes))
+      command = [test.get('language')] if test.get('language') else []
+      # Ideally local tests should be completely hermetic and in theory we can run
+      # them in parallel using futures. I haven't found a flutter engine
+      # configuration with more than one local test but once we find it we
+      # should run the list of tests using parallelism.
+      # TODO(godofredoc): Optimize to run multiple local tests in parallel.
+      command.append(checkout.join(test.get('script')))
+      command.extend(test.get('parameters', []))
+      #api.step(test.get('name'), command)
+      step_name = api.test_utils.test_step_name(test.get('name'))
 
-    def run_test():
-      return api.step(step_name, command)
+      def run_test():
+        return api.step(step_name, command)
 
-    # Rerun test step 3 times by default if failing.
-    # TODO(keyonghan): notify tree gardener for test failures/flakes:
-    # https://github.com/flutter/flutter/issues/89308
-    api.logs_util.initialize_logs_collection(env)
-    try:
-      # Run within another context to make the logs env variable available to
-      # test scripts.
-      with api.context(env=env, env_prefixes=env_prefixes):
-        api.retry.wrap(
-            run_test,
-            max_attempts=test.get('max_attempts', 3),
-            step_name=test.get('name')
-        )
-    finally:
-      api.logs_util.upload_logs(test.get('name'))
+      # Rerun test step 3 times by default if failing.
+      # TODO(keyonghan): notify tree gardener for test failures/flakes:
+      # https://github.com/flutter/flutter/issues/89308
+      api.logs_util.initialize_logs_collection(env)
+      try:
+        # Run within another context to make the logs env variable available to
+        # test scripts.
+        with api.context(env=env, env_prefixes=env_prefixes):
+          api.retry.wrap(
+              run_test,
+              max_attempts=test.get('max_attempts', 3),
+              step_name=test.get('name')
+          )
+      finally:
+        api.logs_util.upload_logs(test.get('name'))
 
 
 def ReadBuildConfig(api, checkout_path):
@@ -267,7 +271,8 @@ def GenTests(api):
           }]
       }, "tests": [{
           "name": "mytest", "script": "myscript.sh",
-          "parameters": ["param1", "param2"], "type": "local"
+          "parameters": ["param1", "param2"], "type": "local",
+          "contexts": ["metric_center_token"]
       }]
   }
   yield api.test(

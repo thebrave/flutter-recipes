@@ -66,6 +66,25 @@ def RunSteps(api):
           remote='gs://flutter_archives_v2/monorepo/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/ios-release/Flutter.dSYM.zip'
       )
   ]
+  expected_monorepo_try_results = [
+      ArchivePaths(
+          local=str(api.path['start_dir'].join('src/out/debug/artifacts.zip')),
+          remote='gs://flutter_archives_v2/monorepo_try/flutter_infra_release/flutter/experimental/8945511751514863184/ios/artifacts.zip'
+      ),
+      ArchivePaths(
+          local=str(
+              api.path['start_dir']
+              .join('src/out/release-nobitcode/Flutter.dSYM.zip')
+          ),
+          remote='gs://flutter_archives_v2/monorepo_try/flutter_infra_release/flutter/experimental/8945511751514863184/ios-release-nobitcode/Flutter.dSYM.zip'
+      ),
+      ArchivePaths(
+          local=str(
+              api.path['start_dir'].join('src/out/release/Flutter.dSYM.zip')
+          ),
+          remote='gs://flutter_archives_v2/monorepo_try/flutter_infra_release/flutter/experimental/8945511751514863184/ios-release/Flutter.dSYM.zip'
+      )
+  ]
   expected_try_results = [
       ArchivePaths(
           local=str(api.path['start_dir'].join('src/out/debug/artifacts.zip')),
@@ -87,7 +106,7 @@ def RunSteps(api):
   ]
   env_to_results = {
       'production': expected_results, 'monorepo': expected_monorepo_results,
-      'monorepo_try': [], 'try': expected_try_results
+      'monorepo_try': expected_monorepo_try_results, 'try': expected_try_results
   }
   config = api.properties.get('config')
   results = api.archives.global_generator_paths(checkout, archives)

@@ -192,7 +192,7 @@ def Build(api, checkout, env, env_prefixes, outputs):
     for archive_config in archives:
       outputs[archive_config['name']] = Archive(api, checkout, archive_config)
     api.flutter_bcid.report_stage('upload-complete')
-  # Archive full build. This is inneficient but necessary for global generators.
+  # Archive full build. This is inefficient but necessary for global generators.
   if build.get('cas_archive', True):
     full_build_hash = api.shard_util_v2.archive_full_build(
         checkout.join('out', build.get('name')), build.get('name')

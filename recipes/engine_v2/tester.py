@@ -50,14 +50,17 @@ def RunSteps(api, properties, env_properties):
   builder = api.path['cache'].join('builder')
   flutter = builder.join('flutter')
   if api.monorepo.is_monorepo_try_build:
-    return
-  if api.monorepo.is_monorepo_ci_build:
+    framework_ref = 'refs/heads/main'
+    artifact_url = 'https://storage.googleapis.com/flutter_archives_v2/monorepo_try'
+    engine_version = api.properties.get('try_build_identifier')
+  elif api.monorepo.is_monorepo_ci_build:
     framework_ref = get_monorepo_framework(api)
     artifact_url = 'https://storage.googleapis.com/flutter_archives_v2/monorepo'
+    engine_version = api.buildbucket.gitiles_commit.id
   else:
     framework_ref = 'refs/heads/master'
     artifact_url = 'https://storage.googleapis.com/flutter_archives_v2'
-  engine_version = api.buildbucket.gitiles_commit.id
+    engine_version = api.buildbucket.gitiles_commit.id
   api.repo_util.checkout('flutter', flutter, ref=framework_ref)
   api.file.write_text(
       'update engine version',
@@ -107,7 +110,9 @@ def GenTests(api):
 
   yield api.test(
       'monorepo_tryjob',
-      api.properties(build=build, no_goma=True),
+      api.properties(
+          build=build, no_goma=True, try_build_identifier='81123491'
+      ),
       api.monorepo.try_build(),
   )
 

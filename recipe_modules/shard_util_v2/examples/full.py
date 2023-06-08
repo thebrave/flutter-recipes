@@ -234,3 +234,11 @@ def GenTests(api):
           ]
       ),
   )
+
+  yield api.test(
+      'monorepo_try_led_without_builder_id',
+      api.properties(**props),
+      api.platform.name('linux'),
+      api.monorepo.try_build(build_id=0),
+      api.expect_exception('AssertionError'),
+  )

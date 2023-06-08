@@ -227,6 +227,10 @@ class ShardUtilApi(recipe_api.RecipeApi):
 
       # Override recipe.
       drone_properties['recipe'] = build['recipe']
+      # Pass try build identifier to subbuilds
+      if self.m.monorepo.is_monorepo_try_build:
+        drone_properties['try_build_identifier'
+                        ] = self.m.monorepo.try_build_identifier
       builder_name, bucket = self._drone_name(build)
       parent = self.m.buildbucket.build
       led_data = self.m.led(
@@ -350,6 +354,10 @@ class ShardUtilApi(recipe_api.RecipeApi):
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
       # Override recipe.
       drone_properties['recipe'] = build['recipe']
+      # Pass try build identifier to subbuilds
+      if self.m.monorepo.is_monorepo_try_build:
+        drone_properties['try_build_identifier'
+                        ] = self.m.monorepo.try_build_identifier
       properties = collections.OrderedDict(
           (key, val)
           for key, val in sorted(drone_properties.items())

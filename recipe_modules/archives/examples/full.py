@@ -21,12 +21,11 @@ def RunSteps(api):
   expected_destinations = api.properties.get('expected_destinations')
   results = api.archives.engine_v2_gcs_paths(checkout, config)
   for result in results:
-    if result.remote not in expected_destinations:
-      assert False, 'Unexpected file generated %s' % result.remote
-  if not results:
-    return
-  api.archives.upload_artifact(results[0].local, results[0].remote)
-  api.archives.download(results[0].remote, results[0].local)
+    found = result.remote in expected_destinations
+    assert found, 'Unexpected file generated %s' % result.remote
+  if results:
+    api.archives.upload_artifact(results[0].local, results[0].remote)
+    api.archives.download(results[0].remote, results[0].local)
 
 
 def GenTests(api):
@@ -313,42 +312,39 @@ def GenTests(api):
   )
 
   # Monorepo try with "production" realm in build configuration file.
-  monorepo_try_realm = []
+  monorepo_try_production_realm = [
+      'gs://flutter_archives_v2/monorepo_try/flutter_infra_release/flutter/8112381/android-arm-profile/artifacts.zip',
+      'gs://flutter_archives_v2/monorepo_try/flutter_infra_release/flutter/8112381/android-arm-profile/linux-x64.zip',
+      'gs://flutter_archives_v2/monorepo_try/flutter_infra_release/flutter/8112381/android-arm-profile/symbols.zip',
+      'gs://flutter_archives_v2/monorepo_try/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar',
+      'gs://flutter_archives_v2/monorepo_try/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
+  ]
   yield api.test(
       'monorepo_try_production_realm',
       api.properties(
-          config=archive_config, expected_destinations=monorepo_try_realm
+          config=archive_config,
+          expected_destinations=monorepo_try_production_realm,
+          try_build_identifier='8112381',
       ),
       api.monorepo.try_build(),
   )
 
   # Monorepo try with "experimental" realm in build configuration file.
-  monorepo_try_realm = []
+  monorepo_try_experimental_realm = [
+      'gs://flutter_archives_v2/monorepo_try/flutter_infra_release/flutter/experimental/8112381/android-arm-profile/artifacts.zip',
+      'gs://flutter_archives_v2/monorepo_try/flutter_infra_release/flutter/experimental/8112381/android-arm-profile/linux-x64.zip',
+      'gs://flutter_archives_v2/monorepo_try/flutter_infra_release/flutter/experimental/8112381/android-arm-profile/symbols.zip',
+      'gs://flutter_archives_v2/monorepo_try/download.flutter.io/io/flutter/experimental/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar',
+      'gs://flutter_archives_v2/monorepo_try/download.flutter.io/io/flutter/experimental/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
+  ]
   monorepo_experimental_realm_config = copy.deepcopy(archive_config)
   monorepo_experimental_realm_config['realm'] = 'experimental'
   yield api.test(
       'monorepo_try_experimental_realm',
       api.properties(
-          config=archive_config, expected_destinations=monorepo_try_realm
+          config=monorepo_experimental_realm_config,
+          expected_destinations=monorepo_try_experimental_realm,
+          try_build_identifier='8112381',
       ),
       api.monorepo.try_build(),
-  )
-
-  yield api.test(
-      'failure',
-      api.properties(
-          config=archive_config, expected_destinations=['/abc/cde.zip']
-      ),
-      api.buildbucket.ci_build(
-          project='flutter',
-          bucket='try',
-          git_repo='https://flutter.googlesource.com/mirrors/engine',
-          git_ref='refs/heads/main'
-      ),
-      api.step_data(
-          'git rev-parse',
-          stdout=api.raw_io
-          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
-      ), api.expect_exception('AssertionError'),
-      api.post_process(StatusException)
   )

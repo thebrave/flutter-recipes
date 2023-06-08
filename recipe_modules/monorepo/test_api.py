@@ -19,7 +19,7 @@ class MonorepoTestApi(recipe_test_api.RecipeTestApi):
         build_number=123,
     )
 
-  def try_build(self):
+  def try_build(self, **kwargs):
     """An example monorepo try build"""
     return self.m.buildbucket.try_build(
         project='dart',
@@ -29,4 +29,5 @@ class MonorepoTestApi(recipe_test_api.RecipeTestApi):
         git_repo='https://dart.googlesource.com/sdk',
         change_number=9425,
         patch_set=3,
+        **kwargs
     )

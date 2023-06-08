@@ -4,6 +4,14 @@
     "name": "launch builds"
   },
   {
+    "cmd": [],
+    "name": "launch builds.get buildbucket id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@8945511751514863184@@@"
+    ]
+  },
+  {
     "cmd": [
       "bb",
       "batch",
@@ -24,7 +32,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try.monorepo\", \"builder\": \"flutter-win-ios_debug-try\", \"project\": \"dart\"}, \"dimensions\": [{\"key\": \"cpu\", \"value\": \"arm64\"}, {\"key\": \"dimension1\", \"value\": \"abc\"}, {\"key\": \"os\", \"value\": \"Windows-10\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"9425\", \"host\": \"dart-review.googlesource.com\", \"patchset\": \"3\", \"project\": \"sdk\"}], \"priority\": 30, \"properties\": {\"build\": {\"dimensions\": {\"cpu\": \"arm64\"}, \"drone_dimensions\": [\"dimension1=abc\", \"os=Windows-10\"], \"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}, \"recipe\": \"engine_v2/builder\"}, \"environment\": \"Staging\", \"gclient_variables\": {}, \"recipe\": \"engine_v2/builder\", \"task_name\": \"mytask\", \"tests\": [{\"dependencies\": [\"ios_debug\"], \"name\": \"felt_test\", \"parameters\": [\"test\"], \"scripts\": [\"out/script.sh\"]}]}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try.monorepo\", \"builder\": \"flutter-win-ios_debug-try\", \"project\": \"dart\"}, \"dimensions\": [{\"key\": \"cpu\", \"value\": \"arm64\"}, {\"key\": \"dimension1\", \"value\": \"abc\"}, {\"key\": \"os\", \"value\": \"Windows-10\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"9425\", \"host\": \"dart-review.googlesource.com\", \"patchset\": \"3\", \"project\": \"sdk\"}], \"priority\": 30, \"properties\": {\"build\": {\"dimensions\": {\"cpu\": \"arm64\"}, \"drone_dimensions\": [\"dimension1=abc\", \"os=Windows-10\"], \"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}, \"recipe\": \"engine_v2/builder\"}, \"environment\": \"Staging\", \"gclient_variables\": {}, \"recipe\": \"engine_v2/builder\", \"task_name\": \"mytask\", \"tests\": [{\"dependencies\": [\"ios_debug\"], \"name\": \"felt_test\", \"parameters\": [\"test\"], \"scripts\": [\"out/script.sh\"]}], \"try_build_identifier\": \"8945511751514863184\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -124,7 +132,8 @@
       "@@@STEP_LOG_LINE@request@                \"out/script.sh\"@@@",
       "@@@STEP_LOG_LINE@request@              ]@@@",
       "@@@STEP_LOG_LINE@request@            }@@@",
-      "@@@STEP_LOG_LINE@request@          ]@@@",
+      "@@@STEP_LOG_LINE@request@          ], @@@",
+      "@@@STEP_LOG_LINE@request@          \"try_build_identifier\": \"8945511751514863184\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", @@@",
       "@@@STEP_LOG_LINE@request@        \"swarming\": {@@@",
@@ -491,6 +500,14 @@
     "name": "launch builds (2)"
   },
   {
+    "cmd": [],
+    "name": "launch builds (2).get buildbucket id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@8945511751514863184@@@"
+    ]
+  },
+  {
     "cmd": [
       "bb",
       "batch",
@@ -511,7 +528,7 @@
       }
     },
     "name": "launch builds (2).schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try.monorepo\", \"builder\": \"flutter-None-felt_test-try\", \"project\": \"dart\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"9425\", \"host\": \"dart-review.googlesource.com\", \"patchset\": \"3\", \"project\": \"sdk\"}], \"priority\": 30, \"properties\": {\"build\": {\"dependencies\": [\"ios_debug\"], \"name\": \"felt_test\", \"parameters\": [\"test\"], \"recipe\": \"engine_v2/tester\", \"resolved_deps\": [{\"full_build\": \"123\", \"ios_debug\": \"bcd\", \"web_tests\": \"abc\"}], \"scripts\": [\"out/script.sh\"]}, \"environment\": \"Staging\", \"gclient_variables\": {}, \"recipe\": \"engine_v2/tester\", \"task_name\": \"mytask\", \"tests\": [{\"dependencies\": [\"ios_debug\"], \"name\": \"felt_test\", \"parameters\": [\"test\"], \"scripts\": [\"out/script.sh\"]}]}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-00000000133a\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try.monorepo\", \"builder\": \"flutter-None-felt_test-try\", \"project\": \"dart\"}, \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"9425\", \"host\": \"dart-review.googlesource.com\", \"patchset\": \"3\", \"project\": \"sdk\"}], \"priority\": 30, \"properties\": {\"build\": {\"dependencies\": [\"ios_debug\"], \"name\": \"felt_test\", \"parameters\": [\"test\"], \"recipe\": \"engine_v2/tester\", \"resolved_deps\": [{\"full_build\": \"123\", \"ios_debug\": \"bcd\", \"web_tests\": \"abc\"}], \"scripts\": [\"out/script.sh\"]}, \"environment\": \"Staging\", \"gclient_variables\": {}, \"recipe\": \"engine_v2/tester\", \"task_name\": \"mytask\", \"tests\": [{\"dependencies\": [\"ios_debug\"], \"name\": \"felt_test\", \"parameters\": [\"test\"], \"scripts\": [\"out/script.sh\"]}], \"try_build_identifier\": \"8945511751514863184\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-00000000133a\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -593,7 +610,8 @@
       "@@@STEP_LOG_LINE@request@                \"out/script.sh\"@@@",
       "@@@STEP_LOG_LINE@request@              ]@@@",
       "@@@STEP_LOG_LINE@request@            }@@@",
-      "@@@STEP_LOG_LINE@request@          ]@@@",
+      "@@@STEP_LOG_LINE@request@          ], @@@",
+      "@@@STEP_LOG_LINE@request@          \"try_build_identifier\": \"8945511751514863184\"@@@",
       "@@@STEP_LOG_LINE@request@        }, @@@",
       "@@@STEP_LOG_LINE@request@        \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-00000000133a\", @@@",
       "@@@STEP_LOG_LINE@request@        \"swarming\": {@@@",

@@ -19,6 +19,7 @@ ANDROID_ARTIFACTS_BUCKET = 'download.flutter.io'
 
 # Monorepo constant.
 MONOREPO = 'monorepo'
+MONOREPO_TRY_BUCKET = 'monorepo-try-bucket'
 
 # Used for mock paths
 DIRECTORY = 'DIRECTORY'
@@ -39,6 +40,7 @@ MOCK_POM_PATH = (
 LUCI_TO_GCS_PREFIX = {
     'flutter': 'flutter_infra_release',
     MONOREPO: 'flutter_archives_v2/monorepo/flutter_infra_release',
+    MONOREPO_TRY_BUCKET: 'flutter_archives_v2/monorepo_try/flutter_infra_release',
     'prod': 'flutter_infra_release',
     'staging': 'flutter_archives_v2/flutter_infra_release',
     'try': 'flutter_archives_v2/flutter_infra_release',
@@ -47,7 +49,8 @@ LUCI_TO_GCS_PREFIX = {
 
 # Bucket + initial prefix for artifact destination.
 LUCI_TO_ANDROID_GCS_PREFIX = {
-    'flutter': '', MONOREPO: 'flutter_archives_v2/monorepo', 'prod': '',
+    'flutter': '', MONOREPO: 'flutter_archives_v2/monorepo',
+    MONOREPO_TRY_BUCKET: 'flutter_archives_v2/monorepo_try', 'prod': '',
     'staging': 'flutter_archives_v2', 'try': 'flutter_archives_v2',
     'try.shadow': 'flutter_archives_v2'
 }
@@ -162,18 +165,17 @@ class ArchivesApi(recipe_api.RecipeApi):
     artifact_realm = REALM_TO_PATH.get(
         archive_config.get('realm', ''), 'experimental'
     )
-    # Do not archive if this is a monorepo try build.
-    if self.m.monorepo.is_monorepo_try_build:
-      return results
-
     # Calculate prefix and commit.
-    is_monorepo = self.m.buildbucket.gitiles_commit.project == MONOREPO
-    bucket = MONOREPO if is_monorepo else self.m.buildbucket.build.builder.bucket
     file_list = self._full_path_list(checkout, archive_config)
-    if is_monorepo:
+    if self.m.monorepo.is_monorepo_try_build:
+      commit = self.m.properties.get('try_build_identifier')
+      bucket = MONOREPO_TRY_BUCKET
+    elif self.m.monorepo.is_monorepo_ci_build:
       commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))
+      bucket = MONOREPO
     else:
       commit = self.m.repo_util.get_commit(checkout.join('flutter'))
+      bucket = self.m.buildbucket.build.builder.bucket
 
     for include_path in file_list:
       is_android_artifact = ANDROID_ARTIFACTS_BUCKET in include_path
@@ -230,17 +232,16 @@ class ArchivesApi(recipe_api.RecipeApi):
     """
     results = []
 
-    # Do not archive if this is a monorepo try build.
-    if self.m.monorepo.is_monorepo_try_build:
-      return results
-
     # Calculate prefix and commit.
-    is_monorepo = self.m.buildbucket.gitiles_commit.project == MONOREPO
-    bucket = MONOREPO if is_monorepo else self.m.buildbucket.build.builder.bucket
-    if is_monorepo:
+    if self.m.monorepo.is_monorepo_try_build:
+      commit = self.m.monorepo.try_build_identifier
+      bucket = MONOREPO_TRY_BUCKET
+    elif self.m.monorepo.is_monorepo_ci_build:
       commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))
+      bucket = MONOREPO
     else:
       commit = self.m.repo_util.get_commit(checkout.join('flutter'))
+      bucket = self.m.buildbucket.build.builder.bucket
     bucket_and_prefix = LUCI_TO_GCS_PREFIX.get(bucket)
 
     for archive in archives:

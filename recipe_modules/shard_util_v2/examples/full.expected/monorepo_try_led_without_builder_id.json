@@ -1,0 +1,47 @@
+[
+  {
+    "cmd": [],
+    "name": "launch builds",
+    "~followup_annotations": [
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch builds.get buildbucket id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "RECIPE CRASH (Uncaught exception)",
+    "~followup_annotations": [
+      "@@@STEP_EXCEPTION@@@",
+      "The recipe has crashed at point 'Uncaught exception'!",
+      "",
+      "Traceback (most recent call last):",
+      "  File \"RECIPE_REPO[flutter]/recipe_modules/shard_util_v2/examples/full.py\", line 40, in RunSteps",
+      "    reqs = api.shard_util_v2.schedule_builds(build_configs, presentation)",
+      "  File \"RECIPE_REPO[flutter]/recipe_modules/shard_util_v2/api.py\", line 141, in schedule_builds",
+      "    return self.schedule(updated_builds, presentation, branch=branch)",
+      "  File \"RECIPE_REPO[flutter]/recipe_modules/shard_util_v2/api.py\", line 181, in schedule",
+      "    builds = self._schedule_with_led(build_list)",
+      "  File \"RECIPE_REPO[flutter]/recipe_modules/shard_util_v2/api.py\", line 233, in _schedule_with_led",
+      "    ] = self.m.monorepo.try_build_identifier",
+      "  File \"RECIPE_REPO[flutter]/recipe_modules/monorepo/api.py\", line 47, in try_build_identifier",
+      "    self.m.step.empty(",
+      "  File \"RECIPE_REPO[recipe_engine]/recipe_modules/step/api.py\", in empty",
+      "    ret.presentation.status = status",
+      "  File \"RECIPE_REPO[recipe_engine]/recipe_engine/engine_types.py\", in status",
+      "    assert val in self.STATUSES",
+      "AssertionError()"
+    ]
+  },
+  {
+    "failure": {
+      "humanReason": "Uncaught Exception: AssertionError()"
+    },
+    "name": "$result"
+  }
+]

@@ -98,6 +98,18 @@ def run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes):
     api.step(generator_task.get('name'), cmd)
 
 
+def _replace_magic_envs(command, env):
+  """Replaces allowed listed env variables by its value."""
+  MAGIC_ENV_DICT = {"${FLUTTER_LOGS_DIR}": "FLUTTER_LOGS_DIR"}
+  result = []
+  for part in command:
+    if part in MAGIC_ENV_DICT.keys():
+      result.append(env[MAGIC_ENV_DICT[part]])
+    else:
+      result.append(part)
+  return result
+
+
 def run_tests(api, tests, checkout, env, env_prefixes):
   """Runs sub-build tests."""
   available_contexts = api.flutter_deps.contexts()
@@ -115,11 +127,12 @@ def run_tests(api, tests, checkout, env, env_prefixes):
       # TODO(godofredoc): Optimize to run multiple local tests in parallel.
       command.append(checkout.join(test.get('script')))
       command.extend(test.get('parameters', []))
-      #api.step(test.get('name'), command)
       step_name = api.test_utils.test_step_name(test.get('name'))
 
       def run_test():
-        return api.step(step_name, command)
+        # Replace MAGIC_ENVS
+        updated_command = _replace_magic_envs(command, env)
+        return api.step(step_name, updated_command)
 
       # Rerun test step 3 times by default if failing.
       # TODO(keyonghan): notify tree gardener for test failures/flakes:
@@ -271,8 +284,8 @@ def GenTests(api):
           }]
       }, "tests": [{
           "name": "mytest", "script": "myscript.sh",
-          "parameters": ["param1", "param2"], "type": "local",
-          "contexts": ["metric_center_token"]
+          "parameters": ["param1", "param2", '${FLUTTER_LOGS_DIR}'],
+          "type": "local", "contexts": ["metric_center_token"]
       }]
   }
   yield api.test(

@@ -188,29 +188,99 @@
     "name": "Dependencies"
   },
   {
-    "cmd": [],
-    "name": "Dependencies.download avd package",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
+    "cmd": [
+      "flutter",
+      "doctor"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "name": "flutter doctor",
+    "timeout": 300
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CACHE]/avd"
+      "dart",
+      "pub",
+      "get"
     ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
     "infra_step": true,
-    "name": "Dependencies.download avd package.Ensure avd cache",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
+    "name": "dart pub get"
+  },
+  {
+    "cmd": [
+      "flutter",
+      "doctor",
+      "--verbose"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "name": "flutter doctor (2)",
+    "timeout": 300
+  },
+  {
+    "cmd": [],
+    "name": "download avd package"
   },
   {
     "cmd": [
@@ -225,7 +295,7 @@
       "-json-output",
       "/path/to/tmp/json"
     ],
-    "cwd": "[CACHE]/avd",
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -237,10 +307,15 @@
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "true"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
@@ -253,9 +328,9 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "Dependencies.download avd package.ensure_installed",
+    "name": "download avd package.ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
@@ -268,107 +343,6 @@
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
     ]
-  },
-  {
-    "cmd": [
-      "flutter",
-      "doctor"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "name": "flutter doctor",
-    "timeout": 300
-  },
-  {
-    "cmd": [
-      "dart",
-      "pub",
-      "get"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "name": "dart pub get"
-  },
-  {
-    "cmd": [
-      "flutter",
-      "doctor",
-      "--verbose"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "name": "flutter doctor (2)",
-    "timeout": 300
   },
   {
     "cmd": [],
@@ -406,7 +380,8 @@
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -460,7 +435,8 @@
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -513,7 +489,8 @@
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -552,7 +529,8 @@
         "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -596,8 +574,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -615,10 +591,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "name": "run abc",
@@ -644,8 +618,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -663,10 +635,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "name": "kill and cleanup avd.Kill emulator cleanup",
@@ -681,8 +651,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -700,10 +668,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "name": "kill and cleanup avd.list processes",
@@ -732,8 +698,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -751,10 +715,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -777,8 +739,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -796,10 +756,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -830,8 +788,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -849,10 +805,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -874,8 +828,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -893,10 +845,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -912,8 +862,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -931,10 +879,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -950,8 +896,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -969,10 +913,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -988,8 +930,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -1007,10 +947,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -1026,8 +964,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -1045,10 +981,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -1068,8 +1002,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -1087,10 +1019,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,
@@ -1103,8 +1033,6 @@
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -1122,10 +1050,8 @@
       "PATH": [
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "infra_step": true,

@@ -53,66 +53,56 @@ def RunSteps(api, properties, env_properties):
         ref=api.properties.get('git_ref'),
     )
 
-  avd_api_version = '31'  # 31 is the first version that supports x86_64
-  for dep in api.properties.get('dependencies', []):
-    if dep['dependency'] == 'android_virtual_device':
-      avd_api_version = dep['version']
-      break
-
   env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
   api.flutter_deps.required_deps(
       env, env_prefixes, api.properties.get('dependencies', [])
   )
 
-  api.android_virtual_device.start(env, env_prefixes)
-  api.android_virtual_device.setup(env, env_prefixes)
-
-  bundletool_dir = cache_root.join('bundletool')
-  bundletool_jar = bundletool_dir.join('bundletool.jar')
-  with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
-    with api.step.nest('prepare environment'), api.step.defer_results():
-      # This prevents junk analytics from being sent due to testing
-      api.step(
-          'flutter config --no-analytics',
-          ['flutter', 'config', '--no-analytics'],
-      )
-      api.step(
-          'flutter doctor',
-          ['flutter', 'doctor'],
-      )
-      api.step(
-          'flutter devices',
-          ['flutter', 'devices', '--device-timeout=40', '--verbose'],
-      )
-      api.step(
-          'download dependencies',
-          ['flutter', 'update-packages', '-v'],
-          infra_step=True,
-      )
-      api.cipd.ensure(
-          bundletool_dir,
-          api.cipd.EnsureFile().add_package(
-              'flutter/android/bundletool',
-              '0xeDa85nRhdQfi3iN2dK8PPluwI73z9San_Afuj3CfgC'
-          )
-      )
-  test_dir = checkout_path.join(
-      'dev', 'integration_tests', 'deferred_components_test'
-  )
-  with api.context(env=env, env_prefixes=env_prefixes,
-                   cwd=test_dir), api.step.defer_results():
-    # These assets are not allowed to be checked into the repo,
-    # so they are downloaded separately here.
-    api.step('download assets script', ['./download_assets.sh'])
-    api.step(
-        'Deferred components release tests',
-        ['./run_release_test.sh',
-         str(bundletool_jar), env['ADB_PATH']],
-        timeout=700,
+  with api.android_virtual_device(env=env, env_prefixes=env_prefixes):
+    bundletool_dir = cache_root.join('bundletool')
+    bundletool_jar = bundletool_dir.join('bundletool.jar')
+    with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
+      with api.step.nest('prepare environment'), api.step.defer_results():
+        # This prevents junk analytics from being sent due to testing
+        api.step(
+            'flutter config --no-analytics',
+            ['flutter', 'config', '--no-analytics'],
+        )
+        api.step(
+            'flutter doctor',
+            ['flutter', 'doctor'],
+        )
+        api.step(
+            'flutter devices',
+            ['flutter', 'devices', '--device-timeout=40', '--verbose'],
+        )
+        api.step(
+            'download dependencies',
+            ['flutter', 'update-packages', '-v'],
+            infra_step=True,
+        )
+        api.cipd.ensure(
+            bundletool_dir,
+            api.cipd.EnsureFile().add_package(
+                'flutter/android/bundletool',
+                '0xeDa85nRhdQfi3iN2dK8PPluwI73z9San_Afuj3CfgC'
+            )
+        )
+    test_dir = checkout_path.join(
+        'dev', 'integration_tests', 'deferred_components_test'
     )
-    # TODO(garyq): add flutter drive tests after https://github.com/flutter/flutter/issues/88906 is resolved
+    with api.context(env=env, env_prefixes=env_prefixes,
+                     cwd=test_dir), api.step.defer_results():
+      # These assets are not allowed to be checked into the repo,
+      # so they are downloaded separately here.
+      api.step('download assets script', ['./download_assets.sh'])
+      api.step(
+          'Deferred components release tests',
+          ['./run_release_test.sh',
+           str(bundletool_jar), env['ADB_PATH']],
+          timeout=700,
+      )
 
-    api.android_virtual_device.kill(env['EMULATOR_PID'])
     # This is to clean up leaked processes.
     api.os_utils.kill_processes()
     # Collect memory/cpu/process after task execution.

@@ -12,9 +12,10 @@ def RunSteps(api):
   env = {'USE_EMULATOR': api.properties.get('use_emulator', False)}
   env_prefixes = {}
   avd_root = api.path['cache'].join('builder', 'avd')
-  api.android_virtual_device.download(
-      avd_root=avd_root, env=env, env_prefixes=env_prefixes, version='31'
-  )
+  with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
+                                  version="31"):
+    api.step('Do something', ['echo', 'hello'])
+  # Calling a second time to ensure we have coverage for duplicated initialization.
   with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
                                   version="31"):
     api.step('Do something', ['echo', 'hello'])
@@ -28,6 +29,14 @@ def GenTests(api):
       api.properties(use_emulator="true"),
       api.step_data(
           'start avd.Start Android emulator (API level %s)' % avd_api_version,
+          stdout=api.raw_io.output_text(
+              'android_' + avd_api_version +
+              '_google_apis_x86|emulator-5554 started (pid: 17687)'
+          )
+      ),
+      api.step_data(
+          'start avd (2).Start Android emulator (API level %s)' %
+          avd_api_version,
           stdout=api.raw_io.output_text(
               'android_' + avd_api_version +
               '_google_apis_x86|emulator-5554 started (pid: 17687)'
@@ -47,6 +56,18 @@ def GenTests(api):
       ),
       api.step_data(
           'kill and cleanup avd.list processes',
+          stdout=api.raw_io.output_text('12345 qemu-system blah')
+      ),
+      api.step_data(
+          'start avd (2).Start Android emulator (API level %s)' %
+          avd_api_version,
+          stdout=api.raw_io.output_text(
+              'android_' + avd_api_version +
+              '_google_apis_x86|emulator-5554 started (pid: 17687)'
+          )
+      ),
+      api.step_data(
+          'kill and cleanup avd (2).list processes',
           stdout=api.raw_io.output_text('12345 qemu-system blah')
       ),
   )

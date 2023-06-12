@@ -90,7 +90,11 @@ def RunSteps(api):
     deps = api.properties.get('dependencies', [])
     # TODO: If deps contains dart_sdk and we are running a local engine,
     # we don't want to fetch it with cipd, so don't fetch it with required_deps
-    api.flutter_deps.required_deps(env, env_prefixes, deps)
+    api.flutter_deps.required_deps(
+        env,
+        env_prefixes,
+        deps,
+    )
 
   target_tags = api.properties.get('tags', [])
   device_tags = api.test_utils.collect_benchmark_tags(
@@ -159,7 +163,7 @@ def RunSteps(api):
                   api.android_virtual_device(
                       env=env,
                       env_prefixes=env_prefixes,
-                      version=dep_list.get('android_virtual_device', None)
+                      version=api.properties.get('avd_version')
                   )
               )
             test_status = api.test_utils.run_test(

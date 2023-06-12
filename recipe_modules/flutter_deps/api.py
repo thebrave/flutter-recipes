@@ -74,7 +74,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     """
     available_deps = {
         'android_sdk': self.android_sdk,
-        'android_virtual_device': self.android_virtual_device,
+        # 'android_virtual_device': self.android_virtual_device,
         'apple_signing': self.apple_signing,
         'arm_tools': self.arm_tools,
         'certs': self.certs,
@@ -111,7 +111,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
             '''.format(dependency)
         raise ValueError(msg)
       parsed_deps.append(dependency)
-      if dependency in ['xcode', 'gems', 'swift']:
+      if dependency in ['xcode', 'gems', 'swift', 'android_virtual_device']:
         continue
       dep_funct = available_deps.get(dependency)
       if not dep_funct:
@@ -683,17 +683,6 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       temp_paths = copy.deepcopy(paths)
       temp_paths.append(jazzy_path.join('ruby', ruby_version, 'bin'))
       env_prefixes['PATH'] = temp_paths
-
-  def android_virtual_device(self, env, env_prefixes, version=None):
-    """Installs and starts an android avd emulator.
-
-    Args:
-      env(dict): Current environment variables.
-      env_prefixes(dict):  Current environment prefixes variables.
-      version: Android API version of the avd.
-    """
-    avd_root = self.m.path['cache'].join('avd')
-    self.m.android_virtual_device.download(avd_root, env, env_prefixes, version)
 
   def contexts(self):
     return {'metric_center_token': self.m.token_util.metric_center_token}

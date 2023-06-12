@@ -49,11 +49,7 @@ def RunSteps(api, properties, env_properties):
       env, env_prefixes, api.properties.get('dependencies', [])
   )
 
-  deps = api.properties.get('dependencies', [])
-  dep_list = {d['dependency']: d.get('version') for d in deps}
-  with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
-                                  version=dep_list.get('android_virtual_device',
-                                                       None)):
+  with api.android_virtual_device(env=env, env_prefixes=env_prefixes):
     with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
       with api.step.nest('prepare environment'), api.step.defer_results():
         # This prevents junk analytics from being sent due to testing

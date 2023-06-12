@@ -71,7 +71,6 @@ def RunSteps(api):
   api.flutter_deps.jazzy(env, env_prefixes, '')
   api.flutter_deps.contexts()
   if api.platform.is_linux:
-    api.flutter_deps.android_virtual_device(env, env_prefixes, '31')
     api.flutter_deps.gh_cli(env, env_prefixes, 'latest')
 
   # Gems dependency requires to run from a flutter_environment.

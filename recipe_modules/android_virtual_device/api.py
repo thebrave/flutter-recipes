@@ -15,45 +15,55 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
 
   def __init__(self, *args, **kwargs):
     super(AndroidVirtualDeviceApi, self).__init__(*args, **kwargs)
-    self.env = {}
-    self.env_prefixes = {}
-    self.version = "31"
     self.emulator_pid = -1
     self.avd_root = None
     self.adb_path = None
+    self._initialized = False
+
+  def _initialize(self, env, env_prefixes):
+    """Initilizes the android emulator environment if needed."""
+    if self._initialized:
+      # Do not download artifacts just update envs.
+      env['AVD_ROOT'] = self.avd_root
+      env['ADB_PATH'] = self.adb_path
+      return
+    self.avd_root = self.m.path['cache'].join('avd')
+    self.download(
+        env=env,
+        env_prefixes=env_prefixes,
+    )
+    self._initialized = True
 
   @contextmanager
-  def __call__(self, env, env_prefixes, version):
-    self.env = env
+  def __call__(self, env, env_prefixes, version="31"):
+    version = version or self.m.properties.get('avd_version')
+    self._initialize(env, env_prefixes)
     try:
-      self.version = version
-      self.emulator_pid = self.start(self.env, self.env_prefixes, self.version)
+      self.emulator_pid = self.start(env, env_prefixes, version)
       env['EMULATOR_PID'] = self.emulator_pid
-      self.setup(self.env, self.env_prefixes)
+      self.setup(env, env_prefixes)
       yield
     finally:
       self.kill(self.emulator_pid)
 
-  def download(self, avd_root, env, env_prefixes, version=None):
+  def download(self, env, env_prefixes):
     """Installs the android avd emulator package.
 
     Args:
       env(dict): Current environment variables.
       env_prefixes(dict):  Current environment prefixes variables.
-      avd_root: The root path to install the AVD package.
+      avd_root(Path): The root path to install the AVD package.
     """
     assert self.m.platform.is_linux
-    self.avd_root = avd_root
-    self.version = version
+    version = self.m.properties.get('avd_cipd_version', AVD_CIPD_IDENTIFIER)
     with self.m.step.nest('download avd package'):
-      self.m.file.ensure_directory('Ensure avd cache', self.avd_root)
-      with self.m.context(env=env, env_prefixes=env_prefixes,
-                          cwd=self.avd_root), self.m.depot_tools.on_path():
+      with self.m.context(
+          env=env, env_prefixes=env_prefixes), self.m.depot_tools.on_path():
         # Download and install AVD
         self.m.cipd.ensure(
             self.avd_root,
             self.m.cipd.EnsureFile().add_package(
-                'chromium/tools/android/avd/linux-amd64', AVD_CIPD_IDENTIFIER
+                'chromium/tools/android/avd/linux-amd64', version
             )
         )
 
@@ -75,7 +85,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       version(string): The android API version of the emulator as a string.
     """
-    self.version = version or self.version or '31'
+    self.version = version or '31'
     self.emulator_pid = ''
     with self.m.step.nest('start avd'):
       with self.m.context(env=env, env_prefixes=env_prefixes,

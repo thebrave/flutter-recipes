@@ -86,21 +86,19 @@ def RunSteps(api, properties, env_properties):
       env, env_prefixes, api.properties.get('dependencies', [])
   )
 
-  api.android_virtual_device.start(env, env_prefixes)
-  api.android_virtual_device.setup(env, env_prefixes)
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
+  with api.android_virtual_device(env=env, env_prefixes=env_prefixes):
 
-  with api.context(cwd=cache_root, env=env,
-                   env_prefixes=env_prefixes), api.depot_tools.on_path():
-    gn_cmd = ['--android', '--android-cpu=x64', '--no-lto']
-    api.build_util.run_gn(gn_cmd, checkout)
-    api.build_util.build(
-        'android_debug_x64', checkout,
-        ['scenario_app', 'flutter_shell_native_unittests']
-    )
-    RunAndroidUnitTests(api, env, env_prefixes)
-    RunAndroidScenarioTests(api, env, env_prefixes)
-    api.step('Kill emulator', ['kill', '-9', env['EMULATOR_PID']])
+    with api.context(cwd=cache_root, env=env,
+                     env_prefixes=env_prefixes), api.depot_tools.on_path():
+      gn_cmd = ['--android', '--android-cpu=x64', '--no-lto']
+      api.build_util.run_gn(gn_cmd, checkout)
+      api.build_util.build(
+          'android_debug_x64', checkout,
+          ['scenario_app', 'flutter_shell_native_unittests']
+      )
+      RunAndroidUnitTests(api, env, env_prefixes)
+      RunAndroidScenarioTests(api, env, env_prefixes)
 
   with api.step.defer_results():
     # This is to clean up leaked processes.

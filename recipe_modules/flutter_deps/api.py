@@ -685,4 +685,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env_prefixes['PATH'] = temp_paths
 
   def contexts(self):
-    return {'metric_center_token': self.m.token_util.metric_center_token}
+    return {
+        'metric_center_token': self.m.token_util.metric_center_token,
+        'android_virtual_device': self.m.android_virtual_device
+    }

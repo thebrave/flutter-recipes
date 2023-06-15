@@ -23,11 +23,12 @@ DEPS = [
 stableTagRegex = r'^(\d+)\.(\d+)\.(\d+)$'
 betaTagRegex = r'^(\d+)\.(\d+)\.(\d+)-(\d+)\.(\d+)\.pre$'
 
-
-def isValidTag(tag):
+def isValidTag(tag, release_channel):
   stable = re.search(stableTagRegex, tag)
-  development = re.search(betaTagRegex, tag)
-  return stable or development
+  beta = re.search(betaTagRegex, tag)
+  if release_channel=='stable':
+    return stable
+  return beta
 
 
 """
@@ -61,7 +62,7 @@ def RunSteps(api):
   engine_git_url = 'https://github.com/flutter/engine'
 
   # Validate the given tag is correctly formatted for either stable or latest
-  assert isValidTag(tag)
+  assert isValidTag(tag, release_channel)
 
   # This recipe is only able to be triggered on linux, and the other platforms
   # are not necessary
@@ -147,6 +148,19 @@ def GenTests(api):
   for tag in ('1.2.3-4.5.pre', '1.2.3'):
     for release_channel in ('stable', 'beta'):
       for force in ('True', 'False'):
+        if ((tag == '1.2.3-4.5.pre' and release_channel=='stable') or (tag == '1.2.3' and release_channel=='beta')):
+          # These are invalid combinations of tag and release_channel.
+          # Expect assertion errors for these combinations
+          post_processing = [api.expect_exception('AssertionError')]
+        else:
+          # Remaining tag combinations of tag and release channel are valid.
+          post_processing = [api.post_process(
+                post_process.MustRun, 'Tag and push release on flutter/flutter'
+            ),
+            api.post_process(
+                post_process.MustRun, 'Tag and push release on flutter/engine'
+            ),
+            api.post_process(post_process.StatusSuccess)]
         test = api.test(
             '%s_%s_%s%s' % (
                 'flutter-2.8-candidate.9', tag, release_channel,
@@ -160,12 +174,6 @@ def GenTests(api):
                 force=force
             ),
             api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-            api.post_process(
-                post_process.MustRun, 'Tag and push release on flutter/flutter'
-            ),
-            api.post_process(
-                post_process.MustRun, 'Tag and push release on flutter/engine'
-            ),
-            api.post_process(post_process.StatusSuccess),
+            *post_processing
         )
         yield test

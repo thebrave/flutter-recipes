@@ -24,6 +24,8 @@ from PB.go.chromium.org.luci.buildbucket.proto \
 
 from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 
+import json
+
 DEPS = [
     'depot_tools/depot_tools',
     'flutter/archives',
@@ -182,7 +184,7 @@ def RunSteps(api, properties, env_properties):
   if not_experimental and dart_internal_build:
     api.pubsub.publish_message(
         BUILD_RESULT_PUBSUB_ENDPOINT,
-        api.buildbucket.build.id,
+        json.dumps({"buildbucket_id": api.buildbucket.build.id}),
         step_name='Publish build results'
     )
 

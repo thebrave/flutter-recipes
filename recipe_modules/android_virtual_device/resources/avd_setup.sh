@@ -22,3 +22,5 @@ $1 shell input keyevent 82
 $1 shell settings put global development_settings_enabled 1
 # Enable MTP file transfer
 $1 shell svc usb setFunctions mtp
+# Wait for device to boot and unlock device's screen.
+$1 wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'

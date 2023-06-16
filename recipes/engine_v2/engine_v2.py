@@ -184,7 +184,7 @@ def RunSteps(api, properties, env_properties):
   if not_experimental and dart_internal_build:
     api.pubsub.publish_message(
         BUILD_RESULT_PUBSUB_ENDPOINT,
-        json.dumps({"buildbucket_id": api.buildbucket.build.id}),
+        json.dumps({"buildbucket_id": api.buildbucket.build_id}),
         step_name='Publish build results'
     )
 

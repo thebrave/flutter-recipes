@@ -80,6 +80,7 @@ def RunSteps(api):
 
 def run_test(api, result, packages_checkout_path, env):
   """Run tests sequentially following the script"""
+  failed_tasks = []
   for task in result.json.output['tasks']:
     script_path = packages_checkout_path.join(task['script'])
     cmd = ['bash', script_path]
@@ -87,11 +88,20 @@ def run_test(api, result, packages_checkout_path, env):
       args = task['args']
       cmd.extend(args)
     api.logs_util.initialize_logs_collection(env)
-    try:
-      with api.context(env=env):
-        api.step(task['name'], cmd)
-    finally:
-      api.logs_util.upload_logs(task['name'])
+
+    # Flag showing whether the task should always run regardless of previous failures.
+    always_run_task = task['always'] if 'always' in task else False
+    with api.context(env=env):
+      # Runs the task in two scenarios:
+      #   1) all earlier tasks pass
+      #   2) there are earlier task failures, but the current task is marked as `always: True`.
+      if not failed_tasks or always_run_task:
+        step = api.step(task['name'], cmd, raise_on_failure=False)
+        if step.retcode != 0:
+          failed_tasks.append(task['name'])
+    api.logs_util.upload_logs(task['name'])
+  if failed_tasks:
+    raise api.step.StepFailure('Tasks failed: %s' % ','.join(failed_tasks))
 
 
 def GenTests(api):
@@ -118,4 +128,22 @@ def GenTests(api):
           version_file='flutter_master.version',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
       ), api.step_data('read yaml.parse', api.json.output(tasks_dict))
+  )
+  multiple_tasks_dict = {
+      'tasks': [{'name': 'one', 'script': 'myscript', 'args': ['arg1', 'arg2']},
+                {
+                    'name': 'two', 'script': 'myscript',
+                    'args': ['arg1', 'arg2'], 'always': True
+                }]
+  }
+  yield api.test(
+      'multiple_tests_with_always',
+      api.repo_util.flutter_environment_data(flutter_path),
+      api.properties(
+          channel='master',
+          version_file='flutter_master.version',
+      ),
+      api.step_data('read yaml.parse', api.json.output(multiple_tasks_dict)),
+      api.step_data('Run package tests.one', retcode=1),
+      status='FAILURE'
   )

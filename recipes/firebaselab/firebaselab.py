@@ -74,12 +74,12 @@ def RunSteps(api):
       # SDK 30 is run on a physical redfin/Pixel 5 above.
   ]
 
-  physical_devices = api.properties.get(
+  physical_devices = default_physical_devices if api.properties.get(
       'physical_devices'
-  ) or default_physical_devices
-  virtual_devices = api.properties.get(
+  ) is None else api.properties.get('physical_devices')
+  virtual_devices = default_virtual_devices if api.properties.get(
       'virtual_devices'
-  ) or default_virtual_devices
+  ) is None else api.properties.get('virtual_devices')
 
   test_configurations = (
       (
@@ -119,6 +119,9 @@ def RunSteps(api):
           infra_step=True,
       )
       for step_name, build_command, binary, devices in test_configurations:
+        # Skip running gcloud command if no devices were provided.
+        if not devices:
+          continue
         api.step(step_name, build_command)
         firebase_cmd = [
             'firebase', 'test', 'android', 'run', '--type', 'robo', '--app',
@@ -162,6 +165,14 @@ def GenTests(api):
       'basic',
       api.repo_util.flutter_environment_data(),
       api.properties(task_name='the_task'),
+      # A return code of 1 from grep means not error messages were
+      # found in logcat and the only acceptable return code.
+      api.step_data('test_execution.analyze_logcat', retcode=1),
+  )
+  yield api.test(
+      'empty_devices',
+      api.repo_util.flutter_environment_data(),
+      api.properties(task_name='the_task', virtual_devices=[]),
       # A return code of 1 from grep means not error messages were
       # found in logcat and the only acceptable return code.
       api.step_data('test_execution.analyze_logcat', retcode=1),

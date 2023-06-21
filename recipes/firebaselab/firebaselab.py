@@ -38,41 +38,10 @@ def RunSteps(api):
   api.flutter_deps.required_deps(env, env_prefixes, deps)
   task_name = api.properties.get('task_name')
 
-  default_physical_devices = [
-      # Physical devices - use only highly available devices to avoid timeouts.
-      # Pixel 3
-      # Disable temporarily to unblock the rolls https://github.com/flutter/flutter/issues/118708
-      #'--device',
-      #'model=blueline,version=28',
-      # Pixel 5
-      '--device',
-      'model=redfin,version=30',
-      # Moto Z XT1650
-      '--device',
-      'model=griffin,version=24',
-  ]
-
-  default_virtual_devices = [
-      # SDK 20 not available virtually or physically.
-      '--device',
-      'model=Nexus5,version=21',
-      '--device',
-      'model=Nexus5,version=22',
-      '--device',
-      'model=Nexus5,version=23',
-      # SDK 24 is run on a physical griffin/Moto Z above.
-      # TODO(flutter/flutter#123331): This device is flaking.
-      # '--device',
-      # 'model=Nexus6P,version=25',
-      '--device',
-      'model=Nexus6P,version=26',
-      '--device',
-      'model=Nexus6P,version=27',
-      # SDK 28 is run on a physical blueline/Pixel 3 above.
-      '--device',
-      'model=NexusLowRes,version=29',
-      # SDK 30 is run on a physical redfin/Pixel 5 above.
-  ]
+  # Initialize to empty lists for use cases when physical_devices or virtual_device
+  # properties are not provided.
+  default_physical_devices = []
+  default_virtual_devices = []
 
   physical_devices = default_physical_devices if api.properties.get(
       'physical_devices'
@@ -161,10 +130,11 @@ def RunSteps(api):
 
 
 def GenTests(api):
+  physical_devices = ['--device', 'model=redfin,version=30']
   yield api.test(
       'basic',
       api.repo_util.flutter_environment_data(),
-      api.properties(task_name='the_task'),
+      api.properties(task_name='the_task', physical_devices=physical_devices),
       # A return code of 1 from grep means not error messages were
       # found in logcat and the only acceptable return code.
       api.step_data('test_execution.analyze_logcat', retcode=1),
@@ -172,7 +142,11 @@ def GenTests(api):
   yield api.test(
       'empty_devices',
       api.repo_util.flutter_environment_data(),
-      api.properties(task_name='the_task', virtual_devices=[]),
+      api.properties(
+          task_name='the_task',
+          virtual_devices=[],
+          physical_devices=physical_devices
+      ),
       # A return code of 1 from grep means not error messages were
       # found in logcat and the only acceptable return code.
       api.step_data('test_execution.analyze_logcat', retcode=1),
@@ -180,6 +154,7 @@ def GenTests(api):
   yield api.test(
       'succeed_on_infra_failure',
       api.repo_util.flutter_environment_data(),
+      api.properties(physical_devices=physical_devices),
       api.step_data('test_execution.gcloud firebase', retcode=15),
       api.step_data('test_execution.gcloud firebase (2)', retcode=15),
       api.step_data('test_execution.gcloud firebase (3)', retcode=15),
@@ -188,6 +163,7 @@ def GenTests(api):
   yield api.test(
       'failure 10',
       api.repo_util.flutter_environment_data(),
+      api.properties(physical_devices=physical_devices),
       api.step_data('test_execution.gcloud firebase', retcode=10),
       status='FAILURE'
   )

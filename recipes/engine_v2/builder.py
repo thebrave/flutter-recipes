@@ -184,10 +184,16 @@ def Build(api, checkout, env, env_prefixes, outputs):
   gn = build.get('gn')
   if gn:
     with api.context(env=env, env_prefixes=env_prefixes):
+      gn = list(gn)
       if api.flutter_bcid.is_official_build():
         # Goma is not supported for official builds.
-        gn = list(gn)
         gn.append('--no-goma')
+      if api.monorepo.is_monorepo_ci_build:
+        version = env['REVISION']
+        gn.append(f'--gn-args=engine_version="{version}"')
+      if api.monorepo.is_monorepo_try_build:
+        version = api.monorepo.try_build_identifier
+        gn.append(f'--gn-args=engine_version="{version}"')
       api.build_util.run_gn(gn, checkout)
       ninja = build.get('ninja')
       ninja_tool[ninja.get('tool', 'ninja')
@@ -240,19 +246,18 @@ def RunSteps(api, properties, env_properties):
 
   # Enable long path support on Windows.
   api.os_utils.enable_long_paths()
-  env, env_prefixes = api.repo_util.engine_environment(
-      api.path['cache'].join('builder')
-  )
-
-  # Engine path is used inconsistently across the engine repo. We'll start
-  # with [cache]/builder and will adjust it to start using it consistently.
-  env['ENGINE_PATH'] = api.path['cache'].join('builder')
 
   api.flutter_bcid.report_stage('fetch')
   if api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
+    env, env_prefixes = api.repo_util.monorepo_environment(
+        api.path['cache'].join('builder')
+    )
     api.repo_util.monorepo_checkout(cache_root, env, env_prefixes)
     checkout = api.path['cache'].join('builder', 'engine', 'src')
   else:
+    env, env_prefixes = api.repo_util.engine_environment(
+        api.path['cache'].join('builder')
+    )
     api.repo_util.engine_checkout(cache_root, env, env_prefixes)
   outputs = {}
   if api.platform.is_mac:

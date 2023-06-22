@@ -427,6 +427,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
             str(self.m.depot_tools.root),
         'ENGINE_CHECKOUT_PATH':
             checkout_path,
+        'ENGINE_PATH':
+            checkout_path,
         'LUCI_CI':
             True,
         'LUCI_PR':
@@ -468,6 +470,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'DEPOT_TOOLS':
             str(self.m.depot_tools.root),
         'ENGINE_CHECKOUT_PATH':
+            checkout_path.join('engine'),
+        'ENGINE_PATH':
             checkout_path.join('engine'),
         'LUCI_CI':
             True,

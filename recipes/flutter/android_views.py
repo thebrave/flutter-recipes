@@ -14,6 +14,7 @@ DEPS = [
     'flutter/flutter_deps',
     'flutter/os_utils',
     'flutter/repo_util',
+    'flutter/retry',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
@@ -51,6 +52,9 @@ def RunSteps(api, properties, env_properties):
 
   with api.android_virtual_device(env=env, env_prefixes=env_prefixes):
     with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
+      views_test_dir = checkout_path.join(
+        'dev', 'integration_tests', 'android_views'
+      )
       with api.step.nest('prepare environment'), api.step.defer_results():
         # This prevents junk analytics from being sent due to testing
         api.step(
@@ -66,13 +70,31 @@ def RunSteps(api, properties, env_properties):
             ['flutter', 'devices', '--device-timeout=40', '--verbose'],
         )
         api.step(
-            'download dependencies',
+            'download flutter dependencies',
             ['flutter', 'update-packages', '-v'],
             infra_step=True,
         )
-    views_test_dir = checkout_path.join(
-        'dev', 'integration_tests', 'android_views'
-    )
+      # Create gradlew file
+      with api.context(env=env, env_prefixes=env_prefixes, cwd=views_test_dir):
+        api.step(
+            'configure android project',
+            ['flutter', 'build', 'apk', '--config-only'],
+            infra_step=True,
+        )
+      # Any gradle command downloads gradle if not already present in the cache.
+      # ./gradlew dependencies downloads any gradle defined dependencies to the cache.
+      # https://docs.gradle.org/current/userguide/viewing_debugging_dependencies.html
+      # Downloading gradle and downloading dependencies are a common source of flakes
+      # and moving those to an infra step that can be retried shifts the blame
+      # individual tests to the infra itself.
+      android_path = views_test_dir.join('android')
+      with api.context(env=env, env_prefixes=env_prefixes, cwd=android_path):
+        api.retry.step(
+            'download android dependencies',
+            ['./gradlew', '-q', 'dependencies'],
+            max_attempts=2,
+            infra_step=True,
+        )
     with api.context(env=env, env_prefixes=env_prefixes,
                      cwd=views_test_dir), api.step.defer_results():
       api.step(

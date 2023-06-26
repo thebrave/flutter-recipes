@@ -1,6 +1,5 @@
 DEPS = [
     'flutter/android_virtual_device',
-    'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/test_utils',
     'flutter/token_util',

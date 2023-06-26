@@ -69,7 +69,7 @@ def RunSteps(api):
   api.flutter_deps.certs(env, env_prefixes, '')
   api.flutter_deps.vs_build(env, env_prefixes, '')
   api.flutter_deps.jazzy(env, env_prefixes, '')
-  api.flutter_deps.contexts(env, env_prefixes)
+  api.flutter_deps.contexts()
   if api.platform.is_linux:
     api.flutter_deps.gh_cli(env, env_prefixes, 'latest')
 

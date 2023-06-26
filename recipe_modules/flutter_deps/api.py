@@ -684,12 +684,8 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       temp_paths.append(jazzy_path.join('ruby', ruby_version, 'bin'))
       env_prefixes['PATH'] = temp_paths
 
-  def contexts(self, env, env_prefixes):
+  def contexts(self):
     return {
-        'metric_center_token':
-            self.m.token_util.metric_center_token(env, env_prefixes),
-        'android_virtual_device':
-            self.m.android_virtual_device(env, env_prefixes),
-        'osx_sdk':
-            self.m.osx_sdk('ios'),
+        'metric_center_token': self.m.token_util.metric_center_token,
+        'android_virtual_device': self.m.android_virtual_device
     }

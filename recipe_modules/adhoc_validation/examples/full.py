@@ -58,8 +58,9 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_path),
       api.step_data(
           'Docs.Identify branches.git branch',
-          stdout=api.raw_io
-          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+          stdout=api.raw_io.output_text(
+              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
       ),
       api.buildbucket.ci_build(
           project='flutter',

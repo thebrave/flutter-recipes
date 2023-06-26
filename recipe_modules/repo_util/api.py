@@ -334,6 +334,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
             commit,
             stdout=self.m.raw_io.output_text()
         ).stdout.splitlines()
+        # Discard local branches as we are interested only in remote branches.
+        branches = [b for b in branches if b.startswith('remotes/origin/')]
         return [b.strip().replace('remotes/origin/', '') for b in branches
                ] or []
 

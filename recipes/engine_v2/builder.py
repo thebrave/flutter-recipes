@@ -334,8 +334,9 @@ def GenTests(api):
       ),
       api.step_data(
           'Identify branches.git branch',
-          stdout=api.raw_io
-          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+          stdout=api.raw_io.output_text(
+              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
       ),
   )
   yield api.test(

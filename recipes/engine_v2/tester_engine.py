@@ -45,6 +45,7 @@ tasks - is a list of dictionaries with the scripts to run in this test sub-build
 This recipe will be called from the engine_v2/engine_v2 recipe using the shard_util_v2 module. The
 test configuration is defined in the engine build configurations files as global tests. 
 """
+import contextlib
 import copy
 
 from contextlib import contextmanager
@@ -58,6 +59,7 @@ DEPS = [
     'depot_tools/depot_tools',
     'flutter/flutter_deps',
     'flutter/logs_util',
+    'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/retry',
     'flutter/test_utils',
@@ -65,6 +67,7 @@ DEPS = [
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
+    'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/step',
 ]
@@ -102,7 +105,10 @@ def run_tests(api, test, checkout, env, env_prefixes):
     try:
       # Run within another context to make the logs env variable available to
       # test scripts.
-      with api.context(env=env, env_prefixes=env_prefixes):
+      available_contexts = api.flutter_deps.contexts(env, env_prefixes)
+      with contextlib.ExitStack() as exit_stack:
+        for context in test.get('contexts', []):
+          exit_stack.enter_context(available_contexts[context])
         api.retry.wrap(
             run_test,
             step_name=task.get('name'),
@@ -150,7 +156,7 @@ def GenTests(api):
           'language': 'dart', 'name': 'felt test: chrome-unit-linux',
           'parameters': ['test', '--browser=chrome', '--require-skia-gold'],
           'script': 'flutter/lib/web_ui/dev/felt'
-      }]
+      }], "contexts": ["osx_sdk"]
   }
   yield api.test(
       'basic',

@@ -112,13 +112,13 @@ def _replace_magic_envs(command, env):
 
 def run_tests(api, tests, checkout, env, env_prefixes):
   """Runs sub-build tests."""
-  available_contexts = api.flutter_deps.contexts()
+  available_contexts = api.flutter_deps.contexts(env, env_prefixes)
   # Run local tests in the builder to optimize resource usage.
   for test in tests:
     # Run tests within a exitStack context
     with contextlib.ExitStack() as exit_stack:
       for context in test.get('contexts', []):
-        exit_stack.enter_context(available_contexts[context](env, env_prefixes))
+        exit_stack.enter_context(available_contexts[context])
       command = [test.get('language')] if test.get('language') else []
       # Ideally local tests should be completely hermetic and in theory we can run
       # them in parallel using futures. I haven't found a flutter engine

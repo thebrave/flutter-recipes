@@ -83,12 +83,12 @@ def RunSteps(api):
     infra_config_path = infra_path.join(
         'config', 'generated', 'ci_yaml', config_name
     )
-    # Generate_jspb
+   # Generate_jspb
     jspb_step = api.step(
         'generate jspb',
         cmd=['dart', generate_jspb_path, repo, git_ref],
-        stdout=api.raw_io.output_text(),
-        stderr=api.raw_io.output_text()
+        stdout=api.raw_io.output_text(add_output_log=True),
+        stderr=api.raw_io.output_text(add_output_log=True)
     )
     api.file.write_raw('write jspb', infra_config_path, jspb_step.stdout)
 

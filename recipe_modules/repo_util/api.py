@@ -12,7 +12,6 @@ REPOS = {
     'monorepo': 'https://dart.googlesource.com/monorepo',
     'openpay': 'https://dash-internal.googlesource.com/openpay',
     'packages': 'https://flutter.googlesource.com/mirrors/packages',
-    'plugins': 'https://flutter.googlesource.com/mirrors/plugins',
 }
 
 # TODO(keyonghan): deprecate when all repos are migrated to main.
@@ -26,7 +25,6 @@ REPO_BRANCHES = {
     'monorepo': 'main',
     'openpay': 'main',
     'packages': 'main',
-    'plugins': 'main',
 }
 
 import copy

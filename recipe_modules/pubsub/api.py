@@ -18,5 +18,5 @@ class PubSubApi(recipe_api.RecipeApi):
       step_name(str): an optional custom step name.
     """
     with self.m.step.nest(step_name):
-      cmd = ['pubsub', 'topics', 'publish', topic, '--message=\'%s\'' % message]
+      cmd = ['pubsub', 'topics', 'publish', topic, '--message=%s' % message]
       self.m.gcloud(*cmd, infra_step=True)

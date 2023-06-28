@@ -685,7 +685,25 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env_prefixes['PATH'] = temp_paths
 
   def contexts(self):
+    """Available contexts across recipes repository."""
     return {
         'metric_center_token': self.m.token_util.metric_center_token,
-        'android_virtual_device': self.m.android_virtual_device
+        'android_virtual_device': self.m.android_virtual_device,
+        'osx_sdk': self.m.osx_sdk,
     }
+
+  def enter_contexts(self, exit_stack, contexts, env, env_prefixes):
+    """Enter corresponding contexts to exit_stack.
+
+    Args:
+      exit_stack(ExitStack): Context manager for dynamic management of a stack of exit callbacks.
+      contexts(list): List of required contexts.
+      env(dict): Current environment variables.
+      env_prefixes(dict):  Current environment prefixes variables.
+    """
+    available_contexts = self.contexts()
+    for context in contexts:
+      exit_stack.enter_context(
+        available_contexts[context](env, env_prefixes)
+        if context != 'osx_sdk' else available_contexts[context]('ios')
+      )

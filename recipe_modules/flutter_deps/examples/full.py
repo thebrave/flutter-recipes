@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
 from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
+from recipe_engine.recipe_api import Property
 
 DEPS = [
     'flutter/flutter_deps',
@@ -14,7 +16,6 @@ DEPS = [
     'recipe_engine/properties',
     'recipe_engine/swarming',
 ]
-
 
 def RunSteps(api):
   env = {}
@@ -70,6 +71,8 @@ def RunSteps(api):
   api.flutter_deps.vs_build(env, env_prefixes, '')
   api.flutter_deps.jazzy(env, env_prefixes, '')
   api.flutter_deps.contexts()
+  with contextlib.ExitStack() as exit_stack:
+    api.flutter_deps.enter_contexts(exit_stack, ['osx_sdk'], env, env_prefixes)
   if api.platform.is_linux:
     api.flutter_deps.gh_cli(env, env_prefixes, 'latest')
 
@@ -89,8 +92,7 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
-      'linux',
-      api.platform('linux', 64),
+      'linux', api.platform('linux', 64),
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(

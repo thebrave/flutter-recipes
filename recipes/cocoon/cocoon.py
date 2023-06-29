@@ -5,6 +5,7 @@
 """Recipe for cocoon repository tests."""
 
 DEPS = [
+    'flutter/os_utils',
     'flutter/repo_util',
     'flutter/yaml',
     'recipe_engine/context',
@@ -18,6 +19,8 @@ DEPS = [
 
 def RunSteps(api):
   """Steps to checkout cocoon, dependencies and execute tests."""
+  # Collect memory/cpu/process before task execution.
+  api.os_utils.collect_os_info()
   start_path = api.path['start_dir']
   cocoon_path = start_path.join('cocoon')
   flutter_path = start_path.join('flutter')
@@ -58,7 +61,10 @@ def RunSteps(api):
       script_path = cocoon_path.join(task['script'])
       test_folder = cocoon_path.join(task['task'])
       api.step(task['task'], cmd=['bash', script_path, test_folder])
-
+  # This is to clean up leaked processes.
+  api.os_utils.kill_processes()
+  # Collect memory/cpu/process after task execution.
+  api.os_utils.collect_os_info()
 
 def GenTests(api):
   tasks_dict = {'tasks': [{'task': 'one', 'script': 'myscript'}]}

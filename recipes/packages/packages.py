@@ -5,6 +5,7 @@
 DEPS = [
     'flutter/flutter_deps',
     'flutter/logs_util',
+    'flutter/os_utils',
     'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/yaml',
@@ -19,6 +20,9 @@ DEPS = [
 
 def RunSteps(api):
   """Recipe to run flutter package tests."""
+  # Collect memory/cpu/process before task execution.
+  api.os_utils.collect_os_info()
+
   packages_checkout_path = api.path['start_dir'].join('packages')
   flutter_checkout_path = api.path['start_dir'].join('flutter')
   channel = api.properties.get('channel')
@@ -77,6 +81,10 @@ def RunSteps(api):
       else:
         run_test(api, result, packages_checkout_path, env)
 
+  # This is to clean up leaked processes.
+  api.os_utils.kill_processes()
+  # Collect memory/cpu/process after task execution.
+  api.os_utils.collect_os_info()
 
 def run_test(api, result, packages_checkout_path, env):
   """Run tests sequentially following the script"""

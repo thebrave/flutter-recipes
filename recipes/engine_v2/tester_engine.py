@@ -60,6 +60,7 @@ DEPS = [
     'flutter/flutter_deps',
     'flutter/logs_util',
     'flutter/osx_sdk',
+    'flutter/os_utils',
     'flutter/repo_util',
     'flutter/retry',
     'flutter/test_utils',
@@ -78,6 +79,8 @@ ENV_PROPERTIES = EnvProperties
 
 def run_tests(api, test, checkout, env, env_prefixes):
   """Runs sub-build tests."""
+  # Collect memory/cpu/process before task execution.
+  api.os_utils.collect_os_info()
   # Install dependencies.
   deps = test.get('test_dependencies', [])
   api.flutter_deps.required_deps(env, env_prefixes, deps)
@@ -117,7 +120,10 @@ def run_tests(api, test, checkout, env, env_prefixes):
           )
     finally:
       api.logs_util.upload_logs(task.get('name'))
-
+  # This is to clean up leaked processes.
+  api.os_utils.kill_processes()
+  # Collect memory/cpu/process after task execution.
+  api.os_utils.collect_os_info()
 
 def Test(api, checkout, env, env_prefixes):
   """Runs a global test using prebuilts."""

@@ -13,6 +13,7 @@ from PB.recipes.flutter.engine.engine import EnvProperties
 DEPS = [
     'flutter/flutter_deps',
     'flutter/monorepo',
+    'flutter/os_utils',
     'flutter/repo_util',
     'flutter/retry',
     'recipe_engine/buildbucket',
@@ -47,6 +48,8 @@ def get_monorepo_framework(api):
 
 
 def RunSteps(api, properties, env_properties):
+  # Collect memory/cpu/process before task execution.
+  api.os_utils.collect_os_info()
   builder = api.path['cache'].join('builder')
   flutter = builder.join('flutter')
   if api.monorepo.is_monorepo_try_build:
@@ -94,7 +97,10 @@ def RunSteps(api, properties, env_properties):
         [flutter.join('bin', 'dart'),
          flutter.join('dev', 'bots', 'test.dart')]
     )
-
+  # This is to clean up leaked processes.
+  api.os_utils.kill_processes()
+  # Collect memory/cpu/process after task execution.
+  api.os_utils.collect_os_info()
 
 def GenTests(api):
   build = {'shard': 'framework_coverage'}

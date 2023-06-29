@@ -238,6 +238,8 @@ def Archive(api, checkout, archive_config):
 
 
 def RunSteps(api, properties, env_properties):
+  # Collect memory/cpu/process before task execution.
+  api.os_utils.collect_os_info()
   api.flutter_bcid.report_stage('start')
   checkout = api.path['cache'].join('builder', 'src')
   api.file.rmtree('Clobber build output', checkout.join('out'))
@@ -268,7 +270,11 @@ def RunSteps(api, properties, env_properties):
   output_props = api.step('Set output properties', None)
   output_props.presentation.properties['cas_output_hash'] = outputs
 
-
+  # This is to clean up leaked processes.
+  api.os_utils.kill_processes()
+  # Collect memory/cpu/process after task execution.
+  api.os_utils.collect_os_info()
+  
 def GenTests(api):
   build = {
       "archives": [{

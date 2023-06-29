@@ -13,6 +13,7 @@ import re
 DEPS = [
     'depot_tools/gsutil',
     'flutter/flutter_deps',
+    'flutter/os_utils',
     'flutter/repo_util',
     'flutter/retry',
     'fuchsia/gcloud',
@@ -26,6 +27,8 @@ DEPS = [
 
 
 def RunSteps(api):
+  api.os_utils.collect_os_info()
+  checkout_path = api.path['start_dir'].join('flutter')
   # Bucket to upload apks and logs.
   gcs_bucket = 'flutter_firebase_testlab_staging'
   # Checkout flutter/flutter.
@@ -146,7 +149,10 @@ def RunSteps(api):
       # Grep logcat files in search of E/flutter log
       # entries, if found then then fail the test.
       api.step('analyze_logcat', ['grep', 'E/flutter', tmp_logcat], ok_ret=(1,))
-
+  # This is to clean up leaked processes.
+  api.os_utils.kill_processes()
+  # Collect memory/cpu/process after task execution.
+  api.os_utils.collect_os_info()
 
 def GenTests(api):
   physical_devices = ['--device', 'model=redfin,version=30']

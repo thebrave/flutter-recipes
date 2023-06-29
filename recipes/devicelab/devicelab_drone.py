@@ -179,7 +179,8 @@ def RunSteps(api):
         if test_status == 'flaky':
           api.test_utils.flaky_step('run %s' % task_name)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
-    uploadResults(
+    def _retryUplaod():
+      api.step('Upload results', uploadResults(
         api,
         env,
         env_prefixes,
@@ -191,7 +192,14 @@ def RunSteps(api):
         task_name,
         benchmark_tags,
         suppress_log=suppress_log
+        )
+      )
+
+    api.retry.wrap(
+      _retryUplaod,
+      step_name='Retryable upload metrics'
     )
+
     uploadMetricsToCas(api, results_path)
 
 

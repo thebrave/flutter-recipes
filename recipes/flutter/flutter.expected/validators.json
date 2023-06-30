@@ -237,6 +237,44 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[flutter::adhoc_validation]/resources/analyze.sh",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[START_DIR]/\u00c1 flutter sdk",
+    "env": {
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/\u00c1 flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/\u00c1 flutter sdk/bin",
+        "[START_DIR]/\u00c1 flutter sdk/bin/cache/dart-sdk/bin",
+        "[START_DIR]/\u00c1 flutter sdk/bin",
+        "[START_DIR]/\u00c1 flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "dart analyze.print script analyze.sh",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@analyze.sh@@@"
+    ]
+  },
+  {
+    "cmd": [
       "RECIPE_MODULE[flutter::adhoc_validation]/resources/analyze.sh"
     ],
     "cwd": "[START_DIR]/\u00c1 flutter sdk",

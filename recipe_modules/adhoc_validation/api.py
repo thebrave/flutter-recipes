@@ -56,6 +56,10 @@ class AddhocValidationApi(recipe_api.RecipeApi):
           )
           with self.m.context(env=env, env_prefixes=env_prefixes):
             self.m.flutter_bcid.report_stage(BcidStage.COMPILE.value)
+            self.m.file.read_text(
+                "print script %s" % self.m.path.basename(resource_name),
+                resource_name,
+            )
             self.m.test_utils.run_test(
                 validation,
                 [resource_name],
@@ -78,6 +82,10 @@ class AddhocValidationApi(recipe_api.RecipeApi):
 
         with self.m.context(env=env, env_prefixes=env_prefixes):
           self.m.flutter_bcid.report_stage(BcidStage.COMPILE.value)
+          self.m.file.read_text(
+              "print script %s" % self.m.path.basename(resource_name),
+              resource_name,
+          )
           self.m.test_utils.run_test(
               validation,
               [resource_name],

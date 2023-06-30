@@ -150,6 +150,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
             'test_stderr'] = self.m.step.active_result.stderr
     if self._is_flaky(step.stdout):
       test_run_status = 'flaky'
+      step.presentation.status = self.m.step.FAILURE
     else:
       test_run_status = 'success'
     return test_run_status

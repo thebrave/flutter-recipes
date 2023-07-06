@@ -402,6 +402,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'REVISION':
             self.get_commit(checkout_path)
     }
+    channel = self.m.properties.get('channel', None)
+    if channel:
+      env['CHANNEL'] = channel
     package_sharding = self.m.properties.get('package_sharding', None)
     if package_sharding:
       env['PACKAGE_SHARDING'] = package_sharding

@@ -64,6 +64,7 @@ def GenTests(api):
               git_ref='refs/pull/1/head',
               clobber=True,
               package_sharding='shard1',
+              channel='stable',
           ), api.repo_util.flutter_environment_data(),
           api.step_data(
               'Identify branches.git rev-parse',

@@ -1579,9 +1579,8 @@
   {
     "cmd": [
       "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
-      "product-bundle",
-      "get",
-      "terminal.qemu-x64"
+      "sdk",
+      "version"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1600,7 +1599,92 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "get terminal.qemu-x64 product bundle"
+    "name": "read sdk version"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "product",
+      "lookup",
+      "terminal.qemu-x64",
+      "ARBITRARY_SDK_VERSION",
+      "--base-url",
+      "gs://fuchsia/development/ARBITRARY_SDK_VERSION"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "lookup terminal.qemu-x64 product bundle"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "product",
+      "download",
+      "gs://path/to/transfer_manifest.json",
+      "/tmp/local_pb",
+      "--force"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "download terminal.qemu-x64 product bundle"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "--config",
+      "ffx-repo-add=true",
+      "repository",
+      "add",
+      "/tmp/local_pb"
+    ],
+    "cwd": "[CACHE]/builder",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "add product bundle repository"
   },
   {
     "cmd": [],
@@ -1623,7 +1707,7 @@
       "-v",
       "emu",
       "start",
-      "terminal.qemu-x64",
+      "/tmp/local_pb",
       "--headless"
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
@@ -1654,6 +1738,8 @@
     "name": "run FEMU test on x64.run v2_test.logs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@target_logs@@@@",
+      "@@@STEP_LOG_END@target_logs@@@",
       "@@@STEP_LOG_LINE@ffx_daemon_log@@@@",
       "@@@STEP_LOG_END@ffx_daemon_log@@@",
       "@@@STEP_LOG_LINE@ffx_log@@@@",
@@ -1662,6 +1748,34 @@
       "@@@STEP_LOG_END@emulator_log@@@",
       "@@@STEP_LOG_LINE@emulator_serial_log@@@@",
       "@@@STEP_LOG_END@emulator_serial_log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "log",
+      "dump"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "run FEMU test on x64.run v2_test.logs.dump target log",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
@@ -1877,7 +1991,7 @@
       "-v",
       "emu",
       "start",
-      "terminal.qemu-x64",
+      "/tmp/local_pb",
       "--headless"
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
@@ -1908,6 +2022,8 @@
     "name": "run FEMU test on x64.run v2_test (attempt #2).logs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@target_logs@@@@",
+      "@@@STEP_LOG_END@target_logs@@@",
       "@@@STEP_LOG_LINE@ffx_daemon_log@@@@",
       "@@@STEP_LOG_END@ffx_daemon_log@@@",
       "@@@STEP_LOG_LINE@ffx_log@@@@",
@@ -1916,6 +2032,34 @@
       "@@@STEP_LOG_END@emulator_log@@@",
       "@@@STEP_LOG_LINE@emulator_serial_log@@@@",
       "@@@STEP_LOG_END@emulator_serial_log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "log",
+      "dump"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "run FEMU test on x64.run v2_test (attempt #2).logs.dump target log",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
@@ -2131,7 +2275,7 @@
       "-v",
       "emu",
       "start",
-      "terminal.qemu-x64",
+      "/tmp/local_pb",
       "--headless"
     ],
     "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
@@ -2162,6 +2306,8 @@
     "name": "run FEMU test on x64.run v2_test (attempt #3).logs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@target_logs@@@@",
+      "@@@STEP_LOG_END@target_logs@@@",
       "@@@STEP_LOG_LINE@ffx_daemon_log@@@@",
       "@@@STEP_LOG_END@ffx_daemon_log@@@",
       "@@@STEP_LOG_LINE@ffx_log@@@@",
@@ -2170,6 +2316,34 @@
       "@@@STEP_LOG_END@emulator_log@@@",
       "@@@STEP_LOG_LINE@emulator_serial_log@@@@",
       "@@@STEP_LOG_END@emulator_serial_log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "log",
+      "dump"
+    ],
+    "cwd": "[CLEANUP]/femu_runfiles__tmp_1",
+    "env": {
+      "FFX_ISOLATE_DIR": "[CLEANUP]/ffx_isolate_files_tmp_1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "run FEMU test on x64.run v2_test (attempt #3).logs.dump target log",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {

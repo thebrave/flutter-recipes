@@ -23,10 +23,13 @@ DEPS = [
 stableTagRegex = r'^(\d+)\.(\d+)\.(\d+)$'
 betaTagRegex = r'^(\d+)\.(\d+)\.(\d+)-(\d+)\.(\d+)\.pre$'
 
+ENGINE_VERSION_FILE = '/bin/internal/engine.version'
+
+
 def isValidTag(tag, release_channel):
   stable = re.search(stableTagRegex, tag)
   beta = re.search(betaTagRegex, tag)
-  if release_channel=='stable':
+  if release_channel == 'stable':
     return stable
   return beta
 
@@ -76,7 +79,7 @@ def RunSteps(api):
         ref="refs/heads/%s" % git_branch,
     )
   with api.step.nest('checkout engine release branch'):
-    api.repo_util.checkout(
+    engine_tot = api.repo_util.checkout(
         'engine',
         api.path['start_dir'].join('engine'),
         url=engine_git_url,
@@ -107,13 +110,16 @@ def RunSteps(api):
       infra_step=True,
   )
 
+  engine_version = GetEngineVersion(api, flutter_checkout)
+  engine_tot = '' if api.repo_util._test_data.enabled else engine_tot
+  assert engine_tot == engine_version
+
   for repo in ('flutter', 'engine'):
     env = env_flutter if repo == 'flutter' else env_engine
     env_prefixes = env_flutter_prefixes if repo == 'flutter' else env_engine_prefixes
     checkout = flutter_checkout if repo == 'flutter' else engine_checkout
-    rel_hash = flutter_rel_hash if repo == 'flutter' else GetEngineVersion(
-        api, flutter_checkout
-    )
+    rel_hash = flutter_rel_hash if repo == 'flutter' else engine_version
+
     with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout):
       token_decrypted = api.path['cleanup'].join('token.txt')
       api.kms.get_secret(
@@ -139,7 +145,7 @@ def RunSteps(api):
 def GetEngineVersion(api, flutter_checkout):
   return api.file.read_text(
       'read engine hash',
-      str(flutter_checkout) + '/bin/internal/engine.version'
+      str(flutter_checkout) + ENGINE_VERSION_FILE
   ).strip()
 
 
@@ -148,25 +154,28 @@ def GenTests(api):
   for tag in ('1.2.3-4.5.pre', '1.2.3'):
     for release_channel in ('stable', 'beta'):
       for force in ('True', 'False'):
-        if ((tag == '1.2.3-4.5.pre' and release_channel=='stable') or (tag == '1.2.3' and release_channel=='beta')):
+        if ((tag == '1.2.3-4.5.pre' and release_channel == 'stable') or
+            (tag == '1.2.3' and release_channel == 'beta')):
           # These are invalid combinations of tag and release_channel.
           # Expect assertion errors for these combinations
           post_processing = [api.expect_exception('AssertionError')]
         else:
           # Remaining tag combinations of tag and release channel are valid.
-          post_processing = [api.post_process(
-                post_process.MustRun, 'Tag and push release on flutter/flutter'
-            ),
-            api.post_process(
-                post_process.MustRun, 'Tag and push release on flutter/engine'
-            ),
-            api.post_process(post_process.StatusSuccess)]
+          post_processing = [
+              api.post_process(
+                  post_process.MustRun,
+                  'Tag and push release on flutter/flutter'
+              ),
+              api.post_process(
+                  post_process.MustRun, 'Tag and push release on flutter/engine'
+              ),
+              api.post_process(post_process.StatusSuccess)
+          ]
         test = api.test(
             '%s_%s_%s%s' % (
                 'flutter-2.8-candidate.9', tag, release_channel,
                 '_force' if force == 'True' else 'False'
-            ),
-            api.platform('linux', 64),
+            ), api.platform('linux', 64),
             api.properties(
                 git_branch='flutter-2.8-candidate.9',
                 tag=tag,

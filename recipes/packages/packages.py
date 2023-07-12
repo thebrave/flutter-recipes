@@ -99,12 +99,15 @@ def run_test(api, result, packages_checkout_path, env):
 
     # Flag showing whether the task should always run regardless of previous failures.
     always_run_task = task['always'] if 'always' in task else False
+    # Flag showing whether the task should be considered and infra failure or test failure.
+    is_infra_step = task['infra_step'] if 'infra_step' in task else False
     with api.context(env=env):
       # Runs the task in two scenarios:
       #   1) all earlier tasks pass
       #   2) there are earlier task failures, but the current task is marked as `always: True`.
+      #   Note that infra tasks fail and do not run the rest of the tasks including `always`.
       if not failed_tasks or always_run_task:
-        step = api.step(task['name'], cmd, raise_on_failure=False)
+        step = api.step(task['name'], cmd, raise_on_failure=is_infra_step, infra_step=is_infra_step)
         if step.retcode != 0:
           failed_tasks.append(task['name'])
     api.logs_util.upload_logs(task['name'])

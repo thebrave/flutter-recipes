@@ -17,9 +17,13 @@ from RECIPE_MODULES.flutter.repo_util.api import REPOS
 
 from google.protobuf import struct_pb2
 
+import json
+
 DEPS = [
     'flutter/yaml',
     'flutter/display_util',
+    'flutter/flutter_bcid',
+    'flutter/pubsub',
     'flutter/repo_util',
     'flutter/shard_util_v2',
     'recipe_engine/buildbucket',
@@ -28,6 +32,7 @@ DEPS = [
     'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
+    'recipe_engine/runtime',
     'recipe_engine/step',
 ]
 
@@ -35,6 +40,7 @@ PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
 RELEASE_CHANNELS = ('refs/heads/beta', 'refs/heads/stable')
+BUILD_RESULT_PUBSUB_ENDPOINT = 'projects/flutter-dashboard/topics/dart-internal-build-results'
 
 
 def ShouldRun(api, git_ref, target, release_branch):
@@ -108,6 +114,15 @@ def RunSteps(api, properties, env_properties):
       raise_on_failure=True,
   )
 
+  not_experimental = not api.runtime.is_experimental and api.buildbucket.build.id != 0
+  dart_internal_build = api.flutter_bcid.is_official_build()
+  if not_experimental and dart_internal_build:
+    api.pubsub.publish_message(
+        BUILD_RESULT_PUBSUB_ENDPOINT,
+        json.dumps({"buildbucket_id": api.buildbucket.build_id}),
+        step_name='Publish build results'
+    )
+
 
 def GenTests(api):
   try_subbuild1 = api.shard_util_v2.try_build_message(
@@ -177,6 +192,28 @@ def GenTests(api):
       api.buildbucket.try_build(
           project='prod',
           builder='try-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          revision='a' * 40,
+          build_number=123,
+          git_ref='refs/heads/%s' % git_ref,
+      ),
+      api.step_data(
+          'read ci yaml.parse', api.json.output(tasks_dict_scheduler)
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io
+          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+      ),
+  )
+
+  yield api.test(
+      'dart_internal',
+      api.properties(environment='Staging', repository='engine'),
+      api.buildbucket.try_build(
+          project='dart-internal',
+          bucket='flutter',
+          builder='prod-builder',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           revision='a' * 40,
           build_number=123,

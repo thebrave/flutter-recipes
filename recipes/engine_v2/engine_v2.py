@@ -24,8 +24,6 @@ from PB.go.chromium.org.luci.buildbucket.proto \
 
 from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 
-import json
-
 DEPS = [
     'depot_tools/depot_tools',
     'flutter/archives',
@@ -34,7 +32,6 @@ DEPS = [
     'flutter/flutter_bcid',
     'flutter/flutter_deps',
     'flutter/monorepo',
-    'flutter/pubsub',
     'flutter/repo_util',
     'flutter/osx_sdk',
     'flutter/shard_util_v2',
@@ -46,13 +43,11 @@ DEPS = [
     'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
-    'recipe_engine/runtime',
     'recipe_engine/step',
 ]
 
 PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
-BUILD_RESULT_PUBSUB_ENDPOINT = 'projects/flutter-dashboard/topics/dart-internal-build-results'
 
 
 def RunSteps(api, properties, env_properties):
@@ -177,15 +172,6 @@ def RunSteps(api, properties, env_properties):
         step_name='display tests',
         subbuilds=test_results,
         raise_on_failure=True,
-    )
-
-  not_experimental = not api.runtime.is_experimental and api.buildbucket.build.id != 0
-  dart_internal_build = api.flutter_bcid.is_official_build()
-  if not_experimental and dart_internal_build:
-    api.pubsub.publish_message(
-        BUILD_RESULT_PUBSUB_ENDPOINT,
-        json.dumps({"buildbucket_id": api.buildbucket.build_id}),
-        step_name='Publish build results'
     )
 
 

@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from contextlib import ExitStack
+
 DEPS = [
+    'flutter/android_virtual_device',
     'flutter/flutter_deps',
     'flutter/logs_util',
     'flutter/os_utils',
@@ -15,6 +18,8 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/properties',
     'recipe_engine/step',
+    'recipe_engine/runtime',
+    'recipe_engine/raw_io',
 ]
 
 
@@ -48,10 +53,18 @@ def RunSteps(api):
         ref=flutter_ref,
         url='https://github.com/flutter/flutter',
     )
+
   env, env_prefixes = api.repo_util.flutter_environment(flutter_checkout_path)
+
+  env['USE_EMULATOR'] = False
   with api.step.nest('Dependencies'):
     deps = api.properties.get('dependencies', [])
     api.flutter_deps.required_deps(env, env_prefixes, deps)
+    dep_list = {d['dependency']: d.get('version') for d in deps}
+    # If the emulator dependency is present then we assume it is wanted for testing.
+    if 'android_virtual_device' in dep_list.keys():
+      env['USE_EMULATOR'] = True
+      env['EMULATOR_VERSION'] = dep_list.get('android_virtual_device')
 
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=flutter_checkout_path):
@@ -77,16 +90,25 @@ def RunSteps(api):
               env, env_prefixes, flutter_checkout_path.join('dev', 'ci', 'mac')
           )
           with api.context(env=env, env_prefixes=env_prefixes):
-            run_test(api, result, packages_checkout_path, env)
+            run_test(api, result, packages_checkout_path, env, env_prefixes)
       else:
-        run_test(api, result, packages_checkout_path, env)
+        with ExitStack() as stack:
+          if env['USE_EMULATOR']:
+            stack.enter_context(
+                  api.android_virtual_device(
+                      env=env,
+                      env_prefixes=env_prefixes,
+                      version=env['EMULATOR_VERSION']
+                  )
+              )
+          run_test(api, result, packages_checkout_path, env, env_prefixes)
 
   # This is to clean up leaked processes.
   api.os_utils.kill_processes()
   # Collect memory/cpu/process after task execution.
   api.os_utils.collect_os_info()
 
-def run_test(api, result, packages_checkout_path, env):
+def run_test(api, result, packages_checkout_path, env, env_prefixes):
   """Run tests sequentially following the script"""
   failed_tasks = []
   for task in result.json.output['tasks']:
@@ -101,7 +123,7 @@ def run_test(api, result, packages_checkout_path, env):
     always_run_task = task['always'] if 'always' in task else False
     # Flag showing whether the task should be considered and infra failure or test failure.
     is_infra_step = task['infra_step'] if 'infra_step' in task else False
-    with api.context(env=env):
+    with api.context(env=env, env_prefixes=env_prefixes):
       # Runs the task in two scenarios:
       #   1) all earlier tasks pass
       #   2) there are earlier task failures, but the current task is marked as `always: True`.
@@ -139,6 +161,27 @@ def GenTests(api):
           version_file='flutter_master.version',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
       ), api.step_data('read yaml.parse', api.json.output(tasks_dict))
+  )
+  checkout_path = api.path['cleanup'].join('tmp_tmp_1', 'flutter sdk')
+  yield api.test(
+      "emulator-test", 
+      api.repo_util.flutter_environment_data(flutter_path),
+      api.properties(
+          channel='master',
+          version_file='flutter_master.version',
+          git_branch='master',
+          dependencies=[{
+              "dependency": "android_virtual_device", "version": "31"
+          }],
+      ),
+      api.step_data('read yaml.parse', api.json.output(tasks_dict)),
+      api.step_data(
+          'Run package tests.start avd.Start Android emulator (API level 31)',
+          stdout=api.raw_io.output_text(
+              'android_31_google_apis_x86|emulator-5554 started (pid: 17687)'
+          )
+      ), 
+      api.runtime(is_experimental=True)
   )
   multiple_tasks_dict = {
       'tasks': [{'name': 'one', 'script': 'myscript', 'args': ['arg1', 'arg2']},

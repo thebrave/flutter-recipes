@@ -83,11 +83,17 @@ def RunSteps(api):
     suppress_log = True
 
   builder_name = api.properties.get('buildername')
-
+  env['USE_EMULATOR'] = False
   api.logs_util.initialize_logs_collection(env)
   with api.step.nest('Dependencies'):
     api.flutter_deps.flutter_engine(env, env_prefixes)
     deps = api.properties.get('dependencies', [])
+    # check to see if an emulator was requested.
+    dep_list = {d['dependency']: d.get('version') for d in deps}
+    # If the emulator dependency is present then we assume it is wanted for testing.
+    if 'android_virtual_device' in dep_list.keys():
+      env['USE_EMULATOR'] = True
+      env['EMULATOR_VERSION'] = dep_list.get('android_virtual_device')
     # TODO: If deps contains dart_sdk and we are running a local engine,
     # we don't want to fetch it with cipd, so don't fetch it with required_deps
     api.flutter_deps.required_deps(
@@ -101,9 +107,6 @@ def RunSteps(api):
       env, env_prefixes, target_tags
   )
   benchmark_tags = api.json.dumps(device_tags)
-
-  # Check to see if an emulator has been requested.
-  env['USE_EMULATOR'] = api.properties.get('use_emulator', False)
 
   devicelab_path = flutter_path.join('dev', 'devicelab')
   git_branch = api.properties.get('git_branch')
@@ -131,7 +134,6 @@ def RunSteps(api):
         timeout=300,
     )
     api.step('dart pub get', ['dart', 'pub', 'get'], infra_step=True)
-    dep_list = {d['dependency']: d.get('version') for d in deps}
     if api.properties.get('$flutter/osx_sdk'):
       api.os_utils.clean_derived_data()
       devicelab = False
@@ -163,7 +165,7 @@ def RunSteps(api):
                   api.android_virtual_device(
                       env=env,
                       env_prefixes=env_prefixes,
-                      version=api.properties.get('avd_version')
+                      version=env['EMULATOR_VERSION']
                   )
               )
             test_status = api.test_utils.run_test(
@@ -375,9 +377,6 @@ def GenTests(api):
           task_name='abc',
           git_branch='master',
           openpay=True,
-          dependencies=[{
-              "dependency": "android_virtual_device", "version": "31"
-          }],
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -484,9 +483,6 @@ def GenTests(api):
           task_name='abc',
           upload_metrics=True,
           git_branch='master',
-          dependencies=[{
-              "dependency": "android_virtual_device", "version": "31"
-          }],
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -520,9 +516,6 @@ def GenTests(api):
           task_name='abc',
           upload_metrics_to_cas=True,
           git_branch='master',
-          dependencies=[{
-              "dependency": "android_virtual_device", "version": "31"
-          }],
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           git_ref='refs/heads/master',
@@ -537,9 +530,6 @@ def GenTests(api):
           upload_metrics_to_cas=True,
           git_branch='master',
           xvfb=1,
-          dependencies=[{
-              "dependency": "android_virtual_device", "version": "31"
-          }],
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           git_ref='refs/heads/master',
@@ -555,9 +545,6 @@ def GenTests(api):
           upload_metrics=True,
           git_branch='master',
           openpay=True,
-          dependencies=[{
-              "dependency": "android_virtual_device", "version": "31"
-          }],
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           git_ref='refs/heads/master',
@@ -572,9 +559,6 @@ def GenTests(api):
           local_engine_cas_hash='isolatehashlocalengine/22',
           local_engine='host-release',
           git_branch='master',
-          dependencies=[{
-              "dependency": "android_virtual_device", "version": "31"
-          }],
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',

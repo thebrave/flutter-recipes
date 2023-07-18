@@ -23,7 +23,6 @@ DEPS = [
     'flutter/yaml',
     'flutter/display_util',
     'flutter/flutter_bcid',
-    'flutter/pubsub',
     'flutter/repo_util',
     'flutter/shard_util_v2',
     'recipe_engine/buildbucket',
@@ -40,7 +39,6 @@ PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
 RELEASE_CHANNELS = ('refs/heads/beta', 'refs/heads/stable')
-BUILD_RESULT_PUBSUB_ENDPOINT = 'projects/flutter-dashboard/topics/dart-internal-build-results'
 
 
 def ShouldRun(api, git_ref, target, release_branch):
@@ -113,15 +111,6 @@ def RunSteps(api, properties, env_properties):
       subbuilds=build_results,
       raise_on_failure=True,
   )
-
-  not_experimental = not api.runtime.is_experimental and api.buildbucket.build.id != 0
-  dart_internal_build = api.flutter_bcid.is_official_build()
-  if not_experimental and dart_internal_build:
-    api.pubsub.publish_message(
-        BUILD_RESULT_PUBSUB_ENDPOINT,
-        json.dumps({"buildbucket_id": api.buildbucket.build_id}),
-        step_name='Publish build results'
-    )
 
 
 def GenTests(api):

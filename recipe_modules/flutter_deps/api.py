@@ -106,7 +106,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       version = dep.get('version')
       # Ensure there are no duplicate entries
       if dependency in parsed_deps:
-        msg = '''Dependency %s is duplicated
+        msg = '''Dependency {} is duplicated
             Ensure ci.yaml contains only one entry for this target
             '''.format(dependency)
         raise ValueError(msg)
@@ -115,9 +115,11 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         continue
       dep_funct = available_deps.get(dependency)
       if not dep_funct:
-        msg = '''Dependency %s not available.
+        msg = '''Dependency {} not available.
             Ensure ci.yaml contains one of the following supported keys:
-            %s'''.format(dependency, available_deps.keys())
+            {}
+            If this is a new dependency, update https://cs.opensource.google/flutter/recipes/+/main:recipe_modules/flutter_deps/api.py
+            '''.format(dependency, available_deps.keys())
         raise ValueError(msg)
       dep_funct(env, env_prefixes, version)
 

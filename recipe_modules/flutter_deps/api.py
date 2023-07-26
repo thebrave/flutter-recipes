@@ -86,6 +86,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'curl': self.curl,
         'dart_sdk': self.dart_sdk,
         'dashing': self.dashing,
+        'doxygen': self.doxygen,
         'firebase': self.firebase,
         'firefox': self.firefox,
         'gh_cli': self.gh_cli,
@@ -304,7 +305,18 @@ class FlutterDepsApi(recipe_api.RecipeApi):
           infra_step=True,
       )
 
-  def curl(self, env, env_prefixes, version):
+  def doxygen(self, _, env_prefixes, version):
+    """Installs doxygen."""
+    version = version or 'latest'
+    doxygen_path = self.m.path.mkdtemp().join('doxygen')
+    doxygen = self.m.cipd.EnsureFile()
+    doxygen.add_package('flutter_internal/tools/doxygen/${platform}', version)
+    self.m.cipd.ensure(doxygen_path, doxygen)
+    paths = env_prefixes.get('PATH', [])
+    paths.append(doxygen_path)
+    env_prefixes['PATH'] = paths
+
+  def curl(self, _, env_prefixes, version):
     """Installs curl."""
     version = version or 'latest'
     curl_path = self.m.path.mkdtemp().join('curl')
@@ -706,6 +718,6 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     available_contexts = self.contexts()
     for context in contexts:
       exit_stack.enter_context(
-        available_contexts[context](env, env_prefixes)
-        if context != 'osx_sdk' else available_contexts[context]('ios')
+          available_contexts[context](env, env_prefixes)
+          if context != 'osx_sdk' else available_contexts[context]('ios')
       )

@@ -66,6 +66,7 @@ def RunSteps(api):
   api.flutter_deps.clang(env, env_prefixes)
   api.flutter_deps.apple_signing(env, env_prefixes)
   api.flutter_deps.curl(env, env_prefixes, '')
+  api.flutter_deps.doxygen(env, env_prefixes, '')
   api.flutter_deps.dart_sdk(env, env_prefixes, '')
   api.flutter_deps.certs(env, env_prefixes, '')
   api.flutter_deps.vs_build(env, env_prefixes, '')

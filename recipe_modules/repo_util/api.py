@@ -383,6 +383,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
         # and so that the pre-populated pub cache is contained in the package.
         'PUB_CACHE':
             pub_cache_path,
+        # https://github.com/flutter/flutter/wiki/Plugins-and-Packages-repository-structure#gradle-structure
+        # go/artifact-hub
+        'ARTIFACT_HUB_REPOSITORY':
+            'artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p',
         # Windows Packaging script assumes this is set.
         'DEPOT_TOOLS':
             str(self.m.depot_tools.root),

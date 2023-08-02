@@ -47,6 +47,8 @@ def RunSteps(api):
   cipd_full_name = api.properties.get('cipd_name')
   project_name = cipd_full_name.split('/')[1]
   project_path = cocoon_dir.join(project_name)
+  if not api.path.exists(project_path):
+    project_path = cocoon_dir.join('cipd_packages').join(project_name)
 
   build_file = cocoon_dir.join(script_path_list)
 

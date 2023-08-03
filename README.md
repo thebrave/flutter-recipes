@@ -17,7 +17,7 @@ No modifications to flutter/infra are required to work on the recipes.
 
 ## Testing locally
 
-Running `python recipes.py test train` will execute all of the tests in this repository
+Running `python3 recipes.py test train` will execute all of the tests in this repository
 
 ## Troubleshooting
 ### `Required binary is not found on PATH: cipd` when testing locally

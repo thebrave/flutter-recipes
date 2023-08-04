@@ -313,8 +313,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     doxygen.add_package('flutter/doxygen/${platform}', version)
     self.m.cipd.ensure(doxygen_path, doxygen)
     paths = env_prefixes.get('PATH', [])
-    paths.append(doxygen_path.join('doxygen'))
-    paths.append(doxygen_path.join('doxygen').join('bin'))
+    paths.append(doxygen_path.join('bin'))
     env_prefixes['PATH'] = paths
 
   def curl(self, _, env_prefixes, version):

@@ -260,7 +260,8 @@ class OsUtilsApi(recipe_api.RecipeApi):
       # Since we double the timeout on each retry, the last retry will have a
       # timeout of 16 minutes
       retry_count = 4
-      with self.m.context(cwd=cocoon_path.join('device_doctor'),
+      with self.m.context(cwd=cocoon_path.join('cipd_packages',
+                                               'device_doctor'),
                           infra_steps=True):
         self.m.step(
             'pub get device_doctor',
@@ -314,7 +315,8 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
             infra_step=True,
         )
         with self.m.context(
-            cwd=cocoon_path.join('device_doctor', 'tool', 'infra-dialog'),
+            cwd=cocoon_path.join('cipd_packages', 'device_doctor', 'tool',
+                                 'infra-dialog'),
             infra_steps=True,
         ):
           device_id = self.m.step(

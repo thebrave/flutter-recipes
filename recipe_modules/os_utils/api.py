@@ -251,6 +251,7 @@ class OsUtilsApi(recipe_api.RecipeApi):
     with self.m.step.nest('ios_debug_symbol_doctor'):
       cocoon_path = self._checkout_cocoon()
       entrypoint = cocoon_path.join(
+          'cipd_packages',
           'device_doctor',
           'bin',
           'ios_debug_symbol_doctor.dart',

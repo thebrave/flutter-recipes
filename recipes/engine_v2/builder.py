@@ -26,7 +26,6 @@ this recipe in the builds property:
  }
 """
 import contextlib
-import copy
 
 from google.protobuf import struct_pb2
 from PB.recipes.flutter.engine.engine import InputProperties
@@ -34,6 +33,7 @@ from PB.recipes.flutter.engine.engine import EnvProperties
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 
 DEPS = [
+    'dart/dart',
     'depot_tools/depot_tools',
     'depot_tools/gsutil',
     'flutter/archives',
@@ -211,6 +211,19 @@ def Build(api, checkout, env, env_prefixes, outputs):
     for archive_config in archives:
       outputs[archive_config['name']] = Archive(api, checkout, archive_config)
     api.flutter_bcid.report_stage('upload-complete')
+    for archive_config in archives:
+      if api.flutter_bcid.is_official_build():
+        # TODO(drewroengoogle): Remove try-except block to make the verification
+        # failure a release blocker.
+        try:
+          with api.step.nest("Verify provenance"):
+            Verify(api, checkout, archive_config)
+        except:  # pylint: disable=bare-except
+          api.step(
+              '(Non-blocking) Provenance verification failed - check step above',
+              []
+          )
+          continue
   # Archive full build. This is inefficient but necessary for global generators.
   if build.get('cas_archive', True):
     full_build_hash = api.shard_util_v2.archive_full_build(
@@ -237,7 +250,27 @@ def Archive(api, checkout, archive_config):
     api.flutter_bcid.upload_provenance(path.local, path.remote)
 
 
-def RunSteps(api, properties, env_properties):
+def Verify(api, checkout, archive_config):
+  """Verifies a set of artifacts through BCID using artifact provenance."""
+
+  paths = api.archives.engine_v2_gcs_paths(checkout, archive_config)
+
+  for path in paths:
+    verify_temp_path = api.path.mkdtemp("verify")
+    gcs_path = path.remote
+    gcs_path_without_prefix = str.lstrip(gcs_path, 'gs://')
+    file = api.path.basename(gcs_path)
+    bucket = gcs_path_without_prefix.split('/', maxsplit=1)[0]
+    gcs_path_without_bucket = '/'.join(gcs_path_without_prefix.split('/')[1:])
+    download_path = verify_temp_path.join(file)
+
+    api.dart.download_and_verify(
+        file, bucket, gcs_path_without_bucket, download_path,
+        'misc_software://flutter/engine'
+    )
+
+
+def RunSteps(api, properties, env_properties):  # pylint: disable=unused-argument
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
   api.flutter_bcid.report_stage('start')
@@ -274,7 +307,8 @@ def RunSteps(api, properties, env_properties):
   api.os_utils.kill_processes()
   # Collect memory/cpu/process after task execution.
   api.os_utils.collect_os_info()
-  
+
+
 def GenTests(api):
   build = {
       "archives": [{
@@ -359,13 +393,43 @@ def GenTests(api):
   build_custom = dict(build)
   build_custom["gclient_variables"] = {"example_custom_var": True}
   build_custom["tests"] = []
+  artifacts_location = 'artifacts.zip'
+  jar_location = 'x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar'
+  pom_location = 'x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
   yield api.test(
-      'dart-internal-flutter',
+      'dart-internal-flutter-success',
       api.properties(build=build, no_goma=True),
       api.buildbucket.ci_build(
           project='dart-internal',
           bucket='flutter',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           git_ref='refs/heads/main',
+      ),
+      api.step_data(
+          'Verify provenance.verify %s provenance' % artifacts_location,
+          stdout=api.raw_io.output_text('{"allowed": true}')
+      ),
+      api.step_data(
+          'Verify provenance.verify %s provenance' % jar_location,
+          stdout=api.raw_io.output_text('{"allowed": true}')
+      ),
+      api.step_data(
+          'Verify provenance.verify %s provenance' % pom_location,
+          stdout=api.raw_io.output_text('{"allowed": true}')
+      ),
+  )
+  yield api.test(
+      'dart-internal-flutter-failure',
+      api.properties(build=build, no_goma=True),
+      api.buildbucket.ci_build(
+          project='dart-internal',
+          bucket='flutter',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+      ),
+      api.step_data(
+          'Verify provenance.verify %s provenance' % artifacts_location,
+          stdout=api.raw_io
+          .output_text('{"rejectionMessage": "failed to validate!"}')
       ),
   )

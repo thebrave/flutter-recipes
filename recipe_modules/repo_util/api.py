@@ -355,7 +355,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
     """
     if self.m.properties.get('git_branch', '') in ['beta', 'stable']:
       branches = self.current_commit_branches(checkout_path)
+      # TODO(xilaizhang): remove print statements after codesigning logic can be triggered from beta.
+      self.m.step("print branches", ["echo", "branches before filtering are "+" ".join(branches)])
       branches = [b for b in branches if b.startswith('flutter')]
+      self.m.step("print branches", ["echo", "branches after filtering are "+" ".join(branches)])
       return branches[0] if len(branches) > 0 else self.m.properties.get(
           'git_branch', ''
       )

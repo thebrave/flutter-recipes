@@ -10,6 +10,7 @@ DEPS = [
     'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/path',
+    'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
 ]
@@ -87,7 +88,8 @@ def GenTests(api):
               stdout=api.raw_io.output_text(
                   'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
               )
-          )
+          ),
+          api.platform('mac', 64)
       )
   )
   yield api.test(
@@ -101,7 +103,8 @@ def GenTests(api):
   yield api.test(
       'monorepo_release', api.repo_util.flutter_environment_data(),
       api.properties(git_branch='beta', clobber=True),
-      api.monorepo.ci_build(git_ref='refs/heads/beta')
+      api.monorepo.ci_build(git_ref='refs/heads/beta'),
+      api.platform('mac', 64)
   )
   yield api.test(
       'monorepo', api.repo_util.flutter_environment_data(),

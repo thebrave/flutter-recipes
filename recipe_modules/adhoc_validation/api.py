@@ -79,7 +79,6 @@ class AddhocValidationApi(recipe_api.RecipeApi):
            ) and self.m.repo_util.is_release_candidate_branch(checkout_path):
           env['LUCI_BRANCH'] = 'stable'
           env['LUCI_CI'] = True
-
         with self.m.context(env=env, env_prefixes=env_prefixes):
           self.m.flutter_bcid.report_stage(BcidStage.COMPILE.value)
           self.m.file.read_text(

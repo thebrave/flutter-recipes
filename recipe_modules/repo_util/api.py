@@ -320,7 +320,6 @@ class RepoUtilApi(recipe_api.RecipeApi):
       return gitiles_commit
     return self.m.properties.get('git_ref', 'led')
 
-  # TODO(xilaizhang): remove print statements after release branch logic is fixed.
   def current_commit_branches(self, checkout_path):
     """Gets the list of branches for the current commit."""
     with self.m.step.nest('Identify branches'):
@@ -333,14 +332,13 @@ class RepoUtilApi(recipe_api.RecipeApi):
             commit,
             stdout=self.m.raw_io.output_text()
         ).stdout.splitlines()
-        if self.m.platform.is_mac:
-          self.m.step("print identified branches", ["echo", "identified branches before filter are "+" ".join(branches)])
         # Discard local branches as we are interested only in remote branches.
-        branches = [b for b in branches if b.startswith('remotes/origin/')]
-        if self.m.platform.is_mac:
-          self.m.step("print identified branches", ["echo", "identified branches after filter are "+" ".join(branches)])
-        return [b.strip().replace('remotes/origin/', '') for b in branches
-               ] or []
+        branches = [
+            b.strip()
+            for b in branches
+            if b.strip().startswith('remotes/origin/')
+        ]
+        return [b.replace('remotes/origin/', '') for b in branches] or []
 
   def get_branch(self, checkout_path):
     """Get git branch for beta and stable channels.
@@ -360,12 +358,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     """
     if self.m.properties.get('git_branch', '') in ['beta', 'stable']:
       branches = self.current_commit_branches(checkout_path)
-      # TODO(xilaizhang): remove print statements after codesigning logic can be triggered from beta.
-      if self.m.platform.is_mac:
-        self.m.step("print branches", ["echo", "branches before filtering are "+" ".join(branches)])
       branches = [b for b in branches if b.startswith('flutter')]
-      if self.m.platform.is_mac:
-        self.m.step("print branches", ["echo", "branches after filtering are "+" ".join(branches)])
       return branches[0] if len(branches) > 0 else self.m.properties.get(
           'git_branch', ''
       )
@@ -524,19 +517,12 @@ class RepoUtilApi(recipe_api.RecipeApi):
     assert checkout_path, 'Outside of a flutter_environment?'
     return self.m.path.abs_to_path(checkout_path)
 
-  # TODO(xilaizhang): remove print statements after release branch logic is fixed.
   def is_release_candidate_branch(self, checkout_path):
     """Returns true if the branch starts with "flutter-"."""
     commit_branches = self.current_commit_branches(checkout_path)
-    if self.m.platform.is_mac:
-      self.m.step("print commit branches", ["echo", "commit branches are "+" ".join(commit_branches)])
     for branch in commit_branches:
       if branch.startswith('flutter-'):
-        if self.m.platform.is_mac:
-          self.m.step("check if release branch", ["echo", "current branches are verdicted as release branches"])
         return True
-    if self.m.platform.is_mac:
-      self.m.step("check if release branch", ["echo", "current branches are not considered release branches"])
     return False
 
   def release_candidate_branch(self, checkout_path):

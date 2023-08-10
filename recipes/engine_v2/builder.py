@@ -59,6 +59,7 @@ DEPS = [
     'recipe_engine/properties',
     'recipe_engine/raw_io',
     'recipe_engine/step',
+    'recipe_engine/time',
 ]
 
 PROPERTIES = InputProperties
@@ -211,6 +212,8 @@ def Build(api, checkout, env, env_prefixes, outputs):
     for archive_config in archives:
       outputs[archive_config['name']] = Archive(api, checkout, archive_config)
     api.flutter_bcid.report_stage('upload-complete')
+    # Allow time for the provenance to upload so it can be validated
+    api.time.sleep(60)
     for archive_config in archives:
       if api.flutter_bcid.is_official_build():
         # TODO(drewroengoogle): Remove try-except block to make the verification

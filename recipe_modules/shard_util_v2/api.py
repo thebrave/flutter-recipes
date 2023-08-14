@@ -308,7 +308,12 @@ class ShardUtilApi(recipe_api.RecipeApi):
       bucket = 'try.monorepo'
       builder_name = f'flutter-{platform}-{task_name}-try'
     else:
-      bucket = self.m.buildbucket.build.builder.bucket
+      # If this is an led real build, then the bucket will be the shadow bucket
+      # and getting a builder from the shadow bucket doesn't work, so get the
+      # builder from the shadowed bucket
+      bucket = (
+          self.m.led.shadowed_bucket or self.m.buildbucket.build.builder.bucket
+      )
       environment = ENVIRONMENTS_MAP.get(bucket, '')
       builder_name = f'{platform_name} {environment}Engine Drone'
     return builder_name, bucket

@@ -46,13 +46,6 @@ class RepoUtilApi(recipe_api.RecipeApi):
       env(dict): A dictionary with the environment variables to set.
       env_prefixes(dict): A dictionary with the paths to be added to environment variables.
     """
-    # Set vs_toolchain env to cache it.
-    if self.m.platform.is_win:
-      # Set win toolchain root to a directory inside cache/builder to cache it.
-      env['DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT'] = self.m.path['cache'].join(
-          'builder', 'vs_toolchain_root'
-      )
-
     bucket = self.m.buildbucket.build.builder.bucket
     # Calculate if we need to clean the source code cache.
     clobber = self.m.properties.get('clobber', False)

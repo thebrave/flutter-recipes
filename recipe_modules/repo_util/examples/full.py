@@ -57,7 +57,7 @@ def RunSteps(api):
 def GenTests(api):
   yield (
       api.test(
-          'mac',
+          'basic',
           api.properties(
               git_branch='beta',
               gn_artifacts='true',
@@ -88,43 +88,8 @@ def GenTests(api):
               stdout=api.raw_io.output_text(
                   'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
               )
-          ), api.platform('mac', 64)
-      )
-  )
-  yield (
-      api.test(
-          'win',
-          api.properties(
-              git_branch='beta',
-              gn_artifacts='true',
-              git_url='https://github.com/flutter/engine',
-              git_ref='refs/pull/1/head',
-              clobber=True,
-              package_sharding='shard1',
-              channel='stable',
-          ), api.repo_util.flutter_environment_data(),
-          api.step_data(
-              'Identify branches.git rev-parse',
-              stdout=api.raw_io.output_text('abchash')
           ),
-          api.step_data(
-              'Identify branches.git branch',
-              stdout=api.raw_io.output_text(
-                  'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-              )
-          ),
-          api.step_data(
-              'Identify branches (2).git branch',
-              stdout=api.raw_io.output_text(
-                  'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-              )
-          ),
-          api.step_data(
-              'Identify branches (3).git branch',
-              stdout=api.raw_io.output_text(
-                  'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-              )
-          ), api.platform.name('win')
+          api.platform('mac', 64)
       )
   )
   yield api.test(
@@ -138,7 +103,8 @@ def GenTests(api):
   yield api.test(
       'monorepo_release', api.repo_util.flutter_environment_data(),
       api.properties(git_branch='beta', clobber=True),
-      api.monorepo.ci_build(git_ref='refs/heads/beta'), api.platform('mac', 64)
+      api.monorepo.ci_build(git_ref='refs/heads/beta'),
+      api.platform('mac', 64)
   )
   yield api.test(
       'monorepo', api.repo_util.flutter_environment_data(),

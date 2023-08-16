@@ -210,6 +210,8 @@ def debug_after_failure(api, task_name):
   api.logs_util.upload_logs(task_name)
   # This is to clean up leaked processes.
   api.os_utils.kill_processes()
+  # This is to reset permission dialogs.
+  api.os_utils.reset_automation_dialogs()
   # Collect memory/cpu/process after task execution.
   api.os_utils.collect_os_info()
 
@@ -432,7 +434,11 @@ def GenTests(api):
       api.step_data(
           'Find device type',
           stdout=api.raw_io.output_text('iPhone8,1'),
-      )
+      ),
+      api.step_data(
+          'Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory',
+          stdout=api.raw_io.output_text('TCC.db'),
+      ),
   )
   yield api.test(
       "xcode-devicelab-timeout",
@@ -455,6 +461,10 @@ def GenTests(api):
           'run abc',
           times_out_after=2,
           had_timeout=True,
+      ),
+      api.step_data(
+          'Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory',
+          stdout=api.raw_io.output_text('TCC.db'),
       ),
       api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
       status='FAILURE',

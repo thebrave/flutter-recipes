@@ -462,7 +462,7 @@
   {
     "cmd": [
       "RECIPE_MODULE[flutter::os_utils]/resources/dismiss_dialogs.sh",
-      ""
+      "123456789"
     ],
     "cwd": "[CACHE]/cocoon/cipd_packages/device_doctor/tool/infra-dialog",
     "infra_step": true,
@@ -512,132 +512,8 @@
     "cmd": [],
     "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Get buildername",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "ls",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC"
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.List TCC directory",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "ls",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC"
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "sqlite3",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
-      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cp",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db.backup"
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Create backup db",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "osascript",
-      "-e",
-      "tell app \"Xcode\"",
-      "-e",
-      "launch",
-      "-e",
-      "count window",
-      "-e",
-      "end tell"
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Trigger dialog",
-    "timeout": 2,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "UserNotificationCenter"
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Dismiss dialog",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "sqlite3",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
-      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "sqlite3",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
-      "UPDATE access SET auth_value = 2, auth_reason = 3, flags = NULL WHERE service = 'kTCCServiceAppleEvents' AND indirect_object_identifier = 'com.apple.dt.Xcode'"
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Update db",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "sqlite3",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
-      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (3)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "Xcode"
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Kill Xcode",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@Mac flutter_gallery_ios__start_up@@@"
     ]
   },
   {

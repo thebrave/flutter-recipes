@@ -657,6 +657,39 @@
   },
   {
     "cmd": [
+      "cp",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db.backup",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db"
+    ],
+    "name": "Reset Xcode automation dialogs.Restore from backup db",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "rm",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db.backup"
+    ],
+    "name": "Reset Xcode automation dialogs.Remove backup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sqlite3",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
+      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
+    ],
+    "infra_step": true,
+    "name": "Reset Xcode automation dialogs.Query TCC db",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
       "ln",
       "-s",
       "/a/file",

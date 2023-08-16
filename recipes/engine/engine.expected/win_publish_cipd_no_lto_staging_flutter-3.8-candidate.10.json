@@ -302,6 +302,64 @@
     ]
   },
   {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]\\builder\\vs_toolchain_root\\data.json",
+      "[CACHE]\\builder\\src\\build\\win_toolchain.json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "copy win_toolchain_metadata"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]\\builder\\vs_toolchain_root\\data.json",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "read win toolchain metadata",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@data.json@{@@@",
+      "@@@STEP_LOG_LINE@data.json@  \"version\": \"2022\"@@@",
+      "@@@STEP_LOG_LINE@data.json@}@@@",
+      "@@@STEP_LOG_END@data.json@@@"
+    ]
+  },
+  {
     "cmd": [],
     "name": "Checkout source code"
   },
@@ -329,6 +387,8 @@
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "DEPOT_TOOLS_REPORT_BUILD": "flutter/staging/Win Engine/8945511751514863184",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -340,7 +400,8 @@
       "GIT_TRACE2_EVENT": "[CLEANUP]\\trace2-event",
       "GIT_TRACE_CURL": "[CLEANUP]\\trace-curl",
       "GIT_TRACE_CURL_NO_DATA": "1",
-      "GIT_TRACE_PACKET": "[CLEANUP]\\trace-packet"
+      "GIT_TRACE_PACKET": "[CLEANUP]\\trace-packet",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -425,9 +486,12 @@
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "DEPOT_TOOLS_REPORT_BUILD": "flutter/staging/Win Engine/8945511751514863184",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -465,6 +529,116 @@
     "cmd": [
       "vpython3",
       "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]\\builder\\vs_toolchain_root\\data.json",
+      "[CACHE]\\builder\\src\\build\\win_toolchain.json"
+    ],
+    "cwd": "[CACHE]\\builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GYP_MSVS_VERSION": "2022"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\certs",
+        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout source code.copy win_toolchain_metadata",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]\\builder\\vs_toolchain_root\\data.json",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]\\builder",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "FLUTTER_PREBUILT_DART_SDK": "True",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GYP_MSVS_VERSION": "2022"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\certs",
+        "[CACHE]\\builder\\src\\third_party\\dart\\tools\\sdks\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout source code.read win toolchain metadata",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@data.json@{@@@",
+      "@@@STEP_LOG_LINE@data.json@  \"version\": \"2022\"@@@",
+      "@@@STEP_LOG_LINE@data.json@}@@@",
+      "@@@STEP_LOG_END@data.json@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
       "RECIPE_REPO[depot_tools]\\gclient.py",
       "runhooks"
     ],
@@ -472,9 +646,12 @@
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
       "DEPOT_TOOLS_REPORT_BUILD": "flutter/staging/Win Engine/8945511751514863184",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -525,9 +702,12 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -585,10 +765,13 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]\\goma\\client",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -643,6 +826,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -656,7 +841,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -717,6 +903,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -730,7 +918,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -780,6 +969,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -793,7 +984,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -847,6 +1039,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -860,7 +1054,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -912,11 +1107,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -962,6 +1160,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -975,7 +1175,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1022,6 +1223,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -1035,7 +1238,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1078,6 +1282,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -1091,7 +1297,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1139,11 +1346,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1193,11 +1403,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1261,11 +1474,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1326,11 +1542,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1380,11 +1599,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1438,11 +1660,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1491,10 +1716,13 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]\\goma\\client",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1537,10 +1765,13 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]\\goma\\client",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1583,6 +1814,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -1596,7 +1829,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1644,11 +1878,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1694,6 +1931,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -1707,7 +1946,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1754,6 +1994,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -1767,7 +2009,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1810,6 +2053,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -1823,7 +2068,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1871,11 +2117,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1925,11 +2174,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -1981,11 +2233,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2032,10 +2287,13 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]\\goma\\client",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2078,6 +2336,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -2091,7 +2351,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2139,11 +2400,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2189,6 +2453,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -2202,7 +2468,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2249,6 +2516,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -2262,7 +2531,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2305,6 +2575,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -2318,7 +2590,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2366,11 +2639,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2420,11 +2696,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2476,11 +2755,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2527,10 +2809,13 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]\\goma\\client",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2574,10 +2859,13 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]\\goma\\client",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2621,10 +2909,13 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]\\goma\\client",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2667,10 +2958,13 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]\\goma\\client",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2714,10 +3008,13 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]\\goma\\client",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2761,10 +3058,13 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
-      "GOMA_DIR": "[CACHE]\\goma\\client"
+      "GOMA_DIR": "[CACHE]\\goma\\client",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2807,6 +3107,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -2820,7 +3122,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2866,11 +3169,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2916,6 +3222,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -2929,7 +3237,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -2976,6 +3285,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -2989,7 +3300,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3032,6 +3344,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -3045,7 +3359,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3093,11 +3408,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3147,11 +3465,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3203,11 +3524,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3254,6 +3578,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -3267,7 +3593,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3313,11 +3640,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3363,6 +3693,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -3376,7 +3708,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3423,6 +3756,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -3436,7 +3771,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3479,6 +3815,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -3492,7 +3830,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3540,11 +3879,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3594,11 +3936,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3650,11 +3995,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3701,6 +4049,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -3714,7 +4064,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3760,11 +4111,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3810,6 +4164,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -3823,7 +4179,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3870,6 +4227,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -3883,7 +4242,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3926,6 +4286,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -3939,7 +4301,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -3987,11 +4350,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4041,11 +4407,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4097,11 +4466,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4148,6 +4520,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -4161,7 +4535,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4207,11 +4582,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4257,6 +4635,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -4270,7 +4650,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4317,6 +4698,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -4330,7 +4713,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4373,6 +4757,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -4386,7 +4772,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4434,11 +4821,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4488,11 +4878,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4544,11 +4937,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4595,6 +4991,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -4608,7 +5006,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4654,11 +5053,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4704,6 +5106,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -4717,7 +5121,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4764,6 +5169,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -4777,7 +5184,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4820,6 +5228,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -4833,7 +5243,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4881,11 +5292,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4935,11 +5349,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -4991,11 +5408,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5042,6 +5462,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -5055,7 +5477,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5101,11 +5524,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5151,6 +5577,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -5164,7 +5592,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5211,6 +5640,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -5224,7 +5655,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5267,6 +5699,8 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
@@ -5280,7 +5714,8 @@
       "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
       "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5328,11 +5763,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5382,11 +5820,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5438,11 +5879,14 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "GOMA_TMP_DIR": "[CLEANUP]\\goma",
-      "GOMA_USE_LOCAL": "False"
+      "GOMA_USE_LOCAL": "False",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5497,9 +5941,12 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5548,9 +5995,12 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5607,9 +6057,12 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5660,9 +6113,12 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5706,9 +6162,12 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5752,9 +6211,12 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [
@@ -5798,9 +6260,12 @@
     "cwd": "[CACHE]\\builder",
     "env": {
       "ANDROID_HOME": "[CACHE]\\builder\\src\\third_party\\android_tools\\sdk",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
       "FLUTTER_LOGS_DIR": "[CLEANUP]\\flutter_logs_dir",
       "FLUTTER_PREBUILT_DART_SDK": "True",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir"
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]\\flutter_logs_dir",
+      "GYP_MSVS_VERSION": "2022"
     },
     "env_prefixes": {
       "PATH": [

@@ -38,6 +38,31 @@ OFFICIAL_BUILD_BUCKET = 'flutter'
 class RepoUtilApi(recipe_api.RecipeApi):
   """Provides utilities to work with flutter repos."""
 
+  def _setup_win_toolchain(self, env):
+    """Setups local win toolchain if available."""
+    if self.m.platform.is_win:
+      toolchain_metadata_src = self.m.path['cache'].join(
+          'builder', 'vs_toolchain_root', 'data.json'
+      )
+      self.m.path.mock_add_paths(toolchain_metadata_src)
+      if self.m.path.exists(toolchain_metadata_src):
+        toolchain_metadata_dst = self.m.path['cache'].join(
+            'builder', 'src', 'build', 'win_toolchain.json'
+        )
+        self.m.file.copy(
+            'copy win_toolchain_metadata', toolchain_metadata_src,
+            toolchain_metadata_dst
+        )
+        data_file = self.m.path['cache'].join(
+            'builder', 'vs_toolchain_root', 'data.json'
+        )
+        metadata = self.m.file.read_json(
+            'read win toolchain metadata',
+            data_file,
+            test_data={'version': '2022'}
+        )
+        env['GYP_MSVS_VERSION'] = metadata['version']
+
   def engine_checkout(self, checkout_path, env, env_prefixes):
     """Checkout code using gclient.
 
@@ -46,6 +71,14 @@ class RepoUtilApi(recipe_api.RecipeApi):
       env(dict): A dictionary with the environment variables to set.
       env_prefixes(dict): A dictionary with the paths to be added to environment variables.
     """
+    # Set vs_toolchain env to cache it.
+    if self.m.platform.is_win:
+      # Set win toolchain root to a directory inside cache/builder to cache it.
+      env['DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT'] = self.m.path['cache'].join(
+          'builder', 'vs_toolchain_root'
+      )
+      env['DEPOT_TOOLS_WIN_TOOLCHAIN'] = 1
+
     bucket = self.m.buildbucket.build.builder.bucket
     # Calculate if we need to clean the source code cache.
     clobber = self.m.properties.get('clobber', False)
@@ -60,7 +93,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     if (not clobber) and (mount_git or
                           mount_builder) and (bucket != OFFICIAL_BUILD_BUCKET):
       self.m.cache.mount_cache('builder', force=True)
-
+      self._setup_win_toolchain(env)
     # Grab any gclient custom variables passed as properties.
     local_custom_vars = self.m.shard_util_v2.unfreeze_dict(
         self.m.properties.get('gclient_variables', {})
@@ -129,6 +162,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
                 == 'BOT_UPDATE_NO_REV_FOUND'):
               raise self.m.step.StepFailure('BOT_UPDATE_NO_REV_FOUND')
             self.m.gclient.runhooks()
+            # if win copy toolchain metadata to the expected location.
+            self._setup_win_toolchain(env)
           except:
             # On any exception, clean up the cache and raise
             _ClobberCache()

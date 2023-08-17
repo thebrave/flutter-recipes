@@ -9,6 +9,7 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/raw_io',
     'recipe_engine/step',
 ]
 
@@ -52,6 +53,14 @@ def GenTests(api):
                   'runtime_versions': ['ios-13-0', 'ios-14-0']
               }
           }
+      ),
+      api.step_data(
+          'list runtimes',
+          stdout=api.raw_io.output_text(
+              '== Runtimes ==\n' +
+              'iOS 13.0 - com.apple.CoreSimulator.SimRuntime.iOS-13-0\n' +
+              'iOS 14.0 - com.apple.CoreSimulator.SimRuntime.iOS-14-0'
+          )
       ),
       api.os_utils.is_symlink(False),
   )

@@ -129,18 +129,38 @@ class OSXSDKApi(recipe_api.RecipeApi):
             'list runtimes', ['xcrun', 'simctl', 'list', 'runtimes'],
             stdout=self.m.raw_io.output_text()
         ).stdout.splitlines()
-        #  If no runtime exists, we should do a fresh re-install of xcode.
-        #
-        #  Skips the Runtimes header when checking. Example of the output:
-        #    == Runtimes ==
-        #    iOS 16.4 (16.4 - 20E247) - com.apple.CoreSimulator.SimRuntime.iOS-16-4
-        if not runtime_simulators[1:]:
+        if self._missing_runtime(runtime_simulators[1:]):
           self._cleanup_cache = True
           self._setup_osx_sdk(kind, devicelab)
       yield
     finally:
       with self.m.context(infra_steps=True):
         self.m.step('reset XCode', ['sudo', 'xcode-select', '--reset'])
+
+  def _missing_runtime(self, runtime_simulators):
+    """Check if there is any missing runtime.
+
+    If no explicit `_runtime_versions` is specified, we assume `runtime_simulators`
+    at least has the default runtime and should not be empty.
+
+    If there is explicit `_runtime_versions` defined, we need to check if the number
+    of installed runtime matches the number of required.
+
+    The runtime_simulators follows:
+    [
+      "iOS 16.2 (16.2 - 20C52) - com.apple.CoreSimulator.SimRuntime.iOS-16-2",
+      "iOS 16.4 (16.4 - 20E247) - com.apple.CoreSimulator.SimRuntime.iOS-16-4"
+    ]
+
+    The property `_runtime_versions` follows:
+    [
+      "ios-16-4_14e300c",
+      "ios-16-2_14c18"
+    ]
+    """
+    if not self._runtime_versions:
+      return not runtime_simulators
+    return len(self._runtime_versions) != len(runtime_simulators)
 
   def _setup_osx_sdk(self, kind, devicelab):
     app = None

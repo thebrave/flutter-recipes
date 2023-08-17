@@ -67,6 +67,17 @@ IDENTIFIER_NAME_MAP = {
 _WINDOWS_OS_RE = r'\[version (\d+\.\d+)\.(\d+(?:\.\d+|))\]'
 
 
+# Same as StepFailure except that the message is assumed to be
+# already formatted. (StepFailure assumes that the message needs
+# to be further escaped.)
+# See https://chromium.googlesource.com/infra/luci/recipes-py/+/HEAD/recipe_engine/recipe_api.py#399
+class PrettyFailure(recipe_api.StepFailure):
+  """Wrapper class to avoid the ! formatter in StepFailure"""
+
+  def reason_message(self):
+    return '{}\nStep failed'.format(self.name)
+
+
 class TestUtilsApi(recipe_api.RecipeApi):
   """Utilities to run flutter tests."""
 
@@ -138,7 +149,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
       stdout = self._truncateString(result.stdout)
       # Truncate stderr
       stderr = self._truncateString(result.stderr)
-      raise self.m.step.StepFailure(
+      raise PrettyFailure(
           '\n\n```%s```\n' % (stdout or stderr),
           result=result,
       )

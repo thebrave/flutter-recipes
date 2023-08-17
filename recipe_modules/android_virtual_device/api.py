@@ -5,8 +5,8 @@ import re
 from contextlib import contextmanager
 from recipe_engine import recipe_api
 
-# Supports 19 though api 33.
-AVD_CIPD_IDENTIFIER = 'thuLfk5G3GvTQU6BzYiS5IAWWwHP7I-NOPf9rO5CYIwC'
+# Supports 19 though API 34.
+AVD_CIPD_IDENTIFIER = 'W3jdQm1xh3II5q9I6u1pv9TSmSEoCrJSg13gQF7phboC'
 
 
 class AndroidVirtualDeviceApi(recipe_api.RecipeApi):

@@ -8,4 +8,4 @@
 
 set -e
 
-./dev/bots/docs.sh
+./dev/bots/docs.sh --output dev/docs/api_docs.zip --keep-staging --staging-dir dev/docs

@@ -66,14 +66,20 @@ def RunSteps(api, properties, env_properties):
       )
       api.step(
           'Update packages', [
-              'bin/flutter', 'update-packages', '-v',
-              '--local-engine=%s' % str(build_dir)
+              'bin/flutter',
+              'update-packages',
+              '-v',
+              '--local-engine=%s' % str(build_dir),
+              '--local-engine-host=host_debug_unopt',
           ]
       )
       api.step(
           'Framework analyze', [
-              'bin/flutter', 'analyze', '--flutter-repo',
-              '--local-engine=%s' % str(build_dir)
+              'bin/flutter',
+              'analyze',
+              '--flutter-repo',
+              '--local-engine=%s' % str(build_dir),
+              '--local-engine-host=host_debug_unopt',
           ]
       )
   # Run framework packages test
@@ -82,8 +88,10 @@ def RunSteps(api, properties, env_properties):
                      cwd=flutter_checkout_path.join('packages', 'flutter')):
       api.step(
           api.test_utils.test_step_name('Framework test'), [
-              str(flutter_checkout_path.join('bin', 'flutter')), 'test',
-              '--local-engine=%s' % str(build_dir)
+              str(flutter_checkout_path.join('bin', 'flutter')),
+              'test',
+              '--local-engine=%s' % str(build_dir),
+              '--local-engine-host=host_debug_unopt',
           ]
       )
 

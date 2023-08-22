@@ -9,6 +9,8 @@ from recipe_engine import recipe_api
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
 TIMEOUT_PROPERTY = 'ios_debug_symbol_doctor_timeout_seconds'
+XCODE_AUTOMATION_DB = 'TCC.db'
+XCODE_AUTOMATION_BACKUP_DB = 'TCC.db.backup'
 
 
 class OsUtilsApi(recipe_api.RecipeApi):
@@ -174,6 +176,11 @@ class OsUtilsApi(recipe_api.RecipeApi):
             ok_ret='any',
             infra_step=True
         )
+        self.m.step(
+            'kill Xcode', ['killall', '-9', 'Xcode'],
+            ok_ret='any',
+            infra_step=True
+        )
       else:
         self.m.step(
             'kill chrome', ['pkill', 'chrome'], ok_ret='any', infra_step=True
@@ -300,7 +307,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
         )
 
   def dismiss_dialogs(self):
-    """Dismisses iOS dialogs to avoid problems.
+    """Dismisses iOS and macOS dialogs to avoid problems.
 
     Args:
       flutter_path(Path): A path to the checkout of the flutter sdk repository.
@@ -308,24 +315,236 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     if str(self.m.swarming.bot_id
           ).startswith('flutter-devicelab') and self.m.platform.is_mac:
       with self.m.step.nest('Dismiss dialogs'):
-        cocoon_path = self._checkout_cocoon()
-        resource_name = self.resource('dismiss_dialogs.sh')
-        self.m.step(
-            'Set execute permission',
-            ['chmod', '755', resource_name],
+        with self.m.step.nest('Dismiss iOS dialogs'):
+          cocoon_path = self._checkout_cocoon()
+          resource_name = self.resource('dismiss_dialogs.sh')
+          self.m.step(
+              'Set execute permission',
+              ['chmod', '755', resource_name],
+              infra_step=True,
+          )
+          with self.m.context(
+              cwd=cocoon_path.join('cipd_packages', 'device_doctor', 'tool',
+                                   'infra-dialog'),
+              infra_steps=True,
+          ):
+            device_id = self.m.step(
+                'Find device id', ['idevice_id', '-l'],
+                stdout=self.m.raw_io.output_text()
+            ).stdout.rstrip()
+            cmd = [resource_name, device_id]
+            self.m.step('Run app to dismiss dialogs', cmd)
+        with self.m.step.nest('Dismiss Xcode automation dialogs'):
+          self._dismiss_xcode_automation_dialogs(device_id)
+
+  def _dismiss_xcode_automation_dialogs(self, device_id):
+    """Dismiss Xcode automation permission dialog and update permission db.
+
+    Only required for CoreDevices (physical iOS 17+ devices) or "xcode_debug" tests.
+
+    Args:
+      device_id(string): A string of the selected device's UDID.
+    """
+
+    # Get list of wired CoreDevices.
+    # Allow any return code and ignore failure since this command will only
+    # work with Xcode 15 and therefore may not work for all machines.
+    self.m.step(
+        'List CoreDevices',
+        [
+            'xcrun',
+            'devicectl',
+            'list',
+            'devices',
+            '-v',
+        ],
+        infra_step=True,
+        raise_on_failure=False,
+        ok_ret='any',
+    )
+
+    device_list = self.m.step(
+        'Find wired CoreDevices',
+        [
+            'xcrun',
+            'devicectl',
+            'list',
+            'devices',
+            '--filter',
+            "connectionProperties.transportType CONTAINS 'wired'",
+            '-v',
+        ],
+        stdout=self.m.raw_io.output_text(),
+        infra_step=True,
+        raise_on_failure=False,
+        ok_ret='any',
+    ).stdout.rstrip()
+
+    builder_name = self.m.properties.get('buildername')
+
+    self.m.step.empty("Get buildername", step_text=builder_name)
+
+    # Skip the rest of this step if the device is not a CoreDevice and the
+    # builder name doesn't contain 'xcode_debug'.
+    # Builders with 'xcode_debug' in the name force tests the workflow that
+    # requires this permission.
+    if device_id not in device_list and 'xcode_debug' not in builder_name:
+      return
+
+    tcc_directory_path, db_path, backup_db_path = self._get_tcc_path()
+
+    # Ensure db exists
+    self.m.step(
+        'List TCC directory',
+        ['ls', tcc_directory_path],
+        infra_step=True,
+    )
+
+    files = self.m.step(
+        'Find TCC directory',
+        ['ls', tcc_directory_path],
+        stdout=self.m.raw_io.output_text(),
+        infra_step=True,
+    ).stdout.rstrip()
+
+    if XCODE_AUTOMATION_DB not in files:
+      self.m.step.empty(
+          'Failed to find TCC.db',
+          status=self.m.step.INFRA_FAILURE,
+      )
+
+    # Print contents of db for potential debugging purposes.
+    self._query_automation_db_step(db_path)
+
+    # Create backup db if there isn't one.
+    # If there is already a backup, it's most likely that a previous run did
+    # not complete correctly and did not get reset, so don't overwrite the backup.
+    if XCODE_AUTOMATION_BACKUP_DB not in files:
+      self.m.step(
+          'Create backup db',
+          ['cp', db_path, backup_db_path],
+          infra_step=True,
+      )
+
+    # Run an arbitrary AppleScript Xcode command to trigger permissions dialog.
+    # The AppleScript counts how many Xcode windows are open.
+    # The script will hang if permission has not been given, so timeout after
+    # a few seconds.
+    self.m.step(
+        'Trigger dialog',
+        [
+            'osascript',
+            '-e',
+            'tell app "Xcode"',
+            '-e',
+            'launch',
+            '-e',
+            'count window',
+            '-e',
+            'end tell',
+        ],
+        infra_step=True,
+        raise_on_failure=False,
+        ok_ret='any',
+        timeout=2,
+    )
+
+    # Kill the dialog. After killing the dialog, an entry for the app requesting
+    # control of Xcode should automatically be added to the db.
+    self.m.step(
+        'Dismiss dialog',
+        ['killall', '-9', 'UserNotificationCenter'],
+        infra_step=True,
+        ok_ret='any',
+    )
+
+    # Print contents of db for potential debugging purposes.
+    self._query_automation_db_step(db_path)
+
+    # Update the db to make it think permission was given.
+    self.m.step(
+        'Update db',
+        [
+            'sqlite3', db_path,
+            "UPDATE access SET auth_value = 2, auth_reason = 3, flags = NULL WHERE service = 'kTCCServiceAppleEvents' AND indirect_object_identifier = 'com.apple.dt.Xcode'"
+        ],
+        infra_step=True,
+    )
+
+    # Print contents of db for potential debugging purposes.
+    self._query_automation_db_step(db_path)
+
+    # Xcode was opened by Applescript, so kill it.
+    self.m.step(
+        'Kill Xcode',
+        ['killall', '-9', 'Xcode'],
+        infra_step=True,
+        ok_ret='any',
+    )
+
+  def _get_tcc_path(self):
+    """Constructs paths to the TCC directory, TCC db, and TCC backup db.
+
+    Returns:
+        A tuple of strings representing the paths to the TCC directory, TCC db, and TCC backup db.
+    """
+    home_path = 'Users/fakeuser' if self._test_data.enabled else os.environ.get(
+        'HOME'
+    )
+    tcc_directory_path = os.path.join(
+        str(home_path), 'Library/Application Support/com.apple.TCC'
+    )
+    db_path = os.path.join(tcc_directory_path, XCODE_AUTOMATION_DB)
+    backup_db_path = os.path.join(
+        tcc_directory_path, XCODE_AUTOMATION_BACKUP_DB
+    )
+    return tcc_directory_path, db_path, backup_db_path
+
+  def _query_automation_db_step(self, db_path):
+    """Queries the TCC database.
+
+    Args:
+      db_path(string): A string of the path to the sqlite database.
+    """
+    self.m.step(
+        'Query TCC db',
+        [
+            'sqlite3', db_path,
+            'SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = "kTCCServiceAppleEvents"'
+        ],
+        infra_step=True,
+    )
+
+  def reset_automation_dialogs(self):
+    """Reset Xcode Automation permissions."""
+    if str(self.m.swarming.bot_id
+          ).startswith('flutter-devicelab') and self.m.platform.is_mac:
+      with self.m.step.nest('Reset Xcode automation dialogs'):
+        tcc_directory_path, db_path, backup_db_path = self._get_tcc_path()
+
+        files = self.m.step(
+            'Find TCC directory',
+            ['ls', tcc_directory_path],
+            stdout=self.m.raw_io.output_text(),
             infra_step=True,
+            raise_on_failure=False,
+            ok_ret='any',
+        ).stdout.rstrip()
+
+        if XCODE_AUTOMATION_BACKUP_DB not in files:
+          return
+
+        self.m.step(
+            'Restore from backup db',
+            ['cp', backup_db_path, db_path],
         )
-        with self.m.context(
-            cwd=cocoon_path.join('cipd_packages', 'device_doctor', 'tool',
-                                 'infra-dialog'),
-            infra_steps=True,
-        ):
-          device_id = self.m.step(
-              'Find device id', ['idevice_id', '-l'],
-              stdout=self.m.raw_io.output_text()
-          ).stdout.rstrip()
-          cmd = [resource_name, device_id]
-          self.m.step('Run app to dismiss dialogs', cmd)
+        self.m.step(
+            'Remove backup',
+            ['rm', backup_db_path],
+        )
+
+        # Print contents of db for potential debugging purposes.
+        self._query_automation_db_step(db_path)
 
   def _checkout_cocoon(self):
     """Checkout cocoon at HEAD to the cache and return the path."""

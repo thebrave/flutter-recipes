@@ -9,6 +9,7 @@ DEPS = [
     'flutter/os_utils',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/raw_io',
 ]
 
 
@@ -23,6 +24,7 @@ def RunSteps(api):
   api.os_utils.shutdown_simulators()
   api.os_utils.enable_long_paths()
   api.os_utils.dismiss_dialogs()
+  api.os_utils.reset_automation_dialogs()
   api.os_utils.print_pub_certs()
   api.os_utils.is_symlink('/a/b/c/simlink')
   api.os_utils.symlink('/a/file', '/a/b/c/simlink')
@@ -33,6 +35,10 @@ def GenTests(api):
   # For coverage.
   api.os_utils.is_symlink(True)
 
+  xcode_dismiss_dialog_find_db_step = api.step_data(
+      'Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory',
+      stdout=api.raw_io.output_text('TCC.db'),
+  )
   yield api.test(
       'basic',
       api.platform('win', 64),
@@ -44,6 +50,7 @@ def GenTests(api):
   yield api.test(
       'ios_debug_symbol_doctor_fails_then_succeeds',
       api.step_data('ios_debug_symbol_doctor.diagnose', retcode=1),
+      xcode_dismiss_dialog_find_db_step,
       api.platform('mac', 64),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
@@ -72,7 +79,48 @@ def GenTests(api):
   )
   yield api.test(
       'clean_derived_data', api.platform('mac', 64),
+      xcode_dismiss_dialog_find_db_step,
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       )
+  )
+  yield api.test(
+      'dimiss_dialog_xcode_automation_fails_find_db',
+      api.step_data(
+          'Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory',
+          stdout=api.raw_io.output_text(''),
+      ),
+      api.platform('mac', 64),
+      api.properties.environ(
+          properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
+      ),
+      status='INFRA_FAILURE'
+  )
+  yield api.test(
+      'reset_dialog_xcode_automation_fails_find_db',
+      xcode_dismiss_dialog_find_db_step,
+      api.step_data(
+          'Reset Xcode automation dialogs.Find TCC directory',
+          stdout=api.raw_io.output_text('TCC.db.backup'),
+      ),
+      api.platform('mac', 64),
+      api.properties.environ(
+          properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
+      ),
+  )
+  yield api.test(
+      'dimiss_dialog_xcode_automation_skip_if_not_core_device',
+      api.step_data(
+          'Dismiss dialogs.Dismiss iOS dialogs.Find device id',
+          stdout=api.raw_io.output_text('123456789'),
+      ),
+      api.step_data(
+          'Dismiss dialogs.Dismiss Xcode automation dialogs.Find wired CoreDevices',
+          stdout=api.raw_io.output_text('No devices found.'),
+      ),
+      api.platform('mac', 64),
+      api.properties(buildername='Mac flutter_gallery_ios__start_up',),
+      api.properties.environ(
+          properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
+      ),
   )

@@ -33,7 +33,9 @@ from PB.recipes.flutter.engine.engine import EnvProperties
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 
 DEPS = [
+    'dart/dart',
     'depot_tools/depot_tools',
+    'depot_tools/gsutil',
     'flutter/archives',
     'flutter/build_util',
     'flutter/flutter_bcid',
@@ -224,6 +226,7 @@ def Build(api, checkout, env, env_prefixes, outputs):
               '(Non-blocking) Provenance verification failed - check step above',
               []
           )
+          continue
   # Archive full build. This is inefficient but necessary for global generators.
   if build.get('cas_archive', True):
     full_build_hash = api.shard_util_v2.archive_full_build(
@@ -256,14 +259,17 @@ def Verify(api, checkout, archive_config):
   paths = api.archives.engine_v2_gcs_paths(checkout, archive_config)
 
   for path in paths:
+    verify_temp_path = api.path.mkdtemp("verify")
     gcs_path = path.remote
     gcs_path_without_prefix = str.lstrip(gcs_path, 'gs://')
     file = api.path.basename(gcs_path)
     bucket = gcs_path_without_prefix.split('/', maxsplit=1)[0]
     gcs_path_without_bucket = '/'.join(gcs_path_without_prefix.split('/')[1:])
+    download_path = verify_temp_path.join(file)
 
-    api.flutter_bcid.download_and_verify_provenance(
-        file, bucket, gcs_path_without_bucket
+    api.dart.download_and_verify(
+        file, bucket, gcs_path_without_bucket, download_path,
+        'misc_software://flutter/engine'
     )
 
 
@@ -387,8 +393,6 @@ def GenTests(api):
       api.monorepo.try_build(),
   )
 
-  fake_bcid_response_success = '{"allowed": true, "verificationSummary": "This artifact is definitely legitimate!"}'
-  fake_bcid_response_failure = '{"rejectionMessage": "failed to validate!"}'
   build_custom = dict(build)
   build_custom["gclient_variables"] = {"example_custom_var": True}
   build_custom["tests"] = []
@@ -406,15 +410,15 @@ def GenTests(api):
       ),
       api.step_data(
           'Verify provenance.verify %s provenance' % artifacts_location,
-          stdout=api.raw_io.output_text(fake_bcid_response_success)
+          stdout=api.raw_io.output_text('{"allowed": true}')
       ),
       api.step_data(
           'Verify provenance.verify %s provenance' % jar_location,
-          stdout=api.raw_io.output_text(fake_bcid_response_success)
+          stdout=api.raw_io.output_text('{"allowed": true}')
       ),
       api.step_data(
           'Verify provenance.verify %s provenance' % pom_location,
-          stdout=api.raw_io.output_text(fake_bcid_response_success)
+          stdout=api.raw_io.output_text('{"allowed": true}')
       ),
   )
   yield api.test(
@@ -428,6 +432,7 @@ def GenTests(api):
       ),
       api.step_data(
           'Verify provenance.verify %s provenance' % artifacts_location,
-          stdout=api.raw_io.output_text(fake_bcid_response_failure)
+          stdout=api.raw_io
+          .output_text('{"rejectionMessage": "failed to validate!"}')
       ),
   )

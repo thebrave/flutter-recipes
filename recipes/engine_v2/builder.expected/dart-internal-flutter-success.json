@@ -2859,7 +2859,7 @@
     "name": "Verify provenance.verify artifacts.zip provenance",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@{\"allowed\": true, \"verificationSummary\": \"This artifact is definitely legitimate!\"}@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@{\"allowed\": true}@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
     ]
   },
@@ -2975,126 +2975,6 @@
     "name": "Verify provenance.delete request",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "This artifact is definitely legitimate!",
-      "[CLEANUP]/verify_tmp_1/artifacts.zip.vsa.intoto.jsonl"
-    ],
-    "cwd": "[CACHE]/builder/src/flutter",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "ENGINE_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Verify provenance.write artifacts.zip.vsa.intoto.jsonl",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@artifacts.zip.vsa.intoto.jsonl@This artifact is definitely legitimate!@@@",
-      "@@@STEP_LOG_END@artifacts.zip.vsa.intoto.jsonl@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]/verify_tmp_1/artifacts.zip.vsa.intoto.jsonl",
-      "gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-x86-jit-release/artifacts.zip"
-    ],
-    "cwd": "[CACHE]/builder/src/flutter",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "ENGINE_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Verify provenance.gsutil upload \"flutter/12345abcde12345abcde12345abcde12345abcde/android-x86-jit-release/artifacts.zip\"",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-x86-jit-release/artifacts.zip@@@"
     ]
   },
   {
@@ -3561,7 +3441,7 @@
     "name": "Verify provenance.verify x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar provenance",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@{\"allowed\": true, \"verificationSummary\": \"This artifact is definitely legitimate!\"}@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@{\"allowed\": true}@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
     ]
   },
@@ -3677,126 +3557,6 @@
     "name": "Verify provenance.delete request (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "This artifact is definitely legitimate!",
-      "[CLEANUP]/verify_tmp_2/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar.vsa.intoto.jsonl"
-    ],
-    "cwd": "[CACHE]/builder/src/flutter",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "ENGINE_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Verify provenance.write x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar.vsa.intoto.jsonl",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar.vsa.intoto.jsonl@This artifact is definitely legitimate!@@@",
-      "@@@STEP_LOG_END@x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar.vsa.intoto.jsonl@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]/verify_tmp_2/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar.vsa.intoto.jsonl",
-      "gs://download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar"
-    ],
-    "cwd": "[CACHE]/builder/src/flutter",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "ENGINE_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Verify provenance.gsutil upload \"io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar\"",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar@@@"
     ]
   },
   {
@@ -4263,7 +4023,7 @@
     "name": "Verify provenance.verify x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom provenance",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@{\"allowed\": true, \"verificationSummary\": \"This artifact is definitely legitimate!\"}@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@{\"allowed\": true}@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
     ]
   },
@@ -4379,126 +4139,6 @@
     "name": "Verify provenance.delete request (3)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "This artifact is definitely legitimate!",
-      "[CLEANUP]/verify_tmp_3/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom.vsa.intoto.jsonl"
-    ],
-    "cwd": "[CACHE]/builder/src/flutter",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "ENGINE_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Verify provenance.write x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom.vsa.intoto.jsonl",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom.vsa.intoto.jsonl@This artifact is definitely legitimate!@@@",
-      "@@@STEP_LOG_END@x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom.vsa.intoto.jsonl@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]/verify_tmp_3/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom.vsa.intoto.jsonl",
-      "gs://download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom"
-    ],
-    "cwd": "[CACHE]/builder/src/flutter",
-    "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
-      "ENGINE_PATH": "[CACHE]/builder",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "LUCI_WORKDIR": "[START_DIR]",
-      "OS": "linux",
-      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Verify provenance.gsutil upload \"io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom\"",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom@@@"
     ]
   },
   {

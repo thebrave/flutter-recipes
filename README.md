@@ -21,5 +21,8 @@ Please follow instructions on [Contributing docs](CONTRIBUTING.md) to setup your
 Running `python3 recipes.py test train` will execute all of the tests in this repository
 
 ## Troubleshooting
-### `Required binary is not found on PATH: cipd` when testing locally
-You need to ensure [depot_tools](https://chromium.googlesource.com/chromium/tools/depot_tools.git) is installed. See [Depot Tools Installation Tutorial](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up)
+
+### "Required binary is not found on PATH: cipd" when testing locally
+
+You need to ensure [depot_tools](https://chromium.googlesource.com/chromium/tools/depot_tools.git) is installed.
+See the [Depot Tools Installation Tutorial](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up).

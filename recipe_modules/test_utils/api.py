@@ -82,7 +82,8 @@ class TestUtilsApi(recipe_api.RecipeApi):
   """Utilities to run flutter tests."""
 
   def _truncateString(self, string):
-    """Truncate the string to MAX_CHARS"""
+    """Truncate the string by lines from the end so that the output has
+    less than MAX_CHARS bytes."""
     byte_count = 0
     lines = string.splitlines()
     output = []
@@ -92,7 +93,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
       if byte_count >= MAX_CHARS:
         break
       output.insert(0, line)
-    return html.escape('\n'.join(output))
+    return '\n'.join(output)
 
   def _is_flaky(self, output):
     """Check if test step is flaky"""
@@ -150,7 +151,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
       # Truncate stderr
       stderr = self._truncateString(result.stderr)
       raise PrettyFailure(
-          '\n\n```%s```\n' % (stdout or stderr),
+          '\n\n```\n%s\n```\n' % (stdout or stderr),
           result=result,
       )
     finally:

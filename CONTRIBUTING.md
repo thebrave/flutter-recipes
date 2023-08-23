@@ -86,3 +86,26 @@ git commit --amend --no-edit
 git push origin HEAD:refs/for/main
 ```
 
+### Getting review
+
+You will need someone with privileges to review the PR. To do this,
+you will need to bring the CL to the attention of a team member. Join
+our [Discord](https://github.com/flutter/flutter/wiki/Chat), and ask
+for a review on `#hackers-infra`. If you do not get a response after a
+day or so, ask again.
+
+
+### Running pre-submit tests
+
+For security reasons, tests will not run until someone with elevated
+privileges clicks `+1` on the CL.
+
+
+### Testing locally
+
+Running `python3 recipes.py test train` will execute all of the tests in this repository
+
+#### "Required binary is not found on PATH: cipd" when testing locally
+
+You need to ensure [depot_tools](https://chromium.googlesource.com/chromium/tools/depot_tools.git) is installed.
+See the [Depot Tools Installation Tutorial](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up).

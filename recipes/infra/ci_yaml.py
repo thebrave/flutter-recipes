@@ -56,11 +56,11 @@ def RunSteps(api):
       )
   )
 
-  git_branch = api.properties.get('git_branch')
+  git_branch = api.properties.get('git_branch', 'main')
   repo = api.properties.get('git_repo')
   if _is_postsubmit(api):
-    # gitiles commit info
-    git_ref = api.buildbucket.gitiles_commit.id
+    # Pulling from HEAD ensures out of order runs do not lead to inconsistencies.
+    git_ref = git_branch
   else:
     # github pull request info
     git_ref = 'main'  # Default to master for LED runs
@@ -83,7 +83,7 @@ def RunSteps(api):
     infra_config_path = infra_path.join(
         'config', 'generated', 'ci_yaml', config_name
     )
-   # Generate_jspb
+    # Generate_jspb
     jspb_step = api.step(
         'generate jspb',
         cmd=['dart', generate_jspb_path, repo, git_ref],
@@ -123,7 +123,8 @@ def RunSteps(api):
               bot_commit=True,
           ),
           repo_dir=infra_path,
-          commit_message='Roll %s to %s' % (repo, git_ref),
+          commit_message='Roll %s to %s' %
+          (repo, api.buildbucket.gitiles_commit.id),
       )
 
 

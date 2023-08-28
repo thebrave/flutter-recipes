@@ -6,6 +6,7 @@ DEPS = [
     'flutter/flutter_bcid',
     'recipe_engine/buildbucket',
     'recipe_engine/path',
+    'recipe_engine/raw_io',
 ]
 
 
@@ -16,9 +17,14 @@ def RunSteps(api):
   )
   api.flutter_bcid.is_official_build()
   api.flutter_bcid.is_prod_build()
+  api.flutter_bcid.download_and_verify_provenance(
+      "artifact.zip", "flutter_infra", "release_artifacts/artifacts.zip"
+  )
 
 
 def GenTests(api):
+  fake_bcid_response_success = '{"allowed": true, "verificationSummary": "This artifact is definitely legitimate!"}'
+  artifacts_location = 'artifact.zip'
   yield api.test(
       'basic',
       api.buildbucket.ci_build(
@@ -26,6 +32,10 @@ def GenTests(api):
           bucket='flutter',
           git_repo='https://dart.googlesource.com/monorepo',
           git_ref='refs/heads/main'
+      ),
+      api.step_data(
+          'verify %s provenance' % artifacts_location,
+          stdout=api.raw_io.output_text(fake_bcid_response_success)
       ),
   )
 
@@ -36,5 +46,9 @@ def GenTests(api):
           bucket='flutter',
           git_repo='https://dart.googlesource.com/monorepo',
           git_ref='refs/heads/main'
+      ),
+      api.step_data(
+          'verify %s provenance' % artifacts_location,
+          stdout=api.raw_io.output_text(fake_bcid_response_success)
       ),
   )

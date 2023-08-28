@@ -112,6 +112,336 @@
     "name": "snoop: report_gcs"
   },
   {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra/release_artifacts/artifacts.zip",
+      "[CLEANUP]/verify_tmp_1/artifact.zip"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil download artifact.zip"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra/release_artifacts/artifacts.zip.intoto.jsonl",
+      "[CLEANUP]/verify_tmp_1/artifact.zip.intoto.jsonl"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil download artifact.zip provenance"
+  },
+  {
+    "cmd": [
+      "luci-auth",
+      "token",
+      "-scopes",
+      "https://www.googleapis.com/auth/bcid_verify https://www.googleapis.com/auth/cloud-platform",
+      "-lifetime",
+      "3m"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get access token for default account"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "file_hash",
+      "[CLEANUP]/verify_tmp_1/artifact.zip"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Compute file hash (2)",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@Hash calculated: 3038cc85aa9c41479c21791a47b1af8f38a422a73f61553b320b1411018a4c90@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/verify_tmp_1/artifact.zip.intoto.jsonl",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "read artifact.zip provenance",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@artifact.zip.intoto.jsonl@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "Authorization: Bearer extra.secret.token.should.not.be.logged\n",
+      "[CLEANUP]/authorization"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "write authorization"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "{\"resourceToVerify\": \"misc_software://flutter/engine\", \"artifactInfo\": {\"digests\": {\"sha256\": \"3038cc85aa9c41479c21791a47b1af8f38a422a73f61553b320b1411018a4c90\"}, \"attestations\": [\"\"]}}",
+      "[CLEANUP]/request"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "write request",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@request@{\"resourceToVerify\": \"misc_software://flutter/engine\", \"artifactInfo\": {\"digests\": {\"sha256\": \"3038cc85aa9c41479c21791a47b1af8f38a422a73f61553b320b1411018a4c90\"}, \"attestations\": [\"\"]}}@@@",
+      "@@@STEP_LOG_END@request@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "curl",
+      "-H",
+      "@[CLEANUP]/authorization",
+      "-H",
+      "Content-Type: application/json",
+      "-d",
+      "@[CLEANUP]/request",
+      "https://bcidsoftwareverifier-pa.googleapis.com/v1/software-artifact-verification-requests"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "verify artifact.zip provenance",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@raw_io.output_text@{\"allowed\": true, \"verificationSummary\": \"This artifact is definitely legitimate!\"}@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "remove",
+      "[CLEANUP]/authorization"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "delete authorization"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "remove",
+      "[CLEANUP]/request"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "delete request"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "This artifact is definitely legitimate!",
+      "[CLEANUP]/verify_tmp_1/artifact.zip.vsa.intoto.jsonl"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "write artifact.zip.vsa.intoto.jsonl",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@artifact.zip.vsa.intoto.jsonl@This artifact is definitely legitimate!@@@",
+      "@@@STEP_LOG_END@artifact.zip.vsa.intoto.jsonl@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "[CLEANUP]/verify_tmp_1/artifact.zip.vsa.intoto.jsonl",
+      "gs://flutter_infra/release_artifacts/artifacts.zip"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil upload \"release_artifacts/artifacts.zip.vsa.intoto.jsonl\"",
+    "~followup_annotations": [
+      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra/release_artifacts/artifacts.zip@@@"
+    ]
+  },
+  {
     "name": "$result"
   }
 ]

@@ -3,9 +3,12 @@
 # found in the LICENSE file.
 
 DEPS = [
+    'dart/dart',
+    'depot_tools/gsutil',
     'flutter/repo_util',
     'recipe_engine/bcid_reporter',
     'recipe_engine/buildbucket',
     'recipe_engine/file',
+    'recipe_engine/path',
     'recipe_engine/platform',
 ]

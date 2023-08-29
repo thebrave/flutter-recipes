@@ -81,6 +81,6 @@ class FlutterBcidApi(recipe_api.RecipeApi):
     self.m.gsutil.upload(
         vsa_local_path,
         bucket,
-        gcs_path_without_bucket,
+        vsa_path_without_bucket,
         name=f'upload "{vsa_path_without_bucket}"'
     )

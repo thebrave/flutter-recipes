@@ -10,7 +10,7 @@ DEPS = [
     "fuchsia/git",
     "fuchsia/gitiles",
     "flutter/subbuild",
-    "fuchsia/swarming_retry",
+    "flutter/swarming_retry",
     "recipe_engine/buildbucket",
     "recipe_engine/context",
     "recipe_engine/file",

@@ -102,6 +102,8 @@ def RunSteps(api):
   ])
   if 'LOCAL_ENGINE' in env:
     runner_params.extend(['--local-engine', env['LOCAL_ENGINE']])
+  if 'LOCAL_ENGINE_HOST' in env:
+    runner_params.extend(['--local-engine-host', env['LOCAL_ENGINE_HOST']])
   # LUCI git checkouts end up in a detached HEAD state, so branch must
   # be passed from gitiles -> test runner -> Cocoon.
   if git_branch and api.properties.get('git_url') is None:
@@ -360,7 +362,8 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           local_engine_cas_hash='isolatehashlocalengine/22',
-          local_engine='host-release',
+          local_engine='android-release',
+          local_engine_host='host-release',
           git_branch='master',
           artifact='def',
           parent_builder='ghi',

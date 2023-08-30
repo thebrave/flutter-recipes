@@ -130,14 +130,11 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
-      'flutter_engine',
-      api.properties(local_engine_cas_hash='abceqwe/7',),
-      api.repo_util.flutter_environment_data(checkout_path),
-  )
-  yield api.test(
       'local_engine_cas',
       api.properties(
-          local_engine_cas_hash='abceqwe/7', local_engine='host-release'
+          local_engine_cas_hash='abceqwe/7',
+          local_engine='android-release',
+          local_engine_host='host-release',
       ),
       api.repo_util.flutter_environment_data(checkout_path),
   )

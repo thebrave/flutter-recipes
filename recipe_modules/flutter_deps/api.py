@@ -31,20 +31,21 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     """
     # No-op if `local_engine_cas_hash` property is empty
     cas_hash = self.m.properties.get('local_engine_cas_hash')
-    local_engine = self.m.properties.get('local_engine')
     if cas_hash:
       checkout_engine = self.m.path['cleanup'].join('builder', 'src', 'out')
-      # Download host_debug_unopt from CAS.
+      # Download built engines from CAS.
       if cas_hash:
         self.m.cas.download(
             'Download engine from CAS', cas_hash, checkout_engine
         )
-      local_engine = checkout_engine.join(local_engine or 'host_debug_unopt')
+      local_engine = checkout_engine.join(self.m.properties.get('local_engine'))
+      local_engine_host = self.m.properties.get('local_engine_host')
       dart_bin = local_engine.join('dart-sdk', 'bin')
       paths = env_prefixes.get('PATH', [])
       paths.insert(0, dart_bin)
       env_prefixes['PATH'] = paths
       env['LOCAL_ENGINE'] = local_engine
+      env['LOCAL_ENGINE_HOST'] = local_engine_host
 
     web_sdk_cas_hash = self.m.properties.get('local_web_sdk_cas_hash')
     local_web_sdk = self.m.properties.get('local_web_sdk')

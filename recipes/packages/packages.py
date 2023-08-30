@@ -56,6 +56,9 @@ def RunSteps(api):
 
   env, env_prefixes = api.repo_util.flutter_environment(flutter_checkout_path)
 
+  # Join labels with ',' and do no perform any char escaping.
+  env['PR_OVERRIDE_LABELS'] = ','.join(api.properties.get('overrides', ''))
+
   env['USE_EMULATOR'] = False
   with api.step.nest('Dependencies'):
     deps = api.properties.get('dependencies', [])
@@ -95,18 +98,19 @@ def RunSteps(api):
         with ExitStack() as stack:
           if env['USE_EMULATOR']:
             stack.enter_context(
-                  api.android_virtual_device(
-                      env=env,
-                      env_prefixes=env_prefixes,
-                      version=env['EMULATOR_VERSION']
-                  )
-              )
+                api.android_virtual_device(
+                    env=env,
+                    env_prefixes=env_prefixes,
+                    version=env['EMULATOR_VERSION']
+                )
+            )
           run_test(api, result, packages_checkout_path, env, env_prefixes)
 
   # This is to clean up leaked processes.
   api.os_utils.kill_processes()
   # Collect memory/cpu/process after task execution.
   api.os_utils.collect_os_info()
+
 
 def run_test(api, result, packages_checkout_path, env, env_prefixes):
   """Run tests sequentially following the script"""
@@ -129,7 +133,12 @@ def run_test(api, result, packages_checkout_path, env, env_prefixes):
       #   2) there are earlier task failures, but the current task is marked as `always: True`.
       #   Note that infra tasks fail and do not run the rest of the tasks including `always`.
       if not failed_tasks or always_run_task:
-        step = api.step(task['name'], cmd, raise_on_failure=is_infra_step, infra_step=is_infra_step)
+        step = api.step(
+            task['name'],
+            cmd,
+            raise_on_failure=is_infra_step,
+            infra_step=is_infra_step
+        )
         if step.retcode != 0:
           failed_tasks.append(task['name'])
     api.logs_util.upload_logs(task['name'])
@@ -164,8 +173,7 @@ def GenTests(api):
   )
   checkout_path = api.path['cleanup'].join('tmp_tmp_1', 'flutter sdk')
   yield api.test(
-      "emulator-test", 
-      api.repo_util.flutter_environment_data(flutter_path),
+      "emulator-test", api.repo_util.flutter_environment_data(flutter_path),
       api.properties(
           channel='master',
           version_file='flutter_master.version',
@@ -173,15 +181,13 @@ def GenTests(api):
           dependencies=[{
               "dependency": "android_virtual_device", "version": "31"
           }],
-      ),
-      api.step_data('read yaml.parse', api.json.output(tasks_dict)),
+      ), api.step_data('read yaml.parse', api.json.output(tasks_dict)),
       api.step_data(
           'Run package tests.start avd.Start Android emulator (API level 31)',
           stdout=api.raw_io.output_text(
               'android_31_google_apis_x86|emulator-5554 started (pid: 17687)'
           )
-      ), 
-      api.runtime(is_experimental=True)
+      ), api.runtime(is_experimental=True)
   )
   multiple_tasks_dict = {
       'tasks': [{'name': 'one', 'script': 'myscript', 'args': ['arg1', 'arg2']},

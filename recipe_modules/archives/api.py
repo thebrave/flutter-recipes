@@ -168,7 +168,7 @@ class ArchivesApi(recipe_api.RecipeApi):
     # Calculate prefix and commit.
     file_list = self._full_path_list(checkout, archive_config)
     if self.m.monorepo.is_monorepo_try_build:
-      commit = self.m.properties.get('try_build_identifier')
+      commit = self.m.monorepo.try_build_identifier
       bucket = MONOREPO_TRY_BUCKET
     elif self.m.monorepo.is_monorepo_ci_build:
       commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))

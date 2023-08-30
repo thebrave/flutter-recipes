@@ -55,7 +55,7 @@ def RunSteps(api, properties, env_properties):
   if api.monorepo.is_monorepo_try_build:
     framework_ref = 'refs/heads/main'
     artifact_url = 'https://storage.googleapis.com/flutter_archives_v2/monorepo_try'
-    engine_version = api.properties.get('try_build_identifier')
+    engine_version = api.monorepo.try_build_identifier
   elif api.monorepo.is_monorepo_ci_build:
     framework_ref = get_monorepo_framework(api)
     artifact_url = 'https://storage.googleapis.com/flutter_archives_v2/monorepo'

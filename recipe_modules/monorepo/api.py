@@ -29,6 +29,10 @@ class MonorepoApi(recipe_api.RecipeApi):
   def try_build_identifier(self):
     """Creates a unique identifier to use as an upload path for artifacts.
 
+    If this is a subbuild spawned by an engine_v2 coordinator, use
+    the try_build_identifier input property passed to this build by the
+    coordinator.
+
     There is no commit hash usable for this, because a Gerrit try job
     patches the monorepo HEAD with an uncommitted patch from the Gerrit CL.
     The flutter framework's bin/internal/engine.version can be any string,
@@ -38,8 +42,12 @@ class MonorepoApi(recipe_api.RecipeApi):
       none
 
     Returns:
-      The buildbucket id of the engine_v2/engine_v2 coordinator build.
+      The buildbucket id of the engine_v2/engine_v2 coordinator build or
+      the try_build_identifer input property passed to this build.
 """
+    parent_identifier = self.m.properties.get('try_build_identifier')
+    if (parent_identifier):
+      return str(parent_identifier)
     buildbucket_id = self.m.buildbucket.build.id
     if buildbucket_id:
       self.m.step.empty('get buildbucket id', step_text=str(buildbucket_id))

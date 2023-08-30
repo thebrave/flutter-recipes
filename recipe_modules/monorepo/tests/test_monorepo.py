@@ -5,6 +5,7 @@
 DEPS = [
     'flutter/monorepo',
     'recipe_engine/buildbucket',
+    'recipe_engine/properties',
     'recipe_engine/step',
 ]
 
@@ -25,6 +26,12 @@ def GenTests(api):
   yield api.test('monorepo_ci_build', api.monorepo.ci_build())
 
   yield api.test('monorepo_try_build', api.monorepo.try_build())
+
+  yield api.test(
+      'monorepo_try_subbuild',
+      api.monorepo.try_build(),
+      api.properties(try_build_identifier='81123491'),
+  )
 
   yield api.test(
       'monorepo_try_build_no_builder_id',

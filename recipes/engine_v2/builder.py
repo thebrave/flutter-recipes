@@ -383,7 +383,9 @@ def GenTests(api):
   )
   yield api.test(
       'monorepo_tryjob',
-      api.properties(build=build, no_goma=True),
+      api.properties(
+          build=build, no_goma=True, try_build_identifier='81123491'
+      ),
       api.monorepo.try_build(),
   )
 

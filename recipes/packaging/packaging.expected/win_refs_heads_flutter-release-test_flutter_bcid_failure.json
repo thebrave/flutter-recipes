@@ -1,10 +1,10 @@
 [
   {
     "cmd": [
-      "cipd",
+      "cipd.bat",
       "ensure",
       "-root",
-      "[START_DIR]/reporter",
+      "[START_DIR]\\reporter",
       "-ensure-file",
       "infra/tools/security/provenance_broker/${platform} git_revision:d3cf3b0144447a77fd79c84fe8500dfe993ef602",
       "-max-threads",
@@ -41,7 +41,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/reporter/snoopy_broker",
+      "[START_DIR]\\reporter\\snoopy_broker",
       "-report-stage",
       "-stage",
       "start",
@@ -66,7 +66,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/reporter/snoopy_broker",
+      "[START_DIR]\\reporter\\snoopy_broker",
       "-report-stage",
       "-stage",
       "fetch"
@@ -100,9 +100,9 @@
     "cmd": [
       "python3",
       "-u",
-      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "RECIPE_MODULE[depot_tools::git]\\resources\\git_setup.py",
       "--path",
-      "[START_DIR]/flutter",
+      "[START_DIR]\\flutter",
       "--url",
       "https://flutter.googlesource.com/mirrors/flutter"
     ],
@@ -128,14 +128,14 @@
       "git",
       "fetch",
       "origin",
-      "stable",
+      "flutter-release-test",
       "--recurse-submodules",
       "--progress",
       "--tags"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "env": {
-      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+      "PATH": "RECIPE_REPO[depot_tools];<PATH>"
     },
     "infra_step": true,
     "luci_context": {
@@ -162,7 +162,7 @@
       "-f",
       "FETCH_HEAD"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -187,7 +187,7 @@
       "rev-parse",
       "HEAD"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -216,7 +216,7 @@
       "-d",
       "-x"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -241,7 +241,7 @@
       "submodule",
       "sync"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -268,7 +268,7 @@
       "--init",
       "--recursive"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -302,9 +302,9 @@
     "cmd": [
       "python3",
       "-u",
-      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "RECIPE_MODULE[depot_tools::git]\\resources\\git_setup.py",
       "--path",
-      "[START_DIR]/flutter",
+      "[START_DIR]\\flutter",
       "--url",
       "https://flutter.googlesource.com/mirrors/flutter"
     ],
@@ -335,9 +335,9 @@
       "--progress",
       "--tags"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "env": {
-      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+      "PATH": "RECIPE_REPO[depot_tools];<PATH>"
     },
     "infra_step": true,
     "luci_context": {
@@ -364,7 +364,7 @@
       "-f",
       "FETCH_HEAD"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -389,7 +389,7 @@
       "rev-parse",
       "HEAD"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -418,7 +418,7 @@
       "-d",
       "-x"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -443,7 +443,7 @@
       "submodule",
       "sync"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -470,7 +470,7 @@
       "--init",
       "--recursive"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -495,7 +495,7 @@
       "rev-parse",
       "HEAD"
     ],
-    "cwd": "[START_DIR]/flutter",
+    "cwd": "[START_DIR]\\flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -513,7 +513,7 @@
   },
   {
     "cmd": [
-      "flutter",
+      "flutter.bat",
       "doctor"
     ],
     "env": {
@@ -523,15 +523,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -558,7 +558,7 @@
   },
   {
     "cmd": [
-      "flutter",
+      "flutter.bat",
       "update-packages",
       "-v"
     ],
@@ -569,15 +569,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -604,7 +604,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/reporter/snoopy_broker",
+      "[START_DIR]\\reporter\\snoopy_broker",
       "-report-stage",
       "-stage",
       "compile"
@@ -616,15 +616,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -653,11 +653,11 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "rmtree",
-      "[START_DIR]/archive"
+      "[START_DIR]\\archive"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -666,15 +666,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -704,13 +704,13 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/archive"
+      "[START_DIR]\\archive"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -719,15 +719,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -755,11 +755,16 @@
   },
   {
     "cmd": [
-      "dart",
-      "[START_DIR]/flutter/dev/bots/prepare_package.dart",
-      "--temp_dir=[START_DIR]/archive",
-      "--revision=deadbeef",
-      "--branch=stable"
+      "cipd.bat",
+      "ensure",
+      "-root",
+      "[CACHE]\\builder\\7za",
+      "-ensure-file",
+      "flutter_internal/tools/7za/${platform} version:19.00",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -768,15 +773,77 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure_installed (2)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:19.00---\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"flutter_internal/tools/7za/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "dart.exe",
+      "[START_DIR]\\flutter\\dev\\bots\\prepare_package.dart",
+      "--temp_dir=[START_DIR]\\archive",
+      "--revision=deadbeef",
+      "--branch=flutter-release-test"
+    ],
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -805,11 +872,11 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "glob",
-      "[START_DIR]/archive",
+      "[START_DIR]\\archive",
       "*flutter*.zip"
     ],
     "env": {
@@ -819,15 +886,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -853,13 +921,13 @@
     },
     "name": "get flutter archive file name",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@glob@[START_DIR]/archive/flutter-archive-package.zip@@@",
+      "@@@STEP_LOG_LINE@glob@[START_DIR]\\archive\\flutter-archive-package.zip@@@",
       "@@@STEP_LOG_END@glob@@@"
     ]
   },
   {
     "cmd": [
-      "[START_DIR]/reporter/snoopy_broker",
+      "[START_DIR]\\reporter\\snoopy_broker",
       "-report-stage",
       "-stage",
       "upload"
@@ -871,15 +939,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -908,69 +977,13 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "glob",
-      "[START_DIR]/archive",
-      "releases_macos.json"
-    ],
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "get flutter archive file name (2)",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@glob@[START_DIR]/archive/releases_linux.json@@@",
-      "@@@STEP_LOG_END@glob@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
       "0777",
-      "[CLEANUP]/tmp_tmp_1/releases"
+      "[CLEANUP]\\tmp_tmp_1\\releases\\flutter-release-test\\windows\\experimental"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -979,15 +992,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1011,18 +1025,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Ensure releases"
+    "name": "Ensure releases/flutter-release-test/windows/experimental"
   },
   {
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[START_DIR]/archive/releases_linux.json",
-      "[CLEANUP]/tmp_tmp_1/releases"
+      "[START_DIR]\\archive\\flutter-archive-package.zip",
+      "[CLEANUP]\\tmp_tmp_1\\releases\\flutter-release-test\\windows\\experimental"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -1031,15 +1045,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1063,21 +1078,19 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Copy [START_DIR]/archive/releases_linux.json to tmp location"
+    "name": "Copy [START_DIR]\\archive\\flutter-archive-package.zip to tmp location"
   },
   {
     "cmd": [
       "python3",
       "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
       "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "RECIPE_REPO[depot_tools]\\gsutil.py",
       "----",
-      "-h",
-      "Cache-Control:max-age=60",
       "cp",
       "-r",
-      "[CLEANUP]/tmp_tmp_1/*",
+      "[CLEANUP]\\tmp_tmp_1/*",
       "gs://flutter_infra_release/"
     ],
     "env": {
@@ -1087,15 +1100,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1119,7 +1133,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gsutil Upload [START_DIR]/archive/releases_linux.json to gs://flutter_infra_release/releases/releases_linux.json",
+    "name": "gsutil Upload [START_DIR]\\archive\\flutter-archive-package.zip to gs://flutter_infra_release/releases/flutter-release-test/windows/experimental/flutter-archive-package.zip",
     "~followup_annotations": [
       "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_infra_release/@@@"
     ]
@@ -1128,173 +1142,11 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CLEANUP]/tmp_tmp_2/releases/stable/macos"
-    ],
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Ensure releases/stable/macos"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[START_DIR]/archive/flutter-archive-package.zip",
-      "[CLEANUP]/tmp_tmp_2/releases/stable/macos"
-    ],
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Copy [START_DIR]/archive/flutter-archive-package.zip to tmp location"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "-r",
-      "[CLEANUP]/tmp_tmp_2/*",
-      "gs://flutter_infra_release/"
-    ],
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil Upload [START_DIR]/archive/flutter-archive-package.zip to gs://flutter_infra_release/releases/stable/macos/flutter-archive-package.zip",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_infra_release/@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "file_hash",
-      "[START_DIR]/archive/flutter-archive-package.zip"
+      "[START_DIR]\\archive\\flutter-archive-package.zip"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -1303,15 +1155,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1337,17 +1190,17 @@
     },
     "name": "Compute file hash",
     "~followup_annotations": [
-      "@@@STEP_TEXT@Hash calculated: 238444ff6db63b181b98fd7e8dc965764c162f4ec6e4f95bacbc9dc49f32b58f@@@"
+      "@@@STEP_TEXT@Hash calculated: 2b2498f81606a952a0c5a93eb659b6b0e37ba163da26562392376dc5f5e5c00b@@@"
     ]
   },
   {
     "cmd": [
-      "[START_DIR]/reporter/snoopy_broker",
+      "[START_DIR]\\reporter\\snoopy_broker",
       "-report-gcs",
       "-digest",
-      "238444ff6db63b181b98fd7e8dc965764c162f4ec6e4f95bacbc9dc49f32b58f",
+      "2b2498f81606a952a0c5a93eb659b6b0e37ba163da26562392376dc5f5e5c00b",
       "-gcs-uri",
-      "gs://flutter_infra_release/releases/stable/macos/flutter-archive-package.zip"
+      "gs://flutter_infra_release/releases/flutter-release-test/windows/experimental/flutter-archive-package.zip"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -1356,15 +1209,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1391,7 +1245,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/reporter/snoopy_broker",
+      "[START_DIR]\\reporter\\snoopy_broker",
       "-report-stage",
       "-stage",
       "upload-complete"
@@ -1403,15 +1257,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1438,19 +1293,22 @@
   },
   {
     "cmd": [],
-    "name": "Verify provenance"
+    "name": "Verify provenance",
+    "~followup_annotations": [
+      "@@@STEP_FAILURE@@@"
+    ]
   },
   {
     "cmd": [
       "python3",
       "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
       "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "RECIPE_REPO[depot_tools]\\gsutil.py",
       "----",
       "cp",
-      "gs://flutter_infra_release/releases/stable/macos/flutter-archive-package.zip",
-      "[CLEANUP]/verify_tmp_1/flutter-archive-package.zip"
+      "gs://flutter_infra_release/releases/flutter-release-test/windows/experimental/flutter-archive-package.zip",
+      "[CLEANUP]\\verify_tmp_1\\flutter-archive-package.zip"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -1459,15 +1317,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1500,13 +1359,13 @@
     "cmd": [
       "python3",
       "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "RECIPE_MODULE[depot_tools::gsutil]\\resources\\gsutil_smart_retry.py",
       "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "RECIPE_REPO[depot_tools]\\gsutil.py",
       "----",
       "cp",
-      "gs://flutter_infra_release/releases/stable/macos/flutter-archive-package.zip.intoto.jsonl",
-      "[CLEANUP]/verify_tmp_1/flutter-archive-package.zip.intoto.jsonl"
+      "gs://flutter_infra_release/releases/flutter-release-test/windows/experimental/flutter-archive-package.zip.intoto.jsonl",
+      "[CLEANUP]\\verify_tmp_1\\flutter-archive-package.zip.intoto.jsonl"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -1515,15 +1374,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1568,15 +1428,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1609,11 +1470,11 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "file_hash",
-      "[CLEANUP]/verify_tmp_1/flutter-archive-package.zip"
+      "[CLEANUP]\\verify_tmp_1\\flutter-archive-package.zip"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -1622,15 +1483,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1657,18 +1519,18 @@
     "name": "Verify provenance.Compute file hash",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@Hash calculated: 3cd58b1c5f5ec64925abaa0dfd6170c2015e97505e247b98610b52f2059e43dc@@@"
+      "@@@STEP_TEXT@Hash calculated: 94a523302a00676b4e7801499610e048de2751cbda4b33ce2e5b61a33f44ab61@@@"
     ]
   },
   {
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[CLEANUP]/verify_tmp_1/flutter-archive-package.zip.intoto.jsonl",
+      "[CLEANUP]\\verify_tmp_1\\flutter-archive-package.zip.intoto.jsonl",
       "/path/to/tmp/"
     ],
     "env": {
@@ -1678,15 +1540,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1720,12 +1583,12 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "copy",
       "Authorization: Bearer extra.secret.token.should.not.be.logged\n",
-      "[CLEANUP]/authorization"
+      "[CLEANUP]\\authorization"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -1734,15 +1597,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1775,12 +1639,12 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "{\"resourceToVerify\": \"misc_software://flutter/engine\", \"artifactInfo\": {\"digests\": {\"sha256\": \"3cd58b1c5f5ec64925abaa0dfd6170c2015e97505e247b98610b52f2059e43dc\"}, \"attestations\": [\"\"]}}",
-      "[CLEANUP]/request"
+      "{\"resourceToVerify\": \"misc_software://flutter/engine\", \"artifactInfo\": {\"digests\": {\"sha256\": \"94a523302a00676b4e7801499610e048de2751cbda4b33ce2e5b61a33f44ab61\"}, \"attestations\": [\"\"]}}",
+      "[CLEANUP]\\request"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -1789,15 +1653,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1824,7 +1689,7 @@
     "name": "Verify provenance.write request",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@request@{\"resourceToVerify\": \"misc_software://flutter/engine\", \"artifactInfo\": {\"digests\": {\"sha256\": \"3cd58b1c5f5ec64925abaa0dfd6170c2015e97505e247b98610b52f2059e43dc\"}, \"attestations\": [\"\"]}}@@@",
+      "@@@STEP_LOG_LINE@request@{\"resourceToVerify\": \"misc_software://flutter/engine\", \"artifactInfo\": {\"digests\": {\"sha256\": \"94a523302a00676b4e7801499610e048de2751cbda4b33ce2e5b61a33f44ab61\"}, \"attestations\": [\"\"]}}@@@",
       "@@@STEP_LOG_END@request@@@"
     ]
   },
@@ -1832,11 +1697,11 @@
     "cmd": [
       "curl",
       "-H",
-      "@[CLEANUP]/authorization",
+      "@[CLEANUP]\\authorization",
       "-H",
       "Content-Type: application/json",
       "-d",
-      "@[CLEANUP]/request",
+      "@[CLEANUP]\\request",
       "https://bcidsoftwareverifier-pa.googleapis.com/v1/software-artifact-verification-requests"
     ],
     "env": {
@@ -1846,15 +1711,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1882,22 +1748,29 @@
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@raw_io.output_text@@@@",
       "@@@STEP_LOG_LINE@raw_io.output_text@  {@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@    \"allowed\": true,@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@    \"verificationSummary\": \"This artifact is definitely legitimate!\"@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@    \"rejectionMessage\": \"failed to validate!\"@@@",
       "@@@STEP_LOG_LINE@raw_io.output_text@  }@@@",
       "@@@STEP_LOG_LINE@raw_io.output_text@  @@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
     ]
   },
   {
+    "cmd": [],
+    "name": "Verify provenance.flutter-archive-package.zip provenance rejected: failed to validate!",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_FAILURE@@@"
+    ]
+  },
+  {
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "remove",
-      "[CLEANUP]/authorization"
+      "[CLEANUP]\\authorization"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -1906,15 +1779,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1947,11 +1821,11 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "remove",
-      "[CLEANUP]/request"
+      "[CLEANUP]\\request"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -1960,15 +1834,16 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "OS": "win",
+      "PUB_CACHE": "[START_DIR]\\.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+      "SDK_CHECKOUT_PATH": "[START_DIR]\\flutter"
     },
     "env_prefixes": {
       "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+        "[CACHE]\\builder\\7za",
+        "[START_DIR]\\flutter\\bin",
+        "[START_DIR]\\flutter\\bin\\cache\\dart-sdk\\bin"
       ]
     },
     "env_suffixes": {
@@ -1998,118 +1873,8 @@
     ]
   },
   {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "This artifact is definitely legitimate!",
-      "[CLEANUP]/verify_tmp_1/flutter-archive-package.zip.vsa.intoto.jsonl"
-    ],
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Verify provenance.write flutter-archive-package.zip.vsa.intoto.jsonl",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@flutter-archive-package.zip.vsa.intoto.jsonl@This artifact is definitely legitimate!@@@",
-      "@@@STEP_LOG_END@flutter-archive-package.zip.vsa.intoto.jsonl@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "[CLEANUP]/verify_tmp_1/flutter-archive-package.zip.vsa.intoto.jsonl",
-      "gs://flutter_infra_release/releases/stable/macos/flutter-archive-package.zip.vsa.intoto.jsonl"
-    ],
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Verify provenance.gsutil upload \"releases/stable/macos/flutter-archive-package.zip.vsa.intoto.jsonl\"",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_infra_release/releases/stable/macos/flutter-archive-package.zip.vsa.intoto.jsonl@@@"
-    ]
+    "cmd": [],
+    "name": "(Non-blocking) Provenance verification failed - check step above"
   },
   {
     "name": "$result"

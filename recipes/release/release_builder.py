@@ -41,8 +41,18 @@ ENV_PROPERTIES = EnvProperties
 RELEASE_CHANNELS = ('refs/heads/beta', 'refs/heads/stable')
 
 
-def ShouldRun(api, git_ref, target, release_branch):
+def ShouldRun(api, git_ref, target, release_branch, retry_override_list):
   """Validates if a target should run based on platform, channel and repo."""
+
+  # If retry_override_list list of targets to retry has been provided,
+  # skip the target if not specified on list.
+  config_name = target.get('properties', {}).get('config_name', False)
+  should_skip = retry_override_list and config_name not in retry_override_list
+  if should_skip:
+    # A list of targets to retry was provided
+    # and this target was not on the list.
+    return False
+
   # Enabled for current branch
   enabled_branches = target.get('enabled_branches', [])
   if enabled_branches and target.get('scheduler') != 'release':
@@ -80,6 +90,10 @@ def RunSteps(api, properties, env_properties):
       repository, checkout_path=checkout_path, url=git_url, ref=git_ref
   )
 
+  # retry_override_list is optional and is a space separated string of
+  # the config_name of targets to explitly retry
+  retry_override_list = api.properties.get('retry_override_list', '').split()
+
   ci_yaml_path = checkout_path.join('.ci.yaml')
   ci_yaml = api.yaml.read('read ci yaml', ci_yaml_path, api.json.output())
 
@@ -94,7 +108,7 @@ def RunSteps(api, properties, env_properties):
   build_results = []
   with api.step.nest('launch builds') as presentation:
     for target in ci_yaml.json.output['targets']:
-      if ShouldRun(api, git_ref, target, release_branch):
+      if ShouldRun(api, git_ref, target, release_branch, retry_override_list):
         target = api.shard_util_v2.pre_process_properties(target)
         tasks.update(
             api.shard_util_v2.schedule([
@@ -195,6 +209,26 @@ def GenTests(api):
           .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
       ),
   )
+  for retry_list in ['skip_target', 'skip_target linux_target']:
+    yield api.test(
+        'retry_override_%s' % retry_list,
+        api.properties(
+            environment='Staging',
+            repository='engine',
+            retry_override_list=retry_list
+        ),
+        api.buildbucket.try_build(
+            project='prod',
+            builder='try-builder',
+            git_repo='https://flutter.googlesource.com/mirrors/engine',
+            revision='a' * 40,
+            build_number=123,
+            git_ref='refs/heads/%s' % git_ref
+        ),
+        api.step_data(
+            'read ci yaml.parse', api.json.output(tasks_dict_scheduler)
+        ),
+    )
 
   yield api.test(
       'dart_internal',

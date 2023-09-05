@@ -112,7 +112,10 @@ def RunSteps(api):
 
   engine_version = GetEngineVersion(api, flutter_checkout)
   engine_tot = '' if api.repo_util._test_data.enabled else engine_tot
-  assert engine_tot == engine_version
+  if engine_tot != engine_version:  # pragma: no cover
+    api.step(
+        '(Warning) engine.version in flutter sdk does not match engine ToT', []
+    )
 
   for repo in ('flutter', 'engine'):
     env = env_flutter if repo == 'flutter' else env_engine

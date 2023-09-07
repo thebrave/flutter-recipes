@@ -4,7 +4,7 @@
 
 DEPS = [
     "fuchsia/utils",
+    "recipe_engine/buildbucket",
     "recipe_engine/context",
     "recipe_engine/step",
-    "recipe_engine/swarming",
 ]

@@ -132,71 +132,19 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.0.install infra/tools/luci/swarming",
+    "name": "launch/collect.0.buildbucket.collect",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin"
-    ],
-    "infra_step": true,
-    "name": "launch/collect.0.install infra/tools/luci/swarming.ensure package directory",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin",
-      "-ensure-file",
-      "infra/tools/luci/swarming/${platform} swarming_module_pin",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "name": "launch/collect.0.install infra/tools/luci/swarming.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-swarming_module_\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/swarming/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "bb",
       "collect",
-      "-server",
-      "https://example.swarmingserver.appspot.com",
-      "-task-summary-json",
-      "/path/to/tmp/json",
-      "-task-output-stdout",
-      "json",
-      "-verbose",
-      "-eager",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-interval",
+      "60s",
       "100",
       "200",
       "300",
@@ -205,119 +153,229 @@
       "600",
       "700"
     ],
-    "cost": {
-      "cpu": 100,
-      "disk": 0,
-      "memory": 50,
-      "net": 0
-    },
     "infra_step": true,
-    "name": "launch/collect.0.collect",
+    "name": "launch/collect.0.buildbucket.collect.wait",
+    "timeout": 3600,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "batch",
+      "-host",
+      "cr-buildbucket.appspot.com"
+    ],
+    "infra_step": true,
+    "name": "launch/collect.0.buildbucket.collect.get",
+    "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"100\"}}, {\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"200\"}}, {\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"300\"}}, {\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"400\"}}, {\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"500\"}}, {\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"600\"}}, {\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"700\"}}]}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"100\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\",@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\",@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
-      "@@@STEP_LOG_LINE@json.output@        }@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35,@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"0\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"name\": \"pass\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"100\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"builder\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createTime\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createdBy\": \"project:project\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"700\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"invocation\": \"invocations/build:700\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          },@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"priority\": 30@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"gerritChanges\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            {@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"change\": \"123456\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"host\": \"chromium-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"patchset\": \"7\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            }@@@",
+      "@@@STEP_LOG_LINE@json.output@          ]@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"status\": \"FAILURE\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"key\": \"cq_experimental\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"value\": \"false\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        ]@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    },@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"builder\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createTime\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createdBy\": \"project:project\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"100\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"invocation\": \"invocations/build:100\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          },@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"priority\": 30@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"gerritChanges\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            {@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"change\": \"123456\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"host\": \"chromium-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"patchset\": \"7\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            }@@@",
+      "@@@STEP_LOG_LINE@json.output@          ]@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"status\": \"SUCCESS\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"key\": \"cq_experimental\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"value\": \"false\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        ]@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    },@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"builder\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createTime\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createdBy\": \"project:project\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"200\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"invocation\": \"invocations/build:200\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          },@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"priority\": 30@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"gerritChanges\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            {@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"change\": \"123456\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"host\": \"chromium-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"patchset\": \"7\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            }@@@",
+      "@@@STEP_LOG_LINE@json.output@          ]@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"status\": \"FAILURE\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"key\": \"cq_experimental\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"value\": \"false\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        ]@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    },@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"builder\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createTime\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createdBy\": \"project:project\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"300\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"invocation\": \"invocations/build:300\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          },@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"priority\": 30@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"gerritChanges\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            {@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"change\": \"123456\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"host\": \"chromium-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"patchset\": \"7\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            }@@@",
+      "@@@STEP_LOG_LINE@json.output@          ]@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"status\": \"FAILURE\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"key\": \"cq_experimental\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"value\": \"false\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        ]@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  },@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"200\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\",@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\",@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
-      "@@@STEP_LOG_LINE@json.output@        }@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35,@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"1\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"name\": \"flake\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"200\"@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  },@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"300\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\",@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\",@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
-      "@@@STEP_LOG_LINE@json.output@        }@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35,@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"1\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"name\": \"fail\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"300\"@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  },@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"700\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\",@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\",@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
-      "@@@STEP_LOG_LINE@json.output@        }@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35,@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"1\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"name\": \"abort_early_task\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"700\"@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LOG_LINE@task stdout+stderr: abort_early_task@hello world!@@@",
-      "@@@STEP_LOG_END@task stdout+stderr: abort_early_task@@@",
-      "@@@STEP_LOG_LINE@task stdout+stderr: fail@hello world!@@@",
-      "@@@STEP_LOG_END@task stdout+stderr: fail@@@",
-      "@@@STEP_LOG_LINE@task stdout+stderr: flake@hello world!@@@",
-      "@@@STEP_LOG_END@task stdout+stderr: flake@@@",
-      "@@@STEP_LOG_LINE@task stdout+stderr: pass@hello world!@@@",
-      "@@@STEP_LOG_END@task stdout+stderr: pass@@@",
-      "@@@STEP_LINK@task cas outputs: abort_early_task@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@",
-      "@@@STEP_LINK@task cas outputs: fail@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@",
-      "@@@STEP_LINK@task cas outputs: flake@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@",
-      "@@@STEP_LINK@task cas outputs: pass@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
+      "@@@STEP_LOG_LINE@request@{@@@",
+      "@@@STEP_LOG_LINE@request@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"100\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    },@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"200\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    },@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"300\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    },@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"400\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    },@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"500\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    },@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"600\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    },@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"700\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    }@@@",
+      "@@@STEP_LOG_LINE@request@  ]@@@",
+      "@@@STEP_LOG_LINE@request@}@@@",
+      "@@@STEP_LOG_END@request@@@",
+      "@@@STEP_LINK@700@https://cr-buildbucket.appspot.com/build/700@@@",
+      "@@@STEP_LINK@100@https://cr-buildbucket.appspot.com/build/100@@@",
+      "@@@STEP_LINK@200@https://cr-buildbucket.appspot.com/build/200@@@",
+      "@@@STEP_LINK@300@https://cr-buildbucket.appspot.com/build/300@@@"
     ]
   },
   {
@@ -329,28 +387,28 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.0.process results.abort_early_task",
+    "name": "launch/collect.0.process results.builder",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "launch/collect.0.process results.fail",
+    "name": "launch/collect.0.process results.builder (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "launch/collect.0.process results.flake",
+    "name": "launch/collect.0.process results.builder (3)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "launch/collect.0.process results.pass",
+    "name": "launch/collect.0.process results.builder (4)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -369,8 +427,8 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LINK@abort_early_task (attempt 0)@https://testhost/task?id=700@@@",
-      "@@@STEP_LINK@fail (attempt 0)@https://testhost/task?id=300@@@",
-      "@@@STEP_LINK@flake (attempt 0)@https://testhost/task?id=200@@@"
+      "@@@STEP_LINK@flake (attempt 0)@https://testhost/task?id=200@@@",
+      "@@@STEP_LINK@fail (attempt 0)@https://testhost/task?id=300@@@"
     ]
   },
   {
@@ -403,7 +461,7 @@
     "name": "launch/collect.1.launch.flake (attempt 1)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_LINK@Swarming task@https://testhost/task?id=201@@@"
+      "@@@STEP_LINK@Swarming task@None@@@"
     ]
   },
   {
@@ -419,7 +477,7 @@
     "name": "launch/collect.1.launch.fail (attempt 1)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_LINK@Swarming task@https://testhost/task?id=301@@@"
+      "@@@STEP_LINK@Swarming task@None@@@"
     ]
   },
   {
@@ -435,7 +493,7 @@
     "name": "launch/collect.1.launch.abort_early_task (attempt 1)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_LINK@Swarming task@https://testhost/task?id=701@@@"
+      "@@@STEP_LINK@Swarming task@None@@@"
     ]
   },
   {
@@ -447,17 +505,20 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "launch/collect.1.buildbucket.collect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "bb",
       "collect",
-      "-server",
-      "https://example.swarmingserver.appspot.com",
-      "-task-summary-json",
-      "/path/to/tmp/json",
-      "-task-output-stdout",
-      "json",
-      "-verbose",
-      "-eager",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-interval",
+      "60s",
       "201",
       "301",
       "400",
@@ -465,44 +526,109 @@
       "600",
       "701"
     ],
-    "cost": {
-      "cpu": 100,
-      "disk": 0,
-      "memory": 50,
-      "net": 0
-    },
     "infra_step": true,
-    "name": "launch/collect.1.collect",
+    "name": "launch/collect.1.buildbucket.collect.wait",
+    "timeout": 3600,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "batch",
+      "-host",
+      "cr-buildbucket.appspot.com"
+    ],
+    "infra_step": true,
+    "name": "launch/collect.1.buildbucket.collect.get",
+    "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"201\"}}, {\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"301\"}}, {\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"400\"}}, {\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"500\"}}, {\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"600\"}}, {\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"701\"}}]}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"701\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\",@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\",@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
-      "@@@STEP_LOG_LINE@json.output@        }@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35,@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"1\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"name\": \"abort_early_task\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"701\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"builder\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createTime\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createdBy\": \"project:project\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"701\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"invocation\": \"invocations/build:701\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          },@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"priority\": 30@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"gerritChanges\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            {@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"change\": \"123456\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"host\": \"chromium-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"patchset\": \"7\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            }@@@",
+      "@@@STEP_LOG_LINE@json.output@          ]@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"status\": \"FAILURE\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"key\": \"cq_experimental\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"value\": \"false\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        ]@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LOG_LINE@task stdout+stderr: abort_early_task@hello world!@@@",
-      "@@@STEP_LOG_END@task stdout+stderr: abort_early_task@@@",
-      "@@@STEP_LINK@task cas outputs: abort_early_task@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
+      "@@@STEP_LOG_LINE@request@{@@@",
+      "@@@STEP_LOG_LINE@request@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"201\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    },@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"301\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    },@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"400\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    },@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"500\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    },@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"600\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    },@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"701\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    }@@@",
+      "@@@STEP_LOG_LINE@request@  ]@@@",
+      "@@@STEP_LOG_LINE@request@}@@@",
+      "@@@STEP_LOG_END@request@@@",
+      "@@@STEP_LINK@701@https://cr-buildbucket.appspot.com/build/701@@@"
     ]
   },
   {
@@ -514,7 +640,7 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.1.process results.abort_early_task",
+    "name": "launch/collect.1.process results.builder",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -524,7 +650,7 @@
     "name": "launch/collect.1.failed tasks",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LINK@abort_early_task (attempt 1)@https://testhost/task?id=701@@@"
+      "@@@STEP_LINK@abort_early_task (attempt 1)@None@@@"
     ]
   },
   {
@@ -532,8 +658,8 @@
     "name": "launch/collect.1.incomplete tasks",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LINK@flake (attempt 1)@https://testhost/task?id=201@@@",
-      "@@@STEP_LINK@fail (attempt 1)@https://testhost/task?id=301@@@",
+      "@@@STEP_LINK@flake (attempt 1)@None@@@",
+      "@@@STEP_LINK@fail (attempt 1)@None@@@",
       "@@@STEP_LINK@pass_long (attempt 0)@https://testhost/task?id=400@@@",
       "@@@STEP_LINK@flake_long (attempt 0)@https://testhost/task?id=500@@@",
       "@@@STEP_LINK@fail_long (attempt 0)@https://testhost/task?id=600@@@"
@@ -551,8 +677,7 @@
     "name": "passes.pass",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@attempt 0 (pass)@https://testhost/task?id=100@@@",
-      "@@@STEP_LINK@vm-123@https://testhost/bot?id=vm-123@@@"
+      "@@@STEP_LINK@attempt 0 (pass)@https://testhost/task?id=100@@@"
     ]
   },
   {
@@ -567,8 +692,7 @@
     "name": "flakes.pass",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@attempt 0 (pass)@https://testhost/task?id=100@@@",
-      "@@@STEP_LINK@vm-123@https://testhost/bot?id=vm-123@@@"
+      "@@@STEP_LINK@attempt 0 (pass)@https://testhost/task?id=100@@@"
     ]
   },
   {
@@ -585,8 +709,7 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=700@@@",
-      "@@@STEP_LINK@vm-123@https://testhost/bot?id=vm-123@@@",
-      "@@@STEP_LINK@attempt 1 (fail)@https://testhost/task?id=701@@@",
+      "@@@STEP_LINK@attempt 1 (fail)@None@@@",
       "@@@STEP_FAILURE@@@"
     ]
   },
@@ -603,9 +726,7 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=200@@@",
-      "@@@STEP_LINK@vm-123@https://testhost/bot?id=vm-123@@@",
-      "@@@STEP_LINK@attempt 1 (fail)@https://testhost/task?id=201@@@",
-      "@@@STEP_LINK@None@None@@@"
+      "@@@STEP_LINK@attempt 1 (fail)@None@@@"
     ]
   },
   {
@@ -614,9 +735,7 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=300@@@",
-      "@@@STEP_LINK@vm-123@https://testhost/bot?id=vm-123@@@",
-      "@@@STEP_LINK@attempt 1 (fail)@https://testhost/task?id=301@@@",
-      "@@@STEP_LINK@None@None@@@"
+      "@@@STEP_LINK@attempt 1 (fail)@None@@@"
     ]
   },
   {
@@ -624,8 +743,7 @@
     "name": "incomplete.pass_long",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=400@@@",
-      "@@@STEP_LINK@None@None@@@"
+      "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=400@@@"
     ]
   },
   {
@@ -633,8 +751,7 @@
     "name": "incomplete.flake_long",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=500@@@",
-      "@@@STEP_LINK@None@None@@@"
+      "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=500@@@"
     ]
   },
   {
@@ -642,8 +759,7 @@
     "name": "incomplete.fail_long",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=600@@@",
-      "@@@STEP_LINK@None@None@@@"
+      "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=600@@@"
     ]
   },
   {

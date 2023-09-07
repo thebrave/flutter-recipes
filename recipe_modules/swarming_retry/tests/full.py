@@ -14,7 +14,6 @@ DEPS = [
     "recipe_engine/led",
     "recipe_engine/properties",
     "recipe_engine/step",
-    "recipe_engine/swarming",
 ]
 
 PROPERTIES = {
@@ -132,22 +131,6 @@ class LedTask(swarming_retry_api.LedTask):
     return ret
 
 
-class TriggeredTask(swarming_retry_api.TriggeredTask):
-
-  def __init__(self, api, name, initial_task_id, **kwargs):
-    del initial_task_id  # Unused.
-
-    dimensions = {
-        "pool": "pool",
-        "device_type": "device_type",
-    }
-
-    request = api.swarming.task_request().with_name(name)
-    request = request.with_slice(0, request[0].with_dimensions(**dimensions))
-
-    super().__init__(request, api, **kwargs)
-
-
 # pylint: disable=invalid-name
 def RunSteps(
     api,
@@ -164,7 +147,7 @@ def RunSteps(
       "internal_failure": InternalFailureTask,
       "raising": RaisingTask,
       "led": LedTask,
-      "triggered": TriggeredTask,
+      #"triggered": TriggeredTask,
   }
 
   _create_task = task_types[task_type]  # pylint: disable=invalid-name
@@ -277,15 +260,6 @@ def GenTests(api):  # pylint: disable=invalid-name
   )
 
   yield (
-      api.test("triggered_task") +
-      api.properties(full=False, task_type="triggered") +
-      api.swarming_retry.trigger_data("task", 1, iteration=0) +
-      test_api.collect_data([test_api.failed_task("task", 1)], iteration=0) +
-      api.swarming_retry.trigger_data("task", 2, iteration=1) +
-      test_api.collect_data([test_api.passed_task("task", 2)], iteration=1)
-  )
-
-  yield (
       api.test("max_attempts_three", status="FAILURE") +
       api.properties(full=False, task_type="raising", max_attempts=3) +
       test_api.collect_data([test_api.passed_task("task", 100)], iteration=0) +
@@ -324,11 +298,11 @@ def GenTests(api):  # pylint: disable=invalid-name
   # Test the simple case where there are no failures of the task.
   yield (
       api.test("multirun_without_failures", status="SUCCESS") +
-      api.properties(run_count=2, task_type="triggered")
+      api.properties(run_count=2, task_type="led") +
       # Enforce that both of these task attempt are launched in the first
       # iteration.  (This requires using task_type="triggered".)
-      + api.swarming_retry.trigger_data("task", 100, iteration=0, attempt=0) +
-      api.swarming_retry.trigger_data("task", 101, iteration=0, attempt=1) +
+      #+ api.swarming_retry.trigger_data("task", 100, iteration=0, attempt=0) +
+      #api.swarming_retry.trigger_data("task", 101, iteration=0, attempt=1) +
       test_api.collect_data([test_api.passed_task("task", 100)], iteration=0) +
       test_api.collect_data([test_api.passed_task("task", 101)], iteration=1)
   )
@@ -337,14 +311,10 @@ def GenTests(api):  # pylint: disable=invalid-name
   # eventually passes.
   yield (
       api.test("multirun_retry_overall_pass", status="SUCCESS") +
-      api.properties(run_count=2, task_type="triggered") +
-      api.swarming_retry.trigger_data("task", 100, iteration=0, attempt=0) +
-      api.swarming_retry.trigger_data("task", 101, iteration=0, attempt=1) +
+      api.properties(run_count=2, task_type="led") +
       test_api.collect_data([test_api.passed_task("task", 100)], iteration=0) +
       test_api.collect_data([test_api.failed_task("task", 101)], iteration=1) +
-      api.swarming_retry.trigger_data("task", 102, iteration=2, attempt=2) +
       test_api.collect_data([test_api.failed_task("task", 102)], iteration=2) +
-      api.swarming_retry.trigger_data("task", 103, iteration=3, attempt=3) +
       test_api.collect_data([test_api.passed_task("task", 103)], iteration=3)
   )
 
@@ -352,14 +322,10 @@ def GenTests(api):  # pylint: disable=invalid-name
   # enough passes within the max_attempts retry limit.
   yield (
       api.test("multirun_retry_overall_fail", status="FAILURE") +
-      api.properties(run_count=2, task_type="triggered") +
-      api.swarming_retry.trigger_data("task", 100, iteration=0, attempt=0) +
-      api.swarming_retry.trigger_data("task", 101, iteration=0, attempt=1) +
+      api.properties(run_count=2, task_type="led") +
       test_api.collect_data([test_api.passed_task("task", 100)], iteration=0) +
       test_api.collect_data([test_api.failed_task("task", 101)], iteration=1) +
-      api.swarming_retry.trigger_data("task", 102, iteration=2, attempt=2) +
       test_api.collect_data([test_api.failed_task("task", 102)], iteration=2) +
-      api.swarming_retry.trigger_data("task", 103, iteration=3, attempt=3) +
       test_api.collect_data([test_api.failed_task("task", 103)], iteration=3)
   )
 
@@ -371,11 +337,7 @@ def GenTests(api):  # pylint: disable=invalid-name
   # finished.
   yield (
       api.test("multirun_fail_pass", status="FAILURE") +
-      api.properties(run_count=2, max_attempts=1, task_type="triggered") +
-      api.swarming_retry.trigger_data("task", 100, iteration=0, attempt=0) +
-      api.swarming_retry.trigger_data("task", 101, iteration=0, attempt=1)
-      # The second attempt passes first.
-      +
+      api.properties(run_count=2, max_attempts=1, task_type="led") +
       test_api.collect_data([test_api.passed_task("task", 101)], iteration=0) +
       test_api.collect_data([test_api.failed_task("task", 100)], iteration=1)
   )
@@ -384,9 +346,7 @@ def GenTests(api):  # pylint: disable=invalid-name
   # attempts in the first batch fail, there should be no retries.
   yield (
       api.test("multirun_no_futile_retries", status="FAILURE") +
-      api.properties(run_count=2, task_type="triggered") +
-      api.swarming_retry.trigger_data("task", 100, iteration=0, attempt=0) +
-      api.swarming_retry.trigger_data("task", 101, iteration=0, attempt=1) +
+      api.properties(run_count=2, task_type="led") +
       test_api.collect_data([test_api.failed_task("task", 100)], iteration=0) +
       test_api.collect_data([test_api.failed_task("task", 101)], iteration=1)
   )

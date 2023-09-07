@@ -10,10 +10,9 @@ from recipe_engine import post_process
 from PB.recipe_modules.flutter.recipe_testing.tests.full import InputProperties
 
 DEPS = [
+    "flutter/recipe_testing",
     "fuchsia/buildbucket_util",
     "fuchsia/commit_queue",
-    "flutter/recipe_testing",
-    "fuchsia/swarming_retry",
     "recipe_engine/json",
     "recipe_engine/path",
     "recipe_engine/properties",
@@ -106,11 +105,7 @@ def GenTests(api):  # pylint: disable=invalid-name
       test.build_data(
           "fuchsia/try/core.x64-debug", "fuchsia", cl_cached=True, fake_id=100
       ) +
-      test.build_data("fuchsia/try/core.arm64-debug", "fuchsia", fake_id=200) +
-      api.swarming_retry.collect_data([
-          test.task_result(100, "fuchsia/try/core.x64-debug"),
-          test.task_result(200, "fuchsia/try/core.arm64-debug"),
-      ])
+      test.build_data("fuchsia/try/core.arm64-debug", "fuchsia", fake_id=200)
   )
 
   yield (
@@ -126,10 +121,7 @@ def GenTests(api):  # pylint: disable=invalid-name
       api.buildbucket_util.test("recipes") + api.recipe_testing.options() +
       api.commit_queue.test_data(project, "recipes-only") +
       test.affected_recipes_data(["recipes"]) +
-      test.build_data("fuchsia/try/recipes", "recipes") +
-      api.swarming_retry.collect_data([
-          test.task_result(100, "fuchsia/try/recipes")
-      ])
+      test.build_data("fuchsia/try/recipes", "recipes")
   )
 
   yield (
@@ -184,10 +176,7 @@ def GenTests(api):  # pylint: disable=invalid-name
           "fuchsia",
           num_log_entries=0,
           fake_id=200,
-      ) + api.swarming_retry.collect_data([
-          test.task_result(100, "fuchsia/try/core.x64-debug"),
-          test.task_result(200, "fuchsia/try/core.arm64-debug"),
-      ])
+      )
   )
 
   yield (

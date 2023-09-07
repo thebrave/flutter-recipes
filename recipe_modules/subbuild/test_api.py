@@ -88,28 +88,23 @@ class SubbuildTestApi(recipe_test_api.RecipeTestApi):
       self,
       builds,
       collect_step="build",
+      launch_step="build",
+      collect_attempt=1
   ):
     """Generates step data to schedule and collect from child builds.
 
         Args:
           builds (list(build_pb2.Build)): The builds to schedule and collect from.
         """
+    del launch_step
+    responses = []
     step_data = []
-    task_results = []
-    i = 0
     for build in builds:
-      i += 1
-      suffix = ""
-      if i > 1:
-        suffix = f" ({int(i)})"
-
-      task_id = f"fake-task-id-{int(i)}"
-
-      # led launch mock will take ....infra.swarming.task_id as this
-      # build's launched swarming ID.
+      responses.append(
+          dict(schedule_build=dict(id=build.id, builder=build.builder))
+      )
       jd = job_pb2.Definition()
       jd.buildbucket.bbagent_args.build.CopyFrom(build)
-      jd.buildbucket.bbagent_args.build.infra.swarming.task_id = task_id
       step_data.append(
           self.m.led.mock_get_builder(
               jd,
@@ -118,17 +113,11 @@ class SubbuildTestApi(recipe_test_api.RecipeTestApi):
               build.builder.builder,
           )
       )
-      task_results.append(
-          self.m.swarming.task_result(id=task_id, name=build.builder.builder)
-      )
-      step_data.append(
-          self.step_data(
-              f"{collect_step}.read build.proto.json{suffix}",
-              self.m.file.read_proto(build),
-          )
-      )
-    ret = self.step_data(
-        f"{collect_step}.collect", self.m.swarming.collect(task_results)
+
+    index = "" if collect_attempt <= 1 else (f" ({collect_attempt})")
+    ret = self.m.buildbucket.simulated_collect_output(
+        step_name=f"{collect_step}.collect{index}",
+        builds=builds,
     )
     for s in step_data:
       ret += s

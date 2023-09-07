@@ -17,7 +17,7 @@ from PB.go.chromium.org.luci.buildbucket.proto import (
 )
 from PB.recipe_modules.flutter.recipe_testing import properties as properties_pb2
 from recipe_engine import recipe_api
-from RECIPE_MODULES.fuchsia.swarming_retry import api as swarming_retry_api
+from RECIPE_MODULES.flutter.swarming_retry import api as swarming_retry_api
 
 # The maximum amount of builds to go back through in buildbucket to find
 # a run that matches the current branch
@@ -227,7 +227,9 @@ class RecipeTestingApi(recipe_api.RecipeApi):
     builder = orig_build.builder
     # By default the priority is increased by 10 (resulting in a "lower"
     # priority), but we want it to stay the same.
-    led_data = self.m.led("get-build", "-adjust-priority", "0", orig_build.id)
+    led_data = self.m.led(
+        "get-build", "-real-build", "-adjust-priority", "0", orig_build.id
+    )
 
     build = Build(api=self.m, name=builder.builder, led_data=led_data)
 

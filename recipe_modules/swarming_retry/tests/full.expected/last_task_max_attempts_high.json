@@ -36,111 +36,94 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.0.install infra/tools/luci/swarming",
+    "name": "launch/collect.0.buildbucket.collect",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin"
+      "bb",
+      "collect",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-interval",
+      "60s",
+      "100"
     ],
     "infra_step": true,
-    "name": "launch/collect.0.install infra/tools/luci/swarming.ensure package directory",
+    "name": "launch/collect.0.buildbucket.collect.wait",
+    "timeout": 3600,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
     "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin",
-      "-ensure-file",
-      "infra/tools/luci/swarming/${platform} swarming_module_pin",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
+      "bb",
+      "batch",
+      "-host",
+      "cr-buildbucket.appspot.com"
     ],
     "infra_step": true,
-    "name": "launch/collect.0.install infra/tools/luci/swarming.ensure_installed",
+    "name": "launch/collect.0.buildbucket.collect.get",
+    "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"100\"}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-swarming_module_\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/swarming/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"builder\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createTime\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createdBy\": \"project:project\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"100\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"invocation\": \"invocations/build:100\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          },@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"priority\": 30@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"gerritChanges\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            {@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"change\": \"123456\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"host\": \"chromium-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"patchset\": \"7\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            }@@@",
+      "@@@STEP_LOG_LINE@json.output@          ]@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"status\": \"SUCCESS\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"key\": \"cq_experimental\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"value\": \"false\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        ]@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
-      "collect",
-      "-server",
-      "https://example.swarmingserver.appspot.com",
-      "-task-summary-json",
-      "/path/to/tmp/json",
-      "-task-output-stdout",
-      "json",
-      "-verbose",
-      "-eager",
-      "100"
-    ],
-    "cost": {
-      "cpu": 100,
-      "disk": 0,
-      "memory": 50,
-      "net": 0
-    },
-    "infra_step": true,
-    "name": "launch/collect.0.collect",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"100\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\",@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\",@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
-      "@@@STEP_LOG_LINE@json.output@        }@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35,@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"0\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"name\": \"task\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"100\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LOG_LINE@task stdout+stderr: task@hello world!@@@",
-      "@@@STEP_LOG_END@task stdout+stderr: task@@@",
-      "@@@STEP_LINK@task cas outputs: task@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
+      "@@@STEP_LOG_LINE@request@{@@@",
+      "@@@STEP_LOG_LINE@request@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"100\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    }@@@",
+      "@@@STEP_LOG_LINE@request@  ]@@@",
+      "@@@STEP_LOG_LINE@request@}@@@",
+      "@@@STEP_LOG_END@request@@@",
+      "@@@STEP_LINK@100@https://cr-buildbucket.appspot.com/build/100@@@"
     ]
   },
   {
@@ -152,7 +135,7 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.0.process results.task",
+    "name": "launch/collect.0.process results.builder",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_FAILURE@@@"
@@ -160,7 +143,7 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.0.process results.task.failing step",
+    "name": "launch/collect.0.process results.builder.failing step",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
       "@@@STEP_FAILURE@@@"
@@ -168,13 +151,13 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.0.process results.task.exception",
+    "name": "launch/collect.0.process results.builder.exception",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
-      "@@@STEP_SUMMARY_TEXT@Step('launch/collect.0.process results.task.failing step') (retcode: 0)@@@",
+      "@@@STEP_SUMMARY_TEXT@Step('launch/collect.0.process results.builder.failing step') (retcode: 0)@@@",
       "@@@STEP_LOG_LINE@exception@Traceback (most recent call last):@@@",
       "@@@STEP_LOG_LINE@exception@... <traceback text omitted to simplify test expectations>@@@",
-      "@@@STEP_LOG_LINE@exception@recipe_engine.recipe_api.StepFailure: Step('launch/collect.0.process results.task.failing step') (retcode: 0)@@@",
+      "@@@STEP_LOG_LINE@exception@recipe_engine.recipe_api.StepFailure: Step('launch/collect.0.process results.builder.failing step') (retcode: 0)@@@",
       "@@@STEP_LOG_END@exception@@@"
     ]
   },
@@ -206,7 +189,7 @@
     "name": "launch/collect.1.launch.task (attempt 1)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_LINK@Swarming task@https://testhost/task?id=101@@@"
+      "@@@STEP_LINK@Swarming task@None@@@"
     ]
   },
   {
@@ -218,57 +201,95 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "launch/collect.1.buildbucket.collect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "bb",
       "collect",
-      "-server",
-      "https://example.swarmingserver.appspot.com",
-      "-task-summary-json",
-      "/path/to/tmp/json",
-      "-task-output-stdout",
-      "json",
-      "-verbose",
-      "-eager",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-interval",
+      "60s",
       "101"
     ],
-    "cost": {
-      "cpu": 100,
-      "disk": 0,
-      "memory": 50,
-      "net": 0
-    },
     "infra_step": true,
-    "name": "launch/collect.1.collect",
+    "name": "launch/collect.1.buildbucket.collect.wait",
+    "timeout": 3600,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "batch",
+      "-host",
+      "cr-buildbucket.appspot.com"
+    ],
+    "infra_step": true,
+    "name": "launch/collect.1.buildbucket.collect.get",
+    "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"101\"}}]}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"101\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\",@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\",@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
-      "@@@STEP_LOG_LINE@json.output@        }@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35,@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"0\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"name\": \"task\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"101\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"builder\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createTime\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createdBy\": \"project:project\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"101\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"invocation\": \"invocations/build:101\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          },@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"priority\": 30@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"gerritChanges\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            {@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"change\": \"123456\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"host\": \"chromium-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"patchset\": \"7\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            }@@@",
+      "@@@STEP_LOG_LINE@json.output@          ]@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"status\": \"SUCCESS\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"key\": \"cq_experimental\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"value\": \"false\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        ]@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LOG_LINE@task stdout+stderr: task@hello world!@@@",
-      "@@@STEP_LOG_END@task stdout+stderr: task@@@",
-      "@@@STEP_LINK@task cas outputs: task@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
+      "@@@STEP_LOG_LINE@request@{@@@",
+      "@@@STEP_LOG_LINE@request@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"101\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    }@@@",
+      "@@@STEP_LOG_LINE@request@  ]@@@",
+      "@@@STEP_LOG_LINE@request@}@@@",
+      "@@@STEP_LOG_END@request@@@",
+      "@@@STEP_LINK@101@https://cr-buildbucket.appspot.com/build/101@@@"
     ]
   },
   {
@@ -280,7 +301,7 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.1.process results.task",
+    "name": "launch/collect.1.process results.builder",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_FAILURE@@@"
@@ -288,7 +309,7 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.1.process results.task.failing step",
+    "name": "launch/collect.1.process results.builder.failing step",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
       "@@@STEP_FAILURE@@@"
@@ -296,13 +317,13 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.1.process results.task.exception",
+    "name": "launch/collect.1.process results.builder.exception",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
-      "@@@STEP_SUMMARY_TEXT@Step('launch/collect.1.process results.task.failing step') (retcode: 0)@@@",
+      "@@@STEP_SUMMARY_TEXT@Step('launch/collect.1.process results.builder.failing step') (retcode: 0)@@@",
       "@@@STEP_LOG_LINE@exception@Traceback (most recent call last):@@@",
       "@@@STEP_LOG_LINE@exception@... <traceback text omitted to simplify test expectations>@@@",
-      "@@@STEP_LOG_LINE@exception@recipe_engine.recipe_api.StepFailure: Step('launch/collect.1.process results.task.failing step') (retcode: 0)@@@",
+      "@@@STEP_LOG_LINE@exception@recipe_engine.recipe_api.StepFailure: Step('launch/collect.1.process results.builder.failing step') (retcode: 0)@@@",
       "@@@STEP_LOG_END@exception@@@"
     ]
   },
@@ -311,7 +332,7 @@
     "name": "launch/collect.1.failed tasks",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LINK@task (attempt 1)@https://testhost/task?id=101@@@"
+      "@@@STEP_LINK@task (attempt 1)@None@@@"
     ]
   },
   {
@@ -346,57 +367,95 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "launch/collect.2.buildbucket.collect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "bb",
       "collect",
-      "-server",
-      "https://example.swarmingserver.appspot.com",
-      "-task-summary-json",
-      "/path/to/tmp/json",
-      "-task-output-stdout",
-      "json",
-      "-verbose",
-      "-eager",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-interval",
+      "60s",
       "102"
     ],
-    "cost": {
-      "cpu": 100,
-      "disk": 0,
-      "memory": 50,
-      "net": 0
-    },
     "infra_step": true,
-    "name": "launch/collect.2.collect",
+    "name": "launch/collect.2.buildbucket.collect.wait",
+    "timeout": 3600,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "batch",
+      "-host",
+      "cr-buildbucket.appspot.com"
+    ],
+    "infra_step": true,
+    "name": "launch/collect.2.buildbucket.collect.get",
+    "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"102\"}}]}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"102\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\",@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\",@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
-      "@@@STEP_LOG_LINE@json.output@        }@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35,@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"0\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"name\": \"task\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"102\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"builder\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createTime\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createdBy\": \"project:project\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"102\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"invocation\": \"invocations/build:102\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          },@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"priority\": 30@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"gerritChanges\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            {@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"change\": \"123456\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"host\": \"chromium-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"patchset\": \"7\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            }@@@",
+      "@@@STEP_LOG_LINE@json.output@          ]@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"status\": \"SUCCESS\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"key\": \"cq_experimental\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"value\": \"false\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        ]@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LOG_LINE@task stdout+stderr: task@hello world!@@@",
-      "@@@STEP_LOG_END@task stdout+stderr: task@@@",
-      "@@@STEP_LINK@task cas outputs: task@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
+      "@@@STEP_LOG_LINE@request@{@@@",
+      "@@@STEP_LOG_LINE@request@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"102\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    }@@@",
+      "@@@STEP_LOG_LINE@request@  ]@@@",
+      "@@@STEP_LOG_LINE@request@}@@@",
+      "@@@STEP_LOG_END@request@@@",
+      "@@@STEP_LINK@102@https://cr-buildbucket.appspot.com/build/102@@@"
     ]
   },
   {
@@ -408,7 +467,7 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.2.process results.task",
+    "name": "launch/collect.2.process results.builder",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_FAILURE@@@"
@@ -416,7 +475,7 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.2.process results.task.failing step",
+    "name": "launch/collect.2.process results.builder.failing step",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
       "@@@STEP_FAILURE@@@"
@@ -424,13 +483,13 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.2.process results.task.exception",
+    "name": "launch/collect.2.process results.builder.exception",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
-      "@@@STEP_SUMMARY_TEXT@Step('launch/collect.2.process results.task.failing step') (retcode: 0)@@@",
+      "@@@STEP_SUMMARY_TEXT@Step('launch/collect.2.process results.builder.failing step') (retcode: 0)@@@",
       "@@@STEP_LOG_LINE@exception@Traceback (most recent call last):@@@",
       "@@@STEP_LOG_LINE@exception@... <traceback text omitted to simplify test expectations>@@@",
-      "@@@STEP_LOG_LINE@exception@recipe_engine.recipe_api.StepFailure: Step('launch/collect.2.process results.task.failing step') (retcode: 0)@@@",
+      "@@@STEP_LOG_LINE@exception@recipe_engine.recipe_api.StepFailure: Step('launch/collect.2.process results.builder.failing step') (retcode: 0)@@@",
       "@@@STEP_LOG_END@exception@@@"
     ]
   },
@@ -462,7 +521,7 @@
     "name": "launch/collect.3.launch.task (attempt 3)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_LINK@Swarming task@https://testhost/task?id=103@@@"
+      "@@@STEP_LINK@Swarming task@None@@@"
     ]
   },
   {
@@ -474,57 +533,95 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "launch/collect.3.buildbucket.collect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "bb",
       "collect",
-      "-server",
-      "https://example.swarmingserver.appspot.com",
-      "-task-summary-json",
-      "/path/to/tmp/json",
-      "-task-output-stdout",
-      "json",
-      "-verbose",
-      "-eager",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-interval",
+      "60s",
       "103"
     ],
-    "cost": {
-      "cpu": 100,
-      "disk": 0,
-      "memory": 50,
-      "net": 0
-    },
     "infra_step": true,
-    "name": "launch/collect.3.collect",
+    "name": "launch/collect.3.buildbucket.collect.wait",
+    "timeout": 3600,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "batch",
+      "-host",
+      "cr-buildbucket.appspot.com"
+    ],
+    "infra_step": true,
+    "name": "launch/collect.3.buildbucket.collect.get",
+    "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"103\"}}]}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"103\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\",@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\",@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
-      "@@@STEP_LOG_LINE@json.output@        }@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35,@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"0\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"name\": \"task\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"103\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"builder\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createTime\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createdBy\": \"project:project\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"103\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"invocation\": \"invocations/build:103\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          },@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"priority\": 30@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"gerritChanges\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            {@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"change\": \"123456\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"host\": \"chromium-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"patchset\": \"7\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            }@@@",
+      "@@@STEP_LOG_LINE@json.output@          ]@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"status\": \"SUCCESS\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"key\": \"cq_experimental\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"value\": \"false\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        ]@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LOG_LINE@task stdout+stderr: task@hello world!@@@",
-      "@@@STEP_LOG_END@task stdout+stderr: task@@@",
-      "@@@STEP_LINK@task cas outputs: task@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
+      "@@@STEP_LOG_LINE@request@{@@@",
+      "@@@STEP_LOG_LINE@request@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"103\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    }@@@",
+      "@@@STEP_LOG_LINE@request@  ]@@@",
+      "@@@STEP_LOG_LINE@request@}@@@",
+      "@@@STEP_LOG_END@request@@@",
+      "@@@STEP_LINK@103@https://cr-buildbucket.appspot.com/build/103@@@"
     ]
   },
   {
@@ -536,7 +633,7 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.3.process results.task",
+    "name": "launch/collect.3.process results.builder",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_FAILURE@@@"
@@ -544,7 +641,7 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.3.process results.task.failing step",
+    "name": "launch/collect.3.process results.builder.failing step",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
       "@@@STEP_FAILURE@@@"
@@ -552,13 +649,13 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.3.process results.task.exception",
+    "name": "launch/collect.3.process results.builder.exception",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
-      "@@@STEP_SUMMARY_TEXT@Step('launch/collect.3.process results.task.failing step') (retcode: 0)@@@",
+      "@@@STEP_SUMMARY_TEXT@Step('launch/collect.3.process results.builder.failing step') (retcode: 0)@@@",
       "@@@STEP_LOG_LINE@exception@Traceback (most recent call last):@@@",
       "@@@STEP_LOG_LINE@exception@... <traceback text omitted to simplify test expectations>@@@",
-      "@@@STEP_LOG_LINE@exception@recipe_engine.recipe_api.StepFailure: Step('launch/collect.3.process results.task.failing step') (retcode: 0)@@@",
+      "@@@STEP_LOG_LINE@exception@recipe_engine.recipe_api.StepFailure: Step('launch/collect.3.process results.builder.failing step') (retcode: 0)@@@",
       "@@@STEP_LOG_END@exception@@@"
     ]
   },
@@ -567,7 +664,7 @@
     "name": "launch/collect.3.failed tasks",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LINK@task (attempt 3)@https://testhost/task?id=103@@@"
+      "@@@STEP_LINK@task (attempt 3)@None@@@"
     ]
   },
   {
@@ -602,57 +699,95 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "launch/collect.4.buildbucket.collect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/tools/luci/swarming/swarming_module_pin/swarming",
+      "bb",
       "collect",
-      "-server",
-      "https://example.swarmingserver.appspot.com",
-      "-task-summary-json",
-      "/path/to/tmp/json",
-      "-task-output-stdout",
-      "json",
-      "-verbose",
-      "-eager",
+      "-host",
+      "cr-buildbucket.appspot.com",
+      "-interval",
+      "60s",
       "104"
     ],
-    "cost": {
-      "cpu": 100,
-      "disk": 0,
-      "memory": 50,
-      "net": 0
-    },
     "infra_step": true,
-    "name": "launch/collect.4.collect",
+    "name": "launch/collect.4.buildbucket.collect.wait",
+    "timeout": 3600,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "bb",
+      "batch",
+      "-host",
+      "cr-buildbucket.appspot.com"
+    ],
+    "infra_step": true,
+    "name": "launch/collect.4.buildbucket.collect.get",
+    "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"104\"}}]}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"104\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"output\": \"hello world!\",@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"outputs\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"results\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"bot_id\": \"vm-123\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"cas_output_root\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"cas_instance\": \"projects/example-project/instances/default_instance\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"digest\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"hash\": \"24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca\",@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"size_bytes\": \"73\"@@@",
-      "@@@STEP_LOG_LINE@json.output@        }@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"duration\": 62.35,@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"exit_code\": \"0\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"name\": \"task\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"resultdb_info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"invocation\": \"invocations/some-inv-name\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"state\": \"COMPLETED\",@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"task_id\": \"104\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"builder\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"bucket\": \"try\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"builder\": \"builder\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createTime\": \"2018-05-25T23:50:17Z\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"createdBy\": \"project:project\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"id\": \"104\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"infra\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"resultdb\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"invocation\": \"invocations/build:104\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          },@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"swarming\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"priority\": 30@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"input\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"gerritChanges\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            {@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"change\": \"123456\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"host\": \"chromium-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"patchset\": \"7\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"project\": \"project\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            }@@@",
+      "@@@STEP_LOG_LINE@json.output@          ]@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"status\": \"SUCCESS\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"tags\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"key\": \"cq_experimental\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"value\": \"false\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        ]@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LOG_LINE@task stdout+stderr: task@hello world!@@@",
-      "@@@STEP_LOG_END@task stdout+stderr: task@@@",
-      "@@@STEP_LINK@task cas outputs: task@https://cas-viewer.appspot.com/projects/example-project/instances/default_instance/blobs/24b2420bc49d8b8fdc1d011a163708927532b37dc9f91d7d8d6877e3a86559ca/73/tree@@@"
+      "@@@STEP_LOG_LINE@request@{@@@",
+      "@@@STEP_LOG_LINE@request@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@request@    {@@@",
+      "@@@STEP_LOG_LINE@request@      \"getBuild\": {@@@",
+      "@@@STEP_LOG_LINE@request@        \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\",@@@",
+      "@@@STEP_LOG_LINE@request@        \"id\": \"104\"@@@",
+      "@@@STEP_LOG_LINE@request@      }@@@",
+      "@@@STEP_LOG_LINE@request@    }@@@",
+      "@@@STEP_LOG_LINE@request@  ]@@@",
+      "@@@STEP_LOG_LINE@request@}@@@",
+      "@@@STEP_LOG_END@request@@@",
+      "@@@STEP_LINK@104@https://cr-buildbucket.appspot.com/build/104@@@"
     ]
   },
   {
@@ -664,7 +799,7 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.4.process results.task",
+    "name": "launch/collect.4.process results.builder",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_FAILURE@@@"
@@ -672,7 +807,7 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.4.process results.task.failing step",
+    "name": "launch/collect.4.process results.builder.failing step",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
       "@@@STEP_FAILURE@@@"
@@ -680,13 +815,13 @@
   },
   {
     "cmd": [],
-    "name": "launch/collect.4.process results.task.exception",
+    "name": "launch/collect.4.process results.builder.exception",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
-      "@@@STEP_SUMMARY_TEXT@Step('launch/collect.4.process results.task.failing step') (retcode: 0)@@@",
+      "@@@STEP_SUMMARY_TEXT@Step('launch/collect.4.process results.builder.failing step') (retcode: 0)@@@",
       "@@@STEP_LOG_LINE@exception@Traceback (most recent call last):@@@",
       "@@@STEP_LOG_LINE@exception@... <traceback text omitted to simplify test expectations>@@@",
-      "@@@STEP_LOG_LINE@exception@recipe_engine.recipe_api.StepFailure: Step('launch/collect.4.process results.task.failing step') (retcode: 0)@@@",
+      "@@@STEP_LOG_LINE@exception@recipe_engine.recipe_api.StepFailure: Step('launch/collect.4.process results.builder.failing step') (retcode: 0)@@@",
       "@@@STEP_LOG_END@exception@@@"
     ]
   },
@@ -726,10 +861,9 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LINK@attempt 0 (fail)@https://testhost/task?id=100@@@",
-      "@@@STEP_LINK@vm-123@https://testhost/bot?id=vm-123@@@",
-      "@@@STEP_LINK@attempt 1 (fail)@https://testhost/task?id=101@@@",
+      "@@@STEP_LINK@attempt 1 (fail)@None@@@",
       "@@@STEP_LINK@attempt 2 (fail)@https://testhost/task?id=102@@@",
-      "@@@STEP_LINK@attempt 3 (fail)@https://testhost/task?id=103@@@",
+      "@@@STEP_LINK@attempt 3 (fail)@None@@@",
       "@@@STEP_LINK@attempt 4 (fail)@https://testhost/task?id=104@@@",
       "@@@STEP_FAILURE@@@"
     ]

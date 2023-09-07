@@ -246,10 +246,7 @@ class SubbuildApi(recipe_api.RecipeApi):
         """
     if launched_by_led is None:
       launched_by_led = self.m.led.launched_by_led
-    if launched_by_led:
-      builds = self._collect_from_led(build_ids)
-    else:
-      builds = self._collect_from_buildbucket(build_ids, extra_fields)
+    builds = self._collect_from_buildbucket(build_ids, extra_fields)
     return collections.OrderedDict(
         sorted(builds.items(), key=lambda item: (item[1].builder, item[0]))
     )
@@ -266,25 +263,6 @@ class SubbuildApi(recipe_api.RecipeApi):
       raise self.m.step.InfraFailure(
           f"Subbuild did not set the {property_name!r} output property"
       )
-
-  def _collect_from_led(self, task_ids):
-    swarming_results = self.m.swarming.collect(
-        "collect", task_ids, output_dir=self.m.path["cleanup"]
-    )
-    builds = {}
-    for result in swarming_results:
-      task_id = result.id
-      # Led launch ensures this file is present in the task root dir.
-      build_proto_path = result.output_dir.join("build.proto.json")
-      build_proto = self.m.file.read_proto(
-          "read build.proto.json", build_proto_path, build_pb2.Build, "JSONPB"
-      )
-      builds[task_id] = SubbuildResult(
-          builder=build_proto.builder.builder,
-          build_id=task_id,
-          build_proto=build_proto,
-      )
-    return builds
 
   def _collect_from_buildbucket(self, build_ids, extra_fields):
     bb_fields = self.m.buildbucket.DEFAULT_FIELDS.union({

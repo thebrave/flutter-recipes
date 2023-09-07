@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 
 import attr
 from recipe_engine import recipe_api
+from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
 from RECIPE_MODULES.fuchsia.utils import pluralize
 
@@ -23,7 +24,6 @@ class Attempt:
   index = attr.ib(type=int, default=None)  # Number of prior attempts.
   host = attr.ib(type=str, default=None)
   task_ui_link = attr.ib(type=str, default=None)
-  # api.swarming.TaskResult from api.swarming.collect() call.
   result = attr.ib(default=None)
   # This attribute should be set by overrides of Task.process_result(). It
   # indicates that even though at the swarming level the task may have
@@ -38,25 +38,11 @@ class Attempt:
     # gives the link and the id. Require the id (since it has no default
     # above) and require either the host or task_ui_link attributes.
     assert self.host or self.task_ui_link
-    if not self.task_ui_link:
-      self.task_ui_link = f"https://{self.host}/task?id={self.task_id}"
-    elif not self.host:
-      self.host = urlparse(self.task_ui_link).netloc
-
-  @property
-  def bot_id(self):
-    return self.result.bot_id if self.result else None
-
-  @property
-  def bot_ui_link(self):
-    return f"https://{self.host}/bot?id={self.bot_id}" if self.bot_id else None
 
   @property
   def name(self):
     return f"attempt {int(self.index)}"
 
-  # TODO(mohrr) add hook for pass/fail beyond swarming task level.
-  # In some cases may need to examine task outputs to determine pass/fail.
   @property
   def success(self):
     if self.failure_reason:
@@ -65,11 +51,7 @@ class Attempt:
     if not self.result:  # pragma: nocover
       return False
 
-    try:
-      self.result.analyze()
-      return True
-    except recipe_api.StepFailure:
-      return False
+    return self.result.status == common_pb2.Status.SUCCESS
 
 
 class TaskTracker:
@@ -203,7 +185,7 @@ class TaskTracker:
     )
 
   def process_result(self, attempt, result):
-    with self._api.step.nest(result.name):
+    with self._api.step.nest(result.builder.builder):
       self._in_progress_attempts.remove(attempt)
       attempt.result = result
       try:
@@ -314,7 +296,6 @@ class Task:
     del kwargs  # Unused.
     name = f"{attempt.name} ({'pass' if attempt.success else 'fail'})"
     task_step_presentation.links[name] = attempt.task_ui_link
-    task_step_presentation.links[attempt.bot_id] = attempt.bot_ui_link
 
   def launch(self, priority_boost_amount):
     """Launch the task (using Swarming, led, or something else).
@@ -328,36 +309,6 @@ class Task:
           from the Swarming or led result.
         """
     assert False, "Subclasses must define launch() method."  # pragma: no cover
-
-
-class TriggeredTask(Task):
-
-  def __init__(self, request, api, **kwargs):
-    super().__init__(api, request.name, **kwargs)
-    self._request = request
-
-  def launch(self, priority_boost_amount):
-    assert self._request
-
-    request = self._request
-    if priority_boost_amount != 0:
-      old_priority = request.priority
-      # For Swarming tasks, numerically lower priority values are logically
-      # higher priorities, so use subtraction here.
-      request = request.with_priority(old_priority - priority_boost_amount)
-      with self._api.step.nest("increase priority") as pres:
-        pres.step_summary_text = (
-            f"from {int(old_priority)} to {int(request.priority)}"
-        )
-
-    metadata = self._api.swarming.trigger("trigger", [request])
-    assert len(metadata) == 1
-    metadata = metadata[0]
-
-    return self._api.swarming_retry.Attempt(
-        task_ui_link=metadata.task_ui_link,
-        task_id=metadata.id,
-    )
 
 
 class LedTask(Task):
@@ -386,7 +337,7 @@ class LedTask(Task):
             f"from {int(self._original_priority)} to {int(new_priority)}"
         )
 
-    res = self._led_data.then("launch", "-modernize", "-real-build")
+    res = self._led_data.then("launch", "-real-build")
     host = res.launch_result.swarming_hostname
     task_id = res.launch_result.task_id or str(res.launch_result.build_id)
     build_url_swarming = 'https://ci.chromium.org/swarming/task/%s?server=%s' % (
@@ -410,8 +361,6 @@ class RetrySwarmingApi(recipe_api.RecipeApi):
 
   Task = Task  # pylint: disable=invalid-name
   LedTask = LedTask  # pylint: disable=invalid-name
-  TriggeredTask = TriggeredTask  # pylint: disable=invalid-name
-
   Attempt = Attempt  # pylint: disable=invalid-name
 
   DEFAULT_MAX_ATTEMPTS = DEFAULT_MAX_ATTEMPTS
@@ -426,15 +375,10 @@ class RetrySwarmingApi(recipe_api.RecipeApi):
     self.raise_failures(tasks)
 
   def _is_complete(self, result):
-    # At the moment results have a bunch of fields set to None if incomplete.
-    # On the assumption this will be changed at some point I'm also checking
-    # the state explicitly.
-    if result.name is None:
-      return False
-
-    return result.state not in {
-        self.m.swarming.TaskState.RUNNING,
-        self.m.swarming.TaskState.PENDING,
+    return result.status not in {
+        common_pb2.Status.STATUS_UNSPECIFIED,
+        common_pb2.Status.SCHEDULED,
+        common_pb2.Status.STARTED,
     }
 
   def _get_tasks_to_launch(self, tasks):
@@ -506,31 +450,24 @@ class RetrySwarmingApi(recipe_api.RecipeApi):
       for attempt in task._in_progress_attempts:
         assert attempt.task_id not in tasks_by_id
         tasks_by_id[attempt.task_id] = (task, attempt)
-    results = []
+    results = {}
     if tasks_by_id:
-      results = self.m.swarming.collect(
-          "collect",
-          sorted(tasks_by_id.keys()),
-          output_dir=collect_output_dir,
-          eager=True,
-          verbose=True,
+      results = self.m.buildbucket.collect_builds(
+          sorted([int(build_id) for build_id in tasks_by_id]),
+          mirror_status=False
       )
-
-    # 'collect' takes a list of task IDs and returns a list specifying
+    # 'collect' takes a list of build IDs and returns a list specifying
     # whether each task has completed or is still running.  However,
     # sometimes the list it returns misses tasks that haven't
     # completed.  That makes no difference here because we only look at
     # the completed tasks.
-    completed_results = [
-        result for result in results if self._is_complete(result)
-    ]
-
+    completed_results = list(filter(self._is_complete, results.values()))
     passed_tasks = []
     failed_tasks = []
     if completed_results:
       with self.m.step.nest("process results") as process_results_presentation:
         for result in completed_results:
-          task, attempt = tasks_by_id[result.id]
+          task, attempt = tasks_by_id[str(result.id)]
           task.process_result(attempt, result)
           if attempt.success:
             passed_tasks.append((task, attempt))

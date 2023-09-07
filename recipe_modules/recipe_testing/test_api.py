@@ -19,7 +19,7 @@ ONE_DAY = int(datetime.timedelta(days=1).total_seconds())
 MAX_BUILD_AGE_SECONDS = int(datetime.timedelta(days=28).total_seconds())
 
 
-class RecipeTestingTestApi(recipe_test_api.RecipeTestApi):
+class FlutterRecipeTestingTestApi(recipe_test_api.RecipeTestApi):
 
   def project(
       self,
@@ -165,14 +165,6 @@ class RecipeTestingTestApi(recipe_test_api.RecipeTestApi):
     )
 
     return res
-
-  def task_result(self, task_id, name, failed=False):
-    return self.m.swarming.task_result(
-        id=task_id,
-        name="recipes-cq:%s" % name,
-        state=None if not name else self.m.swarming.TaskState.COMPLETED,
-        failure=failed,
-    )
 
   def existing_green_tryjobs(self, tryjobs):
     search_results = []

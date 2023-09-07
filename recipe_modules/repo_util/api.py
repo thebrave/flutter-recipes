@@ -173,9 +173,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
     self.m.retry.basic_wrap(
         _InnerCheckout,
         step_name='Checkout source',
-        sleep=10.0,
+        sleep=2.0,
         backoff_factor=5,
-        max_attempts=4
+        max_attempts=2
     )
 
   def monorepo_checkout(self, checkout_path, env, env_prefixes):
@@ -263,9 +263,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
     self.m.retry.basic_wrap(
         _InnerCheckout,
         step_name='Checkout source',
-        sleep=10.0,
+        sleep=2.0,
         backoff_factor=5,
-        max_attempts=4
+        max_attempts=2
     )
 
   def checkout(

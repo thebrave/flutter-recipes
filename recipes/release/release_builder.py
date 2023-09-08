@@ -20,11 +20,12 @@ from google.protobuf import struct_pb2
 import json
 
 DEPS = [
-    'flutter/yaml',
     'flutter/display_util',
     'flutter/flutter_bcid',
+    'flutter/os_utils',
     'flutter/repo_util',
     'flutter/shard_util_v2',
+    'flutter/yaml',
     'recipe_engine/buildbucket',
     'recipe_engine/json',
     'recipe_engine/path',
@@ -79,6 +80,7 @@ def ShouldRun(api, git_ref, target, release_branch, retry_override_list):
 
 
 def RunSteps(api, properties, env_properties):
+  api.os_utils.collect_os_info()
   repository = api.properties.get(
       'git_repo'
   ) or api.buildbucket.gitiles_commit.project

@@ -1,0 +1,362 @@
+[
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/rbe/deps"
+    ],
+    "infra_step": true,
+    "name": "create rbe cache dir"
+  },
+  {
+    "cmd": [],
+    "name": "setup remote execution",
+    "~followup_annotations": [
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CLEANUP]/rbe/bootstrap",
+      "--re_proxy=[CLEANUP]/rbe/reproxy"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "setup remote execution.start reproxy",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "teardown remote execution"
+  },
+  {
+    "cmd": [
+      "[CLEANUP]/rbe/bootstrap",
+      "--shutdown"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "teardown remote execution.stop reproxy",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/bootstrap.WARNING",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "teardown remote execution.read bootstrap.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@bootstrap.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/rbe_metrics.txt",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "teardown remote execution.read rbe_metrics.txt",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@rbe_metrics.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/reproxy.WARNING",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "teardown remote execution.read reproxy.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@reproxy.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/reproxy-gomaip.WARNING",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "teardown remote execution.read reproxy-gomaip.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@reproxy-gomaip.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/reproxy_outerr.log",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "teardown remote execution.read reproxy_outerr.log",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@reproxy_outerr.log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/rewrapper.WARNING",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "teardown remote execution.read rewrapper.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@rewrapper.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "glob",
+      "[CLEANUP]/rbe",
+      "*.rrpl"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "teardown remote execution.find rrpl files",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@glob@[CLEANUP]/rbe/reproxy_2021-10-16_22_52_23.rrpl@@@",
+      "@@@STEP_LOG_END@glob@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/reproxy_2021-10-16_22_52_23.rrpl",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "teardown remote execution.read reproxy_2021-10-16_22_52_23.rrpl",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@reproxy_2021-10-16_22_52_23.rrpl@@@"
+    ]
+  },
+  {
+    "failure": {
+      "humanReason": "Infra Failure: Step('setup remote execution.start reproxy') (retcode: 1)"
+    },
+    "name": "$result"
+  }
+]

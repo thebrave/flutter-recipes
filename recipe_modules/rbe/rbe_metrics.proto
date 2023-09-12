@@ -1,0 +1,28 @@
+// Copyright 2021 The Fuchsia Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+syntax = "proto3";
+
+package recipe_modules.flutter.rbe;
+
+import "google/protobuf/timestamp.proto";
+import "go.fuchsia.dev/foundry-x/re-client/api/stats/stats.proto";
+
+// Schema for RBE metrics.
+// Next field number: 6
+message RbeMetrics {
+  // Buildbucket id.
+  string build_id = 1;
+
+  // Buildbucket builder name.
+  string builder_name = 2;
+
+  // Upload time.
+  google.protobuf.Timestamp created_at = 3;
+
+  // RBE instance.
+  string instance = 4;
+
+  // RBE metrics.
+  stats.Stats stats = 5;
+}

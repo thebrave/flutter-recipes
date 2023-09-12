@@ -22,6 +22,13 @@ def RunSteps(api):
   with api.context(env_prefixes=env_prefixes):
     api.build_util.run_gn(['--no-goma'], checkout)
     api.build_util.build('release', checkout, ['mytarget'])
+  with api.context(env_prefixes=env_prefixes):
+    api.build_util.run_gn(['--no-goma', '--rbe'], checkout)
+    api.build_util.build(
+        'release',
+        checkout, ['mytarget'],
+        rbe_working_path=api.path["cleanup"].join("rbe")
+    )
 
 
 def GenTests(api):

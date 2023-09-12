@@ -1,0 +1,22 @@
+// Copyright 2021 The Fuchsia Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+syntax = "proto3";
+
+package recipe_modules.flutter.rbe;
+
+message InputProperties {
+  // Remote execution instance.
+  // This takes the form of:
+  // projects/<gcp project name>/instances/<rbe instance name>
+  string instance = 1;
+
+  // Reproxy log format.
+  // This can be either "text" or "reducedtext" in infrastructure.
+  // Default is "reducedtext", override to "text" if more Information
+  // is needed from a builder.
+  string log_format = 2;
+
+  // Platform specification, including docker image.
+  string platform = 3;
+}

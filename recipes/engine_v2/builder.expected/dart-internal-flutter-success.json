@@ -391,7 +391,9 @@
       "python3",
       "[CACHE]/builder/src/flutter/tools/gn",
       "--ios",
-      "--no-goma"
+      "--rbe",
+      "--no-goma",
+      "--rbe-server-address=unix://[CLEANUP]/rbe_tmp_1/reproxy.sock"
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
@@ -433,15 +435,22 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gn --ios --no-goma"
+    "name": "gn --ios --rbe --no-goma --rbe-server-address=unix://[CLEANUP]/rbe_tmp_1/reproxy.sock"
+  },
+  {
+    "cmd": [],
+    "name": "ensure reclient"
   },
   {
     "cmd": [
-      "[CACHE]/builder/src/flutter/third_party/ninja/ninja",
-      "-C",
-      "[CACHE]/builder/src/out/ios_debug",
-      "-j",
-      "5"
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[flutter::rbe]/resources/tool_manifest.json",
+      "/path/to/tmp/json"
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
@@ -456,6 +465,298 @@
       "LUCI_PR": "",
       "LUCI_WORKDIR": "[START_DIR]",
       "OS": "linux",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure reclient.read manifest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/reclient\",@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
+      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
+      "@@@STEP_LOG_END@tool_manifest.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure reclient.install path/to/reclient",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/cipd_tool/path/to/reclient/version%3Apinned-version"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure reclient.install path/to/reclient.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cipd_tool/path/to/reclient/version%3Apinned-version",
+      "-ensure-file",
+      "path/to/reclient version:pinned-version",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure reclient.install path/to/reclient.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/reclient\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/rbe/deps"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "create rbe cache dir"
+  },
+  {
+    "cmd": [],
+    "name": "setup remote execution"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/reclient/version%3Apinned-version/bootstrap",
+      "--re_proxy=[START_DIR]/cipd_tool/path/to/reclient/version%3Apinned-version/reproxy"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "setup remote execution.start reproxy",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/src/flutter/third_party/ninja/ninja",
+      "-j",
+      "5",
+      "-C",
+      "[CACHE]/builder/src/out/ios_debug"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true",
       "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
     },
     "env_prefixes": {
@@ -484,6 +785,580 @@
       }
     },
     "name": "build ios_debug"
+  },
+  {
+    "cmd": [],
+    "name": "teardown remote execution"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/path/to/reclient/version%3Apinned-version/bootstrap",
+      "--shutdown"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown remote execution.stop reproxy",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/bootstrap.WARNING",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown remote execution.read bootstrap.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@bootstrap.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/rbe_metrics.txt",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown remote execution.read rbe_metrics.txt",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@rbe_metrics.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/reproxy.WARNING",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown remote execution.read reproxy.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@reproxy.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/reproxy-gomaip.WARNING",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown remote execution.read reproxy-gomaip.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@reproxy-gomaip.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/reproxy_outerr.log",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown remote execution.read reproxy_outerr.log",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@reproxy_outerr.log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/rewrapper.WARNING",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown remote execution.read rewrapper.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@rewrapper.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "glob",
+      "[CLEANUP]/rbe_tmp_1",
+      "*.rrpl"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown remote execution.find rrpl files",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@glob@[CLEANUP]/rbe_tmp_1/reproxy_2021-10-16_22_52_23.rrpl@@@",
+      "@@@STEP_LOG_END@glob@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/reproxy_2021-10-16_22_52_23.rrpl",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "ENGINE_CHECKOUT_PATH": "[CACHE]/builder",
+      "ENGINE_PATH": "[CACHE]/builder",
+      "GIT_BRANCH": "",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "LUCI_WORKDIR": "[START_DIR]",
+      "OS": "linux",
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_platform": "fake_rbe_platform",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true",
+      "REVISION": "2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/src/third_party/dart/tools/sdks/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "teardown remote execution.read reproxy_2021-10-16_22_52_23.rrpl",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@reproxy_2021-10-16_22_52_23.rrpl@@@"
+    ]
   },
   {
     "cmd": [

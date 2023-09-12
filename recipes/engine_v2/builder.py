@@ -193,10 +193,19 @@ def Build(api, checkout, env, env_prefixes, outputs):
       if api.monorepo.is_monorepo_try_build:
         version = api.monorepo.try_build_identifier
         gn.append(f'--gn-args=engine_version="{version}"')
+      rbe_working_path = api.path.mkdtemp(prefix="rbe")
+      if '--rbe' in gn:
+        gn.append(
+            f'--rbe-server-address=unix://{rbe_working_path}/reproxy.sock'
+        )
       api.build_util.run_gn(gn, checkout)
       ninja = build.get('ninja')
-      ninja_tool[ninja.get('tool', 'ninja')
-                ](ninja.get('config'), checkout, ninja.get('targets', []))
+      ninja_tool[ninja.get('tool', 'ninja')](
+          ninja.get('config'),
+          checkout,
+          ninja.get('targets', []),
+          rbe_working_path=rbe_working_path
+      )
   generator_tasks = build.get('generators', {}).get('tasks', [])
   pub_dirs = build.get('generators', {}).get('pub_dirs', [])
   archives = build.get('archives', [])
@@ -318,8 +327,8 @@ def GenTests(api):
               "out/android_jit_release_x86/zip_archives/android-x86-jit-release/artifacts.zip",
               "out/android_jit_release_x86/zip_archives/download.flutter.io"
           ]
-      }], "gn": ["--ios"], "ninja": {"config": "ios_debug", "targets": []},
-      "generators": {
+      }], "gn": ["--ios", "--rbe"],
+      "ninja": {"config": "ios_debug", "targets": []}, "generators": {
           "pub_dirs": ["dev"], "tasks": [{
               "name": "generator1", "scripts": ["script1.sh", "dev/felt.dart"],
               "parameters": ["--argument1"]

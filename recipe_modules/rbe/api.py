@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from enum import Enum
 from contextlib import contextmanager
 
 from recipe_engine import recipe_api
@@ -19,49 +18,12 @@ class RbeApi(recipe_api.RecipeApi):
   """RemoteExecutionApi contains helper functions for using remote execution
     services via re-client/re-proxy."""
 
-  class AbsolutePathPolicy(Enum):
-    """This controls how absolute paths are to be treated.
-
-        The choice impacts how reproxy and rewrapper are invoked.
-
-        Choices:
-          REJECT: remote commands using local absolute paths will fail.
-            rewrapper --canonicalize_working_dir=true.
-              This allows cache sharing between different build output
-              directories (under exec_root) at the same depth.
-            reproxy: no InputPathAbsoluteRoot
-
-          RELATIVIZE: rewrite commands using relative paths, using a wrapper.
-            Relative paths are remote-execution friendly, while absolute paths
-            will likely fail.  cmake builds are known to use absolute paths.
-            Relativized commands are better for caching across build
-            environments, but the wrapper script incurs some overhead.
-            rewrapper --canonicalize_working_dir=true.
-            reproxy: no InputPathAbsoluteRoot
-
-          ALLOW: Force the remote environment to mimic local paths.
-            This allows commands with absolute paths to work,
-            at the expense of being able to cache across build environments.
-            This option can help cmake builds work remotely.
-            rewrapper --canonicalize_working_dir=false.
-            reproxy: --platform InputPathAbsoluteRoot=exec_root
-        """
-
-    REJECT = 1
-    RELATIVIZE = 2
-    ALLOW = 3
-
   def __init__(self, props, *args, **kwargs):
     super().__init__(*args, **kwargs)
 
     self._reclient_path = None
     self._platform = props.platform
     self._instance = props.instance
-
-    # Default: let commands that use absolute paths fail remote execution.
-    # For best caching performance, restrict remote execution commands
-    # to use only relative paths.
-    self._absolute_path_policy = self.AbsolutePathPolicy.REJECT
 
     if not self._platform and self._test_data.enabled:
       self._platform = "fake_rbe_platform"
@@ -76,7 +38,6 @@ class RbeApi(recipe_api.RecipeApi):
       reclient_path=None,
       config_path=None,
       working_path=None,
-      absolute_path_policy=AbsolutePathPolicy.REJECT,
   ):
     """Make context wrapping reproxy start/stop.
 
@@ -84,10 +45,6 @@ class RbeApi(recipe_api.RecipeApi):
           reclient_path (Path): if set, use this Path to reclient tools,
             otherwise, automatically use the Path to a loaded CIPD package.
           config_path (Path): The config file within the checkout.
-            In the case of a Fuchsia checkout, this should be set to the path
-            referenced by $FUCHSIA_OUT_DIR/rbe_config.json as reported by
-            `gn gen`.
-          absolute_path_policy (AbsolutePathPolicy): See enum definition.
 
         Raises:
             StepFailure or InfraFailure if it fails to start/stop.
@@ -108,9 +65,6 @@ class RbeApi(recipe_api.RecipeApi):
     # conflicts between log/metric files.
     working_dir = working_path
 
-    saved_absolute_path_policy = self._absolute_path_policy
-    self._absolute_path_policy = absolute_path_policy
-
     with self.m.context(env=self._environment(working_dir), infra_steps=True):
       try:
         self._start(config_path=config_path)
@@ -119,7 +73,6 @@ class RbeApi(recipe_api.RecipeApi):
       finally:
         if not self.m.runtime.in_global_shutdown:
           self._stop(working_dir=working_dir, config_path=config_path)
-        self._absolute_path_policy = saved_absolute_path_policy
 
   @property
   def _ensure_reclient_path(self):
@@ -136,14 +89,11 @@ class RbeApi(recipe_api.RecipeApi):
     cache_dir = self.m.path["cache"].join("rbe")
     deps_cache_dir = cache_dir.join("deps")
     self.m.file.ensure_directory("create rbe cache dir", deps_cache_dir)
-    # Environment. The source of truth for remote execution configuration
-    # is the Fuchsia tree (see $FUCHSIA_OUT_DIR/rbe_config.json). These
-    # values are used to modify the configuration in Infrastructure when
-    # appropriate. These should not be used to modify the behavior of the
-    # build in a meaningful way.
+    # Environment. These values are used to modify the configuration in
+    # Infrastructure when appropriate. These should not be used to modify
+    # the behavior of the build in a meaningful way.
     return {
         "RBE_service": "remotebuildexecution.googleapis.com:443",
-        # TODO(fangism): sync docker image with that used in Fuchsia
         "RBE_platform": self._platform,
         # Override default instance. Infrastructure uses different RBE
         # backends for different environments.

@@ -38,7 +38,9 @@ class OsUtilsApi(recipe_api.RecipeApi):
     """Replaces allowed listed env variables by its value."""
     MAGIC_ENV_DICT = {
         '${FLUTTER_LOGS_DIR}': 'FLUTTER_LOGS_DIR',
-        '${LUCI_WORKDIR}': 'LUCI_WORKDIR', '${LUCI_CLEANUP}': 'LUCI_CLEANUP'
+        '${LUCI_WORKDIR}': 'LUCI_WORKDIR',
+        '${LUCI_CLEANUP}': 'LUCI_CLEANUP',
+        '${REVISION}': 'revision',
     }
     result = []
     for part in command:

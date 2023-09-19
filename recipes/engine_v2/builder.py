@@ -97,18 +97,6 @@ def run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes):
     api.step(generator_task.get('name'), cmd)
 
 
-def _replace_magic_envs(command, env):
-  """Replaces allowed listed env variables by its value."""
-  MAGIC_ENV_DICT = {"${FLUTTER_LOGS_DIR}": "FLUTTER_LOGS_DIR"}
-  result = []
-  for part in command:
-    if part in MAGIC_ENV_DICT.keys():
-      result.append(env[MAGIC_ENV_DICT[part]])
-    else:
-      result.append(part)
-  return result
-
-
 def run_tests(api, tests, checkout, env, env_prefixes):
   """Runs sub-build tests."""
   # Run local tests in the builder to optimize resource usage.
@@ -128,9 +116,10 @@ def run_tests(api, tests, checkout, env, env_prefixes):
       command.extend(test.get('parameters', []))
       step_name = api.test_utils.test_step_name(test.get('name'))
 
+      # pylint: disable=cell-var-from-loop
       def run_test():
         # Replace MAGIC_ENVS
-        updated_command = _replace_magic_envs(command, env)
+        updated_command = api.os_utils.replace_magic_envs(command, env)
         return api.step(step_name, updated_command)
 
       # Rerun test step 3 times by default if failing.

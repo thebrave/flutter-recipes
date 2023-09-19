@@ -33,6 +33,7 @@ DEPS = [
     'flutter/flutter_deps',
     'flutter/monorepo',
     'flutter/repo_util',
+    'flutter/os_utils',
     'flutter/osx_sdk',
     'flutter/shard_util_v2',
     'recipe_engine/buildbucket',
@@ -251,7 +252,8 @@ def _run_global_generators(
       cmd.extend(generator_task.get('parameters', []))
       # Run within an engine context to make dart available.
       with api.context(env=env, env_prefixes=env_prefixes):
-        api.step(generator_task.get('name'), cmd)
+        updated_command = api.os_utils.replace_magic_envs(cmd, env)
+        api.step(generator_task.get('name'), updated_command)
 
 
 def GenTests(api):

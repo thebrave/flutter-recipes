@@ -34,6 +34,20 @@ class OsUtilsApi(recipe_api.RecipeApi):
         ok_ret='any',
     )
 
+  def replace_magic_envs(self, command, env):
+    """Replaces allowed listed env variables by its value."""
+    MAGIC_ENV_DICT = {
+        '${FLUTTER_LOGS_DIR}': 'FLUTTER_LOGS_DIR',
+        '${LUCI_WORKDIR}': 'LUCI_WORKDIR', '${LUCI_CLEANUP}': 'LUCI_CLEANUP'
+    }
+    result = []
+    for part in command:
+      if part in MAGIC_ENV_DICT:
+        result.append(env[MAGIC_ENV_DICT[part]])
+      else:
+        result.append(part)
+    return result
+
   def print_pub_certs(self):
     """Prints pub.dev certificates."""
     cmd = (

@@ -7,6 +7,7 @@ from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 
 DEPS = [
     'flutter/os_utils',
+    'recipe_engine/assertions',
     'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
@@ -29,6 +30,11 @@ def RunSteps(api):
   api.os_utils.is_symlink('/a/b/c/simlink')
   api.os_utils.symlink('/a/file', '/a/b/c/simlink')
   api.os_utils.kill_simulators()
+
+  command = ['cat', '${FLUTTER_LOGS_DIR}']
+  env = {'FLUTTER_LOGS_DIR': '/a/b/c'}
+  new_command = api.os_utils.replace_magic_envs(command, env)
+  api.assertions.assertEqual(new_command, ['cat', '/a/b/c'])
 
 
 def GenTests(api):

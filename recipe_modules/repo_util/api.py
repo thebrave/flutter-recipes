@@ -493,7 +493,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             str(android_tmp.join('.android')),
         'LUCI_WORKDIR':
             str(self.m.path['start_dir']),
-        'LUCI_TMPDIR':
+        'LUCI_CLEANUP':
             str(self.m.path['cleanup']),
         'REVISION':
             self.m.buildbucket.gitiles_commit.id or ''

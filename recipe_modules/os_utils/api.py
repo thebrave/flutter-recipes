@@ -40,7 +40,7 @@ class OsUtilsApi(recipe_api.RecipeApi):
         '${FLUTTER_LOGS_DIR}': 'FLUTTER_LOGS_DIR',
         '${LUCI_WORKDIR}': 'LUCI_WORKDIR',
         '${LUCI_CLEANUP}': 'LUCI_CLEANUP',
-        '${REVISION}': 'revision',
+        '${REVISION}': 'REVISION',
     }
     result = []
     for part in command:

@@ -35,8 +35,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
     self._initialized = True
 
   @contextmanager
-  def __call__(self, env, env_prefixes, version="31"):
-    version = version or self.m.properties.get('avd_version')
+  def __call__(self, env, env_prefixes, version='31'):
     self._initialize(env, env_prefixes)
     try:
       self.emulator_pid = self.start(env, env_prefixes, version)
@@ -77,7 +76,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
     env['AVD_ROOT'] = self.avd_root
     env['ADB_PATH'] = self.adb_path
 
-  def start(self, env, env_prefixes, version=None):
+  def start(self, env, env_prefixes, version):
     """Starts an android avd emulator.
 
     Args:
@@ -85,7 +84,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       version(string): The android API version of the emulator as a string.
     """
-    self.version = version or '31'
+    self.version = version
     self.emulator_pid = ''
     with self.m.step.nest('start avd'):
       with self.m.context(env=env, env_prefixes=env_prefixes,

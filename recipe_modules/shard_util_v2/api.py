@@ -13,8 +13,6 @@ from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from RECIPE_MODULES.fuchsia.utils import pluralize
 
-DRONE_TIMEOUT_SECS = 3600 * 3  # 3 hours.
-
 # Builder names use full platform name instead of short names. We need to
 # map short names to full platform names to be able to identify the drone
 # used to run the subshards.
@@ -394,7 +392,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       # Increase timeout if no_goma, since the runtime is going to
       # be much longer.
       if drone_properties.get("no_goma", False):
-        req.execution_timeout.FromSeconds(60 * 60 * 2)
+        req.execution_timeout.FromSeconds(60 * 60 * 4)
       reqs.append(req)
     scheduled_builds = self.m.buildbucket.schedule(reqs, step_name="schedule")
     results = {}

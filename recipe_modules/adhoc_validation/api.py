@@ -106,6 +106,12 @@ class AddhocValidationApi(recipe_api.RecipeApi):
             # Only deploy to firebase directly if this is master or main.
             if ((self.m.properties.get('git_branch') in ['master', 'main']) or
                 (git_ref == 'refs/heads/stable')):
+              sha = self.m.buildbucket.gitiles_commit.id
+              gcs_location = 'flutter/%s/api_docs.zip' % sha
+              with self.m.step.nest("Verify docs provenance"):
+                self.m.flutter_bcid.download_and_verify_provenance(
+                    'api_docs.zip', 'flutter_infra_release', gcs_location
+                )
               self.m.firebase.deploy_docs(
                   env=env,
                   env_prefixes=env_prefixes,

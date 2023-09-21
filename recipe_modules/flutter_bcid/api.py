@@ -39,9 +39,10 @@ class FlutterBcidApi(recipe_api.RecipeApi):
   def upload_provenance(self, local_artifact_path, remote_artifact_path):
     """Generate provenance for given artifact.
 
-    This function acts on one specific local file and one specific
-    remote file location. It does not accept glob patterns or
-    directories.
+    This function acts on one specific local file and one specific remote file
+    location. It does not accept glob patterns or directories. This method is a
+    noop if it is not an official build, as only official builds generate
+    provenance.
 
     parmeters:
       local_artifact_path: (str) path and filename of a specific file.
@@ -57,7 +58,9 @@ class FlutterBcidApi(recipe_api.RecipeApi):
     """Downloads and verifies provenance for a specified artifact.
 
     This method downloads an artifact and associated provenance from GCS,
-    verifies it. If verification fails, an error is raised.
+    verifies it. If verification fails, an error is raised. This method is a
+    noop if it is not an official build, as only official builds generate
+    provenance.
 
     parameters:
       filename: (str) the name of the file, eg: "flutter_artifact.zip"
@@ -65,22 +68,23 @@ class FlutterBcidApi(recipe_api.RecipeApi):
       gcs_path_without_bucket: (str) the GCS path, excluding gs://{bucket}/
         eg: "flutter/004d0bdf6721bc65cdb9a558908b2de4cfac97c5/sky_engine.zip"
     """
-    verify_temp_path = self.m.path.mkdtemp("verify")
-    download_path = download_path = verify_temp_path.join(filename)
-    bcid_response = self.m.dart.download_and_verify(
-        filename, bucket, gcs_path_without_bucket, download_path,
-        'misc_software://flutter/engine'
-    )
+    if self.is_official_build():
+      verify_temp_path = self.m.path.mkdtemp("verify")
+      download_path = download_path = verify_temp_path.join(filename)
+      bcid_response = self.m.dart.download_and_verify(
+          filename, bucket, gcs_path_without_bucket, download_path,
+          'misc_software://flutter/engine'
+      )
 
-    artifact_vsa = bcid_response['verificationSummary']
-    vsa_local_path = f'{download_path}{VSA_EXTENSION}'
-    self.m.file.write_text(
-        f'write {filename}{VSA_EXTENSION}', vsa_local_path, artifact_vsa
-    )
-    vsa_path_without_bucket = gcs_path_without_bucket + VSA_EXTENSION
-    self.m.gsutil.upload(
-        vsa_local_path,
-        bucket,
-        vsa_path_without_bucket,
-        name=f'upload "{vsa_path_without_bucket}"'
-    )
+      artifact_vsa = bcid_response['verificationSummary']
+      vsa_local_path = f'{download_path}{VSA_EXTENSION}'
+      self.m.file.write_text(
+          f'write {filename}{VSA_EXTENSION}', vsa_local_path, artifact_vsa
+      )
+      vsa_path_without_bucket = gcs_path_without_bucket + VSA_EXTENSION
+      self.m.gsutil.upload(
+          vsa_local_path,
+          bucket,
+          vsa_path_without_bucket,
+          name=f'upload "{vsa_path_without_bucket}"',
+      )

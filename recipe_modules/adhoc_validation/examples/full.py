@@ -51,6 +51,7 @@ def GenTests(api):
       api.expect_exception('AssertionError'),
       api.repo_util.flutter_environment_data(checkout_path)
   )
+  fake_bcid_response_success = '{"allowed": true, "verificationSummary": "This artifact is definitely legitimate!"}'
   yield api.test(
       'docs',
       api.platform.name('linux'),
@@ -70,4 +71,8 @@ def GenTests(api):
           revision='abcd' * 10,
           build_number=123,
       ),
+      api.step_data(
+          'Docs.Verify docs provenance.verify api_docs.zip provenance',
+          stdout=api.raw_io.output_text(fake_bcid_response_success)
+      )
   )

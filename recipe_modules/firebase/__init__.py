@@ -1,4 +1,5 @@
 DEPS = [
+    'flutter/flutter_bcid',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',

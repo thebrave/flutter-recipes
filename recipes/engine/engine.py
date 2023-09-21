@@ -1126,16 +1126,6 @@ def UploadFuchsiaDebugSymbols(api, upload):
     debug_sym_future.result()
 
 
-def ShouldPublishToCIPD(api, package_name, git_rev):
-  """
-  CIPD will, upon request, tag multiple instances with the same tag. However, if
-  you try to retrieve that tag, it will throw an error complaining that the tag
-  amgiguously refers to multiple instances. We should check before tagging.
-  """
-  instances = api.cipd.search(package_name, "git_revision:%s" % git_rev)
-  return len(instances) == 0
-
-
 def BuildFuchsia(api, gclient_vars):
   """
   This schedules release and profile builds for x64 and arm64 on other bots,
@@ -1213,8 +1203,7 @@ def BuildFuchsia(api, gclient_vars):
 
   upload = (
       api.bucket_util.should_upload_packages() and
-      not api.runtime.is_experimental and
-      ShouldPublishToCIPD(api, 'flutter/fuchsia', git_rev)
+      not api.runtime.is_experimental
   )
 
   if upload:
@@ -1975,77 +1964,63 @@ def GenTests(api):
   for platform in ('mac', 'linux', 'win'):
     for should_upload in (True, False):
       for maven in (True, False):
-        for should_publish_cipd in (True, False):
-          for no_lto in (True, False):
-            for font_subset in (True, False):
-              for bucket in ('prod', 'staging', 'flutter'):
-                for branch in ('main', 'flutter-3.8-candidate.10'):
-                  if maven and platform in ['mac', 'win']:
-                    continue
-                  test = api.test(
-                      '%s%s%s%s%s%s_%s_%s' % (
-                          platform, '_upload' if should_upload else '',
-                          '_maven' if maven else '',
-                          '_publish_cipd' if should_publish_cipd else '',
-                          '_no_lto' if no_lto else '',
-                          '_font_subset' if font_subset else '', bucket, branch
-                      ),
-                      api.platform(platform, 64),
-                      api.buildbucket.ci_build(
-                          builder='%s Engine' % platform.capitalize(),
-                          git_repo=GIT_REPO,
-                          project='flutter',
-                          revision='%s' % git_revision,
-                          bucket=bucket,
-                      ),
-                      api.runtime(is_experimental=False),
+        for no_lto in (True, False):
+          for font_subset in (True, False):
+            for bucket in ('prod', 'staging', 'flutter'):
+              for branch in ('main', 'flutter-3.8-candidate.10'):
+                if maven and platform in ['mac', 'win']:
+                  continue
+                test = api.test(
+                    '%s%s%s%s%s_%s_%s' % (
+                        platform, '_upload' if should_upload else '',
+                        '_maven' if maven else '', '_no_lto' if no_lto else '',
+                        '_font_subset' if font_subset else '', bucket, branch
+                    ),
+                    api.platform(platform, 64),
+                    api.buildbucket.ci_build(
+                        builder='%s Engine' % platform.capitalize(),
+                        git_repo=GIT_REPO,
+                        project='flutter',
+                        revision='%s' % git_revision,
+                        bucket=bucket,
+                    ),
+                    api.runtime(is_experimental=False),
+                    api.properties(
+                        **{
+                            'clobber': False,
+                            'goma_jobs': '1024',
+                            'fuchsia_ctl_version': 'version:0.0.2',
+                            'build_host': True,
+                            'build_fuchsia': True,
+                            'build_android_aot': True,
+                            'build_android_debug': True,
+                            'git_branch': branch,
+                            'no_maven': maven,
+                            'upload_packages': should_upload,
+                            'force_upload': True,
+                            'no_lto': no_lto,
+                            'build_font_subset': font_subset,
+                        }
+                    ),
+                    api.properties.environ(
+                        EnvProperties(SWARMING_TASK_ID='deadbeef')
+                    ),
+                )
+                if platform != 'win':
+                  test += collect_build_output
+                if platform == 'mac':
+                  test += (
                       api.properties(
                           **{
-                              'clobber': False,
-                              'goma_jobs': '1024',
-                              'fuchsia_ctl_version': 'version:0.0.2',
-                              'build_host': True,
-                              'build_fuchsia': True,
-                              'build_android_aot': True,
-                              'build_android_debug': True,
-                              'git_branch': branch,
-                              'no_maven': maven,
-                              'upload_packages': should_upload,
-                              'force_upload': True,
-                              'no_lto': no_lto,
-                              'build_font_subset': font_subset,
+                              'jazzy_version': '0.8.4',
+                              'build_ios': True,
+                              'ios_debug': True,
+                              'ios_profile': True,
+                              'ios_release': True,
                           }
-                      ),
-                      api.properties.environ(
-                          EnvProperties(SWARMING_TASK_ID='deadbeef')
-                      ),
+                      )
                   )
-                  if platform == 'linux' and should_upload:
-                    instances = 0 if should_publish_cipd else 1
-                    test += (
-                        api.override_step_data(
-                            'cipd search flutter/fuchsia git_revision:%s' %
-                            git_revision,
-                            api.cipd.example_search(
-                                'flutter/fuchsia', instances=instances
-                            )
-                        )
-                    )
-                  if platform != 'win':
-                    test += collect_build_output
-                  if platform == 'mac':
-                    test += (
-                        api.properties(
-                            **{
-                                'jazzy_version': '0.8.4',
-                                'build_ios': True,
-                                'ios_debug': True,
-                                'ios_profile': True,
-                                'ios_release': True,
-                            }
-                        )
-                    )
-                  yield test
+                yield test
 
   for should_upload in (True, False):
     yield api.test(
@@ -2123,10 +2098,6 @@ def GenTests(api):
           git_repo=GIT_REPO,
           project='flutter',
           revision='%s' % git_revision,
-      ),
-      api.step_data(
-          'cipd search flutter/fuchsia git_revision:%s' % git_revision,
-          api.cipd.example_search('flutter/fuchsia', instances=0)
       ),
       collect_build_output,
       api.properties(

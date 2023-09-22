@@ -219,9 +219,8 @@ def RunTestSuiteOnFfxEmuImpl(api, suite, ffx, arch, pb_path):
   emu_cmd = [ffx, '-v', 'emu', 'start', pb_path, '--headless']
   if arch == 'arm64':
     api.step(
-        'launch arm64 emulator with QEMU engine', emu_cmd + [
-            '--engine', 'qemu', '--headless', '--startup-timeout', '360'
-        ]
+        'launch arm64 emulator with QEMU engine', emu_cmd +
+        ['--engine', 'qemu', '--headless', '--startup-timeout', '360']
     )
   else:
     api.step('launch x64 emulator', emu_cmd)
@@ -240,8 +239,8 @@ def RunTestSuiteOnFfxEmuImpl(api, suite, ffx, arch, pb_path):
   for package in suite['package_basenames']:
     api.step(
         'ffx repository publish {}'.format(package), [
-            ffx, 'repository', 'publish', pb_path, '--package-archive',
-            package, '--blob-repo-dir', ffx_blob_repo_path
+            ffx, 'repository', 'publish', pb_path, '--package-archive', package,
+            '--blob-repo-dir', ffx_blob_repo_path
         ]
     )
 
@@ -267,8 +266,7 @@ def ReadLogFiles(api, ffx):
   """
   with api.step.nest('logs') as dump_step:
     dump_step.presentation.logs['target_logs'] = api.step(
-        'dump target log',
-        [ffx, 'log', 'dump'],
+        'dump target log', [ffx, 'log', 'dump'],
         stdout=api.raw_io.output_text()
     ).stdout
     dump_step.presentation.logs['ffx_daemon_log'] = api.file.read_text(
@@ -361,26 +359,31 @@ def TestFuchsiaFEMU(api):
   # Fuchsia LSC runs will override the remote SDK and product bundles that
   # should be used for the tests. The path to the product bundle is passed
   # through the `gclient_variables`.
-  pb_override_path = api.properties.get('gclient_variables', {}).get('product_bundles_v2_path', None)
+  pb_override_path = api.properties.get('gclient_variables', {}
+                                       ).get('product_bundles_v2_path', None)
   if pb_override_path:
     gs_bucket = 'fuchsia-artifacts'
     with api.step.nest('parse external sdk id'):
-      sdk_id = re.search(r'^development/(?P<sdk_id>\d+)/product_bundles.json', pb_override_path).group('sdk_id')
+      sdk_id = re.search(
+          r'^development/(?P<sdk_id>\d+)/product_bundles.json', pb_override_path
+      ).group('sdk_id')
   else:
     # Read the sdk version; this is necessary to get the right product bundle
     gs_bucket = 'fuchsia'
     sdk_id = api.step(
-        'read sdk version',
-        [ffx, 'sdk', 'version'],
+        'read sdk version', [ffx, 'sdk', 'version'],
         stdout=api.raw_io.output_text()
     ).stdout.strip()
 
   # Lookup the product bundle
+  # qemu-x64 has been merged into x64, but other arches still have qemu-specific
+  # builds published.
+  product_name = 'terminal.%s' % arch if arch == 'x64' else 'terminal.qemu-%s' % arch
   product_transfer_manifest = api.step(
-      'lookup terminal.qemu-%s product bundle' % arch,
-      [ffx, 'product', 'lookup',
-       'terminal.qemu-%s' % arch, sdk_id, '--base-url',
-       'gs://%s/development/%s' % (gs_bucket, sdk_id)],
+      'lookup %s product bundle' % product_name, [
+          ffx, 'product', 'lookup', product_name, sdk_id, '--base-url',
+          'gs://%s/development/%s' % (gs_bucket, sdk_id)
+      ],
       stdout=api.raw_io.output_text()
   ).stdout.strip()
 
@@ -389,8 +392,10 @@ def TestFuchsiaFEMU(api):
   # Retrieve the required product bundle and store in a temporary directory
   # Contains necessary images, packages, etc to launch the emulator
   api.step(
-      'download terminal.qemu-%s product bundle' % arch,
-      [ffx, 'product', 'download', product_transfer_manifest, local_pb, '--force']
+      'download %s product bundle' % product_name, [
+          ffx, 'product', 'download', product_transfer_manifest, local_pb,
+          '--force'
+      ]
   )
 
   # Add the product bundle's repository
@@ -467,9 +472,7 @@ def GenTests(api):
                 "type": "file_system",
                 "metadata_repo_path": "/tmp/local_pb/repository",
                 "blob_repo_path": "/tmp/local_pb/blobs",
-                "aliases": [
-                    "fuchsia.com",
-                ],
+                "aliases": ["fuchsia.com",],
             },
         }]),
         retcode=0
@@ -546,7 +549,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('ARBITRARY_SDK_VERSION'),
       ),
       api.step_data(
-          'lookup terminal.qemu-x64 product bundle',
+          'lookup terminal.x64 product bundle',
           stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
       ),
       *fail_step_with_retries(
@@ -604,7 +607,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('ARBITRARY_SDK_VERSION'),
       ),
       api.step_data(
-          'lookup terminal.qemu-x64 product bundle',
+          'lookup terminal.x64 product bundle',
           stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
       ),
       *ffx_repo_list_step_data_with_retries(
@@ -663,7 +666,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('ARBITRARY_SDK_VERSION'),
       ),
       api.step_data(
-          'lookup terminal.qemu-x64 product bundle',
+          'lookup terminal.x64 product bundle',
           stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
       ),
       *ffx_repo_list_step_data_with_retries(
@@ -720,7 +723,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('ARBITRARY_SDK_VERSION'),
       ),
       api.step_data(
-          'lookup terminal.qemu-x64 product bundle',
+          'lookup terminal.x64 product bundle',
           stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
       ),
       ffx_repo_list_step_data(
@@ -833,7 +836,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('ARBITRARY_SDK_VERSION'),
       ),
       api.step_data(
-          'lookup terminal.qemu-x64 product bundle',
+          'lookup terminal.x64 product bundle',
           stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
       ),
       ffx_repo_list_step_data(
@@ -885,7 +888,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('ARBITRARY_SDK_VERSION'),
       ),
       api.step_data(
-          'lookup terminal.qemu-x64 product bundle',
+          'lookup terminal.x64 product bundle',
           stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
       ),
       ffx_repo_list_step_data(
@@ -952,7 +955,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('ARBITRARY_SDK_VERSION'),
       ),
       api.step_data(
-          'lookup terminal.qemu-x64 product bundle',
+          'lookup terminal.x64 product bundle',
           stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
       ),
       ffx_repo_list_step_data(
@@ -1061,7 +1064,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('ARBITRARY_SDK_VERSION'),
       ),
       api.step_data(
-          'lookup terminal.qemu-x64 product bundle',
+          'lookup terminal.x64 product bundle',
           stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
       ),
       *fail_step_with_retries(
@@ -1175,7 +1178,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('ARBITRARY_SDK_VERSION'),
       ),
       api.step_data(
-          'lookup terminal.qemu-x64 product bundle',
+          'lookup terminal.x64 product bundle',
           stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
       ),
       api.step_data(

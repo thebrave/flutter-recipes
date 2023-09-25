@@ -112,24 +112,16 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
       if ((not api.runtime.is_experimental) and
           (api.flutter_bcid.is_official_build())):
         api.time.sleep(60)
-        try:
-          with api.step.nest("Verify provenance"):
-            gcs_path = pkg_gs_path
-            gcs_path_without_prefix = str.lstrip(gcs_path, 'gs://')
-            file = api.path.basename(gcs_path)
-            bucket = gcs_path_without_prefix.split('/', maxsplit=1)[0]
-            gcs_path_without_bucket = '/'.join(
-                gcs_path_without_prefix.split('/')[1:]
-            )
-
-            api.flutter_bcid.download_and_verify_provenance(
-                file, bucket, gcs_path_without_bucket
-            )
-        except Exception:  # pylint: disable=bare-except
-          api.step(
-              '(Non-blocking) Provenance verification failed - check step above',
-              []
-          )
+        gcs_path = pkg_gs_path
+        gcs_path_without_prefix = str.lstrip(gcs_path, 'gs://')
+        file = api.path.basename(gcs_path)
+        bucket = gcs_path_without_prefix.split('/', maxsplit=1)[0]
+        gcs_path_without_bucket = '/'.join(
+            gcs_path_without_prefix.split('/')[1:]
+        )
+        api.flutter_bcid.download_and_verify_provenance(
+            file, bucket, gcs_path_without_bucket
+        )
 
 
 def GetFlutterPackageAbsolutePath(api, work_dir):
@@ -228,11 +220,6 @@ def GenTests(api):
     "verificationSummary": "This artifact is definitely legitimate!"
   }
   '''
-  fake_bcid_response_failure = '''
-  {
-    "rejectionMessage": "failed to validate!"
-  }
-  '''
 
   def RequiresBcid(bucket, experimental, git_ref, branch):
     return bucket == 'flutter' and not experimental and git_ref != 'invalid' + branch
@@ -259,30 +246,9 @@ def GenTests(api):
                   api.runtime(is_experimental=experimental),
                   api.repo_util.flutter_environment_data(),
                   api.step_data(
-                      'Verify provenance.verify flutter-archive-package.%s provenance'
-                      % ('tar.xz' if platform == 'linux' else 'zip'),
+                      'Verify flutter-archive-package.{0} provenance.verify flutter-archive-package.{0} provenance'
+                      .format('tar.xz' if platform == 'linux' else 'zip'),
                       stdout=api.raw_io.output_text(fake_bcid_response_success)
-                  ),
-              )
-              yield api.test(
-                  '%s_%s%s_%s%s' % (
-                      platform, git_ref, '_experimental'
-                      if experimental else '', bucket, '_bcid_failure'
-                  ),
-                  api.platform(platform, 64),
-                  api.buildbucket.ci_build(
-                      git_ref=git_ref, revision=None, bucket=bucket
-                  ),
-                  api.properties(
-                      shard='tests',
-                      fuchsia_ctl_version='version:0.0.2',
-                  ),
-                  api.runtime(is_experimental=experimental),
-                  api.repo_util.flutter_environment_data(),
-                  api.step_data(
-                      'Verify provenance.verify flutter-archive-package.%s provenance'
-                      % ('tar.xz' if platform == 'linux' else 'zip'),
-                      stdout=api.raw_io.output_text(fake_bcid_response_failure)
                   ),
               )
             else:

@@ -212,16 +212,7 @@ def Build(api, checkout, env, env_prefixes, outputs):
     api.time.sleep(60)
     for archive_config in archives:
       if api.flutter_bcid.is_official_build():
-        # TODO(drewroengoogle): Remove try-except block to make the verification
-        # failure a release blocker.
-        try:
-          with api.step.nest("Verify provenance"):
-            Verify(api, checkout, archive_config)
-        except:  # pylint: disable=bare-except
-          api.step(
-              '(Non-blocking) Provenance verification failed - check step above',
-              []
-          )
+        Verify(api, checkout, archive_config)
   # Archive full build. This is inefficient but necessary for global generators.
   if build.get('cas_archive', True):
     full_build_hash = api.shard_util_v2.archive_full_build(
@@ -393,11 +384,6 @@ def GenTests(api):
     "verificationSummary": "This artifact is definitely legitimate!"
   }
   '''
-  fake_bcid_response_failure = '''
-  {
-    "rejectionMessage": "failed to validate!"
-  }
-  '''
   build_custom = dict(build)
   build_custom["gclient_variables"] = {"example_custom_var": True}
   build_custom["tests"] = []
@@ -414,29 +400,16 @@ def GenTests(api):
           git_ref='refs/heads/main',
       ),
       api.step_data(
-          'Verify provenance.verify %s provenance' % artifacts_location,
+          'Verify {0} provenance.verify {0} provenance'
+          .format(artifacts_location),
           stdout=api.raw_io.output_text(fake_bcid_response_success)
       ),
       api.step_data(
-          'Verify provenance.verify %s provenance' % jar_location,
+          'Verify {0} provenance.verify {0} provenance'.format(jar_location),
           stdout=api.raw_io.output_text(fake_bcid_response_success)
       ),
       api.step_data(
-          'Verify provenance.verify %s provenance' % pom_location,
+          'Verify {0} provenance.verify {0} provenance'.format(pom_location),
           stdout=api.raw_io.output_text(fake_bcid_response_success)
-      ),
-  )
-  yield api.test(
-      'dart-internal-flutter-failure',
-      api.properties(build=build, no_goma=True),
-      api.buildbucket.ci_build(
-          project='dart-internal',
-          bucket='flutter',
-          git_repo='https://flutter.googlesource.com/mirrors/engine',
-          git_ref='refs/heads/main',
-      ),
-      api.step_data(
-          'Verify provenance.verify %s provenance' % artifacts_location,
-          stdout=api.raw_io.output_text(fake_bcid_response_failure)
       ),
   )

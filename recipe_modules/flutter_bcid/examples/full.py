@@ -34,7 +34,7 @@ def GenTests(api):
           git_ref='refs/heads/main'
       ),
       api.step_data(
-          'verify %s provenance' % artifacts_location,
+          'Verify artifact.zip provenance.verify artifact.zip provenance',
           stdout=api.raw_io.output_text(fake_bcid_response_success)
       ),
   )
@@ -48,7 +48,7 @@ def GenTests(api):
           git_ref='refs/heads/main'
       ),
       api.step_data(
-          'verify %s provenance' % artifacts_location,
+          'Verify artifact.zip provenance.verify artifact.zip provenance',
           stdout=api.raw_io.output_text(fake_bcid_response_success)
       ),
   )

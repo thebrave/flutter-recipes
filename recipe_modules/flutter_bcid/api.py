@@ -69,22 +69,23 @@ class FlutterBcidApi(recipe_api.RecipeApi):
         eg: "flutter/004d0bdf6721bc65cdb9a558908b2de4cfac97c5/sky_engine.zip"
     """
     if self.is_official_build():
-      verify_temp_path = self.m.path.mkdtemp("verify")
-      download_path = download_path = verify_temp_path.join(filename)
-      bcid_response = self.m.dart.download_and_verify(
-          filename, bucket, gcs_path_without_bucket, download_path,
-          'misc_software://flutter/engine'
-      )
+      with self.m.step.nest("Verify %s provenance" % filename):
+        verify_temp_path = self.m.path.mkdtemp("verify")
+        download_path = download_path = verify_temp_path.join(filename)
+        bcid_response = self.m.dart.download_and_verify(
+            filename, bucket, gcs_path_without_bucket, download_path,
+            'misc_software://flutter/engine'
+        )
 
-      artifact_vsa = bcid_response['verificationSummary']
-      vsa_local_path = f'{download_path}{VSA_EXTENSION}'
-      self.m.file.write_text(
-          f'write {filename}{VSA_EXTENSION}', vsa_local_path, artifact_vsa
-      )
-      vsa_path_without_bucket = gcs_path_without_bucket + VSA_EXTENSION
-      self.m.gsutil.upload(
-          vsa_local_path,
-          bucket,
-          vsa_path_without_bucket,
-          name=f'upload "{vsa_path_without_bucket}"',
-      )
+        artifact_vsa = bcid_response['verificationSummary']
+        vsa_local_path = f'{download_path}{VSA_EXTENSION}'
+        self.m.file.write_text(
+            f'write {filename}{VSA_EXTENSION}', vsa_local_path, artifact_vsa
+        )
+        vsa_path_without_bucket = gcs_path_without_bucket + VSA_EXTENSION
+        self.m.gsutil.upload(
+            vsa_local_path,
+            bucket,
+            vsa_path_without_bucket,
+            name=f'upload "{vsa_path_without_bucket}"',
+        )

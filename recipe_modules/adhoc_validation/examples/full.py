@@ -53,8 +53,7 @@ def GenTests(api):
   )
   fake_bcid_response_success = '{"allowed": true, "verificationSummary": "This artifact is definitely legitimate!"}'
   yield api.test(
-      'docs',
-      api.platform.name('linux'),
+      'docs', api.platform.name('linux'),
       api.properties(firebase_project='myproject', git_branch=''),
       api.repo_util.flutter_environment_data(checkout_path),
       api.step_data(
@@ -72,7 +71,7 @@ def GenTests(api):
           build_number=123,
       ),
       api.step_data(
-          'Docs.Verify docs provenance.verify api_docs.zip provenance',
+          'Docs.Verify api_docs.zip provenance.verify api_docs.zip provenance',
           stdout=api.raw_io.output_text(fake_bcid_response_success)
       )
   )

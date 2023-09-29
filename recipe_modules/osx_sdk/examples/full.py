@@ -6,6 +6,7 @@ DEPS = [
     'flutter/os_utils',
     'flutter/osx_sdk',
     'recipe_engine/file',
+    'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
@@ -90,4 +91,282 @@ def GenTests(api):
       'ancient_version',
       api.platform.name('mac'),
       api.platform.mac_release('10.1.0'),
+  )
+
+  yield api.test(
+      'explicit_package_source', api.platform.name('mac'),
+      api.properties(
+          **{
+              '$flutter/osx_sdk': {
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver': '123abc',
+                  'xcode_cipd_package_source': 'some/package',
+                  'cleanup_cache': True,
+              }
+          }
+      )
+  )
+
+  yield api.test(
+      'explicit_invalid_runtime_version_with_mac_13',
+      api.platform.name('mac'),
+      api.platform.mac_release('13.5.1'),
+      api.properties(
+          **{
+              '$flutter/osx_sdk': {
+                  'sdk_version': 'deadbeef', 'toolchain_ver': '123abc',
+                  'runtime_versions': ['ios-16-4', 'ios-16-2']
+              }
+          }
+      ),
+      status='INFRA_FAILURE'
+  )
+
+  yield api.test(
+      'mac_13_explicit_runtime_version_already_mounted',
+      api.platform.name('mac'),
+      api.platform.mac_release('13.5.1'),
+      api.properties(
+          **{
+              '$flutter/osx_sdk': {
+                  'sdk_version': 'deadbeef', 'toolchain_ver': '123abc',
+                  'runtime_versions': ['ios-16-4_14e300c']
+              }
+          }
+      ),
+      api.step_data(
+          'install runtimes.list runtimes',
+          stdout=api.raw_io.output_text(
+              '== Runtimes ==\n' +
+              'iOS 16.4 (16.4 - 20E247) - com.apple.CoreSimulator.SimRuntime.iOS-16-4'
+          )
+      ),
+      api.step_data(
+          'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg',
+          retcode=1
+      ),
+      api.step_data(
+          'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg (2)',
+          api.json.output({
+              'result': {
+                  'pin': {'package': 'xxx', 'instance_id': 'xxx'},
+                  'registered_by':
+                      'xxx',
+                  'registered_ts':
+                      'xxx',
+                  'tags': [
+                      {
+                          'tag': 'ios_runtime_build:20e247',
+                          'registered_by': 'xxx', 'registered_ts': 'xxx'
+                      },
+                      {
+                          'tag': 'ios_runtime_version:ios-16-4',
+                          'registered_by': 'xxx', 'registered_ts': 'xxx'
+                      },
+                  ],
+              }
+          }),
+      ),
+      api.step_data(
+          'list runtimes',
+          stdout=api.raw_io.output_text(
+              '== Runtimes ==\n' +
+              'iOS 16.4 (16.4 - 20E247) - com.apple.CoreSimulator.SimRuntime.iOS-16-4'
+          )
+      ),
+  )
+
+  yield api.test(
+      'mac_13_explicit_runtime_version_not_mounted',
+      api.platform.name('mac'),
+      api.platform.mac_release('13.5.1'),
+      api.properties(
+          **{
+              '$flutter/osx_sdk': {
+                  'sdk_version': 'deadbeef', 'toolchain_ver': '123abc',
+                  'runtime_versions': ['ios-16-4_14e300c']
+              }
+          }
+      ),
+      api.step_data(
+          'install runtimes.list runtimes',
+          stdout=api.raw_io.output_text('== Runtimes ==\n')
+      ),
+      api.step_data(
+          'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg',
+          retcode=1
+      ),
+      api.step_data(
+          'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg (2)',
+          api.json.output({
+              'result': {
+                  'pin': {'package': 'xxx', 'instance_id': 'xxx'},
+                  'registered_by':
+                      'xxx',
+                  'registered_ts':
+                      'xxx',
+                  'tags': [
+                      {
+                          'tag': 'ios_runtime_build:20e247',
+                          'registered_by': 'xxx', 'registered_ts': 'xxx'
+                      },
+                      {
+                          'tag': 'ios_runtime_version:ios-16-4',
+                          'registered_by': 'xxx', 'registered_ts': 'xxx'
+                      },
+                  ],
+              }
+          }),
+      ),
+      api.step_data(
+          'list runtimes',
+          stdout=api.raw_io.output_text(
+              '== Runtimes ==\n' +
+              'iOS 16.4 (16.4 - 20E247) - com.apple.CoreSimulator.SimRuntime.iOS-16-4'
+          )
+      ),
+  )
+
+  yield api.test(
+      'mac_13_explicit_runtime_version_build_verion_failure',
+      api.platform.name('mac'),
+      api.platform.mac_release('13.5.1'),
+      api.properties(
+          **{
+              '$flutter/osx_sdk': {
+                  'sdk_version': 'deadbeef', 'toolchain_ver': '123abc',
+                  'runtime_versions': ['ios-16-4_14e300c']
+              }
+          }
+      ),
+      api.step_data(
+          'install runtimes.list runtimes',
+          stdout=api.raw_io.output_text('== Runtimes ==\n')
+      ),
+      api.step_data(
+          'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg',
+          retcode=1
+      ),
+      api.step_data(
+          'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg (2)',
+          api.json.output({
+              'result': {
+                  'pin': {'package': 'xxx', 'instance_id': 'xxx'},
+                  'registered_by':
+                      'xxx',
+                  'registered_ts':
+                      'xxx',
+                  'tags': [{
+                      'tag': 'ios_runtime_build_invalid_tag',
+                      'registered_by': 'xxx', 'registered_ts': 'xxx'
+                  }],
+              }
+          }),
+      ),
+      status='INFRA_FAILURE'
+  )
+
+  yield api.test(
+      'mac_13_explicit_runtime_version_clean',
+      api.platform.name('mac'),
+      api.platform.mac_release('13.5.1'),
+      api.properties(
+          **{
+              '$flutter/osx_sdk': {
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver': '123abc',
+                  'runtime_versions': ['ios-16-4_14e300c'],
+                  'cleanup_cache': True,
+              }
+          }
+      ),
+      api.step_data(
+          'Cleaning up runtimes cache.Cleaning up mounted simulator runtimes',
+          stdout=api.raw_io.output_text('No matching images found to delete'),
+          stderr=api.raw_io.output_text('No matching images found to delete')
+      ),
+      api.step_data(
+          'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg',
+          api.json.output({
+              'result': {
+                  'pin': {'package': 'xxx', 'instance_id': 'xxx'},
+                  'registered_by':
+                      'xxx',
+                  'registered_ts':
+                      'xxx',
+                  'tags': [
+                      {
+                          'tag': 'ios_runtime_build:20e247',
+                          'registered_by': 'xxx', 'registered_ts': 'xxx'
+                      },
+                      {
+                          'tag': 'ios_runtime_version:ios-16-4',
+                          'registered_by': 'xxx', 'registered_ts': 'xxx'
+                      },
+                  ],
+              }
+          }),
+      ),
+      api.step_data(
+          'list runtimes',
+          stdout=api.raw_io.output_text(
+              '== Runtimes ==\n' +
+              'iOS 16.4 (16.4 - 20E247) - com.apple.CoreSimulator.SimRuntime.iOS-16-4'
+          )
+      ),
+  )
+
+  yield api.test(
+      'failed_to_delete_runtimes_err_in_stdout',
+      api.platform.name('mac'),
+      api.platform.mac_release('13.5.1'),
+      api.properties(
+          **{
+              '$flutter/osx_sdk': {
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver': '123abc',
+                  'runtime_versions': ['ios-16-4_14e300c', 'ios-16-2_14c18'],
+                  'cleanup_cache': True,
+              }
+          }
+      ),
+      api.step_data(
+          'Cleaning up runtimes cache.Cleaning up mounted simulator runtimes',
+          stdout=api.raw_io.output_text('Some error')
+      ),
+      status='INFRA_FAILURE'
+  )
+  yield api.test(
+      'failed_to_delete_runtimes_err_in_stderr',
+      api.platform.name('mac'),
+      api.platform.mac_release('13.5.1'),
+      api.properties(
+          **{
+              '$flutter/osx_sdk': {
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver': '123abc',
+                  'runtime_versions': ['ios-16-4_14e300c', 'ios-16-2_14c18'],
+                  'cleanup_cache': True,
+              }
+          }
+      ),
+      api.step_data(
+          'Cleaning up runtimes cache.Cleaning up mounted simulator runtimes',
+          stderr=api.raw_io.output_text('Some error')
+      ),
+      status='INFRA_FAILURE'
+  )
+  yield api.test(
+      'mac_13_cleanup_no_runtimes',
+      api.platform.name('mac'),
+      api.platform.mac_release('13.5.1'),
+      api.properties(
+          **{
+              '$flutter/osx_sdk': {
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver': '123abc',
+                  'cleanup_cache': True,
+              }
+          }
+      ),
   )

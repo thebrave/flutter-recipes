@@ -37,6 +37,9 @@ PROPERTIES = {
       toolchain_ver=Single(str),
       # Cleanup caches
       cleanup_cache=Single(bool),
+
+      # Location of the Xcode CIPD package
+      xcode_cipd_package_source=Single(str),
     ), default={},
     )
 }

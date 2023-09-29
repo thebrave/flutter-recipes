@@ -1,10 +1,23 @@
 [
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CACHE]/osx_sdk/xcode_deadbeef"
+    ],
+    "infra_step": true,
+    "name": "Cleaning up Xcode cache"
+  },
+  {
+    "cmd": [
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-14-0_ios-13-0",
+      "[CACHE]/osx_sdk/xcode_deadbeef",
       "-ensure-file",
       "infra/tools/mac_toolchain/${platform} 123abc",
       "-max-threads",
@@ -30,112 +43,20 @@
   },
   {
     "cmd": [
-      "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-14-0_ios-13-0/mac_toolchain",
+      "[CACHE]/osx_sdk/xcode_deadbeef/mac_toolchain",
       "install",
       "-kind",
       "mac",
       "-xcode-version",
       "deadbeef",
       "-output-dir",
-      "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-14-0_ios-13-0/XCode.app",
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
       "-cipd-package-prefix",
-      "flutter_internal/ios/xcode",
-      "-with-runtime=False"
+      "some/package",
+      "-with-runtime=True"
     ],
     "infra_step": true,
     "name": "install xcode"
-  },
-  {
-    "cmd": [],
-    "name": "install runtimes"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0777",
-      "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-14-0_ios-13-0/XCode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes"
-    ],
-    "infra_step": true,
-    "name": "install runtimes.Ensuring runtimes directory",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-14-0_ios-13-0/mac_toolchain",
-      "install-runtime",
-      "-cipd-package-prefix",
-      "flutter_internal/ios/xcode",
-      "-runtime-version",
-      "ios-14-0",
-      "-output-dir",
-      "[CACHE]/osx_sdk/xcode_runtime_ios-14-0"
-    ],
-    "infra_step": true,
-    "name": "install runtimes.install xcode runtime ios-14-0",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copytree",
-      "--symlinks",
-      "[CACHE]/osx_sdk/xcode_runtime_ios-14-0/iOS.simruntime",
-      "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-14-0_ios-13-0/XCode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 14.0.simruntime"
-    ],
-    "infra_step": true,
-    "name": "install runtimes.Copy runtime to [CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-14-0_ios-13-0/XCode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 14.0.simruntime",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-14-0_ios-13-0/mac_toolchain",
-      "install-runtime",
-      "-cipd-package-prefix",
-      "flutter_internal/ios/xcode",
-      "-runtime-version",
-      "ios-13-0",
-      "-output-dir",
-      "[CACHE]/osx_sdk/xcode_runtime_ios-13-0"
-    ],
-    "infra_step": true,
-    "name": "install runtimes.install xcode runtime ios-13-0",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copytree",
-      "--symlinks",
-      "[CACHE]/osx_sdk/xcode_runtime_ios-13-0/iOS.simruntime",
-      "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-14-0_ios-13-0/XCode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.0.simruntime"
-    ],
-    "infra_step": true,
-    "name": "install runtimes.Copy runtime to [CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-14-0_ios-13-0/XCode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.0.simruntime",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
   },
   {
     "cmd": [
@@ -151,7 +72,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-14-0_ios-13-0/XCode.app"
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
     ],
     "infra_step": true,
     "name": "select XCode"
@@ -174,6 +95,93 @@
     ],
     "infra_step": true,
     "name": "list runtimes"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CACHE]/osx_sdk/xcode_deadbeef"
+    ],
+    "infra_step": true,
+    "name": "Cleaning up Xcode cache (2)"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/osx_sdk/xcode_deadbeef",
+      "-ensure-file",
+      "infra/tools/mac_toolchain/${platform} 123abc",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "ensure_installed (2)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-123abc----------\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/osx_sdk/xcode_deadbeef/mac_toolchain",
+      "install",
+      "-kind",
+      "mac",
+      "-xcode-version",
+      "deadbeef",
+      "-output-dir",
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
+      "-cipd-package-prefix",
+      "some/package",
+      "-with-runtime=True"
+    ],
+    "infra_step": true,
+    "name": "install xcode (2)"
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "com.apple.CoreSimulator.CoreSimulatorDevice"
+    ],
+    "infra_step": true,
+    "name": "kill dart (2)"
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--switch",
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
+    ],
+    "infra_step": true,
+    "name": "select XCode (2)"
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "simctl",
+      "list"
+    ],
+    "infra_step": true,
+    "name": "list simulators (2)"
   },
   {
     "cmd": [
@@ -202,90 +210,6 @@
   },
   {
     "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CLEANUP]/tmp_tmp_1/osx_sdk",
-      "-ensure-file",
-      "infra/tools/mac_toolchain/${platform} 123abc",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "name": "ensure_installed (2)",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-123abc----------\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CLEANUP]/tmp_tmp_1/osx_sdk/mac_toolchain",
-      "install",
-      "-kind",
-      "mac",
-      "-xcode-version",
-      "deadbeef",
-      "-output-dir",
-      "/opt/flutter/xcode/deadbeef/XCode.app",
-      "-cipd-package-prefix",
-      "flutter_internal/ios/xcode",
-      "-with-runtime=False"
-    ],
-    "infra_step": true,
-    "name": "install xcode (2)"
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "com.apple.CoreSimulator.CoreSimulatorDevice"
-    ],
-    "infra_step": true,
-    "name": "kill dart (2)"
-  },
-  {
-    "cmd": [
-      "sudo",
-      "xcode-select",
-      "--switch",
-      "/opt/flutter/xcode/deadbeef/XCode.app"
-    ],
-    "infra_step": true,
-    "name": "select XCode (2)"
-  },
-  {
-    "cmd": [
-      "xcrun",
-      "simctl",
-      "list"
-    ],
-    "infra_step": true,
-    "name": "list simulators (2)"
-  },
-  {
-    "cmd": [
-      "xcrun",
-      "simctl",
-      "list",
-      "runtimes"
-    ],
-    "infra_step": true,
-    "name": "list runtimes (2)"
-  },
-  {
-    "cmd": [
       "vpython3",
       "-u",
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
@@ -295,14 +219,14 @@
       "/opt/flutter/xcode/deadbeef"
     ],
     "infra_step": true,
-    "name": "Cleaning up Xcode cache"
+    "name": "Cleaning up Xcode cache (3)"
   },
   {
     "cmd": [
       "cipd",
       "ensure",
       "-root",
-      "[CLEANUP]/tmp_tmp_2/osx_sdk",
+      "[CLEANUP]/tmp_tmp_1/osx_sdk",
       "-ensure-file",
       "infra/tools/mac_toolchain/${platform} 123abc",
       "-max-threads",
@@ -328,7 +252,7 @@
   },
   {
     "cmd": [
-      "[CLEANUP]/tmp_tmp_2/osx_sdk/mac_toolchain",
+      "[CLEANUP]/tmp_tmp_1/osx_sdk/mac_toolchain",
       "install",
       "-kind",
       "mac",
@@ -337,8 +261,8 @@
       "-output-dir",
       "/opt/flutter/xcode/deadbeef/XCode.app",
       "-cipd-package-prefix",
-      "flutter_internal/ios/xcode",
-      "-with-runtime=False"
+      "some/package",
+      "-with-runtime=True"
     ],
     "infra_step": true,
     "name": "install xcode (3)"
@@ -370,6 +294,103 @@
     ],
     "infra_step": true,
     "name": "list simulators (3)"
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "simctl",
+      "list",
+      "runtimes"
+    ],
+    "infra_step": true,
+    "name": "list runtimes (2)"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "/opt/flutter/xcode/deadbeef"
+    ],
+    "infra_step": true,
+    "name": "Cleaning up Xcode cache (4)"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CLEANUP]/tmp_tmp_2/osx_sdk",
+      "-ensure-file",
+      "infra/tools/mac_toolchain/${platform} 123abc",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "ensure_installed (4)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-123abc----------\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CLEANUP]/tmp_tmp_2/osx_sdk/mac_toolchain",
+      "install",
+      "-kind",
+      "mac",
+      "-xcode-version",
+      "deadbeef",
+      "-output-dir",
+      "/opt/flutter/xcode/deadbeef/XCode.app",
+      "-cipd-package-prefix",
+      "some/package",
+      "-with-runtime=True"
+    ],
+    "infra_step": true,
+    "name": "install xcode (4)"
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "com.apple.CoreSimulator.CoreSimulatorDevice"
+    ],
+    "infra_step": true,
+    "name": "kill dart (4)"
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--switch",
+      "/opt/flutter/xcode/deadbeef/XCode.app"
+    ],
+    "infra_step": true,
+    "name": "select XCode (4)"
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "simctl",
+      "list"
+    ],
+    "infra_step": true,
+    "name": "list simulators (4)"
   },
   {
     "cmd": [

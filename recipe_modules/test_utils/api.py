@@ -262,6 +262,6 @@ class TestUtilsApi(recipe_api.RecipeApi):
     device_tags['device_version'] = 'none'
 
     device_tags['host_type'] = self.m.platform.name
-    device_tags['arch'] = self.m.platform.arch
+    device_tags['arch'] = self.m.properties.get('arch', self.m.platform.arch)
 
     return device_tags

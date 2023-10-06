@@ -119,7 +119,6 @@ class TestUtilsApi(recipe_api.RecipeApi):
       command_list,
       timeout_secs=TIMEOUT_SECS,
       infra_step=False,
-      suppress_log=False
   ):
     """Recipe's step wrapper to collect stdout and add it to step_summary.
 
@@ -129,7 +128,6 @@ class TestUtilsApi(recipe_api.RecipeApi):
         parameters to execute.
       timeout_secs(int): The timeout in seconds for this step.
       infra_step: mark step as an infra step
-      suppress_log: flag whether test logs are suppressed.
 
     Returns(str): The status of the test step. A str `flaky` or `success` will
       be returned when step succeeds, and an exception will be thrown out when
@@ -155,11 +153,10 @@ class TestUtilsApi(recipe_api.RecipeApi):
           result=result,
       )
     finally:
-      if not suppress_log:
-        self.m.step.active_result.presentation.logs[
-            'test_stdout'] = self.m.step.active_result.stdout
-        self.m.step.active_result.presentation.logs[
-            'test_stderr'] = self.m.step.active_result.stderr
+      self.m.step.active_result.presentation.logs[
+          'test_stdout'] = self.m.step.active_result.stdout
+      self.m.step.active_result.presentation.logs[
+          'test_stderr'] = self.m.step.active_result.stderr
     if self._is_flaky(step.stdout):
       test_run_status = 'flaky'
       step.presentation.status = self.m.step.FAILURE

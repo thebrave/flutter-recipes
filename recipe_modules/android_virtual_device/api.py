@@ -105,9 +105,9 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
         )
         output = self.m.step(
             'Start Android emulator (API level %s)' % self.version, [
-                'vpython3', avd_script_path, 'start', '--no-read-only',
-                '--wipe-data', '--writable-system', '--debug-tags', 'all',
-                '--avd-config', avd_config
+                'xvfb-run', 'vpython3', avd_script_path, 'start',
+                '--no-read-only', '--wipe-data', '--writable-system',
+                '--debug-tags', 'all', '--avd-config', avd_config
             ],
             stdout=self.m.raw_io.output_text(add_output_log=True)
         ).stdout

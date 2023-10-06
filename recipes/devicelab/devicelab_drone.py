@@ -68,20 +68,6 @@ def RunSteps(api):
     ).stdout.rstrip()
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
 
-  # Flag to suppress logs.
-  suppress_log = False
-
-  # Checkout openpay repo if property exists in builder config.
-  if api.properties.get('openpay'):
-    openpay_path = api.path.mkdtemp().join('openpay')
-    api.repo_util.checkout(
-        'openpay',
-        openpay_path,
-        ref='refs/heads/main',
-    )
-    env['OPENPAY_CHECKOUT_PATH'] = openpay_path
-    suppress_log = True
-
   builder_name = api.properties.get('buildername')
   env['USE_EMULATOR'] = False
   api.logs_util.initialize_logs_collection(env)
@@ -143,8 +129,13 @@ def RunSteps(api):
         devicelab = True
       with api.osx_sdk('ios', devicelab=devicelab):
         test_status = mac_test(
-            api, env, env_prefixes, flutter_path, task_name, runner_params,
-            suppress_log, test_timeout_secs
+            api,
+            env,
+            env_prefixes,
+            flutter_path,
+            task_name,
+            runner_params,
+            test_timeout_secs,
         )
     else:
       with api.context(env=env, env_prefixes=env_prefixes):
@@ -174,35 +165,32 @@ def RunSteps(api):
                 'run %s' % task_name,
                 test_runner_command,
                 timeout_secs=test_timeout_secs,
-                suppress_log=suppress_log,
             )
         finally:
-          if not suppress_log:
-            debug_after_failure(api, task_name)
+          debug_after_failure(api, task_name)
 
         if test_status == 'flaky':
           api.test_utils.flaky_step('run %s' % task_name)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
+
     def _retryUplaod():
-      api.step('Upload results', uploadResults(
-        api,
-        env,
-        env_prefixes,
-        results_path,
-        test_status == 'flaky',
-        git_branch,
-        api.properties.get('buildername'),
-        commit_time,
-        task_name,
-        benchmark_tags,
-        suppress_log=suppress_log
-        )
+      api.step(
+          'Upload results',
+          uploadResults(
+              api,
+              env,
+              env_prefixes,
+              results_path,
+              test_status == 'flaky',
+              git_branch,
+              api.properties.get('buildername'),
+              commit_time,
+              task_name,
+              benchmark_tags,
+          )
       )
 
-    api.retry.wrap(
-      _retryUplaod,
-      step_name='Retryable upload metrics'
-    )
+    api.retry.wrap(_retryUplaod, step_name='Retryable upload metrics')
 
     uploadMetricsToCas(api, results_path)
 
@@ -219,8 +207,13 @@ def debug_after_failure(api, task_name):
 
 
 def mac_test(
-    api, env, env_prefixes, flutter_path, task_name, runner_params,
-    suppress_log, test_timeout_secs
+    api,
+    env,
+    env_prefixes,
+    flutter_path,
+    task_name,
+    runner_params,
+    test_timeout_secs,
 ):
   """Runs a devicelab mac test."""
   api.flutter_deps.gems(
@@ -244,7 +237,6 @@ def mac_test(
           'run %s' % task_name,
           test_runner_command,
           timeout_secs=test_timeout_secs,
-          suppress_log=suppress_log,
       )
     except api.step.StepFailure as failure:
       if failure.had_timeout:
@@ -284,7 +276,6 @@ def uploadResults(
     task_name,
     benchmark_tags,
     test_status='Succeeded',
-    suppress_log=False,
 ):
   """Upload DeviceLab test results to Cocoon/skia perf.
 
@@ -310,7 +301,6 @@ def uploadResults(
     task_name(str): The task name of the current test.
     benchmark_tags(str): Json dumped str of benchmark tags, which includes host and device info.
     test_status(str): The status of the test running step.
-    suppress_log(bool): Flag whether test logs are suppressed.
   """
   if shouldNotUpdate(api, git_branch):
     return
@@ -342,16 +332,7 @@ def uploadResults(
       upload_command = ['dart', 'bin/test_runner.dart', 'upload-metrics']
       upload_command.extend(runner_params)
       with api.context(env=env, env_prefixes=env_prefixes):
-        if suppress_log:
-          api.step(
-              'upload results',
-              upload_command,
-              infra_step=True,
-              stdout=api.raw_io.output_text(),
-              stderr=api.raw_io.output_text(),
-          )
-        else:
-          api.step('upload results', upload_command, infra_step=True)
+        api.step('upload results', upload_command, infra_step=True)
 
 
 def uploadMetricsToCas(api, results_path):
@@ -425,14 +406,16 @@ def GenTests(api):
           tags=['ios'],
           git_branch='master',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
-      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      ),
+      api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.platform.name('mac'),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.step_data(
           'run abc',
           stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
           retcode=0
-      ), api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
+      ),
+      api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
       api.step_data(
           'Find device type',
           stdout=api.raw_io.output_text('iPhone8,1'),
@@ -542,21 +525,6 @@ def GenTests(api):
           upload_metrics_to_cas=True,
           git_branch='master',
           xvfb=1,
-      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-      api.buildbucket.ci_build(
-          git_ref='refs/heads/master',
-          bucket='staging',
-      )
-  )
-  yield api.test(
-      "suppress-logs",
-      api.properties(
-          buildername='Linux_samsung_a02_staging flutter_gallery__transition_perf',
-          task_name='flutter_gallery__transition_perf',
-          upload_metrics_to_cas=True,
-          upload_metrics=True,
-          git_branch='master',
-          openpay=True,
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           git_ref='refs/heads/master',

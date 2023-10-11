@@ -17,6 +17,7 @@ DEPS = [
     'recipe_engine/swarming',
 ]
 
+
 def RunSteps(api):
   env = {}
   env_prefixes = {}
@@ -93,7 +94,8 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
-      'linux', api.platform('linux', 64),
+      'linux',
+      api.platform('linux', 64),
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
@@ -117,6 +119,27 @@ def GenTests(api):
       api.properties(
           dependencies=[{"dependency": "xcode"},
                         {'dependency': 'chrome_and_driver'}]
+      ),
+      api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
+      api.path.exists(
+          api.path['cache'].join(
+              'osx_sdk/XCode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift'
+          ),
+          api.path['cache'].join(
+              'osx_sdk/XCode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.0'
+          ),
+      ),
+      api.repo_util.flutter_environment_data(checkout_path),
+  )
+
+  # Tests the old vanilla chromium version dependency
+  yield api.test(
+      'mac_old',
+      api.platform('mac', 64),
+      api.properties(
+          dependencies=[{"dependency": "xcode"}, {
+              'dependency': 'chrome_and_driver', 'version': 'version:117.0'
+          }]
       ),
       api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
       api.path.exists(

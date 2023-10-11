@@ -241,9 +241,19 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env_prefixes['PATH'] = paths
       binary_name = 'chrome.exe' if self.m.platform.is_win else 'chrome'
       if self.m.platform.is_mac:
-        exec_path = chrome_path.join(
-            'chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium'
-        )
+        if version.count('.') == 1:
+          # This is the old mac path for vanilla Chromium, which is expressed
+          # as just a major and minor version (e.g. 117.0)
+          exec_path = chrome_path.join(
+              'chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium'
+          )
+        else:
+          # Google Chrome For Testing path, which is usually expressed with a
+          # four part version number (e.g. 117.0.5938.149)
+          exec_path = chrome_path.join(
+              'Google Chrome for Testing.app', 'Contents', 'MacOS',
+              'Google Chrome for Testing'
+          )
         env['CHROME_EXECUTABLE'] = exec_path
       else:
         env['CHROME_EXECUTABLE'] = chrome_path.join(binary_name)

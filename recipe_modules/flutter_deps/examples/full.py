@@ -75,6 +75,9 @@ def RunSteps(api):
   api.flutter_deps.contexts()
   with contextlib.ExitStack() as exit_stack:
     api.flutter_deps.enter_contexts(exit_stack, ['osx_sdk'], env, env_prefixes)
+    api.flutter_deps.enter_contexts(
+        exit_stack, ['osx_sdk_devicelab'], env, env_prefixes
+    )
   if api.platform.is_linux:
     api.flutter_deps.gh_cli(env, env_prefixes, 'latest')
 

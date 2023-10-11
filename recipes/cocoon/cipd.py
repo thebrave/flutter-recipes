@@ -2,12 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
+
 from platform import platform
 from recipe_engine.recipe_api import Property
 
 from RECIPE_MODULES.flutter.repo_util.api import REPOS
 
 DEPS = [
+    'flutter/flutter_deps',
     'flutter/repo_util',
     'flutter/yaml',
     'recipe_engine/buildbucket',
@@ -42,7 +45,6 @@ def RunSteps(api):
   #       add_recipes_cq: "true"
   #     script: device_doctor/tool/build.sh
   #     cipd_name: flutter/device_doctor/mac-amd64
-
   script_path_list = api.properties.get('script')
   cipd_full_name = api.properties.get('cipd_name')
   project_name = cipd_full_name.split('/')[1]
@@ -51,17 +53,24 @@ def RunSteps(api):
   build_file = cocoon_dir.join(script_path_list)
 
   cmd = [build_file]
-  if not api.platform.is_win:
-    cmd = ['bash', build_file]
+  env = {}
+  env_prefixes = {}
+  with contextlib.ExitStack() as exit_stack:
+    api.flutter_deps.enter_contexts(
+        exit_stack, api.properties.get('contexts', []), env, env_prefixes
+    )
+    with api.context(env=env, env_prefixes=env_prefixes):
+      if not api.platform.is_win:
+        cmd = ['bash', build_file]
 
-  with api.context(cwd=project_path):
-    api.step('build package', cmd)
+      with api.context(cwd=project_path):
+        api.step('build package', cmd)
 
-    cipd_zip_path = project_name + '.zip'
+  cipd_zip_path = project_name + '.zip'
 
-    api.cipd.build(project_path.join('build'), cipd_zip_path, cipd_full_name)
-    if api.buildbucket.build.builder.bucket == 'prod' and should_upload:
-      api.cipd.register(cipd_full_name, cipd_zip_path, refs=["latest"])
+  api.cipd.build(project_path.join('build'), cipd_zip_path, cipd_full_name)
+  if api.buildbucket.build.builder.bucket == 'prod' and should_upload:
+    api.cipd.register(cipd_full_name, cipd_zip_path, refs=["latest"])
 
 
 def GenTests(api):

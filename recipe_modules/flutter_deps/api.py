@@ -715,6 +715,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'metric_center_token': self.m.token_util.metric_center_token,
         'android_virtual_device': self.m.android_virtual_device,
         'osx_sdk': self.m.osx_sdk,
+        'osx_sdk_devicelab': self.m.osx_sdk,
     }
 
   def enter_contexts(self, exit_stack, contexts, env, env_prefixes):
@@ -727,8 +728,10 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
     """
     available_contexts = self.contexts()
+    params = (env, env_prefixes)
     for context in contexts:
-      exit_stack.enter_context(
-          available_contexts[context](env, env_prefixes)
-          if context != 'osx_sdk' else available_contexts[context]('ios')
-      )
+      if context == 'osx_sdk':
+        params = ('ios',)
+      if context == 'osx_sdk_devicelab':
+        params = ('ios', True)
+      exit_stack.enter_context(available_contexts[context](*params))

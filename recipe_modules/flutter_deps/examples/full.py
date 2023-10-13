@@ -72,6 +72,7 @@ def RunSteps(api):
   api.flutter_deps.certs(env, env_prefixes, '')
   api.flutter_deps.vs_build(env, env_prefixes, '')
   api.flutter_deps.jazzy(env, env_prefixes, '')
+  api.flutter_deps.ruby(env, env_prefixes, '')
   api.flutter_deps.contexts()
   with contextlib.ExitStack() as exit_stack:
     api.flutter_deps.enter_contexts(exit_stack, ['osx_sdk'], env, env_prefixes)

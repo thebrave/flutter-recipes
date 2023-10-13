@@ -100,6 +100,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'jazzy': self.jazzy,
         'ninja': self.ninja,
         'open_jdk': self.open_jdk,
+        'ruby': self.ruby,
         'vs_build': self.vs_build,
     }
     parsed_deps = []
@@ -708,6 +709,24 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       temp_paths = copy.deepcopy(paths)
       temp_paths.append(jazzy_path.join('ruby', ruby_version, 'bin'))
       env_prefixes['PATH'] = temp_paths
+
+  # pylint: disable=unused-argument
+  def ruby(self, env, env_prefixes, version=None):
+    """Installs a self contained Ruby.
+
+   Args:
+     env(dict): Current environment variables.
+     env_prefixes(dict):  Current environment prefixes variables.
+    """
+    version = version or 'latest'
+    with self.m.step.nest('Install ruby'):
+      ruby_path = self.m.path['cache'].join('ruby')
+      ruby = self.m.cipd.EnsureFile()
+      ruby.add_package('flutter/ruby/${platform}', version)
+      self.m.cipd.ensure(ruby_path, ruby)
+      paths = env_prefixes.get('PATH', [])
+      paths.insert(0, ruby_path.join('bin'))
+      env_prefixes['PATH'] = paths
 
   def contexts(self):
     """Available contexts across recipes repository."""

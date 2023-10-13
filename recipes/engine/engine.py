@@ -1843,7 +1843,6 @@ def BuildWindows(api):
 
 def BuildObjcDoc(api, env, env_prefixes):
   """Builds documentation for the Objective-C variant of engine."""
-  api.flutter_deps.jazzy(env, env_prefixes)
   checkout = GetCheckoutPath(api)
   with api.os_utils.make_temp_directory('BuildObjcDoc') as temp_dir:
     objcdoc_cmd = [checkout.join('flutter/tools/gen_objcdoc.sh'), temp_dir]

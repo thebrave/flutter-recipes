@@ -97,7 +97,6 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'ios_signing':
             self.
             apple_signing,  # TODO(drewroen): Remove this line once ios_signing is not being referenced
-        'jazzy': self.jazzy,
         'ninja': self.ninja,
         'open_jdk': self.open_jdk,
         'ruby': self.ruby,
@@ -676,39 +675,6 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env['FLUTTER_XCODE_DEVELOPMENT_TEAM'] = 'S8QB4VV633'
       env['FLUTTER_XCODE_PROVISIONING_PROFILE_SPECIFIER'
          ] = 'match Development *'
-
-  def jazzy(self, env, env_prefixes, version=None):
-    """Installs mac Jazzy.
-
-    Args:
-      env(dict): Current environment variables.
-      env_prefixes(dict):  Current environment prefixes variables.
-      gemfile_dir(Path): The path to the location of the repository gemfile.
-    """
-    with self.m.step.nest('Install jazzy'):
-      # TODO: Don't hardcode the version here.
-      self._install_ruby(env, env_prefixes, 'v3.3.14')
-      # Find major/minor ruby version
-      with self.m.context(env=env, env_prefixes=env_prefixes):
-        ruby_version = self.m.step(
-            'Ruby version', ['ruby', '-e', 'puts RUBY_VERSION'],
-            stdout=self.m.raw_io.output_text(),
-            ok_ret='any'
-        ).stdout.rstrip()
-      parts = ruby_version.split('.')
-      parts[-1] = '0'
-      ruby_version = '.'.join(parts)
-      version = version or 'v0.14.3'
-      jazzy_path = self.m.path['cache'].join('gems')
-      jazzy = self.m.cipd.EnsureFile()
-      jazzy.add_package("flutter/jazzy/${platform}", version)
-      self.m.cipd.ensure(jazzy_path, jazzy)
-      paths = env_prefixes.get('PATH', [])
-      env['GEM_HOME'] = jazzy_path.join('ruby', ruby_version)
-      paths = env_prefixes.get('PATH', [])
-      temp_paths = copy.deepcopy(paths)
-      temp_paths.append(jazzy_path.join('ruby', ruby_version, 'bin'))
-      env_prefixes['PATH'] = temp_paths
 
   # pylint: disable=unused-argument
   def ruby(self, env, env_prefixes, version=None):

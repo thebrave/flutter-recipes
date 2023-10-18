@@ -77,51 +77,23 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
 
       flutter_pkg_absolute_path = GetFlutterPackageAbsolutePath(api, work_dir)
       file_name = api.path.basename(flutter_pkg_absolute_path)
-      platform_name = PLATFORMS_MAP[api.platform.name]
-      dest_archive = '/%s/%s' % (branch, platform_name)
-      dest_gs = 'gs://flutter_infra_release/releases%s' % dest_archive
+      pkg_gcs_path = GetFlutterArtifactGCSPath(api, branch, file_name)
       api.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
-      if branch in ('beta', 'stable') and api.flutter_bcid.is_official_build():
-        # only publish using upload_artifact if is branch is beta or stable
-        # publish both package and metadata which has been updated
-        # by the packaging_script
-        pkg_gs_path = '%s/%s' % (dest_gs, file_name)
-        metadata_absolute_path = GetFlutterMetadataAbsolutePath(api, work_dir)
-        metadata_filename = api.path.basename(metadata_absolute_path)
-        metadata_dst = 'gs://flutter_infra_release/releases'
-        metadata_gs_path = "%s/%s" % (metadata_dst, metadata_filename)
-        # This metadata file is used by the website, so we don't want a long
-        # latency between publishing a release and it being available on the
-        # site.
-        headers = {'Cache-Control': 'max-age=60'}
-        api.archives.upload_artifact(
-            metadata_absolute_path, metadata_gs_path, metadata=headers
-        )
-      else:
-        # add experimental subpath if branch is not beta or stable
-        pkg_gs_path = '%s/%s/%s' % (dest_gs, 'experimental', file_name)
       # Do not upload on presubmit.
       if ((not api.runtime.is_experimental) and
           (api.flutter_bcid.is_official_build() or
            api.flutter_bcid.is_prod_build())):
-        api.archives.upload_artifact(flutter_pkg_absolute_path, pkg_gs_path)
+        api.archives.upload_artifact(flutter_pkg_absolute_path, pkg_gcs_path)
         api.flutter_bcid.upload_provenance(
-            flutter_pkg_absolute_path, pkg_gs_path
+            flutter_pkg_absolute_path, pkg_gcs_path
         )
-      api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
       if ((not api.runtime.is_experimental) and
           (api.flutter_bcid.is_official_build())):
         api.time.sleep(60)
-        gcs_path = pkg_gs_path
-        gcs_path_without_prefix = str.lstrip(gcs_path, 'gs://')
-        file = api.path.basename(gcs_path)
-        bucket = gcs_path_without_prefix.split('/', maxsplit=1)[0]
-        gcs_path_without_bucket = '/'.join(
-            gcs_path_without_prefix.split('/')[1:]
-        )
-        api.flutter_bcid.download_and_verify_provenance(
-            file, bucket, gcs_path_without_bucket
-        )
+        VerifyProvenance(api, pkg_gcs_path)
+      if branch in ('beta', 'stable') and api.flutter_bcid.is_official_build():
+        UploadReleaseMetadataToGCS(api, work_dir)
+      api.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
 
 
 def GetFlutterPackageAbsolutePath(api, work_dir):
@@ -163,6 +135,56 @@ def GetFlutterMetadataAbsolutePath(api, work_dir):
       test_data=['releases_linux.json']
   )
   return files[0] if len(files) == 1 else None
+
+
+def UploadReleaseMetadataToGCS(api, work_dir):
+  """Uploads the release metadata to cloud storage.
+
+  Args:
+    api: LUCI's api object
+    work_dir(str): The directory of the release metadata
+  """
+  metadata_absolute_path = GetFlutterMetadataAbsolutePath(api, work_dir)
+  metadata_filename = api.path.basename(metadata_absolute_path)
+  metadata_dst = 'gs://flutter_infra_release/releases'
+  metadata_gs_path = "%s/%s" % (metadata_dst, metadata_filename)
+  # This metadata file is used by the website, so we don't want a long
+  # latency between publishing a release and it being available on the
+  # site.
+  headers = {'Cache-Control': 'max-age=60'}
+  api.archives.upload_artifact(
+      metadata_absolute_path, metadata_gs_path, metadata=headers
+  )
+
+
+def GetFlutterArtifactGCSPath(api, branch, file_name):
+  """Returns the cloud storage destination for the flutter SDK
+  Args:
+    api: LUCI's api object
+    branch: The branch the artifact is based on in Github
+    file_name(str): The basename of the flutter SDK
+  """
+  platform_name = PLATFORMS_MAP[api.platform.name]
+  dest_archive = '/%s/%s' % (branch, platform_name)
+  dest_gs = 'gs://flutter_infra_release/releases%s' % dest_archive
+  if branch in ('beta', 'stable') and api.flutter_bcid.is_official_build():
+    return '%s/%s' % (dest_gs, file_name)
+  return '%s/%s/%s' % (dest_gs, 'experimental', file_name)
+
+
+def VerifyProvenance(api, pkg_gcs_path):
+  """Verifies provenance of the flutter SDK
+  Args:
+    api: LUCI's api object
+    pkg_gcs_path(str): The cloud storage path of the flutter SDK
+  """
+  gcs_path_without_prefix = str.lstrip(pkg_gcs_path, 'gs://')
+  file = api.path.basename(pkg_gcs_path)
+  bucket = gcs_path_without_prefix.split('/', maxsplit=1)[0]
+  gcs_path_without_bucket = '/'.join(gcs_path_without_prefix.split('/')[1:])
+  api.flutter_bcid.download_and_verify_provenance(
+      file, bucket, gcs_path_without_bucket
+  )
 
 
 def RunSteps(api):

@@ -804,40 +804,6 @@
     "name": "ensure directory"
   },
   {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CACHE]\\builder\\vs_toolchain_root\\data.json",
-      "[CACHE]\\builder\\src\\build\\win_toolchain.json"
-    ],
-    "infra_step": true,
-    "name": "copy win_toolchain_metadata"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CACHE]\\builder\\vs_toolchain_root\\data.json",
-      "/path/to/tmp/"
-    ],
-    "infra_step": true,
-    "name": "read win toolchain metadata",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@data.json@{@@@",
-      "@@@STEP_LOG_LINE@data.json@  \"version\": \"2022\"@@@",
-      "@@@STEP_LOG_LINE@data.json@}@@@",
-      "@@@STEP_LOG_END@data.json@@@"
-    ]
-  },
-  {
     "cmd": [],
     "name": "Checkout source code"
   },
@@ -948,8 +914,7 @@
       "GIT_TRACE2_EVENT": "[CLEANUP]\\trace2-event",
       "GIT_TRACE_CURL": "[CLEANUP]\\trace-curl",
       "GIT_TRACE_CURL_NO_DATA": "1",
-      "GIT_TRACE_PACKET": "[CLEANUP]\\trace-packet",
-      "GYP_MSVS_VERSION": "2022"
+      "GIT_TRACE_PACKET": "[CLEANUP]\\trace-packet"
     },
     "env_suffixes": {
       "DEPOT_TOOLS_UPDATE": [
@@ -1015,8 +980,7 @@
     "cwd": "[START_DIR]\\engine",
     "env": {
       "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
-      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
-      "GYP_MSVS_VERSION": "2022"
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root"
     },
     "env_suffixes": {
       "DEPOT_TOOLS_UPDATE": [
@@ -1046,8 +1010,7 @@
     "cwd": "[START_DIR]\\engine",
     "env": {
       "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
-      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
-      "GYP_MSVS_VERSION": "2022"
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root"
     },
     "env_suffixes": {
       "DEPOT_TOOLS_UPDATE": [
@@ -1077,8 +1040,7 @@
     "cwd": "[START_DIR]\\engine",
     "env": {
       "DEPOT_TOOLS_WIN_TOOLCHAIN": "1",
-      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root",
-      "GYP_MSVS_VERSION": "2022"
+      "DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT": "[CACHE]\\builder\\vs_toolchain_root"
     },
     "env_suffixes": {
       "DEPOT_TOOLS_UPDATE": [

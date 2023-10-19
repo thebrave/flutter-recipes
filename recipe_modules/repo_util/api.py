@@ -93,7 +93,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     if (not clobber) and (mount_git or
                           mount_builder) and (bucket != OFFICIAL_BUILD_BUCKET):
       self.m.cache.mount_cache('builder', force=True)
-    self._setup_win_toolchain(env)
+      self._setup_win_toolchain(env)
     # Grab any gclient custom variables passed as properties.
     local_custom_vars = self.m.shard_util_v2.unfreeze_dict(
         self.m.properties.get('gclient_variables', {})

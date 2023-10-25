@@ -113,7 +113,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
             '''.format(dependency)
         raise ValueError(msg)
       parsed_deps.append(dependency)
-      if dependency in ['xcode', 'gems', 'swift', 'android_virtual_device']:
+      if dependency in ['xcode', 'android_virtual_device']:
         continue
       dep_funct = available_deps.get(dependency)
       if not dep_funct:
@@ -372,80 +372,6 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     # leaving the bot in a bad state.
     # For more, see CI section on https://docs.gradle.org/current/userguide/gradle_daemon.html#sec:disabling_the_daemon
     env['GRADLE_OPTS'] = '-Dorg.gradle.daemon=false'
-
-  def _install_ruby(self, env, env_prefixes, version=None):
-    """Installs arm64 Ruby.
-
-    Context of arm64ruby:
-      go/benchmarks-on-platforms
-      https://github.com/flutter/flutter/issues/87508
-    """
-    version = version or 'latest'
-    with self.m.step.nest('Install ruby'):
-      ruby_path = self.m.path['cache'].join('ruby')
-      ruby = self.m.cipd.EnsureFile()
-      ruby.add_package('flutter/ruby/${platform}', version)
-      self.m.cipd.ensure(ruby_path, ruby)
-      paths = env_prefixes.get('PATH', [])
-      paths.insert(0, ruby_path.join('bin'))
-      env['RUBY_HOME'] = ruby_path
-      env_prefixes['PATH'] = paths
-      env_prefixes['DYLD_FALLBACK_LIBRARY_PATH'] = [ruby_path.join('dylibs')]
-
-  def gems(self, env, env_prefixes, gem_dir, version=None):
-    """Installs mac gems.
-
-    Args:
-      env(dict): Current environment variables.
-      env_prefixes(dict):  Current environment prefixes variables.
-      gemfile_dir(Path): The path to the location of the repository gemfile.
-    """
-    deps_list = self.m.properties.get('dependencies', [])
-    deps = {d['dependency']: d.get('version') for d in deps_list}
-    if 'gems' not in deps.keys():
-      # Noop if gems property is not set.
-      return
-    version = deps['gems']
-    gemfile_dir = gem_dir or self.m.repo_util.sdk_checkout_path(
-    ).join('dev', 'ci', 'mac')
-    gem_destination = self.m.path['start_dir'].join('gems')
-    env['GEM_HOME'] = gem_destination
-    self._install_ruby(env, env_prefixes, version)
-    with self.m.step.nest('Install gems'):
-      self.m.file.ensure_directory('mkdir gems', gem_destination)
-      paths = env_prefixes.get('PATH', [])
-      temp_paths = copy.deepcopy(paths)
-      temp_paths.insert(0, gem_dir.join('bin'))
-      env_prefixes['PATH'] = temp_paths
-      with self.m.context(env=env, env_prefixes=env_prefixes, cwd=gemfile_dir):
-        self.m.step(
-            'Set gems path',
-            ['bundle', 'config', 'set', '--local', 'path', gem_destination],
-            infra_step=True,
-        )
-        opt_path = self.m.path['cache'].join('ruby', 'opt')
-        lib_path = self.m.path['cache'].join('ruby')
-        self.m.step(
-            'Set ffi build flags',
-            [
-                'bundle', 'config', 'build.ffi',
-                '--with-opt-dir=%s/gmp:%s' % (opt_path, lib_path)
-            ],
-            infra_step=True,
-        )
-        self.m.step('install gems', ['bundler', 'install'], infra_step=True)
-      # Find major/minor ruby version
-      ruby_version = self.m.step(
-          'Ruby version', ['ruby', '-e', 'puts RUBY_VERSION'],
-          stdout=self.m.raw_io.output_text(),
-          ok_ret='any'
-      ).stdout.rstrip()
-      parts = ruby_version.split('.')
-      parts[-1] = '0'
-      ruby_version = '.'.join(parts)
-      paths.append(gem_destination.join('ruby', ruby_version, 'bin'))
-      # Update envs to the final destination.
-      self.m.file.listdir('list bundle', gem_destination, recursive=True)
 
   def firebase(self, env, env_prefixes, version='latest'):
     """Installs firebase binary.

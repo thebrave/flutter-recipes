@@ -51,9 +51,6 @@ class AddhocValidationApi(recipe_api.RecipeApi):
       checkout_path = self.m.repo_util.sdk_checkout_path()
       if self.m.properties.get('$flutter/osx_sdk'):
         with self.m.osx_sdk('ios'):
-          self.m.flutter_deps.gems(
-              env, env_prefixes, checkout_path.join('dev', 'ci', 'mac')
-          )
           with self.m.context(env=env, env_prefixes=env_prefixes):
             self.m.flutter_bcid.report_stage(BcidStage.COMPILE.value)
             self.m.file.read_text(

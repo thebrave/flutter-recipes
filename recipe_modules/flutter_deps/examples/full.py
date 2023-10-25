@@ -84,9 +84,6 @@ def RunSteps(api):
   # Gems dependency requires to run from a flutter_environment.
   checkout_path = api.path['start_dir'].join('flutter\ sdk')
   env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
-  with api.context(env=env, env_prefixes=env_prefixes):
-    gems_dir = api.path['start_dir'].join('dev', 'ci', 'mac')
-    api.flutter_deps.gems(env, env_prefixes, gems_dir)
 
 
 def GenTests(api):
@@ -101,21 +98,6 @@ def GenTests(api):
       api.platform('linux', 64),
       api.repo_util.flutter_environment_data(checkout_path),
   )
-  yield api.test(
-      'with-gems',
-      api.properties(
-          dependencies=[{"dependency": "gems", "version": "v3.1.3"}]
-      ),
-      api.repo_util.flutter_environment_data(checkout_path),
-  )
-
-  yield api.test(
-      'with-arm64ruby',
-      api.properties(dependencies=[{"dependency": "gems"}]),
-      api.repo_util.flutter_environment_data(checkout_path),
-      api.platform.arch('arm'),
-  )
-
   yield api.test(
       'mac',
       api.platform('mac', 64),

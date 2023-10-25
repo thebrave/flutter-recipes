@@ -216,9 +216,6 @@ def mac_test(
     test_timeout_secs,
 ):
   """Runs a devicelab mac test."""
-  api.flutter_deps.gems(
-      env, env_prefixes, flutter_path.join('dev', 'ci', 'mac')
-  )
   api.retry.step(
       'flutter doctor', ['flutter', 'doctor', '--verbose'],
       max_attempts=3,

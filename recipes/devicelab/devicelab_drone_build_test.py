@@ -170,9 +170,6 @@ def build(api, task_name, artifact, artifact_gcs_dir):
       api.step('dart pub get', ['dart', 'pub', 'get'], infra_step=True)
       if api.properties.get('$flutter/osx_sdk'):
         with api.osx_sdk('ios'):
-          api.flutter_deps.gems(
-              env, env_prefixes, flutter_path.join('dev', 'ci', 'mac')
-          )
           with api.context(env=env, env_prefixes=env_prefixes):
             test_runner_command = ['dart', 'bin/test_runner.dart', 'test']
             test_runner_command.extend(runner_params)

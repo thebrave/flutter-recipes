@@ -89,9 +89,6 @@ def RunSteps(api):
     with api.step.nest('Run package tests'):
       if api.properties.get('$flutter/osx_sdk'):
         with api.osx_sdk('ios'):
-          api.flutter_deps.gems(
-              env, env_prefixes, flutter_checkout_path.join('dev', 'ci', 'mac')
-          )
           with api.context(env=env, env_prefixes=env_prefixes):
             run_test(api, result, packages_checkout_path, env, env_prefixes)
       else:

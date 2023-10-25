@@ -98,9 +98,6 @@ def RunSteps(api):
       api.flutter_deps.flutter_engine(env, env_prefixes)
       if api.properties.get('$flutter/osx_sdk'):
         with api.osx_sdk('ios'), api.step.defer_results():
-          api.flutter_deps.gems(
-              env, env_prefixes, checkout_path.join('dev', 'ci', 'mac')
-          )
           api.step(
               'flutter doctor',
               ['flutter', 'doctor', '-v'],

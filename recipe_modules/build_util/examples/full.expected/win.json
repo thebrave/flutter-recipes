@@ -570,36 +570,7 @@
   },
   {
     "cmd": [],
-    "name": "ensure reclient"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "RECIPE_MODULE[flutter::rbe]\\resources\\tool_manifest.json",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "name": "ensure reclient.read manifest",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/reclient\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "ensure reclient.install path/to/reclient",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
+    "name": "install infra/rbe/client"
   },
   {
     "cmd": [
@@ -611,12 +582,12 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]\\cipd_tool\\path\\to\\reclient\\version%3Apinned-version"
+      "[START_DIR]\\cipd_tool\\infra\\rbe\\client\\re_client_version%3A0.111.0.1ccaa23-gomaip"
     ],
     "infra_step": true,
-    "name": "ensure reclient.install path/to/reclient.ensure package directory",
+    "name": "install infra/rbe/client.ensure package directory",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -624,24 +595,24 @@
       "cipd.bat",
       "ensure",
       "-root",
-      "[START_DIR]\\cipd_tool\\path\\to\\reclient\\version%3Apinned-version",
+      "[START_DIR]\\cipd_tool\\infra\\rbe\\client\\re_client_version%3A0.111.0.1ccaa23-gomaip",
       "-ensure-file",
-      "path/to/reclient version:pinned-version",
+      "infra/rbe/client/${platform} re_client_version:0.111.0.1ccaa23-gomaip",
       "-max-threads",
       "0",
       "-json-output",
       "/path/to/tmp/json"
     ],
     "infra_step": true,
-    "name": "ensure reclient.install path/to/reclient.ensure_installed",
+    "name": "install infra/rbe/client.ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/reclient\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"re_client_version:0.111.0.1ccaa23-gomaip\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/rbe/client/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -670,8 +641,8 @@
   },
   {
     "cmd": [
-      "[START_DIR]\\cipd_tool\\path\\to\\reclient\\version%3Apinned-version\\bootstrap",
-      "--re_proxy=[START_DIR]\\cipd_tool\\path\\to\\reclient\\version%3Apinned-version\\reproxy"
+      "[START_DIR]\\cipd_tool\\infra\\rbe\\client\\re_client_version%3A0.111.0.1ccaa23-gomaip\\client\\bootstrap",
+      "--re_proxy=[START_DIR]\\cipd_tool\\infra\\rbe\\client\\re_client_version%3A0.111.0.1ccaa23-gomaip\\client\\reproxy"
     ],
     "env": {
       "RBE_cache_dir": "[CACHE]\\rbe\\deps",
@@ -736,7 +707,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]\\cipd_tool\\path\\to\\reclient\\version%3Apinned-version\\bootstrap",
+      "[START_DIR]\\cipd_tool\\infra\\rbe\\client\\re_client_version%3A0.111.0.1ccaa23-gomaip\\client\\bootstrap",
       "--shutdown"
     ],
     "env": {

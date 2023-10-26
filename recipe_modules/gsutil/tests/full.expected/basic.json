@@ -1,48 +1,7 @@
 [
   {
     "cmd": [],
-    "name": "ensure gsutil"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "RECIPE_MODULE[flutter::gsutil]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "fuchsia:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "ensure gsutil.read manifest",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gsutil\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "ensure gsutil.install path/to/gsutil",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
+    "name": "install infra/3pp/tools/gsutil"
   },
   {
     "cmd": [
@@ -54,7 +13,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/path/to/gsutil/version%3Apinned-version"
+      "[START_DIR]/cipd_tool/infra/3pp/tools/gsutil/version%3A2%405.19"
     ],
     "infra_step": true,
     "luci_context": {
@@ -69,9 +28,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure gsutil.install path/to/gsutil.ensure package directory",
+    "name": "install infra/3pp/tools/gsutil.ensure package directory",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -79,9 +38,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/gsutil/version%3Apinned-version",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/gsutil/version%3A2%405.19",
       "-ensure-file",
-      "path/to/gsutil version:pinned-version",
+      "infra/3pp/tools/gsutil/${platform} version:2@5.19",
       "-max-threads",
       "0",
       "-json-output",
@@ -100,15 +59,15 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure gsutil.install path/to/gsutil.ensure_installed",
+    "name": "install infra/3pp/tools/gsutil.ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gsutil\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@5.19--\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/gsutil/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -118,7 +77,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gsutil/version%3Apinned-version/gsutil",
+      "True",
       "-h",
       "Cache-Control:no-cache",
       "-h",
@@ -158,7 +117,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gsutil/version%3Apinned-version/gsutil",
+      "True",
       "-h",
       "Custom-Time:2012-05-14T12:53:23.000000Z",
       "-o",
@@ -192,7 +151,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gsutil/version%3Apinned-version/gsutil",
+      "True",
       "-h",
       "Custom-Time:2012-05-14T12:53:24.500000Z",
       "-o",
@@ -226,7 +185,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gsutil/version%3Apinned-version/gsutil",
+      "True",
       "-h",
       "Custom-Time:2012-05-14T12:53:26.000000Z",
       "-o",
@@ -256,7 +215,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gsutil/version%3Apinned-version/gsutil",
+      "True",
       "-o",
       "GSUtil:software_update_check_period=0",
       "cp",
@@ -284,7 +243,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gsutil/version%3Apinned-version/gsutil",
+      "True",
       "-o",
       "GSUtil:software_update_check_period=0",
       "cp",

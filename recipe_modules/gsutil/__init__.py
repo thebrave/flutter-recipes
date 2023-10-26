@@ -4,9 +4,9 @@
 
 DEPS = [
     "fuchsia/buildbucket_util",
-    "fuchsia/ensure_tool",
     "fuchsia/python3",
     "fuchsia/utils",
+    "recipe_engine/cipd",
     "recipe_engine/platform",
     "recipe_engine/step",
     "recipe_engine/time",

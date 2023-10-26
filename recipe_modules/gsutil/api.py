@@ -4,15 +4,15 @@
 
 from recipe_engine import recipe_api
 
-
 GSUTIL_VERSION = 'version:2@5.19'
+
 
 class GSUtilApi(recipe_api.RecipeApi):
   """GSUtilApi provides support for GSUtil."""
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
-    self._initialized = False
+    self._tool_path = None
 
   @recipe_api.non_step
   def join(self, *parts):
@@ -268,12 +268,11 @@ class GSUtilApi(recipe_api.RecipeApi):
 
   @property
   def _gsutil_tool(self):
-    if not self._initialized:
-      self.m.cipd.ensure_tool(
+    if not self._tool_path:
+      self._tool_path = self.m.cipd.ensure_tool(
           'infra/3pp/tools/gsutil/${platform}', GSUTIL_VERSION
       )
-      self._initialized = True
-    return self._initialized
+    return self._tool_path
 
   def _run(self, *args, **kwargs):
     """Return a step to run arbitrary gsutil command."""

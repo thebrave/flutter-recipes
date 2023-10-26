@@ -37,36 +37,7 @@
   },
   {
     "cmd": [],
-    "name": "ensure bsdtar"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "RECIPE_MODULE[flutter::tar]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "name": "ensure bsdtar.read manifest",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/bsdtar\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "ensure bsdtar.install path/to/bsdtar",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
+    "name": "install fuchsia/tools/bsdtar"
   },
   {
     "cmd": [
@@ -78,12 +49,12 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/path/to/bsdtar/version%3Apinned-version"
+      "[START_DIR]/cipd_tool/fuchsia/tools/bsdtar/git_revision%3A6462ccda48c8f33dce4c80c2f1533263277d4da9"
     ],
     "infra_step": true,
-    "name": "ensure bsdtar.install path/to/bsdtar.ensure package directory",
+    "name": "install fuchsia/tools/bsdtar.ensure package directory",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -91,24 +62,24 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/bsdtar/version%3Apinned-version",
+      "[START_DIR]/cipd_tool/fuchsia/tools/bsdtar/git_revision%3A6462ccda48c8f33dce4c80c2f1533263277d4da9",
       "-ensure-file",
-      "path/to/bsdtar version:pinned-version",
+      "fuchsia/tools/bsdtar/${platform} git_revision:6462ccda48c8f33dce4c80c2f1533263277d4da9",
       "-max-threads",
       "0",
       "-json-output",
       "/path/to/tmp/json"
     ],
     "infra_step": true,
-    "name": "ensure bsdtar.install path/to/bsdtar.ensure_installed",
+    "name": "install fuchsia/tools/bsdtar.ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/bsdtar\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:646\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"fuchsia/tools/bsdtar/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -118,7 +89,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/bsdtar/version%3Apinned-version/bsdtar",
+      "[START_DIR]/cipd_tool/fuchsia/tools/bsdtar/git_revision%3A6462ccda48c8f33dce4c80c2f1533263277d4da9/bsdtar",
       "--create",
       "-f",
       "[CLEANUP]/tar-example_tmp_1/more.tar.gz",
@@ -142,7 +113,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/bsdtar/version%3Apinned-version/bsdtar",
+      "[START_DIR]/cipd_tool/fuchsia/tools/bsdtar/git_revision%3A6462ccda48c8f33dce4c80c2f1533263277d4da9/bsdtar",
       "--extract",
       "--verbose",
       "-f",

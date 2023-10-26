@@ -4,11 +4,17 @@
 
 from recipe_engine import recipe_api
 
+TAR_VERSION = 'git_revision:6462ccda48c8f33dce4c80c2f1533263277d4da9'
+
 
 class TarApi(recipe_api.RecipeApi):
   """Provides steps to tar and untar files."""
 
   COMPRESSION_OPTS = ["gzip", "bzip2", "xz", "lzma"]
+
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self._tool_path = None
 
   def __call__(self, step_name, cmd):
     full_cmd = [self._bsdtar_path] + list(cmd)
@@ -17,7 +23,11 @@ class TarApi(recipe_api.RecipeApi):
   @property
   def _bsdtar_path(self):
     """Ensures that bsdtar is installed."""
-    return self.m.ensure_tool("bsdtar", self.resource("tool_manifest.json"))
+    if not self._tool_path:
+      self._tool_path = self.m.cipd.ensure_tool(
+          'fuchsia/tools/bsdtar/${platform}', TAR_VERSION
+      )
+    return self._tool_path
 
   def create(self, path, compression=None):
     """Returns TarArchive object that can be used to compress a set of files.

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 DEPS = [
-    "fuchsia/ensure_tool",
+    "recipe_engine/cipd",
     "recipe_engine/context",
     "recipe_engine/path",
     "recipe_engine/step",

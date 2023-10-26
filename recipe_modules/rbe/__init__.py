@@ -5,8 +5,8 @@
 from PB.recipe_modules.flutter.rbe.properties import InputProperties
 
 DEPS = [
+    "fuchsia/ensure_tool",
     "recipe_engine/buildbucket",
-    "recipe_engine/cipd",
     "recipe_engine/context",
     "recipe_engine/file",
     "recipe_engine/json",

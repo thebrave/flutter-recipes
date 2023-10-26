@@ -26,6 +26,7 @@ this recipe in the builds property:
  }
 """
 import contextlib
+import copy
 
 from google.protobuf import struct_pb2
 from PB.recipes.flutter.engine.engine import InputProperties
@@ -101,10 +102,14 @@ def run_tests(api, tests, checkout, env, env_prefixes):
   """Runs sub-build tests."""
   # Run local tests in the builder to optimize resource usage.
   for test in tests:
+    # Copy and expand env, env_prefixes. This is required to
+    # add configuration env variables.
+    tmp_env = copy.deepcopy(env)
+    tmp_env.update(test.get('env', {}))
     # Run tests within a exitStack context
     with contextlib.ExitStack() as exit_stack:
       api.flutter_deps.enter_contexts(
-          exit_stack, test.get('contexts', []), env, env_prefixes
+          exit_stack, test.get('contexts', []), tmp_env, env_prefixes
       )
       command = [test.get('language')] if test.get('language') else []
       # Ideally local tests should be completely hermetic and in theory we can run
@@ -119,17 +124,17 @@ def run_tests(api, tests, checkout, env, env_prefixes):
       # pylint: disable=cell-var-from-loop
       def run_test():
         # Replace MAGIC_ENVS
-        updated_command = api.os_utils.replace_magic_envs(command, env)
+        updated_command = api.os_utils.replace_magic_envs(command, tmp_env)
         return api.step(step_name, updated_command)
 
       # Rerun test step 3 times by default if failing.
       # TODO(keyonghan): notify tree gardener for test failures/flakes:
       # https://github.com/flutter/flutter/issues/89308
-      api.logs_util.initialize_logs_collection(env)
+      api.logs_util.initialize_logs_collection(tmp_env)
       try:
         # Run within another context to make the logs env variable available to
         # test scripts.
-        with api.context(env=env, env_prefixes=env_prefixes):
+        with api.context(env=tmp_env, env_prefixes=env_prefixes):
           api.retry.wrap(
               run_test,
               max_attempts=test.get('max_attempts', 3),

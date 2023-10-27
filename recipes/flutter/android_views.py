@@ -51,13 +51,6 @@ def RunSteps(api, properties, env_properties):
       env, env_prefixes, api.properties.get('dependencies', [])
   )
 
-  deps = api.properties.get('dependencies', [])
-  dep_list = {d['dependency']: d.get('version') for d in deps}
-  # If the emulator dependency is present then we assume it is wanted for testing.
-  if 'android_virtual_device' in dep_list.keys():
-    env['USE_EMULATOR'] = True
-    env['EMULATOR_VERSION'] = dep_list.get('android_virtual_device')
-
   with api.android_virtual_device(env=env, env_prefixes=env_prefixes, version=env['EMULATOR_VERSION']):
     with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
       views_test_dir = checkout_path.join(

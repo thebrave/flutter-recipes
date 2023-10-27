@@ -73,19 +73,12 @@ def RunSteps(api):
   api.logs_util.initialize_logs_collection(env)
   with api.step.nest('Dependencies'):
     api.flutter_deps.flutter_engine(env, env_prefixes)
-    deps = api.properties.get('dependencies', [])
-    # check to see if an emulator was requested.
-    dep_list = {d['dependency']: d.get('version') for d in deps}
-    # If the emulator dependency is present then we assume it is wanted for testing.
-    if 'android_virtual_device' in dep_list.keys():
-      env['USE_EMULATOR'] = True
-      env['EMULATOR_VERSION'] = dep_list.get('android_virtual_device')
     # TODO: If deps contains dart_sdk and we are running a local engine,
     # we don't want to fetch it with cipd, so don't fetch it with required_deps
     api.flutter_deps.required_deps(
         env,
         env_prefixes,
-        deps,
+        api.properties.get('dependencies', [])
     )
 
   target_tags = api.properties.get('tags', [])
@@ -152,7 +145,7 @@ def RunSteps(api):
 
         try:
           with ExitStack() as stack:
-            if env['USE_EMULATOR']:
+            if 'USE_EMULATOR' in env and env['USE_EMULATOR']:
               test_runner_command.extend('--use-emulator')
               stack.enter_context(
                   api.android_virtual_device(

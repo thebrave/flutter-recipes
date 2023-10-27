@@ -75,7 +75,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     """
     available_deps = {
         'android_sdk': self.android_sdk,
-        # 'android_virtual_device': self.android_virtual_device,
+        'android_virtual_device': self.android_virtual_device,
         'apple_signing': self.apple_signing,
         'arm_tools': self.arm_tools,
         'certs': self.certs,
@@ -113,7 +113,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
             '''.format(dependency)
         raise ValueError(msg)
       parsed_deps.append(dependency)
-      if dependency in ['xcode', 'android_virtual_device']:
+      if dependency in ['xcode']:
         continue
       dep_funct = available_deps.get(dependency)
       if not dep_funct:
@@ -124,6 +124,17 @@ class FlutterDepsApi(recipe_api.RecipeApi):
             '''.format(dependency, available_deps.keys())
         raise ValueError(msg)
       dep_funct(env, env_prefixes, version)
+
+  def android_virtual_device(self, env, env_prefixes, version):
+    """Simply sets the version of the emulator globally as the module will download the package itself.
+
+    Args:
+      env(dict): Current environment variables.
+      env_prefixes(dict):  Current environment prefixes variables.
+      version(str): The OpenJdk version to install.
+    """
+    env['USE_EMULATOR'] = True
+    env['EMULATOR_VERSION'] = version
 
   def open_jdk(self, env, env_prefixes, version):
     """Downloads OpenJdk CIPD package and updates environment variables.
@@ -645,4 +656,6 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         params = ('ios',)
       if context == 'osx_sdk_devicelab':
         params = ('ios', True)
+      if context == 'android_virtual_device':
+        params = params + (env['EMULATOR_VERSION'],) # pragma: nocover
       exit_stack.enter_context(available_contexts[context](*params))

@@ -27,6 +27,9 @@ def RunSteps(api):
   api.assertions.assertTrue(env.get('ARM_TOOLS'))
   api.flutter_deps.goldctl(env, env_prefixes, 'v2')
   api.assertions.assertTrue(env.get('GOLDCTL'))
+  api.flutter_deps.android_virtual_device(env, env_prefixes, "34")
+  api.assertions.assertTrue(env.get('EMULATOR_VERSION'))
+  api.assertions.assertTrue(env.get('USE_EMULATOR'))
   env_prefixes = {}
   env = {}
   api.flutter_deps.chrome_and_driver(env, env_prefixes, 'v3')
@@ -72,7 +75,8 @@ def RunSteps(api):
   api.flutter_deps.certs(env, env_prefixes, '')
   api.flutter_deps.vs_build(env, env_prefixes, '')
   api.flutter_deps.ruby(env, env_prefixes, '')
-  api.flutter_deps.contexts()
+  api.flutter_deps.android_virtual_device(env, env_prefixes, '34')
+  
   with contextlib.ExitStack() as exit_stack:
     api.flutter_deps.enter_contexts(exit_stack, ['osx_sdk'], env, env_prefixes)
     api.flutter_deps.enter_contexts(
@@ -87,8 +91,7 @@ def RunSteps(api):
 
 
 def GenTests(api):
-  checkout_path = api.path['start_dir'].join('flutter\ sdk')
-  avd_api_version = '31'
+  checkout_path = api.path['start_dir'].join('flutter\ sdk')    
   yield api.test(
       'basic',
       api.repo_util.flutter_environment_data(checkout_path),

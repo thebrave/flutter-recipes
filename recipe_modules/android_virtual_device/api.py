@@ -36,6 +36,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
 
   @contextmanager
   def __call__(self, env, env_prefixes, version='31'):
+    # check for emulator version in env
     self._initialize(env, env_prefixes)
     try:
       self.emulator_pid = self.start(env, env_prefixes, version)
@@ -54,7 +55,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       avd_root(Path): The root path to install the AVD package.
     """
     assert self.m.platform.is_linux
-    version = self.m.properties.get('avd_cipd_version', AVD_CIPD_IDENTIFIER)
+    cipd_version = self.m.properties.get('avd_cipd_version', AVD_CIPD_IDENTIFIER)
     with self.m.step.nest('download avd package'):
       with self.m.context(
           env=env, env_prefixes=env_prefixes), self.m.depot_tools.on_path():
@@ -62,7 +63,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
         self.m.cipd.ensure(
             self.avd_root,
             self.m.cipd.EnsureFile().add_package(
-                'chromium/tools/android/avd/linux-amd64', version
+                'chromium/tools/android/avd/linux-amd64', cipd_version
             )
         )
 

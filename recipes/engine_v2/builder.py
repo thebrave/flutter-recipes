@@ -104,6 +104,8 @@ def run_tests(api, tests, checkout, env, env_prefixes):
   for test in tests:
     # Copy and expand env, env_prefixes. This is required to
     # add configuration env variables.
+    test_deps = test.get('test_dependencies', [])
+    api.flutter_deps.required_deps(env, env_prefixes, test_deps)
     tmp_env = copy.deepcopy(env)
     tmp_env.update(test.get('env', {}))
     # Run tests within a exitStack context

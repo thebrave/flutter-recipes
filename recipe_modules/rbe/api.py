@@ -13,6 +13,8 @@ RECLIENT_CXX_WRAPPER = "reclient-cxx-wrapper.sh"
 # be large enough.
 _DEPS_CACHE_MAX_MB = "512"
 
+RBE_VERSION = 're_client_version:0.111.0.1ccaa23-gomaip'
+
 
 class RbeApi(recipe_api.RecipeApi):
   """RemoteExecutionApi contains helper functions for using remote execution
@@ -76,8 +78,8 @@ class RbeApi(recipe_api.RecipeApi):
 
   @property
   def _ensure_reclient_path(self):
-    return self.m.ensure_tool(
-        "reclient", self.resource("tool_manifest.json"), executable_path=""
+    return self.m.cipd.ensure_tool(
+        'infra/rbe/client/${platform}', RBE_VERSION, executable_path=''
     )
 
   @property

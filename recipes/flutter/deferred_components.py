@@ -19,6 +19,7 @@ DEPS = [
     'flutter/repo_util',
     'recipe_engine/cipd',
     'recipe_engine/context',
+    'recipe_engine/defer',
     'recipe_engine/file',
     'recipe_engine/path',
     'recipe_engine/properties',
@@ -62,46 +63,72 @@ def RunSteps(api, properties, env_properties):
     bundletool_dir = cache_root.join('bundletool')
     bundletool_jar = bundletool_dir.join('bundletool.jar')
     with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
-      with api.step.nest('prepare environment'), api.step.defer_results():
+      with api.step.nest('prepare environment'):
+        deferred = []
         # This prevents junk analytics from being sent due to testing
-        api.step(
-            'flutter config --no-analytics',
-            ['flutter', 'config', '--no-analytics'],
-        )
-        api.step(
-            'flutter doctor',
-            ['flutter', 'doctor'],
-        )
-        api.step(
-            'flutter devices',
-            ['flutter', 'devices', '--device-timeout=40', '--verbose'],
-        )
-        api.step(
-            'download dependencies',
-            ['flutter', 'update-packages', '-v'],
-            infra_step=True,
-        )
-        api.cipd.ensure(
-            bundletool_dir,
-            api.cipd.EnsureFile().add_package(
-                'flutter/android/bundletool',
-                '0xeDa85nRhdQfi3iN2dK8PPluwI73z9San_Afuj3CfgC'
+        deferred.append(
+            api.defer(
+                api.step,
+                'flutter config --no-analytics',
+                ['flutter', 'config', '--no-analytics'],
             )
         )
+        deferred.append(
+            api.defer(
+                api.step,
+                'flutter doctor',
+                ['flutter', 'doctor'],
+            )
+        )
+        deferred.append(
+            api.defer(
+                api.step,
+                'flutter devices',
+                ['flutter', 'devices', '--device-timeout=40', '--verbose'],
+            )
+        )
+        deferred.append(
+            api.defer(
+                api.step,
+                'download dependencies',
+                ['flutter', 'update-packages', '-v'],
+                infra_step=True,
+            )
+        )
+        deferred.append(
+            api.defer(
+                api.cipd.ensure,
+                bundletool_dir,
+                api.cipd.EnsureFile().add_package(
+                    'flutter/android/bundletool',
+                    '0xeDa85nRhdQfi3iN2dK8PPluwI73z9San_Afuj3CfgC'
+                )
+            )
+        )
+        api.defer.collect(deferred)
+
     test_dir = checkout_path.join(
         'dev', 'integration_tests', 'deferred_components_test'
     )
-    with api.context(env=env, env_prefixes=env_prefixes,
-                     cwd=test_dir), api.step.defer_results():
+    with api.context(env=env, env_prefixes=env_prefixes, cwd=test_dir):
+      deferred = []
       # These assets are not allowed to be checked into the repo,
       # so they are downloaded separately here.
-      api.step('download assets script', ['./download_assets.sh'])
-      api.step(
-          'Deferred components release tests',
-          ['./run_release_test.sh',
-           str(bundletool_jar), env['ADB_PATH']],
-          timeout=700,
+      deferred.append(
+          api.defer(
+              api.step, 'download assets script', ['./download_assets.sh']
+          )
       )
+      deferred.append(
+          api.defer(
+              api.step,
+              'Deferred components release tests',
+              ['./run_release_test.sh',
+               str(bundletool_jar), env['ADB_PATH']],
+              timeout=700,
+          )
+      )
+      api.defer.collect(deferred)
 
     # This is to clean up leaked processes.
     api.os_utils.kill_processes()

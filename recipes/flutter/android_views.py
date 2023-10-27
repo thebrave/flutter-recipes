@@ -16,6 +16,7 @@ DEPS = [
     'flutter/repo_util',
     'flutter/retry',
     'recipe_engine/context',
+    'recipe_engine/defer',
     'recipe_engine/file',
     'recipe_engine/path',
     'recipe_engine/properties',
@@ -62,25 +63,40 @@ def RunSteps(api, properties, env_properties):
       views_test_dir = checkout_path.join(
         'dev', 'integration_tests', 'android_views'
       )
-      with api.step.nest('prepare environment'), api.step.defer_results():
+      with api.step.nest('prepare environment'):
+        deferred = []
         # This prevents junk analytics from being sent due to testing
-        api.step(
-            'flutter config --no-analytics',
-            ['flutter', 'config', '--no-analytics'],
+        deferred.append(
+            api.defer(
+                api.step,
+                'flutter config --no-analytics',
+                ['flutter', 'config', '--no-analytics'],
+            )
         )
-        api.step(
-            'flutter doctor',
-            ['flutter', 'doctor'],
+        deferred.append(
+            api.defer(
+                api.step,
+                'flutter doctor',
+                ['flutter', 'doctor'],
+            )
         )
-        api.step(
-            'flutter devices',
-            ['flutter', 'devices', '--device-timeout=40', '--verbose'],
+        deferred.append(
+            api.defer(
+                api.step,
+                'flutter devices',
+                ['flutter', 'devices', '--device-timeout=40', '--verbose'],
+            )
         )
-        api.step(
-            'download flutter dependencies',
-            ['flutter', 'update-packages', '-v'],
-            infra_step=True,
+        deferred.append(
+            api.defer(
+                api.step,
+                'download flutter dependencies',
+                ['flutter', 'update-packages', '-v'],
+                infra_step=True,
+            )
         )
+        api.defer.collect(deferred)
+
       # Create gradlew file
       with api.context(env=env, env_prefixes=env_prefixes, cwd=views_test_dir):
         api.step(
@@ -102,8 +118,7 @@ def RunSteps(api, properties, env_properties):
             max_attempts=2,
             infra_step=True,
         )
-    with api.context(env=env, env_prefixes=env_prefixes,
-                     cwd=views_test_dir), api.step.defer_results():
+    with api.context(env=env, env_prefixes=env_prefixes, cwd=views_test_dir):
       api.step(
           'Android Views Integration Tests',
           [

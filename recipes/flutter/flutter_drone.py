@@ -21,6 +21,7 @@ DEPS = [
     'flutter/test_utils',
     'flutter/token_util',
     'recipe_engine/context',
+    'recipe_engine/defer',
     'recipe_engine/path',
     'recipe_engine/properties',
     'recipe_engine/step',
@@ -97,27 +98,35 @@ def RunSteps(api):
       # Load local engine information if available.
       api.flutter_deps.flutter_engine(env, env_prefixes)
       if api.properties.get('$flutter/osx_sdk'):
-        with api.osx_sdk('ios'), api.step.defer_results():
-          api.step(
-              'flutter doctor',
-              ['flutter', 'doctor', '-v'],
+        with api.osx_sdk('ios'):
+          deferred = []
+          deferred.append(
+              api.defer(
+                  api.step,
+                  'flutter doctor',
+                  ['flutter', 'doctor', '-v'],
+              )
           )
-          RunShard(api, env, env_prefixes, checkout_path)
+          deferred.append(
+              api.defer(RunShard, api, env, env_prefixes, checkout_path))
           # This is to clean up leaked processes.
-          api.os_utils.kill_processes()
+          deferred.append(api.defer(api.os_utils.kill_processes))
           # Collect memory/cpu/process after task execution.
-          api.os_utils.collect_os_info()
+          deferred.append(api.defer(api.os_utils.collect_os_info))
+          api.defer.collect(deferred)
       else:
-        with api.step.defer_results():
-          api.step(
-              'flutter doctor',
-              ['flutter', 'doctor', '-v'],
-          )
-          RunShard(api, env, env_prefixes, checkout_path)
-          # This is to clean up leaked processes.
-          api.os_utils.kill_processes()
-          # Collect memory/cpu/process after task execution.
-          api.os_utils.collect_os_info()
+        deferred = []
+        deferred.append(
+            api.defer(api.step,
+                      'flutter doctor',
+                      ['flutter', 'doctor', '-v']))
+        deferred.append(
+            api.defer(RunShard, api, env, env_prefixes, checkout_path))
+        # This is to clean up leaked processes.
+        deferred.append(api.defer(api.os_utils.kill_processes))
+        # Collect memory/cpu/process after task execution.
+        deferred.append(api.defer(api.os_utils.collect_os_info))
+        api.defer.collect(deferred)
 
 
 def GenTests(api):

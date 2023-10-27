@@ -255,8 +255,7 @@ def RunTestSuiteOnFfxEmuImpl(api, suite, ffx, arch, pb_path):
   # TODO(http://fxb/121613): Emulator instances are not cleaned up
   # when tests fail. Added a clean up step before tests start to
   # stop all running emulators.
-  with api.step.defer_results():
-    api.retry.step('run ffx test', [ffx] + suite['test_command'].split(' '))
+  api.retry.step('run ffx test', [ffx] + suite['test_command'].split(' '))
 
 
 def ReadLogFiles(api, ffx):

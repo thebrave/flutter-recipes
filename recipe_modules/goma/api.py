@@ -169,19 +169,21 @@ class GomaApi(recipe_api.RecipeApi):
       self._goma_ctl("start goma", ["restart"])
       self._goma_started = True
     except self.m.step.StepFailure:  # pragma: no cover
-      with self.m.step.defer_results():
-        self._run_jsonstatus()
-        self._goma_ctl("stop goma (start failure)", ["stop"])
+      deferred = []
+      deferred.append(self.m.defer(self._run_jsonstatus))
+      deferred.append(self.m.defer(self._goma_ctl, "stop goma (start failure)", ["stop"]))
+      self.m.defer.collect(deferred)
       raise
 
   def _stop(self):
     """Stop goma compiler proxy."""
     assert self._goma_started
 
-    with self.m.step.defer_results():
-      self._run_jsonstatus()
-      self._goma_ctl("goma stats", ["stat"])
-      self._goma_ctl("stop goma", ["stop"])
+    deferred = []
+    deferred.append(self.m.defer(self._run_jsonstatus))
+    deferred.append(self.m.defer(self._goma_ctl, "goma stats", ["stat"]))
+    deferred.append(self.m.defer(self._goma_ctl, "stop goma", ["stop"]))
+    self.m.defer.collect(deferred)
 
     self._goma_started = False
 

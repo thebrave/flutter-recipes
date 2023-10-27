@@ -17,6 +17,7 @@ DEPS = [
     'recipe_engine/buildbucket',
     'recipe_engine/cas',
     'recipe_engine/context',
+    'recipe_engine/defer',
     'recipe_engine/file',
     'recipe_engine/path',
     'recipe_engine/platform',
@@ -55,7 +56,7 @@ def RunGN(api, disable_goma, *args):
     api.step('gn %s' % ' '.join(args), gn_cmd)
   else:
     # Run gn within a context.
-    env = {'GOMA_DIR': api.goma.goma_dir.get_result()}
+    env = {'GOMA_DIR': api.goma.goma_dir}
     with api.context(env=env):
       api.step('gn %s' % ' '.join(args), gn_cmd)
 
@@ -79,13 +80,19 @@ def RunSteps(api, properties):
 
     output_files = []
     output_dirs = []
-    with api.osx_sdk('ios'), api.depot_tools.on_path(), api.context(
-        env=env), api.step.defer_results():
+    with api.osx_sdk('ios'), api.depot_tools.on_path(), api.context(env=env):
+      deferred = []
       for build in properties.builds:
         with api.step.nest('build %s (%s)' %
                            (build.dir, ','.join(build.targets))):
-          RunGN(api, build.disable_goma, *build.gn_args)
-          Build(api, build.dir, build.disable_goma, *build.targets)
+          deferred.append(
+              api.defer(RunGN, api, build.disable_goma, *build.gn_args)
+          )
+          deferred.append(
+              api.defer(
+                  Build, api, build.dir, build.disable_goma, *build.targets
+              )
+          )
           for output_file in build.output_files:
             output_files.append(
                 cache_root.join('src', 'out', build.dir, output_file)
@@ -95,9 +102,10 @@ def RunSteps(api, properties):
                 cache_root.join('src', 'out', build.dir, output_dir)
             )
       # This is to clean up leaked processes.
-      api.os_utils.kill_processes()
+      deferred.append(api.defer(api.os_utils.kill_processes))
       # Collect memory/cpu/process after task execution.
-      api.os_utils.collect_os_info()
+      deferred.append(api.defer(api.os_utils.collect_os_info))
+      api.defer.collect(deferred)
 
     cas_hash = CasOutputs(api, output_files, output_dirs)
     output_props = api.step('Set output properties', None)

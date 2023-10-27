@@ -19,6 +19,7 @@ DEPS = [
     'fuchsia/git_checkout',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
+    'recipe_engine/defer',
     'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/properties',
@@ -106,9 +107,12 @@ def RunSteps(api, remote, unittest_only):
   with api.context(cwd=checkout_path):
     api.git('log', 'log', '--oneline', '-n', '10')
   api.recipe_testing.projects = ('flutter',)
-  with api.step.defer_results():
-    api.recipe_testing.run_lint(checkout_path)
-    api.recipe_testing.run_unit_tests(checkout_path)
+
+  deferred = []
+  deferred.append(api.defer(api.recipe_testing.run_lint, checkout_path))
+  deferred.append(api.defer(api.recipe_testing.run_unit_tests, checkout_path))
+  api.defer.collect(deferred)
+
   if not unittest_only:
     flutter = options_pb2.Project(name='flutter', include_unrestricted=True)
     opts = options_pb2.Options(projects=[flutter])

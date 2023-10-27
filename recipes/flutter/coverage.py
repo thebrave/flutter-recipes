@@ -7,6 +7,7 @@ DEPS = [
     'flutter/flutter_deps',
     'flutter/repo_util',
     'recipe_engine/context',
+    'recipe_engine/defer',
     'recipe_engine/path',
     'recipe_engine/properties',
     'recipe_engine/step',
@@ -31,16 +32,20 @@ def RunSteps(api):
 
   packages_path = checkout_path.join('packages', 'flutter')
   with api.context(env=env, env_prefixes=env_prefixes, cwd=packages_path):
-    with api.step.nest('prepare environment'), api.step.defer_results():
-      api.step(
-          'flutter doctor',
-          ['flutter', 'doctor'],
+    with api.step.nest('prepare environment'):
+      deferred = []
+      deferred.append(
+          api.defer(api.step, 'flutter doctor',['flutter', 'doctor'])
       )
-      api.step(
-          'download dependencies',
-          ['flutter', 'update-packages', '-v'],
-          infra_step=True,
+      deferred.append(
+          api.defer(
+              api.step,
+              'download dependencies',
+              ['flutter', 'update-packages', '-v'],
+              infra_step=True,
+          )
       )
+      api.defer.collect(deferred)
 
     api.step(
         'flutter coverage',

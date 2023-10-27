@@ -19,6 +19,7 @@ DEPS = [
     'flutter/os_utils',
     'flutter/repo_util',
     'recipe_engine/context',
+    'recipe_engine/defer',
     'recipe_engine/path',
     'recipe_engine/properties',
     'recipe_engine/step',
@@ -50,26 +51,35 @@ def RunSteps(api):
       env, env_prefixes, api.properties.get('dependencies', [])
   )
   with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
-    with api.step.nest('prepare environment'), api.step.defer_results():
-      api.step(
-          'flutter doctor',
-          ['flutter', 'doctor'],
+    with api.step.nest('prepare environment'):
+      deferred = []
+      deferred.append(
+          api.defer(api.step, 'flutter doctor', ['flutter', 'doctor'])
       )
-      api.step(
-          'download dependencies',
-          ['flutter', 'update-packages', '-v'],
-          infra_step=True,
+      deferred.append(
+          api.defer(
+              api.step,
+              'download dependencies',
+              ['flutter', 'update-packages', '-v'],
+              infra_step=True,
+          )
       )
-    with api.step.defer_results():
-      api.adhoc_validation.run(
-          api.properties.get('validation_name'),
-          api.properties.get('validation'), env, env_prefixes,
-          api.properties.get('secrets', {})
-      )
-      # This is to clean up leaked processes.
-      api.os_utils.kill_processes()
-      # Collect memory/cpu/process after task execution.
-      api.os_utils.collect_os_info()
+      api.defer.collect(deferred)
+
+    deferred = []
+    deferred.append(
+        api.defer(
+            api.adhoc_validation.run,
+            api.properties.get('validation_name'),
+            api.properties.get('validation'), env, env_prefixes,
+            api.properties.get('secrets', {})
+        )
+    )
+    # This is to clean up leaked processes.
+    deferred.append(api.defer(api.os_utils.kill_processes))
+    # Collect memory/cpu/process after task execution.
+    deferred.append(api.defer(api.os_utils.collect_os_info))
+    api.defer.collect(deferred)
 
 
 def GenTests(api):

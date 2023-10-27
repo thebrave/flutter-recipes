@@ -48,10 +48,11 @@
   },
   {
     "cmd": [
-      "luci-auth",
-      "token",
-      "-lifetime",
-      "3m"
+      "prpc",
+      "call",
+      "-format=json",
+      "config.luci.app",
+      "config.service.v2.Configs.GetConfig"
     ],
     "infra_step": true,
     "luci_context": {
@@ -66,40 +67,14 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch flutter commit-queue.cfg.get access token for default account",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::url]/resources/pycurl.py",
-      "--url",
-      "https://luci-config.appspot.com/_ah/api/config/v1/config_sets/projects/flutter/config/commit-queue.cfg",
-      "--status-json",
-      "/path/to/tmp/json",
-      "--outfile",
-      "/path/to/tmp/json",
-      "--headers-json",
-      "{\"Authorization\": \"Bearer extra.secret.token.should.not.be.logged\"}"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "fuchsia:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "fetch flutter commit-queue.cfg.get",
+    "stdin": "{\n  \"config_set\": \"projects/flutter\",\n  \"path\": \"commit-queue.cfg\"\n}",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"raw_content\": \"CiAgICBzdWJtaXRfb3B0aW9uczogewogICAgICBtYXhfYnVyc3Q6IDQKICAgICAgYnVyc3RfZGVsYXk6IHsKICAgICAgICBzZWNvbmRzOiA0ODAKICAgICAgfQogICAgfQoKICAgIGNvbmZpZ19ncm91cHM6IHsKICAgICAgZ2Vycml0OiB7CiAgICAgICAgdXJsOiAiaHR0cHM6Ly9mdWNoc2lhLXJldmlldy5nb29nbGVzb3VyY2UuY29tIgogICAgICAgIHByb2plY3RzOiB7CiAgICAgICAgICBuYW1lOiAiY29iYWx0IgogICAgICAgICAgcmVmX3JlZ2V4cDogInJlZnMvaGVhZHMvLisiCiAgICAgICAgfQogICAgICB9CgogICAgICB2ZXJpZmllcnM6IHsKICAgICAgICBnZXJyaXRfY3FfYWJpbGl0eTogewogICAgICAgICAgY29tbWl0dGVyX2xpc3Q6ICJwcm9qZWN0LWZ1Y2hzaWEtY29tbWl0dGVycyIKICAgICAgICAgIGRyeV9ydW5fYWNjZXNzX2xpc3Q6ICJwcm9qZWN0LWZ1Y2hzaWEtdHJ5am9iLWFjY2VzcyIKICAgICAgICB9CiAgICAgICAgdHJ5am9iOiB7CiAgICAgICAgICBidWlsZGVyczogewogICAgICAgICAgICBuYW1lOiAiZnVjaHNpYS90cnkvY29iYWx0LXg2NC1saW51eCIKICAgICAgICAgIH0KICAgICAgICB9CiAgICAgIH0KICAgIH0KCiAgICBjb25maWdfZ3JvdXBzOiB7CiAgICAgIGdlcnJpdDogewogICAgICAgIHVybDogImh0dHBzOi8vZnVjaHNpYS1yZXZpZXcuZ29vZ2xlc291cmNlLmNvbSIKICAgICAgICBwcm9qZWN0czogewogICAgICAgICAgbmFtZTogImRvY3MiCiAgICAgICAgICByZWZfcmVnZXhwOiAicmVmcy9oZWFkcy8uKyIKICAgICAgICB9CiAgICAgIH0KCiAgICAgIHZlcmlmaWVyczogewogICAgICAgIGdlcnJpdF9jcV9hYmlsaXR5OiB7CiAgICAgICAgICBjb21taXR0ZXJfbGlzdDogInByb2plY3QtZnVjaHNpYS1jb21taXR0ZXJzIgogICAgICAgICAgZHJ5X3J1bl9hY2Nlc3NfbGlzdDogInByb2plY3QtZnVjaHNpYS10cnlqb2ItYWNjZXNzIgogICAgICAgIH0KICAgICAgICB0cnlqb2I6IHsKICAgICAgICAgIGJ1aWxkZXJzOiB7CiAgICAgICAgICAgIG5hbWU6ICJmdWNoc2lhL3RyeS9kb2MtY2hlY2tlciIKICAgICAgICAgICAgZXhwZXJpbWVudF9wZXJjZW50YWdlOiAxMDAKICAgICAgICAgIH0KICAgICAgICAgIGJ1aWxkZXJzOiB7CiAgICAgICAgICAgIG5hbWU6ICJmdWNoc2lhL3RyeS9zZWNyZXQtdHJ5am9iIgogICAgICAgICAgICByZXN1bHRfdmlzaWJpbGl0eTogQ09NTUVOVF9MRVZFTF9SRVNUUklDVEVECiAgICAgICAgICB9CiAgICAgICAgfQogICAgICB9CiAgICB9CgogICAgY29uZmlnX2dyb3VwczogewogICAgICBnZXJyaXQ6IHsKICAgICAgICB1cmw6ICJodHRwczovL2Z1Y2hzaWEtcmV2aWV3Lmdvb2dsZXNvdXJjZS5jb20iCiAgICAgICAgcHJvamVjdHM6IHsKICAgICAgICAgIG5hbWU6ICJmdWNoc2lhIgogICAgICAgICAgcmVmX3JlZ2V4cDogInJlZnMvaGVhZHMvLisiCiAgICAgICAgfQogICAgICB9CiAgICAgIHZlcmlmaWVyczogewogICAgICAgIGdlcnJpdF9jcV9hYmlsaXR5OiB7CiAgICAgICAgICBjb21taXR0ZXJfbGlzdDogInByb2plY3QtZnVjaHNpYS1jb21taXR0ZXJzIgogICAgICAgICAgZHJ5X3J1bl9hY2Nlc3NfbGlzdDogInByb2plY3QtZnVjaHNpYS10cnlqb2ItYWNjZXNzIgogICAgICAgIH0KICAgICAgICB0cmVlX3N0YXR1czogewogICAgICAgICAgdXJsOiAiaHR0cHM6Ly9mdWNoc2lhLXN0ZW0tc3RhdHVzLmFwcHNwb3QuY29tIgogICAgICAgIH0KCiAgICAgICAgdHJ5am9iOiB7CiAgICAgICAgICBidWlsZGVyczogewogICAgICAgICAgICBuYW1lOiAiZnVjaHNpYS90cnkvY29yZS5hcm02NC1kZWJ1ZyIKICAgICAgICAgIH0KICAgICAgICAgIGJ1aWxkZXJzOiB7CiAgICAgICAgICAgIG5hbWU6ICJmdWNoc2lhL3RyeS9jb3JlLng2NC1kZWJ1ZyIKICAgICAgICAgIH0KICAgICAgICB9CiAgICAgIH0KICAgIH0KICAgIA==\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
     ]
   },
   {
@@ -437,9 +412,16 @@
   },
   {
     "cmd": [],
-    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gitiles",
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure infra/tools/luci/gitiles/${platform}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure infra/tools/luci/gitiles/${platform}.get packages",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
@@ -450,8 +432,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[fuchsia::gitiles]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
+      "RECIPE_MODULE[fuchsia::gitiles]/resources/cipd.ensure",
+      "/path/to/tmp/"
     ],
     "cwd": "[START_DIR]/recipe_path",
     "infra_step": true,
@@ -467,19 +449,16 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gitiles.read manifest",
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure infra/tools/luci/gitiles/${platform}.get packages.read ensure file",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gitiles\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_LOG_LINE@cipd.ensure@infra/tools/luci/gitiles/${platform} version:pinned-version@@@",
+      "@@@STEP_LOG_END@cipd.ensure@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gitiles.install path/to/gitiles",
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure infra/tools/luci/gitiles/${platform}.install infra/tools/luci/gitiles",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -494,7 +473,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/path/to/gitiles/version%3Apinned-version"
+      "[START_DIR]/cipd_tool/infra/tools/luci/gitiles/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07"
     ],
     "cwd": "[START_DIR]/recipe_path",
     "infra_step": true,
@@ -510,7 +489,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gitiles.install path/to/gitiles.ensure package directory",
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure infra/tools/luci/gitiles/${platform}.install infra/tools/luci/gitiles.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@"
     ]
@@ -520,9 +499,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/gitiles/version%3Apinned-version",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gitiles/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07",
       "-ensure-file",
-      "path/to/gitiles version:pinned-version",
+      "infra/tools/luci/gitiles/${platform} version:pinned-version",
       "-max-threads",
       "0",
       "-json-output",
@@ -542,7 +521,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gitiles.install path/to/gitiles.ensure_installed",
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure infra/tools/luci/gitiles/${platform}.install infra/tools/luci/gitiles.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -550,7 +529,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gitiles\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/gitiles/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -560,7 +539,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gitiles/version%3Apinned-version/gitiles",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gitiles/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/gitiles",
       "log",
       "-json-output",
       "/path/to/tmp/json",
@@ -622,9 +601,16 @@
   },
   {
     "cmd": [],
-    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gerrit",
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure infra/tools/luci/gerrit/${platform}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure infra/tools/luci/gerrit/${platform}.get packages",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
@@ -635,8 +621,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[fuchsia::gerrit]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
+      "RECIPE_MODULE[fuchsia::gerrit]/resources/cipd.ensure",
+      "/path/to/tmp/"
     ],
     "cwd": "[START_DIR]/recipe_path",
     "infra_step": true,
@@ -652,19 +638,16 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gerrit.read manifest",
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure infra/tools/luci/gerrit/${platform}.get packages.read ensure file",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gerrit\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_LOG_LINE@cipd.ensure@infra/tools/luci/gerrit/${platform} version:pinned-version@@@",
+      "@@@STEP_LOG_END@cipd.ensure@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gerrit.install path/to/gerrit",
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -679,7 +662,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version"
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07"
     ],
     "cwd": "[START_DIR]/recipe_path",
     "infra_step": true,
@@ -695,7 +678,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gerrit.install path/to/gerrit.ensure package directory",
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@"
     ]
@@ -705,9 +688,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07",
       "-ensure-file",
-      "path/to/gerrit version:pinned-version",
+      "infra/tools/luci/gerrit/${platform} version:pinned-version",
       "-max-threads",
       "0",
       "-json-output",
@@ -727,7 +710,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "get builders.fuchsia/try/core.arm64-debug.ensure gerrit.install path/to/gerrit.ensure_installed",
+    "name": "get builders.fuchsia/try/core.arm64-debug.ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@4@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -735,7 +718,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gerrit\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/gerrit/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -745,7 +728,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version/gerrit",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/gerrit",
       "change-detail",
       "-host",
       "https://flutter-review.googlesource.com",

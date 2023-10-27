@@ -1089,9 +1089,16 @@
   },
   {
     "cmd": [],
-    "name": "setup goma.ensure cpython3",
+    "name": "setup goma.ensure infra/3pp/tools/cpython3/${platform}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "setup goma.ensure infra/3pp/tools/cpython3/${platform}.get packages",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -1102,8 +1109,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[fuchsia::python3]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
+      "RECIPE_MODULE[fuchsia::python3]/resources/cipd.ensure",
+      "/path/to/tmp/"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1147,19 +1154,16 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "setup goma.ensure cpython3.read manifest",
+    "name": "setup goma.ensure infra/3pp/tools/cpython3/${platform}.get packages.read ensure file",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/cpython3\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@cipd.ensure@infra/3pp/tools/cpython3/${platform} version:pinned-version@@@",
+      "@@@STEP_LOG_END@cipd.ensure@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "setup goma.ensure cpython3.install path/to/cpython3",
+    "name": "setup goma.ensure infra/3pp/tools/cpython3/${platform}.install infra/3pp/tools/cpython3",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1174,7 +1178,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version"
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1218,7 +1222,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "setup goma.ensure cpython3.install path/to/cpython3.ensure package directory",
+    "name": "setup goma.ensure infra/3pp/tools/cpython3/${platform}.install infra/3pp/tools/cpython3.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -1228,9 +1232,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07",
       "-ensure-file",
-      "path/to/cpython3 version:pinned-version",
+      "infra/3pp/tools/cpython3/${platform} version:pinned-version",
       "-max-threads",
       "0",
       "-json-output",
@@ -1278,7 +1282,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "setup goma.ensure cpython3.install path/to/cpython3.ensure_installed",
+    "name": "setup goma.ensure infra/3pp/tools/cpython3/${platform}.install infra/3pp/tools/cpython3.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -1286,7 +1290,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/cpython3\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/cpython3/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -1296,7 +1300,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -1400,7 +1404,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "/path/to/tmp/json"
@@ -1458,7 +1462,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -1511,7 +1515,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -1675,9 +1679,16 @@
   },
   {
     "cmd": [],
-    "name": "teardown goma.ensure bqupload",
+    "name": "teardown goma.ensure infra/tools/bqupload/${platform}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "teardown goma.ensure infra/tools/bqupload/${platform}.get packages",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -1688,8 +1699,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[fuchsia::bqupload]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
+      "RECIPE_MODULE[fuchsia::bqupload]/resources/cipd.ensure",
+      "/path/to/tmp/"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1725,19 +1736,16 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma.ensure bqupload.read manifest",
+    "name": "teardown goma.ensure infra/tools/bqupload/${platform}.get packages.read ensure file",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/bqupload\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@cipd.ensure@infra/tools/bqupload/${platform} version:pinned-version@@@",
+      "@@@STEP_LOG_END@cipd.ensure@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "teardown goma.ensure bqupload.install path/to/bqupload",
+    "name": "teardown goma.ensure infra/tools/bqupload/${platform}.install infra/tools/bqupload",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1752,7 +1760,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version"
+      "[START_DIR]/cipd_tool/infra/tools/bqupload/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -1788,7 +1796,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma.ensure bqupload.install path/to/bqupload.ensure package directory",
+    "name": "teardown goma.ensure infra/tools/bqupload/${platform}.install infra/tools/bqupload.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -1798,9 +1806,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version",
+      "[START_DIR]/cipd_tool/infra/tools/bqupload/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07",
       "-ensure-file",
-      "path/to/bqupload version:pinned-version",
+      "infra/tools/bqupload/${platform} version:pinned-version",
       "-max-threads",
       "0",
       "-json-output",
@@ -1840,7 +1848,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "teardown goma.ensure bqupload.install path/to/bqupload.ensure_installed",
+    "name": "teardown goma.ensure infra/tools/bqupload/${platform}.install infra/tools/bqupload.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -1848,7 +1856,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/bqupload\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/bqupload/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -1858,7 +1866,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
+      "[START_DIR]/cipd_tool/infra/tools/bqupload/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bqupload",
       "fuchsia-infra.artifacts.builds_beta_goma",
       "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:53:21.500000\", \"time_stamp_int\": 1337000003000}}"
     ],
@@ -1998,7 +2006,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
       "[CACHE]/goma/client/goma_ctl.py",
       "restart"
     ],
@@ -2102,7 +2110,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
       "[CACHE]/goma/client/goma_ctl.py",
       "jsonstatus",
       "/path/to/tmp/json"
@@ -2160,7 +2168,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
       "[CACHE]/goma/client/goma_ctl.py",
       "stat"
     ],
@@ -2213,7 +2221,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
       "[CACHE]/goma/client/goma_ctl.py",
       "stop"
     ],
@@ -2377,7 +2385,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/bqupload/version%3Apinned-version/bqupload",
+      "[START_DIR]/cipd_tool/infra/tools/bqupload/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bqupload",
       "fuchsia-infra.artifacts.builds_beta_goma",
       "{\"build_info\": {\"build_id\": 8945511751514863184, \"builder\": \"Linux Engine\", \"time_stamp\": \"2012-05-14 12:53:24.500000\", \"time_stamp_int\": 1337000006000}}"
     ],
@@ -2675,7 +2683,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/infra/tools/luci/cas/git_revision%3Amock_infra_git_revision"
+      "[START_DIR]/cipd_tool/infra/tools/luci/cas/33f9d887e5b8aeaaf9d65506acccfa8da2c480712e534a23a79e92c342c44bee"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
@@ -2719,7 +2727,7 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/infra/tools/luci/cas/git_revision%3Amock_infra_git_revision",
+      "[START_DIR]/cipd_tool/infra/tools/luci/cas/33f9d887e5b8aeaaf9d65506acccfa8da2c480712e534a23a79e92c342c44bee",
       "-ensure-file",
       "infra/tools/luci/cas/${platform} git_revision:mock_infra_git_revision",
       "-max-threads",
@@ -2777,7 +2785,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/tools/luci/cas/git_revision%3Amock_infra_git_revision/cas",
+      "[START_DIR]/cipd_tool/infra/tools/luci/cas/33f9d887e5b8aeaaf9d65506acccfa8da2c480712e534a23a79e92c342c44bee/cas",
       "download",
       "-cas-instance",
       "projects/example-cas-server/instances/default_instance",

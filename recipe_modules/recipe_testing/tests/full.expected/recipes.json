@@ -48,10 +48,11 @@
   },
   {
     "cmd": [
-      "luci-auth",
-      "token",
-      "-lifetime",
-      "3m"
+      "prpc",
+      "call",
+      "-format=json",
+      "config.luci.app",
+      "config.service.v2.Configs.GetConfig"
     ],
     "infra_step": true,
     "luci_context": {
@@ -66,40 +67,14 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "fetch flutter commit-queue.cfg.get access token for default account",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::url]/resources/pycurl.py",
-      "--url",
-      "https://luci-config.appspot.com/_ah/api/config/v1/config_sets/projects/flutter/config/commit-queue.cfg",
-      "--status-json",
-      "/path/to/tmp/json",
-      "--outfile",
-      "/path/to/tmp/json",
-      "--headers-json",
-      "{\"Authorization\": \"Bearer extra.secret.token.should.not.be.logged\"}"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "fuchsia:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
     "name": "fetch flutter commit-queue.cfg.get",
+    "stdin": "{\n  \"config_set\": \"projects/flutter\",\n  \"path\": \"commit-queue.cfg\"\n}",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"raw_content\": \"CiAgICBzdWJtaXRfb3B0aW9uczogewogICAgICBtYXhfYnVyc3Q6IDQKICAgICAgYnVyc3RfZGVsYXk6IHsKICAgICAgICBzZWNvbmRzOiA0ODAKICAgICAgfQogICAgfQoKICAgIGNvbmZpZ19ncm91cHM6IHsKICAgICAgZ2Vycml0OiB7CiAgICAgICAgdXJsOiAiaHR0cHM6Ly9mdWNoc2lhLXJldmlldy5nb29nbGVzb3VyY2UuY29tIgogICAgICAgIHByb2plY3RzOiB7CiAgICAgICAgICBuYW1lOiAiY29iYWx0IgogICAgICAgICAgcmVmX3JlZ2V4cDogInJlZnMvaGVhZHMvLisiCiAgICAgICAgfQogICAgICB9CgogICAgICB2ZXJpZmllcnM6IHsKICAgICAgICBnZXJyaXRfY3FfYWJpbGl0eTogewogICAgICAgICAgY29tbWl0dGVyX2xpc3Q6ICJwcm9qZWN0LWZ1Y2hzaWEtY29tbWl0dGVycyIKICAgICAgICAgIGRyeV9ydW5fYWNjZXNzX2xpc3Q6ICJwcm9qZWN0LWZ1Y2hzaWEtdHJ5am9iLWFjY2VzcyIKICAgICAgICB9CiAgICAgICAgdHJ5am9iOiB7CiAgICAgICAgICBidWlsZGVyczogewogICAgICAgICAgICBuYW1lOiAiZnVjaHNpYS90cnkvcmVjaXBlcyIKICAgICAgICAgIH0KICAgICAgICB9CiAgICAgIH0KICAgIH0KICAgIA==\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
     ]
   },
   {

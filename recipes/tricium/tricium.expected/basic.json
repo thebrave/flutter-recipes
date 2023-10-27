@@ -668,9 +668,16 @@
   },
   {
     "cmd": [],
-    "name": "check commit tags.ensure gerrit",
+    "name": "check commit tags.ensure infra/tools/luci/gerrit/${platform}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "check commit tags.ensure infra/tools/luci/gerrit/${platform}.get packages",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -681,8 +688,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[fuchsia::gerrit]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
+      "RECIPE_MODULE[fuchsia::gerrit]/resources/cipd.ensure",
+      "/path/to/tmp/"
     ],
     "infra_step": true,
     "luci_context": {
@@ -697,19 +704,16 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "check commit tags.ensure gerrit.read manifest",
+    "name": "check commit tags.ensure infra/tools/luci/gerrit/${platform}.get packages.read ensure file",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gerrit\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@cipd.ensure@infra/tools/luci/gerrit/${platform} version:pinned-version@@@",
+      "@@@STEP_LOG_END@cipd.ensure@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "check commit tags.ensure gerrit.install path/to/gerrit",
+    "name": "check commit tags.ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -724,7 +728,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version"
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07"
     ],
     "infra_step": true,
     "luci_context": {
@@ -739,7 +743,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "check commit tags.ensure gerrit.install path/to/gerrit.ensure package directory",
+    "name": "check commit tags.ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -749,9 +753,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07",
       "-ensure-file",
-      "path/to/gerrit version:pinned-version",
+      "infra/tools/luci/gerrit/${platform} version:pinned-version",
       "-max-threads",
       "0",
       "-json-output",
@@ -770,7 +774,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "check commit tags.ensure gerrit.install path/to/gerrit.ensure_installed",
+    "name": "check commit tags.ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -778,7 +782,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gerrit\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/gerrit/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -788,7 +792,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version/gerrit",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/gerrit",
       "change-detail",
       "-host",
       "https://fuchsia-review.googlesource.com",
@@ -964,134 +968,9 @@
   },
   {
     "cmd": [],
-    "name": "analyze engine.py"
-  },
-  {
-    "cmd": [
-      "git",
-      "diff-tree",
-      "--no-commit-id",
-      "--diff-filter=d",
-      "-U0",
-      "HEAD",
-      "--",
-      "engine.py"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "fuchsia:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "analyze engine.py.get change diff",
-    "timeout": 600.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@change_line_ranges@[Range(start=1, end=5)]@@@",
-      "@@@STEP_LOG_END@change_line_ranges@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "analyze engine.py.yapf",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd/yapf",
-      "--in-place",
-      "engine.py"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "fuchsia:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "analyze engine.py.yapf.run",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "diff-index",
-      "--no-commit-id",
-      "--diff-filter=d",
-      "-U0",
-      "HEAD",
-      "--",
-      "engine.py"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "fuchsia:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "analyze engine.py.get formatted diff",
-    "timeout": 600.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@formatted_line_ranges@[Range(start=1, end=3)]@@@",
-      "@@@STEP_LOG_END@formatted_line_ranges@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "reset",
-      "--hard",
-      "HEAD"
-    ],
-    "cwd": "[START_DIR]/recipes",
-    "luci_context": {
-      "realm": {
-        "name": "fuchsia:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "analyze engine.py.reset",
-    "timeout": 600.0,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
     "name": "write results",
     "~followup_annotations": [
-      "@@@SET_BUILD_PROPERTY@tricium@\"{\\n\\\"comments\\\": [\\n{\\n\\\"category\\\": \\\"Format/YAPF\\\",\\n\\\"message\\\": \\\"File not formatted properly.\\\\nRun the following to format:\\\\n\\\\nyapf --in-place engine.py\\\",\\n\\\"path\\\": \\\"engine.py\\\"\\n}\\n]\\n}\"@@@"
+      "@@@SET_BUILD_PROPERTY@tricium@\"{}\"@@@"
     ]
   },
   {

@@ -36,7 +36,7 @@ _CheckoutResult = collections.namedtuple(
     '_CheckoutResult', ['root_dir', 'release_version']
 )
 
-REMOTE='https://flutter.googlesource.com/recipes'
+REMOTE = 'https://flutter.googlesource.com/recipes'
 
 
 def RunSteps(api, props):
@@ -85,13 +85,13 @@ index e684c1e..a76a10e 100644
 
   def change_diff_data(filename):
     return api.step_data(
-        f"analyze {filename}.get change diff",
+        f"check for inclusivity.get change diff for {filename}",
         api.raw_io.stream_output_text(DIFF.format(filename)),
     )
 
   def formatted_diff_data(filename):
     return api.step_data(
-        f"analyze {filename}.get formatted diff",
+        f"check for inclusivity.get change diff for {filename}",
         api.raw_io.stream_output_text(DIFF.format(filename)),
     )
 

@@ -675,7 +675,14 @@
   },
   {
     "cmd": [],
-    "name": "ensure gcloud"
+    "name": "ensure infra/3pp/tools/gcloud/${platform}"
+  },
+  {
+    "cmd": [],
+    "name": "ensure infra/3pp/tools/gcloud/${platform}.get packages",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -685,8 +692,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[fuchsia::gcloud]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
+      "RECIPE_MODULE[fuchsia::gcloud]/resources/cipd.ensure",
+      "/path/to/tmp/"
     ],
     "infra_step": true,
     "luci_context": {
@@ -701,19 +708,16 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure gcloud.read manifest",
+    "name": "ensure infra/3pp/tools/gcloud/${platform}.get packages.read ensure file",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gcloud\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@cipd.ensure@infra/3pp/tools/gcloud/${platform} version:pinned-version@@@",
+      "@@@STEP_LOG_END@cipd.ensure@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "ensure gcloud.install path/to/gcloud",
+    "name": "ensure infra/3pp/tools/gcloud/${platform}.install infra/3pp/tools/gcloud",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -728,7 +732,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/path/to/gcloud/version%3Apinned-version"
+      "[START_DIR]/cipd_tool/infra/3pp/tools/gcloud/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07"
     ],
     "infra_step": true,
     "luci_context": {
@@ -743,7 +747,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure gcloud.install path/to/gcloud.ensure package directory",
+    "name": "ensure infra/3pp/tools/gcloud/${platform}.install infra/3pp/tools/gcloud.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -753,9 +757,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/gcloud/version%3Apinned-version",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/gcloud/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07",
       "-ensure-file",
-      "path/to/gcloud version:pinned-version",
+      "infra/3pp/tools/gcloud/${platform} version:pinned-version",
       "-max-threads",
       "0",
       "-json-output",
@@ -774,7 +778,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure gcloud.install path/to/gcloud.ensure_installed",
+    "name": "ensure infra/3pp/tools/gcloud/${platform}.install infra/3pp/tools/gcloud.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -782,7 +786,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gcloud\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/gcloud/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -792,7 +796,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gcloud/version%3Apinned-version/bin/gcloud",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/gcloud/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/gcloud",
       "compute",
       "images",
       "describe-from-family",
@@ -1023,7 +1027,14 @@
   },
   {
     "cmd": [],
-    "name": "ensure gerrit"
+    "name": "ensure infra/tools/luci/gerrit/${platform}"
+  },
+  {
+    "cmd": [],
+    "name": "ensure infra/tools/luci/gerrit/${platform}.get packages",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -1033,8 +1044,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[fuchsia::gerrit]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
+      "RECIPE_MODULE[fuchsia::gerrit]/resources/cipd.ensure",
+      "/path/to/tmp/"
     ],
     "cwd": "[START_DIR]/dash-internal-salt",
     "infra_step": true,
@@ -1050,19 +1061,16 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure gerrit.read manifest",
+    "name": "ensure infra/tools/luci/gerrit/${platform}.get packages.read ensure file",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gerrit\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@cipd.ensure@infra/tools/luci/gerrit/${platform} version:pinned-version@@@",
+      "@@@STEP_LOG_END@cipd.ensure@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "ensure gerrit.install path/to/gerrit",
+    "name": "ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -1077,7 +1085,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version"
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07"
     ],
     "cwd": "[START_DIR]/dash-internal-salt",
     "infra_step": true,
@@ -1093,7 +1101,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure gerrit.install path/to/gerrit.ensure package directory",
+    "name": "ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1103,9 +1111,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07",
       "-ensure-file",
-      "path/to/gerrit version:pinned-version",
+      "infra/tools/luci/gerrit/${platform} version:pinned-version",
       "-max-threads",
       "0",
       "-json-output",
@@ -1125,7 +1133,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure gerrit.install path/to/gerrit.ensure_installed",
+    "name": "ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -1133,7 +1141,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gerrit\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/gerrit/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -1143,7 +1151,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version/gerrit",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/gerrit",
       "change-query",
       "-host",
       "https://dash-internal-review.googlesource.com",
@@ -1247,7 +1255,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version/gerrit",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/gerrit",
       "change-detail",
       "-host",
       "https://dash-internal-review.googlesource.com",

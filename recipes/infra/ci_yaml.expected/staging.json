@@ -1052,7 +1052,14 @@
   },
   {
     "cmd": [],
-    "name": "ensure gerrit"
+    "name": "ensure infra/tools/luci/gerrit/${platform}"
+  },
+  {
+    "cmd": [],
+    "name": "ensure infra/tools/luci/gerrit/${platform}.get packages",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -1062,8 +1069,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[fuchsia::gerrit]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
+      "RECIPE_MODULE[fuchsia::gerrit]/resources/cipd.ensure",
+      "/path/to/tmp/"
     ],
     "cwd": "[START_DIR]/infra",
     "infra_step": true,
@@ -1079,19 +1086,16 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure gerrit.read manifest",
+    "name": "ensure infra/tools/luci/gerrit/${platform}.get packages.read ensure file",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/gerrit\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@cipd.ensure@infra/tools/luci/gerrit/${platform} version:pinned-version@@@",
+      "@@@STEP_LOG_END@cipd.ensure@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "ensure gerrit.install path/to/gerrit",
+    "name": "ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -1106,7 +1110,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version"
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07"
     ],
     "cwd": "[START_DIR]/infra",
     "infra_step": true,
@@ -1122,7 +1126,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure gerrit.install path/to/gerrit.ensure package directory",
+    "name": "ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1132,9 +1136,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07",
       "-ensure-file",
-      "path/to/gerrit version:pinned-version",
+      "infra/tools/luci/gerrit/${platform} version:pinned-version",
       "-max-threads",
       "0",
       "-json-output",
@@ -1154,7 +1158,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure gerrit.install path/to/gerrit.ensure_installed",
+    "name": "ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -1162,7 +1166,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/gerrit\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/gerrit/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -1172,7 +1176,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version/gerrit",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/gerrit",
       "change-query",
       "-host",
       "https://flutter-review.googlesource.com",
@@ -1276,7 +1280,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/gerrit/version%3Apinned-version/gerrit",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/gerrit",
       "change-detail",
       "-host",
       "https://flutter-review.googlesource.com",

@@ -5,9 +5,16 @@
   },
   {
     "cmd": [],
-    "name": "setup goma.ensure cpython3",
+    "name": "setup goma.ensure infra/3pp/tools/cpython3/${platform}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "setup goma.ensure infra/3pp/tools/cpython3/${platform}.get packages",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -18,8 +25,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[fuchsia::python3]/resources/tool_manifest.json",
-      "/path/to/tmp/json"
+      "RECIPE_MODULE[fuchsia::python3]/resources/cipd.ensure",
+      "/path/to/tmp/"
     ],
     "env": {
       "GLOG_log_dir": "[CLEANUP]",
@@ -34,19 +41,16 @@
       "GOMA_USE_LOCAL": "False"
     },
     "infra_step": true,
-    "name": "setup goma.ensure cpython3.read manifest",
+    "name": "setup goma.ensure infra/3pp/tools/cpython3/${platform}.get packages.read ensure file",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@{@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"path\": \"path/to/cpython3\",@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@  \"version\": \"version:pinned-version\"@@@",
-      "@@@STEP_LOG_LINE@tool_manifest.json@}@@@",
-      "@@@STEP_LOG_END@tool_manifest.json@@@"
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@cipd.ensure@infra/3pp/tools/cpython3/${platform} version:pinned-version@@@",
+      "@@@STEP_LOG_END@cipd.ensure@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "setup goma.ensure cpython3.install path/to/cpython3",
+    "name": "setup goma.ensure infra/3pp/tools/cpython3/${platform}.install infra/3pp/tools/cpython3",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -61,7 +65,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version"
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07"
     ],
     "env": {
       "GLOG_log_dir": "[CLEANUP]",
@@ -76,7 +80,7 @@
       "GOMA_USE_LOCAL": "False"
     },
     "infra_step": true,
-    "name": "setup goma.ensure cpython3.install path/to/cpython3.ensure package directory",
+    "name": "setup goma.ensure infra/3pp/tools/cpython3/${platform}.install infra/3pp/tools/cpython3.ensure package directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -86,9 +90,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07",
       "-ensure-file",
-      "path/to/cpython3 version:pinned-version",
+      "infra/3pp/tools/cpython3/${platform} version:pinned-version",
       "-max-threads",
       "0",
       "-json-output",
@@ -107,7 +111,7 @@
       "GOMA_USE_LOCAL": "False"
     },
     "infra_step": true,
-    "name": "setup goma.ensure cpython3.install path/to/cpython3.ensure_installed",
+    "name": "setup goma.ensure infra/3pp/tools/cpython3/${platform}.install infra/3pp/tools/cpython3.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -115,7 +119,7 @@
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"path/to/cpython3\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/cpython3/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -125,7 +129,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
       "path/to/goma/goma_ctl.py",
       "restart"
     ],
@@ -164,7 +168,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
       "path/to/goma/goma_ctl.py",
       "jsonstatus",
       "/path/to/tmp/json"
@@ -193,7 +197,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
       "path/to/goma/goma_ctl.py",
       "stat"
     ],
@@ -217,7 +221,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/path/to/cpython3/version%3Apinned-version/bin/python3",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
       "path/to/goma/goma_ctl.py",
       "stop"
     ],

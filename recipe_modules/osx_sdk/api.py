@@ -460,6 +460,15 @@ class OSXSDKApi(recipe_api.RecipeApi):
             step_text=simulator_cleanup_stderr,
         )
 
+      # Wait until runtimes are unmounted
+      self.m.retry.basic_wrap(
+          self._is_runtimes_unmounted,
+          step_name='Wait for runtimes to unmount',
+          sleep=3.0,
+          backoff_factor=2,
+          max_attempts=3
+      )
+
       if not self._runtime_versions:
         return
 
@@ -470,6 +479,21 @@ class OSXSDKApi(recipe_api.RecipeApi):
             'Cleaning up runtime cache %s' % version.lower(),
             runtime_dmg_cache_dir
         )
+
+  def _is_runtimes_unmounted(self):
+    '''Check if more than one runtime is currently mounted. If more than one
+    is mounted, raise a `StepFailure`.
+    '''
+    runtime_simulators = self.m.step(
+        'list runtimes', ['xcrun', 'simctl', 'list', 'runtimes'],
+        stdout=self.m.raw_io.output_text(add_output_log=True)
+    ).stdout.splitlines()
+
+    # There should not be more than one runtime after deleting all. There may
+    # be one if the runtime is included within Xcode, which means it won't be
+    # unmounted.
+    if len(runtime_simulators[1:]) > 1:
+      raise self.m.step.StepFailure('Runtimes not unmounted yet')
 
   def _is_runtime_mounted(
       self, runtime_version, xcode_version, runtime_simulators

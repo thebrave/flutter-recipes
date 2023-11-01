@@ -5,6 +5,7 @@
 DEPS = [
     'flutter/os_utils',
     'flutter/osx_sdk',
+    'flutter/retry',
     'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/path',
@@ -284,6 +285,15 @@ def GenTests(api):
           'Cleaning up runtimes cache.Cleaning up mounted simulator runtimes',
           stdout=api.raw_io.output_text('No matching images found to delete'),
           stderr=api.raw_io.output_text('No matching images found to delete')
+      ),
+      api.step_data(
+          'Cleaning up runtimes cache.list runtimes',
+          stdout=api.raw_io.output_text(
+              '== Runtimes ==\n' +
+              'iOS 16.4 (16.2 - 20E247) - com.apple.CoreSimulator.SimRuntime.iOS-16-4\n'
+              +
+              'iOS 16.2 (16.2 - 20C52) - com.apple.CoreSimulator.SimRuntime.iOS-16-2'
+          )
       ),
       api.step_data(
           'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg',

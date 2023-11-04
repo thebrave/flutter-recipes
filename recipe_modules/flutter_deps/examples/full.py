@@ -76,22 +76,23 @@ def RunSteps(api):
   api.flutter_deps.vs_build(env, env_prefixes, '')
   api.flutter_deps.ruby(env, env_prefixes, '')
   api.flutter_deps.android_virtual_device(env, env_prefixes, '34')
-  
+
   with contextlib.ExitStack() as exit_stack:
     api.flutter_deps.enter_contexts(exit_stack, ['osx_sdk'], env, env_prefixes)
     api.flutter_deps.enter_contexts(
-        exit_stack, ['osx_sdk_devicelab'], env, env_prefixes
+        exit_stack, ['osx_sdk_devicelab', 'depot_tools_on_path'], env,
+        env_prefixes
     )
   if api.platform.is_linux:
     api.flutter_deps.gh_cli(env, env_prefixes, 'latest')
 
   # Gems dependency requires to run from a flutter_environment.
-  checkout_path = api.path['start_dir'].join('flutter\ sdk')
+  checkout_path = api.path['start_dir'].join(r'flutter\ sdk')
   env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
 
 
 def GenTests(api):
-  checkout_path = api.path['start_dir'].join('flutter\ sdk')    
+  checkout_path = api.path['start_dir'].join(r'flutter\ sdk')
   yield api.test(
       'basic',
       api.repo_util.flutter_environment_data(checkout_path),

@@ -638,6 +638,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'android_virtual_device': self.m.android_virtual_device,
         'osx_sdk': self.m.osx_sdk,
         'osx_sdk_devicelab': self.m.osx_sdk,
+        'depot_tools_on_path': self.m.depot_tools.on_path,
     }
 
   def enter_contexts(self, exit_stack, contexts, env, env_prefixes):
@@ -652,10 +653,13 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     available_contexts = self.contexts()
     params = (env, env_prefixes)
     for context in contexts:
+      aux_params = params
       if context == 'osx_sdk':
-        params = ('ios',)
+        aux_params = ('ios',)
       if context == 'osx_sdk_devicelab':
-        params = ('ios', True)
+        aux_params = ('ios', True)
       if context == 'android_virtual_device':
-        params = params + (env['EMULATOR_VERSION'],) # pragma: nocover
-      exit_stack.enter_context(available_contexts[context](*params))
+        aux_params = params + (env['EMULATOR_VERSION'],)  # pragma: nocover
+      if context == 'depot_tools_on_path':
+        aux_params = tuple()
+      exit_stack.enter_context(available_contexts[context](*aux_params))

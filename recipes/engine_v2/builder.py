@@ -140,7 +140,7 @@ def run_tests(api, tests, checkout, env, env_prefixes):
           api.retry.wrap(
               run_test,
               max_attempts=test.get('max_attempts', 3),
-              step_name=test.get('name')
+              step_name=step_name
           )
       finally:
         api.logs_util.upload_logs(test.get('name'))

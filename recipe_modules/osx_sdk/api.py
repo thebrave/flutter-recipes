@@ -153,6 +153,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     try:
       with self.m.context(infra_steps=True):
+        self._show_xcode_cache()
         self._setup_osx_sdk(kind, devicelab)
         runtime_simulators = self.m.step(
             'list runtimes', ['xcrun', 'simctl', 'list', 'runtimes'],
@@ -252,6 +253,9 @@ class OSXSDKApi(recipe_api.RecipeApi):
     self._install_runtimes(devicelab, app_dir, tool_dir, sdk_app, kind)
 
     return sdk_app
+
+  def _show_xcode_cache(self):
+    self.m.step('Show xcode cache', ['ls', self.m.path['cache'].join(_XCODE_CACHE_PATH)])
 
   def _install_runtimes(self, devicelab, app_dir, tool_dir, sdk_app, kind):
     '''Ensure runtimes are installed.

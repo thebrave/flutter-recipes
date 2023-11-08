@@ -34,7 +34,7 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver': '123abc',
+                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
                   'cleanup_cache': True
               }
           }
@@ -51,7 +51,7 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver': '123abc',
+                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-13-0', 'ios-14-0']
               }
           }
@@ -74,7 +74,7 @@ def GenTests(api):
           **{
               '$flutter/osx_sdk': {
                   'sdk_version': 'deadbeef',
-                  'toolchain_ver': '123abc',
+                  'toolchain_ver_intel': '123abc',
               }
           }
       ),
@@ -100,7 +100,7 @@ def GenTests(api):
           **{
               '$flutter/osx_sdk': {
                   'sdk_version': 'deadbeef',
-                  'toolchain_ver': '123abc',
+                  'toolchain_ver_intel': '123abc',
                   'xcode_cipd_package_source': 'some/package',
                   'cleanup_cache': True,
               }
@@ -115,7 +115,7 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver': '123abc',
+                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-16-4', 'ios-16-2']
               }
           }
@@ -130,7 +130,7 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver': '123abc',
+                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-16-4_14e300c']
               }
           }
@@ -184,7 +184,7 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver': '123abc',
+                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-16-4_14e300c']
               }
           }
@@ -235,7 +235,7 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver': '123abc',
+                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-16-4_14e300c']
               }
           }
@@ -275,7 +275,7 @@ def GenTests(api):
           **{
               '$flutter/osx_sdk': {
                   'sdk_version': 'deadbeef',
-                  'toolchain_ver': '123abc',
+                  'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-16-4_14e300c'],
                   'cleanup_cache': True,
               }
@@ -334,7 +334,7 @@ def GenTests(api):
           **{
               '$flutter/osx_sdk': {
                   'sdk_version': 'deadbeef',
-                  'toolchain_ver': '123abc',
+                  'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-16-4_14e300c', 'ios-16-2_14c18'],
                   'cleanup_cache': True,
               }
@@ -354,7 +354,7 @@ def GenTests(api):
           **{
               '$flutter/osx_sdk': {
                   'sdk_version': 'deadbeef',
-                  'toolchain_ver': '123abc',
+                  'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-16-4_14e300c', 'ios-16-2_14c18'],
                   'cleanup_cache': True,
               }
@@ -374,8 +374,38 @@ def GenTests(api):
           **{
               '$flutter/osx_sdk': {
                   'sdk_version': 'deadbeef',
-                  'toolchain_ver': '123abc',
+                  'toolchain_ver_intel': '123abc',
                   'cleanup_cache': True,
+              }
+          }
+      ),
+  )
+
+  yield api.test(
+      'mac_13_arm_host',
+      api.platform.name('mac'),
+      api.platform.mac_release('13.5.1'),
+      api.platform.arch('arm'),
+      api.properties(
+          **{
+              '$flutter/osx_sdk': {
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver_arm': 'ARM_toolchain_verison',
+              }
+          }
+      ),
+  )
+
+  yield api.test(
+      'mac_13_x86_host',
+      api.platform.name('mac'),
+      api.platform.mac_release('13.5.1'),
+      api.platform.arch('intel'),
+      api.properties(
+          **{
+              '$flutter/osx_sdk': {
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver_intel': 'INTEL_toolchain_version',
               }
           }
       ),

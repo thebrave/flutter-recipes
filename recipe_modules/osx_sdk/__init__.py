@@ -35,7 +35,8 @@ PROPERTIES = {
 
       # The CIPD toolchain tool package and version
       toolchain_pkg=Single(str),
-      toolchain_ver=Single(str),
+      toolchain_ver_arm=Single(str),
+      toolchain_ver_intel=Single(str),
       # Cleanup caches
       cleanup_cache=Single(bool),
 

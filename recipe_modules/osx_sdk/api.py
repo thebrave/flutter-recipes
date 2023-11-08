@@ -64,8 +64,10 @@ class OSXSDKApi(recipe_api.RecipeApi):
     if 'cleanup_cache' in self._sdk_properties:
       self._cleanup_cache = self._sdk_properties['cleanup_cache']
 
-    if 'toolchain_ver' in self._sdk_properties:
-      self._tool_ver = self._sdk_properties['toolchain_ver'].lower()
+    if 'arm' in self.m.platform.arch and 'toolchain_ver_arm' in self._sdk_properties:
+      self._tool_ver = self._sdk_properties['toolchain_ver_arm']
+    elif 'intel' in self.m.platform.arch and 'toolchain_ver_intel' in self._sdk_properties:
+      self._tool_ver = self._sdk_properties['toolchain_ver_intel']
 
     if 'runtime_versions' in self._sdk_properties:
       # Sorts the runtime versions to make xcode cache path deterministic, without

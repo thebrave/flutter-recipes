@@ -466,13 +466,13 @@ class OSXSDKApi(recipe_api.RecipeApi):
             step_text=simulator_cleanup_stderr,
         )
 
-      # Wait until runtimes are unmounted
+      # Wait up to ~5 minutes until runtimes are unmounted.
       self.m.retry.basic_wrap(
           self._is_runtimes_unmounted,
           step_name='Wait for runtimes to unmount',
-          sleep=3.0,
+          sleep=5.0,
           backoff_factor=2,
-          max_attempts=3
+          max_attempts=7
       )
 
       if not self._runtime_versions:

@@ -380,11 +380,12 @@ def TestFuchsiaFEMU(api):
   product_name = 'terminal.%s' % arch if arch == 'x64' else 'terminal.qemu-%s' % arch
   product_transfer_manifest = api.step(
       'lookup %s product bundle' % product_name, [
-          ffx, 'product', 'lookup', product_name, sdk_id, '--base-url',
+          ffx, '--machine', 'json-pretty', 'product', 'lookup',
+          product_name, sdk_id, '--base-url',
           'gs://%s/development/%s' % (gs_bucket, sdk_id)
       ],
-      stdout=api.raw_io.output_text()
-  ).stdout.strip()
+      stdout=api.json.output(),
+  ).stdout['transfer_manifest_url']
 
   local_pb = '/tmp/local_pb'
 
@@ -549,7 +550,10 @@ def GenTests(api):
       ),
       api.step_data(
           'lookup terminal.x64 product bundle',
-          stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
+          stdout=api.json.output({
+              'name': 'terminal.x64',
+              'transfer_manifest_url': 'gs://path/to/transfer_manifest.json',
+          }),
       ),
       *fail_step_with_retries(
           'run FEMU test on x64.run v2_test', 'launch x64 emulator'
@@ -607,7 +611,10 @@ def GenTests(api):
       ),
       api.step_data(
           'lookup terminal.x64 product bundle',
-          stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
+          stdout=api.json.output({
+              'name': 'terminal.x64',
+              'transfer_manifest_url': 'gs://path/to/transfer_manifest.json',
+          }),
       ),
       *ffx_repo_list_step_data_with_retries(
           'run FEMU test on x64.run v2_test', MAX_RETRIES
@@ -666,7 +673,10 @@ def GenTests(api):
       ),
       api.step_data(
           'lookup terminal.x64 product bundle',
-          stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
+          stdout=api.json.output({
+              'name': 'terminal.x64',
+              'transfer_manifest_url': 'gs://path/to/transfer_manifest.json',
+          }),
       ),
       *ffx_repo_list_step_data_with_retries(
           'run FEMU test on x64.run flutter-embedder-test', 2
@@ -723,7 +733,10 @@ def GenTests(api):
       ),
       api.step_data(
           'lookup terminal.x64 product bundle',
-          stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
+          stdout=api.json.output({
+              'name': 'terminal.x64',
+              'transfer_manifest_url': 'gs://path/to/transfer_manifest.json',
+          }),
       ),
       ffx_repo_list_step_data(
           'run FEMU test on x64.run v2_test.get repository information'
@@ -836,7 +849,10 @@ def GenTests(api):
       ),
       api.step_data(
           'lookup terminal.x64 product bundle',
-          stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
+          stdout=api.json.output({
+              'name': 'terminal.x64',
+              'transfer_manifest_url': 'gs://path/to/transfer_manifest.json',
+          }),
       ),
       ffx_repo_list_step_data(
           'run FEMU test on x64.run dart-jit-runner-integration-test.get repository information'
@@ -888,7 +904,10 @@ def GenTests(api):
       ),
       api.step_data(
           'lookup terminal.x64 product bundle',
-          stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
+          stdout=api.json.output({
+              'name': 'terminal.x64',
+              'transfer_manifest_url': 'gs://path/to/transfer_manifest.json',
+          }),
       ),
       ffx_repo_list_step_data(
           'run FEMU test on x64.run v2_test.get repository information'
@@ -955,7 +974,10 @@ def GenTests(api):
       ),
       api.step_data(
           'lookup terminal.x64 product bundle',
-          stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
+          stdout=api.json.output({
+              'name': 'terminal.x64',
+              'transfer_manifest_url': 'gs://path/to/transfer_manifest.json',
+          }),
       ),
       ffx_repo_list_step_data(
           'run FEMU test on x64.run run-on-both-arch.get repository information'
@@ -1006,7 +1028,10 @@ def GenTests(api):
       ),
       api.step_data(
           'lookup terminal.qemu-arm64 product bundle',
-          stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
+          stdout=api.json.output({
+              'name': 'terminal.qemu-arm64',
+              'transfer_manifest_url': 'gs://path/to/transfer_manifest.json',
+          }),
       ),
       ffx_repo_list_step_data(
           'run FEMU test on arm64.run v2_test.get repository information'
@@ -1064,7 +1089,10 @@ def GenTests(api):
       ),
       api.step_data(
           'lookup terminal.x64 product bundle',
-          stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
+          stdout=api.json.output({
+              'name': 'terminal.x64',
+              'transfer_manifest_url': 'gs://path/to/transfer_manifest.json',
+          }),
       ),
       *fail_step_with_retries(
           'run FEMU test on x64.run v2_test', 'launch x64 emulator'
@@ -1125,6 +1153,13 @@ def GenTests(api):
           'read manifest',
           api.file.read_json({'id': '0.20200101.0.1'}),
       ),
+      api.step_data(
+          'lookup terminal.x64 product bundle',
+          stdout=api.json.output({
+              'name': 'terminal.x64',
+              'transfer_manifest_url': 'gs://path/to/transfer_manifest.json',
+          }),
+      ),
       *fail_step_with_retries(
           'run FEMU test on x64.run v2_test', 'launch x64 emulator'
       ),
@@ -1178,7 +1213,10 @@ def GenTests(api):
       ),
       api.step_data(
           'lookup terminal.x64 product bundle',
-          stdout=api.raw_io.output_text('gs://path/to/transfer_manifest.json'),
+          stdout=api.json.output({
+              'name': 'terminal.x64',
+              'transfer_manifest_url': 'gs://path/to/transfer_manifest.json',
+          }),
       ),
       api.step_data(
           'run FEMU test on x64.run run-on-x64.launch x64 emulator', retcode=1

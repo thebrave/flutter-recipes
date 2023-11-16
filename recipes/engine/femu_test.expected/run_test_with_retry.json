@@ -1612,6 +1612,8 @@
   {
     "cmd": [
       "[CACHE]/builder/src/fuchsia/sdk/linux/tools/x64/ffx",
+      "--machine",
+      "json-pretty",
       "product",
       "lookup",
       "terminal.x64",
@@ -1636,7 +1638,14 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "lookup terminal.x64 product bundle"
+    "name": "lookup terminal.x64 product bundle",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"name\": \"terminal.x64\",@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"transfer_manifest_url\": \"gs://path/to/transfer_manifest.json\"@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
   },
   {
     "cmd": [

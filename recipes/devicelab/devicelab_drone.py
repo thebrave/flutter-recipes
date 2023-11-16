@@ -76,9 +76,7 @@ def RunSteps(api):
     # TODO: If deps contains dart_sdk and we are running a local engine,
     # we don't want to fetch it with cipd, so don't fetch it with required_deps
     api.flutter_deps.required_deps(
-        env,
-        env_prefixes,
-        api.properties.get('dependencies', [])
+        env, env_prefixes, api.properties.get('dependencies', [])
     )
 
   target_tags = api.properties.get('tags', [])
@@ -114,7 +112,12 @@ def RunSteps(api):
         max_attempts=3,
         timeout=300,
     )
-    api.step('dart pub get', ['dart', 'pub', 'get'], infra_step=True)
+    api.step(
+        'dart pub get',
+        ['dart', 'pub', 'get'],
+        infra_step=True,
+        timeout=10 * 60,  # 10 minutes
+    )
     if api.properties.get('$flutter/osx_sdk'):
       api.os_utils.clean_derived_data()
       devicelab = False

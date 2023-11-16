@@ -15,9 +15,6 @@
 from contextlib import contextmanager
 from google.protobuf import struct_pb2
 
-from PB.recipes.flutter.engine.engine import InputProperties
-from PB.recipes.flutter.engine.engine import EnvProperties
-
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from PB.go.chromium.org.luci.buildbucket.proto \
   import builds_service as builds_service_pb2
@@ -47,11 +44,8 @@ DEPS = [
     'recipe_engine/step',
 ]
 
-PROPERTIES = InputProperties
-ENV_PROPERTIES = EnvProperties
 
-
-def RunSteps(api, properties, env_properties):
+def RunSteps(api):
   api.flutter_bcid.report_stage(BcidStage.START.value)
   config_name = api.properties.get('config_name')
   builds = api.properties.get('builds')

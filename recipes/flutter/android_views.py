@@ -6,9 +6,6 @@
 # to validate stability of AVD in pre and post submit. Move this into the general recipe
 # once validated, stable, and no longer under heavy development.
 
-from PB.recipes.flutter.engine.engine import InputProperties
-from PB.recipes.flutter.engine.engine import EnvProperties
-
 DEPS = [
     'flutter/android_virtual_device',
     'flutter/flutter_deps',
@@ -24,11 +21,8 @@ DEPS = [
     'recipe_engine/step',
 ]
 
-PROPERTIES = InputProperties
-ENV_PROPERTIES = EnvProperties
 
-
-def RunSteps(api, properties, env_properties):
+def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
   api.os_utils.print_pub_certs()
@@ -51,10 +45,11 @@ def RunSteps(api, properties, env_properties):
       env, env_prefixes, api.properties.get('dependencies', [])
   )
 
-  with api.android_virtual_device(env=env, env_prefixes=env_prefixes, version=env['EMULATOR_VERSION']):
+  with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
+                                  version=env['EMULATOR_VERSION']):
     with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
       views_test_dir = checkout_path.join(
-        'dev', 'integration_tests', 'android_views'
+          'dev', 'integration_tests', 'android_views'
       )
       with api.step.nest('prepare environment'):
         deferred = []

@@ -29,8 +29,6 @@ import contextlib
 import copy
 
 from google.protobuf import struct_pb2
-from PB.recipes.flutter.engine.engine import InputProperties
-from PB.recipes.flutter.engine.engine import EnvProperties
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 
 DEPS = [
@@ -61,8 +59,6 @@ DEPS = [
     'recipe_engine/time',
 ]
 
-PROPERTIES = InputProperties
-ENV_PROPERTIES = EnvProperties
 ANDROID_ARTIFACTS_BUCKET = 'download.flutter.io'
 
 # Relative paths used to mock paths for testing.
@@ -263,7 +259,7 @@ def Verify(api, checkout, archive_config):
     )
 
 
-def RunSteps(api, properties, env_properties):  # pylint: disable=unused-argument
+def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
   api.flutter_bcid.report_stage('start')

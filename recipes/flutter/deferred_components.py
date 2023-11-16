@@ -9,9 +9,6 @@
 from contextlib import contextmanager
 import re
 
-from PB.recipes.flutter.engine.engine import InputProperties
-from PB.recipes.flutter.engine.engine import EnvProperties
-
 DEPS = [
     'flutter/android_virtual_device',
     'flutter/flutter_deps',
@@ -32,11 +29,8 @@ DEPS = [
 #  - android_avd
 #  - curl
 
-PROPERTIES = InputProperties
-ENV_PROPERTIES = EnvProperties
 
-
-def RunSteps(api, properties, env_properties):
+def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
   api.os_utils.print_pub_certs()
@@ -97,8 +91,7 @@ def RunSteps(api, properties, env_properties):
         )
         deferred.append(
             api.defer(
-                api.cipd.ensure,
-                bundletool_dir,
+                api.cipd.ensure, bundletool_dir,
                 api.cipd.EnsureFile().add_package(
                     'flutter/android/bundletool',
                     '0xeDa85nRhdQfi3iN2dK8PPluwI73z9San_Afuj3CfgC'

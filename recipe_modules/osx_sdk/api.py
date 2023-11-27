@@ -228,17 +228,33 @@ class OSXSDKApi(recipe_api.RecipeApi):
     ef.add_package(self._tool_pkg, self._tool_ver)
     self.m.cipd.ensure(tool_dir, ef)
 
-  def _install_xcode(self, tool_dir, kind, app_dir):
+  def _try_install_xcode(self, tool_dir, kind, app_dir, devicelab):
+    """Installs xcode using mac_toolchain. If install fails, clear the cache and try again."""
+    try:
+      self._install_xcode(tool_dir, kind, app_dir, devicelab)
+    except self.m.step.StepFailure:
+      self._install_xcode(tool_dir, kind, app_dir, devicelab)
+
+  def _install_xcode(self, tool_dir, kind, app_dir, devicelab):
     """Installs xcode using mac_toolchain."""
-    self.m.step(
-        'install xcode',
-        [
-            tool_dir.join('mac_toolchain'), 'install', '-kind', kind,
-            '-xcode-version', self._sdk_version, '-output-dir', app_dir,
-            '-cipd-package-prefix', self._xcode_cipd_package_source,
-            '-with-runtime=%s' % (not bool(self._runtime_versions))
-        ],
-    )
+    try:
+      self._ensure_mac_toolchain(tool_dir)
+      self.m.step(
+          'install xcode',
+          [
+              tool_dir.join('mac_toolchain'), 'install', '-kind', kind,
+              '-xcode-version', self._sdk_version, '-output-dir', app_dir,
+              '-cipd-package-prefix', self._xcode_cipd_package_source,
+              '-with-runtime=%s' % (not bool(self._runtime_versions))
+          ],
+      )
+    except self.m.step.StepFailure:
+      self._cleanup_cache = True
+      self._clean_xcode_cache(devicelab)
+      self.m.step.empty(
+          'Failed to install Xcode',
+          status=self.m.step.INFRA_FAILURE,
+      )
 
   def _ensure_sdk(self, kind, devicelab):
     """Ensures the mac_toolchain tool and OSX SDK packages are installed.
@@ -246,9 +262,8 @@ class OSXSDKApi(recipe_api.RecipeApi):
     Returns Path to the installed sdk app bundle."""
     app_dir = self._xcode_dir(devicelab)
     tool_dir = self.m.path.mkdtemp().join('osx_sdk') if devicelab else app_dir
-    self._ensure_mac_toolchain(tool_dir)
     sdk_app = self.m.path.join(app_dir, 'XCode.app')
-    self._install_xcode(tool_dir, kind, sdk_app)
+    self._try_install_xcode(tool_dir, kind, sdk_app, devicelab)
 
     self._cleanup_runtimes_cache(sdk_app)
 
@@ -257,7 +272,10 @@ class OSXSDKApi(recipe_api.RecipeApi):
     return sdk_app
 
   def _show_xcode_cache(self):
-    self.m.step('Show xcode cache', ['ls', self.m.path['cache'].join(_XCODE_CACHE_PATH)])
+    self.m.step(
+        'Show xcode cache',
+        ['ls', self.m.path['cache'].join(_XCODE_CACHE_PATH)]
+    )
 
   def _install_runtimes(self, devicelab, app_dir, tool_dir, sdk_app, kind):
     '''Ensure runtimes are installed.
@@ -283,12 +301,12 @@ class OSXSDKApi(recipe_api.RecipeApi):
       # install Xcode, and then clean up the runtimes cache. It happens in this
       # order because removing runtimes requires Xcode developer tools so Xcode
       # must be installed first. However, when no explicit runtimes are defined,
-      # the runtime is also installed in the `_install_xcode` function. So after
+      # the runtime is also installed in the `_try_install_xcode` function. So after
       # cleaning the runtimes, the runtime that was installed may have been
-      # removed. So re-call `_install_xcode` to reinstall the removed runtime.
+      # removed. So re-call `_try_install_xcode` to reinstall the removed runtime.
       if self.macos_13_or_later and self._cleanup_cache:
         with self.m.step.nest('install runtimes'):
-          self._install_xcode(tool_dir, kind, sdk_app)
+          self._try_install_xcode(tool_dir, kind, sdk_app, devicelab)
       return
 
     if devicelab:

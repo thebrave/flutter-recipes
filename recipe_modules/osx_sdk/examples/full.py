@@ -410,3 +410,12 @@ def GenTests(api):
           }
       ),
   )
+
+  yield api.test(
+      'xcode_install_fails',
+      api.platform.name('mac'),
+      api.properties(**{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}),
+      api.step_data('install xcode', retcode=1),
+      api.step_data('install xcode (2)', retcode=1),
+      status='INFRA_FAILURE'
+  )

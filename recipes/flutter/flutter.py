@@ -69,8 +69,7 @@ def RunSteps(api):
     deferred = []
     deferred.append(
         api.defer(
-            api.adhoc_validation.run,
-            api.properties.get('validation_name'),
+            api.adhoc_validation.run, api.properties.get('validation_name'),
             api.properties.get('validation'), env, env_prefixes,
             api.properties.get('secrets', {})
         )
@@ -86,8 +85,8 @@ def GenTests(api):
   yield api.test(
       'validators',
       api.properties(
-          validation='analyze',
-          validation_name='dart analyze',
+          validation='docs',
+          validation_name='docs',
           android_sdk_license='android_license',
           android_sdk_preview_license='android_preview_license'
       ), api.repo_util.flutter_environment_data()

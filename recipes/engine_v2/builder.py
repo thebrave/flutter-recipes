@@ -27,6 +27,7 @@ this recipe in the builds property:
 """
 import contextlib
 import copy
+import re
 
 from google.protobuf import struct_pb2
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
@@ -94,10 +95,23 @@ def run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes):
     api.step(generator_task.get('name'), cmd)
 
 
+def _should_run_test(test, branch):
+  """Whether the current test should on this branch."""
+  # Default to wildcard to run tests everywhere.
+  test_if = test.get('test_if', '.*')
+  regex = re.compile(test_if)
+  return regex.match(branch)
+
+
 def run_tests(api, tests, checkout, env, env_prefixes):
   """Runs sub-build tests."""
+  branch = 'main'
+  if checkout and api.repo_util.is_release_candidate_branch(checkout):
+    branch = api.repo_util.release_candidate_branch(checkout)
   # Run local tests in the builder to optimize resource usage.
   for test in tests:
+    if not _should_run_test(test, branch):
+      continue
     # Copy and expand env, env_prefixes. This is required to
     # add configuration env variables.
     test_deps = test.get('test_dependencies', [])
@@ -367,6 +381,18 @@ def GenTests(api):
               'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
           )
       ),
+      api.step_data(
+          'Identify branches (2).git branch',
+          stdout=api.raw_io.output_text(
+              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
+      ),
+      api.step_data(
+          'Identify branches (3).git branch',
+          stdout=api.raw_io.output_text(
+              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
+      ),
   )
   yield api.test(
       'monorepo',
@@ -414,5 +440,38 @@ def GenTests(api):
       api.step_data(
           'Verify {0} provenance.verify {0} provenance'.format(pom_location),
           stdout=api.raw_io.output_text(fake_bcid_response_success)
+      ),
+  )
+  test_if_build = {
+      "tests": [{
+          "name": "mytest", "script": "myscript.sh",
+          "parameters": ["param1", "param2", '${FLUTTER_LOGS_DIR}'],
+          "type": "local", "contexts": ["metric_center_token"],
+          "test_if": "main"
+      }]
+  }
+  yield api.test(
+      'test_if_skip',
+      api.properties(build=test_if_build, no_goma=True),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='linux-host',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/flutter-3.17-candidate.0',
+          revision='abcd' * 10,
+          build_number=123,
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io.output_text(
+              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
+      ),
+      api.step_data(
+          'Identify branches (2).git branch',
+          stdout=api.raw_io.output_text(
+              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
       ),
   )

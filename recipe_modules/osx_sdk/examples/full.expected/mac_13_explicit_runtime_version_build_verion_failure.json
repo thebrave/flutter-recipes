@@ -2,6 +2,7 @@
   {
     "cmd": [
       "ls",
+      "-al",
       "[CACHE]/osx_sdk"
     ],
     "infra_step": true,
@@ -38,6 +39,15 @@
   },
   {
     "cmd": [
+      "ls",
+      "-al",
+      "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-16-4_14e300c"
+    ],
+    "infra_step": true,
+    "name": "Show tool_dir cache"
+  },
+  {
+    "cmd": [
       "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-16-4_14e300c/mac_toolchain",
       "install",
       "-kind",
@@ -48,7 +58,8 @@
       "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-16-4_14e300c/XCode.app",
       "-cipd-package-prefix",
       "infra_internal/ios/xcode",
-      "-with-runtime=False"
+      "-with-runtime=False",
+      "-verbose"
     ],
     "infra_step": true,
     "name": "install xcode"

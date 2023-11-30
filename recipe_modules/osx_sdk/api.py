@@ -239,16 +239,26 @@ class OSXSDKApi(recipe_api.RecipeApi):
     """Installs xcode using mac_toolchain."""
     try:
       self._ensure_mac_toolchain(tool_dir)
+      if self.macos_13_or_later:
+        # TODO(vashworth): Remove macOS 13 specific install steps once
+        # https://github.com/flutter/flutter/issues/138238 is resolved.
+        self.m.step('Show tool_dir cache', ['ls', '-al', tool_dir])
       self.m.step(
           'install xcode',
           [
               tool_dir.join('mac_toolchain'), 'install', '-kind', kind,
               '-xcode-version', self._sdk_version, '-output-dir', app_dir,
               '-cipd-package-prefix', self._xcode_cipd_package_source,
-              '-with-runtime=%s' % (not bool(self._runtime_versions))
+              '-with-runtime=%s' % (not bool(self._runtime_versions)),
+              '-verbose',
           ],
       )
     except self.m.step.StepFailure:
+      if self.macos_13_or_later:
+        # TODO(vashworth): Remove macOS 13 specific install steps once
+        # https://github.com/flutter/flutter/issues/138238 is resolved.
+        self.m.step('Show tool_dir cache', ['ls', '-al', tool_dir])
+        self.m.step('Show app_dir cache', ['ls', '-al', app_dir], ok_ret='any')
       self._cleanup_cache = True
       self._clean_xcode_cache(devicelab)
       self.m.step.empty(
@@ -274,7 +284,8 @@ class OSXSDKApi(recipe_api.RecipeApi):
   def _show_xcode_cache(self):
     self.m.step(
         'Show xcode cache',
-        ['ls', self.m.path['cache'].join(_XCODE_CACHE_PATH)]
+        ['ls', '-al', self.m.path['cache'].join(_XCODE_CACHE_PATH)],
+        ok_ret='any',
     )
 
   def _install_runtimes(self, devicelab, app_dir, tool_dir, sdk_app, kind):

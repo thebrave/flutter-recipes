@@ -134,6 +134,9 @@ def RunSteps(api):
       )
 
   if generators:
+    # If on macOS, reset Xcode in case a previous build failed to do so.
+    api.osx_sdk.reset_xcode()
+
     # Download sub-builds
     out_builds_path = full_engine_checkout.join('src', 'out')
     api.file.rmtree('Clobber build download folder', out_builds_path)

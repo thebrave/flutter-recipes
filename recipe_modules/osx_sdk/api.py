@@ -166,8 +166,14 @@ class OSXSDKApi(recipe_api.RecipeApi):
           self._setup_osx_sdk(kind, devicelab)
       yield
     finally:
-      with self.m.context(infra_steps=True):
-        self.m.step('reset XCode', ['sudo', 'xcode-select', '--reset'])
+      self.reset_xcode()
+
+  def reset_xcode(self):
+    '''Unset manually defined Xcode path for Xcode command line tools on macOS.'''
+    if not self.m.platform.is_mac:
+      return
+    with self.m.context(infra_steps=True):
+      self.m.step('reset XCode', ['sudo', 'xcode-select', '--reset'])
 
   def _missing_runtime(self, runtime_simulators):
     """Check if there is any missing runtime.
@@ -199,7 +205,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
     self._clean_xcode_cache(devicelab)
     app = self._ensure_sdk(kind, devicelab)
     self.m.os_utils.kill_simulators()
-    self.m.step('select XCode', ['sudo', 'xcode-select', '--switch', app])
+    self._select_xcode(app)
     self.m.step('list simulators', ['xcrun', 'simctl', 'list'])
 
   def _clean_xcode_cache(self, devicelab):
@@ -228,15 +234,118 @@ class OSXSDKApi(recipe_api.RecipeApi):
     ef.add_package(self._tool_pkg, self._tool_ver)
     self.m.cipd.ensure(tool_dir, ef)
 
-  def _try_install_xcode(self, tool_dir, kind, app_dir, devicelab):
-    """Installs xcode using mac_toolchain. If install fails, clear the cache and try again."""
-    try:
-      self._install_xcode(tool_dir, kind, app_dir, devicelab)
-    except self.m.step.StepFailure:
-      self._install_xcode(tool_dir, kind, app_dir, devicelab)
+  def _select_xcode(self, sdk_app):
+    self.m.step('select xcode', ['sudo', 'xcode-select', '--switch', sdk_app])
 
-  def _install_xcode(self, tool_dir, kind, app_dir, devicelab):
-    """Installs xcode using mac_toolchain."""
+  def _verify_xcode(self, sdk_app):
+    '''If Xcode is already downloaded, verify that it's not damaged.
+
+    Args:
+    sdk_app: (Path) Path to installed Xcode app bundle.
+    '''
+    if not self.m.path.exists(sdk_app):
+      return
+
+    with self.m.step.nest('verify xcode %s' % sdk_app):
+      version_check_failed = False
+      try:
+        self._select_xcode(sdk_app)
+
+        # This step is expected to timeout if Xcode is damaged.
+        self.m.step(
+            'check xcode version',
+            [
+                'xcrun',
+                'xcodebuild',
+                '-version',
+            ],
+            timeout=60 * 5,  # 5 minutes
+        )
+      except self.m.step.StepFailure:
+        version_check_failed = True
+        raise
+      finally:
+        self.reset_xcode()
+        self._dimiss_damaged_notification()
+
+        if version_check_failed:
+          self._diagnose_codesign_failure(sdk_app)
+
+  def _diagnose_codesign_failure(self, sdk_app):
+    '''Check if Xcode verification may have failed due to code not matching
+    original signed code. Used to help debug issues.
+    '''
+    self.m.step(
+        'verify codesign',
+        [
+            'codesign',
+            '-vv',
+            sdk_app,
+        ],
+        ok_ret='any',
+    )
+
+  def _dimiss_damaged_notification(self):
+    '''If Xcode is damaged, it may show a notification that can cause
+    Xcode processes to hang until it's closed. Kill `CoreServicesUIAgent`
+    to close it.
+    '''
+    self.m.step(
+        'dismiss damaged notification',
+        ['killall', '-9', 'CoreServicesUIAgent'],
+        ok_ret='any',
+    )
+
+  def _try_install_xcode(self, tool_dir, kind, app_dir, sdk_app, devicelab):
+    """Installs xcode using mac_toolchain. If install fails, clear the cache and try again.
+
+    Args:
+      devicelab: (bool) Whether this is a devicelab tasks. Don't install
+        explicit runtimes for devicelab tasks.
+      app_dir: (Path) Path to Xcode cache directory.
+      tool_dir: (Path) Path to mac_toolchain cache directory.
+      sdk_app: (Path) Path to installed Xcode app bundle.
+      kind ('mac'|'ios'): How the SDK should be configured.
+    """
+    with self.m.step.nest('install xcode'):
+      try:
+        self._install_xcode(tool_dir, kind, app_dir, sdk_app, devicelab)
+      except self.m.step.StepFailure:
+        self._install_xcode(tool_dir, kind, app_dir, sdk_app, devicelab, True)
+
+  def _install_xcode(
+      self, tool_dir, kind, app_dir, sdk_app, devicelab, retry=False
+  ):
+    """Installs xcode using mac_toolchain.
+
+    Args:
+      devicelab: (bool) Whether this is a devicelab tasks. Don't install
+        explicit runtimes for devicelab tasks.
+      app_dir: (Path) Path to Xcode cache directory.
+      tool_dir: (Path) Path to mac_toolchain cache directory.
+      sdk_app: (Path) Path to installed Xcode app bundle.
+      kind ('mac'|'ios'): How the SDK should be configured.
+      retry: (bool) Whether this is the second attempt to install Xcode.
+    """
+
+    install_path = sdk_app
+
+    # On retry, install Xcode to a different path and later move it to the
+    # original path. Although unproven, there is a theory that re-installing
+    # Xcode to the same path as a previously damaged version may cause the new
+    # version to also be considered damaged.
+    if retry:
+      uuid = self.m.uuid.random()
+      install_path = self.m.path.join(app_dir, 'temp_%s_xcode.app' % uuid)
+
+    try:
+      # Verify that existing Xcode is not damaged. If it's damaged, the
+      # 'install xcode from cipd' step may get stuck until it times out.
+      self._verify_xcode(install_path)
+    except self.m.step.StepFailure:
+      self._cleanup_cache = True
+      self._clean_xcode_cache(devicelab)
+
     try:
       self._ensure_mac_toolchain(tool_dir)
       if self.macos_13_or_later:
@@ -244,27 +353,50 @@ class OSXSDKApi(recipe_api.RecipeApi):
         # https://github.com/flutter/flutter/issues/138238 is resolved.
         self.m.step('Show tool_dir cache', ['ls', '-al', tool_dir])
       self.m.step(
-          'install xcode',
+          'install xcode from cipd',
           [
               tool_dir.join('mac_toolchain'), 'install', '-kind', kind,
-              '-xcode-version', self._sdk_version, '-output-dir', app_dir,
+              '-xcode-version', self._sdk_version, '-output-dir', install_path,
               '-cipd-package-prefix', self._xcode_cipd_package_source,
               '-with-runtime=%s' % (not bool(self._runtime_versions)),
               '-verbose',
           ],
+          timeout=60 * 30  # 30 minutes
       )
+      if retry:
+        self.m.step(
+            'move to final destination',
+            [
+                'mv',
+                install_path,
+                sdk_app,
+            ],
+        )
     except self.m.step.StepFailure:
       if self.macos_13_or_later:
         # TODO(vashworth): Remove macOS 13 specific install steps once
         # https://github.com/flutter/flutter/issues/138238 is resolved.
         self.m.step('Show tool_dir cache', ['ls', '-al', tool_dir])
         self.m.step('Show app_dir cache', ['ls', '-al', app_dir], ok_ret='any')
+      self._dimiss_damaged_notification()
+      self._diagnose_codesign_failure(sdk_app)
       self._cleanup_cache = True
       self._clean_xcode_cache(devicelab)
       self.m.step.empty(
           'Failed to install Xcode',
           status=self.m.step.INFRA_FAILURE,
       )
+    finally:
+      if retry:
+        self.m.step(
+            'clean temporary install path',
+            [
+                'rm',
+                '-rf',
+                install_path,
+            ],
+            ok_ret='any',
+        )
 
   def _ensure_sdk(self, kind, devicelab):
     """Ensures the mac_toolchain tool and OSX SDK packages are installed.
@@ -273,7 +405,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
     app_dir = self._xcode_dir(devicelab)
     tool_dir = self.m.path.mkdtemp().join('osx_sdk') if devicelab else app_dir
     sdk_app = self.m.path.join(app_dir, 'XCode.app')
-    self._try_install_xcode(tool_dir, kind, sdk_app, devicelab)
+    self._try_install_xcode(tool_dir, kind, app_dir, sdk_app, devicelab)
 
     self._cleanup_runtimes_cache(sdk_app)
 
@@ -317,7 +449,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
       # removed. So re-call `_try_install_xcode` to reinstall the removed runtime.
       if self.macos_13_or_later and self._cleanup_cache:
         with self.m.step.nest('install runtimes'):
-          self._try_install_xcode(tool_dir, kind, sdk_app, devicelab)
+          self._try_install_xcode(tool_dir, kind, app_dir, sdk_app, devicelab)
       return
 
     if devicelab:
@@ -325,9 +457,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     with self.m.step.nest('install runtimes'):
       if self.macos_13_or_later:
-        self.m.step(
-            'select XCode', ['sudo', 'xcode-select', '--switch', sdk_app]
-        )
+        self._select_xcode(sdk_app)
         runtime_simulators = self.m.step(
             'list runtimes', ['xcrun', 'simctl', 'list', 'runtimes'],
             stdout=self.m.raw_io.output_text(add_output_log=True)
@@ -463,7 +593,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
       return
 
     with self.m.step.nest('Cleaning up runtimes cache'):
-      self.m.step('select XCode', ['sudo', 'xcode-select', '--switch', sdk_app])
+      self._select_xcode(sdk_app)
 
       simulator_cleanup_result = self.m.step(
           'Cleaning up mounted simulator runtimes',

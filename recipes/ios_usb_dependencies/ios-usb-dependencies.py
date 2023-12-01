@@ -125,13 +125,13 @@ def UpdateEnv(
 def GetDylibFilenames(api, dir, package_name):
   """Returns a list of file names that matches dylib file regex in given directory.
 
-  A package_name maps to a regex pattern based on DIRNAME_PATTERN_DICT(dict). All 
+  A package_name maps to a regex pattern based on DIRNAME_PATTERN_DICT(dict). All
   file names in the current dir that matches this regex pattern are returned.
 
   Args:
 
       dir(Path): The directory in which to search for dylib files.
-      package_name(str): Name of the ios usb dependency passed in. 
+      package_name(str): Name of the ios usb dependency passed in.
   """
   directory_paths = api.file.listdir(
       "checking dylib file inside: %s" % dir,
@@ -163,7 +163,7 @@ def EmbedCodesignConfiguration(api, package_out_dir, package_name):
   Args:
 
       package_out_dir(Path): The directory in which ios usb dependency artifact is generated.
-      package_name(str): Name of the ios usb dependency passed in. 
+      package_name(str): Name of the ios usb dependency passed in.
   """
   entitlement_file_contents = []
   without_entitlement_file_contents = []
@@ -295,6 +295,9 @@ def BuildPackage(
 
 
 def RunSteps(api):
+  # If on macOS, reset Xcode in case a previous build failed to do so.
+  api.osx_sdk.reset_xcode()
+
   with api.osx_sdk('ios', devicelab=True):
     env_prefixes = {'PATH': [], 'LIBRARY_PATH': []}
     env = {}

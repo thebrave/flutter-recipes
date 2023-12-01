@@ -9,6 +9,10 @@
     "name": "Show xcode cache"
   },
   {
+    "cmd": [],
+    "name": "install xcode"
+  },
+  {
     "cmd": [
       "cipd",
       "ensure",
@@ -22,8 +26,9 @@
       "/path/to/tmp/json"
     ],
     "infra_step": true,
-    "name": "ensure_installed",
+    "name": "install xcode.ensure_installed",
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
@@ -44,7 +49,10 @@
       "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-16-4_14e300c"
     ],
     "infra_step": true,
-    "name": "Show tool_dir cache"
+    "name": "install xcode.Show tool_dir cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -62,7 +70,11 @@
       "-verbose"
     ],
     "infra_step": true,
-    "name": "install xcode"
+    "name": "install xcode.install xcode from cipd",
+    "timeout": 1800,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [],
@@ -76,7 +88,7 @@
       "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-16-4_14e300c/XCode.app"
     ],
     "infra_step": true,
-    "name": "install runtimes.select XCode",
+    "name": "install runtimes.select xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -257,7 +269,7 @@
       "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-16-4_14e300c/XCode.app"
     ],
     "infra_step": true,
-    "name": "select XCode"
+    "name": "select xcode"
   },
   {
     "cmd": [
@@ -313,6 +325,10 @@
     "name": "Show xcode cache (2)"
   },
   {
+    "cmd": [],
+    "name": "install xcode (2)"
+  },
+  {
     "cmd": [
       "cipd",
       "ensure",
@@ -326,8 +342,9 @@
       "/path/to/tmp/json"
     ],
     "infra_step": true,
-    "name": "ensure_installed (2)",
+    "name": "install xcode (2).ensure_installed",
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
@@ -348,7 +365,10 @@
       "[CLEANUP]/tmp_tmp_1/osx_sdk"
     ],
     "infra_step": true,
-    "name": "Show tool_dir cache (2)"
+    "name": "install xcode (2).Show tool_dir cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -366,7 +386,11 @@
       "-verbose"
     ],
     "infra_step": true,
-    "name": "install xcode (2)"
+    "name": "install xcode (2).install xcode from cipd",
+    "timeout": 1800,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -385,7 +409,7 @@
       "/opt/flutter/xcode/deadbeef/XCode.app"
     ],
     "infra_step": true,
-    "name": "select XCode (2)"
+    "name": "select xcode (2)"
   },
   {
     "cmd": [
@@ -420,6 +444,10 @@
     "name": "Cleaning up Xcode cache"
   },
   {
+    "cmd": [],
+    "name": "install xcode (3)"
+  },
+  {
     "cmd": [
       "cipd",
       "ensure",
@@ -433,8 +461,9 @@
       "/path/to/tmp/json"
     ],
     "infra_step": true,
-    "name": "ensure_installed (3)",
+    "name": "install xcode (3).ensure_installed",
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
@@ -455,7 +484,10 @@
       "[CLEANUP]/tmp_tmp_2/osx_sdk"
     ],
     "infra_step": true,
-    "name": "Show tool_dir cache (3)"
+    "name": "install xcode (3).Show tool_dir cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -473,7 +505,11 @@
       "-verbose"
     ],
     "infra_step": true,
-    "name": "install xcode (3)"
+    "name": "install xcode (3).install xcode from cipd",
+    "timeout": 1800,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [],
@@ -487,7 +523,7 @@
       "/opt/flutter/xcode/deadbeef/XCode.app"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache.select XCode",
+    "name": "Cleaning up runtimes cache.select xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -554,7 +590,7 @@
       "/opt/flutter/xcode/deadbeef/XCode.app"
     ],
     "infra_step": true,
-    "name": "select XCode (3)"
+    "name": "select xcode (3)"
   },
   {
     "cmd": [
@@ -589,6 +625,15 @@
     ],
     "infra_step": true,
     "name": "reset XCode (2)"
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--reset"
+    ],
+    "infra_step": true,
+    "name": "reset XCode (3)"
   },
   {
     "name": "$result"

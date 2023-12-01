@@ -276,6 +276,10 @@ def Verify(api, checkout, archive_config):
 def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
+
+  # If on macOS, reset Xcode in case a previous build failed to do so.
+  api.osx_sdk.reset_xcode()
+
   api.flutter_bcid.report_stage('start')
   checkout = api.path['cache'].join('builder', 'src')
   api.file.rmtree('Clobber build output', checkout.join('out'))

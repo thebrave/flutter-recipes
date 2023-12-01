@@ -13,6 +13,7 @@ DEPS = [
     'recipe_engine/raw_io',
     'recipe_engine/step',
     'recipe_engine/version',
+    'recipe_engine/uuid',
 ]
 
 from recipe_engine.recipe_api import Property

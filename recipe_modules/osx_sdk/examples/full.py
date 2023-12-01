@@ -23,6 +23,7 @@ def RunSteps(api):
   with api.osx_sdk('mac', devicelab=True):
     api.step('gn', ['gn', 'gen', 'out/Release'])
     api.step('ninja', ['ninja', '-C', 'out/Release'])
+  api.osx_sdk.reset_xcode()
 
 
 def GenTests(api):
@@ -412,20 +413,14 @@ def GenTests(api):
   )
 
   yield api.test(
-      'xcode_install_fails',
-      api.platform.name('mac'),
-      api.properties(**{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}),
-      api.step_data('install xcode', retcode=1),
-      api.step_data('install xcode (2)', retcode=1),
-      status='INFRA_FAILURE'
-  )
-
-  yield api.test(
-      'mac_13_xcode_install_fails',
+      'xcode_install_fails_passes_on_retry',
       api.platform.name('mac'),
       api.platform.mac_release('13.5.1'),
       api.properties(**{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}),
-      api.step_data('install xcode', retcode=1),
-      api.step_data('install xcode (2)', retcode=1),
-      status='INFRA_FAILURE'
+      api.path.exists(sdk_app_path),
+      api.step_data(
+          'install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.check xcode version',
+          retcode=1
+      ),
+      api.step_data('install xcode.install xcode from cipd', retcode=1),
   )

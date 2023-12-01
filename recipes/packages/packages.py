@@ -28,6 +28,9 @@ def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
 
+  # If on macOS, reset Xcode in case a previous build failed to do so.
+  api.osx_sdk.reset_xcode()
+
   packages_checkout_path = api.path['start_dir'].join('packages')
   flutter_checkout_path = api.path['start_dir'].join('flutter')
   channel = api.properties.get('channel')

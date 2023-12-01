@@ -9,6 +9,10 @@
     "name": "Show xcode cache"
   },
   {
+    "cmd": [],
+    "name": "install xcode"
+  },
+  {
     "cmd": [
       "cipd",
       "ensure",
@@ -22,8 +26,9 @@
       "/path/to/tmp/json"
     ],
     "infra_step": true,
-    "name": "ensure_installed",
+    "name": "install xcode.ensure_installed",
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
@@ -44,7 +49,10 @@
       "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-16-4_ios-16-2"
     ],
     "infra_step": true,
-    "name": "Show tool_dir cache"
+    "name": "install xcode.Show tool_dir cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -62,7 +70,11 @@
       "-verbose"
     ],
     "infra_step": true,
-    "name": "install xcode"
+    "name": "install xcode.install xcode from cipd",
+    "timeout": 1800,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [],
@@ -79,7 +91,7 @@
       "[CACHE]/osx_sdk/xcode_deadbeef_runtime_ios-16-4_ios-16-2/XCode.app"
     ],
     "infra_step": true,
-    "name": "install runtimes.select XCode",
+    "name": "install runtimes.select xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

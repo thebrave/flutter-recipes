@@ -63,6 +63,27 @@
     "name": "git xattr info"
   },
   {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--reset"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "reset XCode"
+  },
+  {
     "cmd": [],
     "name": "Checkout flutter/flutter"
   },
@@ -584,6 +605,10 @@
     "name": "Show xcode cache"
   },
   {
+    "cmd": [],
+    "name": "install xcode"
+  },
+  {
     "cmd": [
       "cipd",
       "ensure",
@@ -631,8 +656,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure_installed",
+    "name": "install xcode.ensure_installed",
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
@@ -696,7 +722,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "install xcode"
+    "name": "install xcode.install xcode from cipd",
+    "timeout": 1800,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -783,7 +813,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "select XCode"
+    "name": "select xcode"
   },
   {
     "cmd": [
@@ -920,6 +950,10 @@
     "name": "Cleaning up Xcode cache"
   },
   {
+    "cmd": [],
+    "name": "install xcode (2)"
+  },
+  {
     "cmd": [
       "cipd",
       "ensure",
@@ -967,8 +1001,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "ensure_installed (2)",
+    "name": "install xcode (2).ensure_installed",
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
@@ -1032,7 +1067,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "install xcode (2)"
+    "name": "install xcode (2).install xcode from cipd",
+    "timeout": 1800,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -1119,7 +1158,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "select XCode (2)"
+    "name": "select xcode (2)"
   },
   {
     "cmd": [
@@ -4171,7 +4210,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "reset XCode"
+    "name": "reset XCode (2)"
   },
   {
     "failure": {

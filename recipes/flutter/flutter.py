@@ -17,6 +17,7 @@ DEPS = [
     'flutter/flutter_bcid',
     'flutter/flutter_deps',
     'flutter/os_utils',
+    'flutter/osx_sdk',
     'flutter/repo_util',
     'recipe_engine/context',
     'recipe_engine/defer',
@@ -31,6 +32,10 @@ def RunSteps(api):
   api.flutter_bcid.report_stage(BcidStage.START.value)
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
+
+  # If on macOS, reset Xcode in case a previous build failed to do so.
+  api.osx_sdk.reset_xcode()
+
   api.os_utils.print_pub_certs()
 
   # Trigger validation tests. This is to optimize resources usage

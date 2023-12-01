@@ -1064,6 +1064,27 @@
   },
   {
     "cmd": [
+      "sudo",
+      "xcode-select",
+      "--reset"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "reset XCode"
+  },
+  {
+    "cmd": [
       "vpython3",
       "-u",
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
@@ -1116,6 +1137,13 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "Global generators.install xcode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
     "cmd": [
       "cipd",
       "ensure",
@@ -1141,9 +1169,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Global generators.ensure_installed",
+    "name": "Global generators.install xcode.ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
@@ -1185,9 +1213,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Global generators.install xcode",
+    "name": "Global generators.install xcode.install xcode from cipd",
+    "timeout": 1800,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -1234,7 +1263,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Global generators.select XCode",
+    "name": "Global generators.select xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -1317,6 +1346,13 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "Global generators.install xcode (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
     "cmd": [
       "cipd",
       "ensure",
@@ -1342,9 +1378,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Global generators.ensure_installed (2)",
+    "name": "Global generators.install xcode (2).ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
@@ -1386,9 +1422,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Global generators.install xcode (2)",
+    "name": "Global generators.install xcode (2).install xcode from cipd",
+    "timeout": 1800,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -1435,7 +1472,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Global generators.select XCode (2)",
+    "name": "Global generators.select xcode (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

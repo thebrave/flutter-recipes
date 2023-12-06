@@ -144,6 +144,13 @@ def GenTests(api):
           )
       ),
       api.step_data(
+          'install runtimes.list xcode runtime dmg ios-16-4_14e300c',
+          stdout=api.raw_io.output_text(
+              '[CACHE]/osx_sdk/xcode_runtime_dmg_ios-16-4_14e300c/.cipd\n' +
+              '[CACHE]/osx_sdk/xcode_runtime_dmg_ios-16-4_14e300c/iOS_16-4.dmg'
+          )
+      ),
+      api.step_data(
           'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg',
           retcode=1
       ),
@@ -193,6 +200,13 @@ def GenTests(api):
       api.step_data(
           'install runtimes.list runtimes',
           stdout=api.raw_io.output_text('== Runtimes ==\n')
+      ),
+      api.step_data(
+          'install runtimes.list xcode runtime dmg ios-16-4_14e300c',
+          stdout=api.raw_io.output_text(
+              '[CACHE]/osx_sdk/xcode_runtime_dmg_ios-16-4_14e300c/.cipd\n' +
+              '[CACHE]/osx_sdk/xcode_runtime_dmg_ios-16-4_14e300c/iOS_16-4.dmg'
+          )
       ),
       api.step_data(
           'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg',
@@ -246,6 +260,13 @@ def GenTests(api):
           stdout=api.raw_io.output_text('== Runtimes ==\n')
       ),
       api.step_data(
+          'install runtimes.list xcode runtime dmg ios-16-4_14e300c',
+          stdout=api.raw_io.output_text(
+              '[CACHE]/osx_sdk/xcode_runtime_dmg_ios-16-4_14e300c/.cipd\n' +
+              '[CACHE]/osx_sdk/xcode_runtime_dmg_ios-16-4_14e300c/iOS_16-4.dmg'
+          )
+      ),
+      api.step_data(
           'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg',
           retcode=1
       ),
@@ -264,6 +285,31 @@ def GenTests(api):
                   }],
               }
           }),
+      ),
+      status='INFRA_FAILURE'
+  )
+
+  yield api.test(
+      'mac_13_explicit_runtime_version_fails_to_find_dmg',
+      api.platform.name('mac'),
+      api.platform.mac_release('13.5.1'),
+      api.properties(
+          **{
+              '$flutter/osx_sdk': {
+                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
+                  'runtime_versions': ['ios-16-4_14e300c']
+              }
+          }
+      ),
+      api.step_data(
+          'install runtimes.list runtimes',
+          stdout=api.raw_io.output_text('== Runtimes ==\n')
+      ),
+      api.step_data(
+          'install runtimes.list xcode runtime dmg ios-16-4_14e300c',
+          stdout=api.raw_io.output_text(
+              '[CACHE]/osx_sdk/xcode_runtime_dmg_ios-16-4_14e300c/.cipd\n'
+          )
       ),
       status='INFRA_FAILURE'
   )
@@ -294,6 +340,13 @@ def GenTests(api):
               'iOS 16.4 (16.2 - 20E247) - com.apple.CoreSimulator.SimRuntime.iOS-16-4\n'
               +
               'iOS 16.2 (16.2 - 20C52) - com.apple.CoreSimulator.SimRuntime.iOS-16-2'
+          )
+      ),
+      api.step_data(
+          'install runtimes.list xcode runtime dmg ios-16-4_14e300c',
+          stdout=api.raw_io.output_text(
+              '[CACHE]/osx_sdk/xcode_runtime_dmg_ios-16-4_14e300c/.cipd\n' +
+              '[CACHE]/osx_sdk/xcode_runtime_dmg_ios-16-4_14e300c/iOS_17_Simulator_Runtime.dmg'
           )
       ),
       api.step_data(

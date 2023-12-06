@@ -472,13 +472,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
             )
           runtime_version = runtime_version_parts[0]
           xcode_version = runtime_version_parts[1]
-
-          runtime_dmg_name = 'iOS-%s.dmg' % runtime_version.lower(
-          ).replace('ios-', '')
           runtime_dmg_cache_dir = self._runtime_dmg_dir_cache_path(version)
-          runtime_dmg_path = os.path.join(
-              str(runtime_dmg_cache_dir), runtime_dmg_name
-          )
 
           self.m.step(
               'install xcode runtime %s' % version.lower(),
@@ -495,11 +489,22 @@ class OSXSDKApi(recipe_api.RecipeApi):
                   runtime_dmg_cache_dir,
               ],
           )
-
-          self.m.file.listdir(
+          downloaded_runtime_files = self.m.file.listdir(
               'list xcode runtime dmg %s' % version.lower(),
               runtime_dmg_cache_dir
           )
+
+          # The runtime dmg may not be named consistently so search for the dmg file.
+          runtime_dmg_path = None
+          for file_path in downloaded_runtime_files:
+            if '.dmg' in str(file_path):
+              runtime_dmg_path = str(file_path)
+
+          if runtime_dmg_path is None:
+            self.m.step.empty(
+                'Failed to find runtime dmg',
+                status=self.m.step.INFRA_FAILURE,
+            )
 
           # Skip adding the runtime if it's already mounted
           if not self._is_runtime_mounted(runtime_version, xcode_version,

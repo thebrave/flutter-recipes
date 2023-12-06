@@ -90,8 +90,8 @@ def GenTests(api):
   yield api.test(
       'validators',
       api.properties(
-          validation='docs',
-          validation_name='docs',
+          validation='verify_binaries_codesigned',
+          validation_name='verify_binaries_codesigned',
           android_sdk_license='android_license',
           android_sdk_preview_license='android_preview_license'
       ), api.repo_util.flutter_environment_data()

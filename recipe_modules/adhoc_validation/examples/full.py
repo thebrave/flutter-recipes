@@ -18,60 +18,23 @@ DEPS = [
 
 
 def RunSteps(api):
-  validation = api.properties.get('validation', 'docs')
+  validation = api.properties.get('validation', 'verify_binaries_codesigned')
   env, env_prefixes = api.repo_util.flutter_environment(
       api.path['start_dir'].join('flutter sdk')
   )
   with api.context(env=env, env_prefixes=env_prefixes):
-    api.adhoc_validation.run('Docs', validation, {}, {})
+    api.adhoc_validation.run('verify_binaries_codesigned', validation, {}, {})
 
 
 def GenTests(api):
   checkout_path = api.path['start_dir'].join('flutter sdk')
-  yield api.test(
-      'win', api.platform.name('win'),
-      api.repo_util.flutter_environment_data(checkout_path)
-  )
-  yield api.test(
-      'linux', api.platform.name('linux'),
-      api.properties(firebase_project='myproject', git_branch='main'),
-      api.repo_util.flutter_environment_data(checkout_path)
-  )
   yield api.test(
       'mac', api.platform.name('mac'),
       api.properties(**{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},),
       api.repo_util.flutter_environment_data(checkout_path)
   )
   yield api.test(
-      'mac_nodeps', api.platform.name('mac'),
-      api.repo_util.flutter_environment_data(checkout_path)
-  )
-  yield api.test(
       'invalid_validation', api.properties(validation='invalid'),
       api.expect_exception('AssertionError'),
       api.repo_util.flutter_environment_data(checkout_path)
-  )
-  fake_bcid_response_success = '{"allowed": true, "verificationSummary": "This artifact is definitely legitimate!"}'
-  yield api.test(
-      'docs', api.platform.name('linux'),
-      api.properties(firebase_project='myproject', git_branch=''),
-      api.repo_util.flutter_environment_data(checkout_path),
-      api.step_data(
-          'Docs.Identify branches.git branch',
-          stdout=api.raw_io.output_text(
-              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-          )
-      ),
-      api.buildbucket.ci_build(
-          project='flutter',
-          bucket='flutter',
-          git_repo='https://flutter.googlesource.com/mirrors/flutter',
-          git_ref='refs/heads/stable',
-          revision='abcd' * 10,
-          build_number=123,
-      ),
-      api.step_data(
-          'Docs.Verify api_docs.zip provenance.verify api_docs.zip provenance',
-          stdout=api.raw_io.output_text(fake_bcid_response_success)
-      )
   )

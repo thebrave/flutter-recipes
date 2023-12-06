@@ -11,13 +11,13 @@
   },
   {
     "cmd": [],
-    "name": "Docs"
+    "name": "verify_binaries_codesigned"
   },
   {
     "cmd": [
       "chmod",
       "755",
-      "RECIPE_MODULE[flutter::adhoc_validation]/resources/docs.sh"
+      "RECIPE_MODULE[flutter::adhoc_validation]/resources/verify_binaries_codesigned.sh"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -38,7 +38,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.Set execute permission",
+    "name": "verify_binaries_codesigned.Set execute permission",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -68,14 +68,14 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.Show xcode cache",
+    "name": "verify_binaries_codesigned.Show xcode cache",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Docs.install xcode",
+    "name": "verify_binaries_codesigned.install xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -112,7 +112,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.install xcode.ensure_installed",
+    "name": "verify_binaries_codesigned.install xcode.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -162,7 +162,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.install xcode.install xcode from cipd",
+    "name": "verify_binaries_codesigned.install xcode.install xcode from cipd",
     "timeout": 1800,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -193,7 +193,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.kill dart",
+    "name": "verify_binaries_codesigned.kill dart",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -224,7 +224,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.select xcode",
+    "name": "verify_binaries_codesigned.select xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -254,7 +254,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.list simulators",
+    "name": "verify_binaries_codesigned.list simulators",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -285,7 +285,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.list runtimes",
+    "name": "verify_binaries_codesigned.list runtimes",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -319,14 +319,14 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.Cleaning up Xcode cache",
+    "name": "verify_binaries_codesigned.Cleaning up Xcode cache",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Docs.install xcode (2)",
+    "name": "verify_binaries_codesigned.install xcode (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -363,7 +363,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.install xcode (2).ensure_installed",
+    "name": "verify_binaries_codesigned.install xcode (2).ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -413,7 +413,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.install xcode (2).install xcode from cipd",
+    "name": "verify_binaries_codesigned.install xcode (2).install xcode from cipd",
     "timeout": 1800,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -444,7 +444,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.kill dart (2)",
+    "name": "verify_binaries_codesigned.kill dart (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -475,7 +475,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.select xcode (2)",
+    "name": "verify_binaries_codesigned.select xcode (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -505,7 +505,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.list simulators (2)",
+    "name": "verify_binaries_codesigned.list simulators (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -518,7 +518,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[flutter::adhoc_validation]/resources/docs.sh",
+      "RECIPE_MODULE[flutter::adhoc_validation]/resources/verify_binaries_codesigned.sh",
       "/path/to/tmp/"
     ],
     "env": {
@@ -540,15 +540,15 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.print script docs.sh",
+    "name": "verify_binaries_codesigned.print script verify_binaries_codesigned.sh",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@docs.sh@@@"
+      "@@@STEP_LOG_END@verify_binaries_codesigned.sh@@@"
     ]
   },
   {
     "cmd": [
-      "RECIPE_MODULE[flutter::adhoc_validation]/resources/docs.sh"
+      "RECIPE_MODULE[flutter::adhoc_validation]/resources/verify_binaries_codesigned.sh"
     ],
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
@@ -568,7 +568,7 @@
         "[START_DIR]/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
-    "name": "Docs.docs",
+    "name": "verify_binaries_codesigned.verify_binaries_codesigned",
     "timeout": 4500,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -603,7 +603,7 @@
       ]
     },
     "infra_step": true,
-    "name": "Docs.reset XCode",
+    "name": "verify_binaries_codesigned.reset XCode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

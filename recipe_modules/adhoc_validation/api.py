@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 from recipe_engine import recipe_api
-from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 
 
 class AddhocValidationApi(recipe_api.RecipeApi):
@@ -16,7 +15,7 @@ class AddhocValidationApi(recipe_api.RecipeApi):
 
   def available_validations(self):
     """Returns the list of accepted validations."""
-    return ['docs', 'verify_binaries_codesigned', 'docs_deploy']
+    return ['verify_binaries_codesigned']
 
   def run(self, name, validation, env, env_prefixes, secrets=None):
     """Runs a validation as a recipe step.
@@ -36,20 +35,15 @@ class AddhocValidationApi(recipe_api.RecipeApi):
     with self.m.step.nest(name):
       resource_name = ''
       self.m.kms.decrypt_secrets(env, secrets)
-      if self.m.platform.is_linux or self.m.platform.is_mac:
-        resource_name = self.resource('%s.sh' % validation)
-        self.m.step(
-            'Set execute permission',
-            ['chmod', '755', resource_name],
-            infra_step=True,
-        )
-      elif self.m.platform.is_win:
-        resource_name = self.resource('%s.bat' % validation)
-      checkout_path = self.m.repo_util.sdk_checkout_path()
+      resource_name = self.resource('%s.sh' % validation)
+      self.m.step(
+          'Set execute permission',
+          ['chmod', '755', resource_name],
+          infra_step=True,
+      )
       if self.m.properties.get('$flutter/osx_sdk'):
         with self.m.osx_sdk('ios'):
           with self.m.context(env=env, env_prefixes=env_prefixes):
-            self.m.flutter_bcid.report_stage(BcidStage.COMPILE.value)
             self.m.file.read_text(
                 "print script %s" % self.m.path.basename(resource_name),
                 resource_name,
@@ -59,55 +53,3 @@ class AddhocValidationApi(recipe_api.RecipeApi):
                 [resource_name],
                 timeout_secs=4500  # 75 minutes
             )
-      else:
-        git_ref = self.m.properties.get(
-            'release_ref'
-        ) or self.m.buildbucket.gitiles_commit.ref
-        # Post-processing of docs require LUCI_BRANCH to be set when running from dart-internal.
-        env['LUCI_BRANCH'] = git_ref.replace('refs/heads/', '')
-        # Override LUCI_BRANCH for docs and release candidate branches. Docs built from
-        # release candidate branches need to be build as stable to ensure they are processed
-        # correctly.
-        checkout_path = self.m.repo_util.sdk_checkout_path()
-        if (validation == 'docs'
-           ) and self.m.repo_util.is_release_candidate_branch(checkout_path):
-          env['LUCI_BRANCH'] = 'stable'
-          env['LUCI_CI'] = True
-        with self.m.context(env=env, env_prefixes=env_prefixes):
-          self.m.flutter_bcid.report_stage(BcidStage.COMPILE.value)
-          self.m.file.read_text(
-              "print script %s" % self.m.path.basename(resource_name),
-              resource_name,
-          )
-          self.m.test_utils.run_test(
-              validation,
-              [resource_name],
-              timeout_secs=4500  # 75 minutes
-          )
-          if ((validation == 'docs' or validation == 'docs_deploy') and
-              self.m.properties.get('firebase_project')):
-            docs_path = checkout_path.join('dev', 'docs')
-            # Do not upload on docs_deploy.
-            if not validation == 'docs_deploy':
-              self.m.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
-              src = docs_path.join('api_docs.zip')
-              commit = self.m.repo_util.get_commit(checkout_path)
-              dst = 'gs://flutter_infra_release/flutter/%s/api_docs.zip' % commit
-              self.m.archives.upload_artifact(src, dst)
-              self.m.flutter_bcid.upload_provenance(src, dst)
-              self.m.flutter_bcid.report_stage(BcidStage.UPLOAD_COMPLETE.value)
-            project = self.m.properties.get('firebase_project')
-            # Only deploy to firebase directly if this is master or main.
-            if ((self.m.properties.get('git_branch') in ['master', 'main']) or
-                (git_ref == 'refs/heads/stable')):
-              sha = self.m.buildbucket.gitiles_commit.id
-              gcs_location = 'flutter/%s/api_docs.zip' % sha
-              self.m.flutter_bcid.download_and_verify_provenance(
-                  'api_docs.zip', 'flutter_infra_release', gcs_location
-              )
-              self.m.firebase.deploy_docs(
-                  env=env,
-                  env_prefixes=env_prefixes,
-                  docs_path=docs_path,
-                  project=project
-              )

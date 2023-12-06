@@ -205,13 +205,13 @@
   },
   {
     "cmd": [],
-    "name": "docs"
+    "name": "verify_binaries_codesigned"
   },
   {
     "cmd": [
       "chmod",
       "755",
-      "RECIPE_MODULE[flutter::adhoc_validation]/resources/docs.sh"
+      "RECIPE_MODULE[flutter::adhoc_validation]/resources/verify_binaries_codesigned.sh"
     ],
     "cwd": "[START_DIR]/\u00c1 flutter sdk",
     "env": {
@@ -233,154 +233,9 @@
       ]
     },
     "infra_step": true,
-    "name": "docs.Set execute permission",
+    "name": "verify_binaries_codesigned.Set execute permission",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "docs.Identify branches",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "rev-parse",
-      "HEAD"
-    ],
-    "cwd": "[START_DIR]/\u00c1 flutter sdk",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/\u00c1 flutter sdk"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/\u00c1 flutter sdk/bin",
-        "[START_DIR]/\u00c1 flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "name": "docs.Identify branches.git rev-parse",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "branch",
-      "-a",
-      "--contains",
-      "12345abcde12345abcde12345abcde12345abcde"
-    ],
-    "cwd": "[START_DIR]/\u00c1 flutter sdk",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/\u00c1 flutter sdk"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/\u00c1 flutter sdk/bin",
-        "[START_DIR]/\u00c1 flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "name": "docs.Identify branches.git branch",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "RECIPE_MODULE[flutter::adhoc_validation]/resources/docs.sh",
-      "/path/to/tmp/"
-    ],
-    "cwd": "[START_DIR]/\u00c1 flutter sdk",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/\u00c1 flutter sdk"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/\u00c1 flutter sdk/bin",
-        "[START_DIR]/\u00c1 flutter sdk/bin/cache/dart-sdk/bin",
-        "[START_DIR]/\u00c1 flutter sdk/bin",
-        "[START_DIR]/\u00c1 flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "name": "docs.print script docs.sh",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@docs.sh@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "RECIPE_MODULE[flutter::adhoc_validation]/resources/docs.sh"
-    ],
-    "cwd": "[START_DIR]/\u00c1 flutter sdk",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/\u00c1 flutter sdk"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/\u00c1 flutter sdk/bin",
-        "[START_DIR]/\u00c1 flutter sdk/bin/cache/dart-sdk/bin",
-        "[START_DIR]/\u00c1 flutter sdk/bin",
-        "[START_DIR]/\u00c1 flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "name": "docs.docs",
-    "timeout": 4500,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@test_stdout@@@@",
-      "@@@STEP_LOG_END@test_stdout@@@",
-      "@@@STEP_LOG_LINE@test_stderr@@@@",
-      "@@@STEP_LOG_END@test_stderr@@@"
     ]
   },
   {

@@ -401,7 +401,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
           [
               'curl', '-Lo',
               firebase_dir.join('firebase'),
-              'https://firebase.tools/bin/linux/latest'
+              'https://github.com/firebase/firebase-tools/releases/download/v12.9.1/firebase-tools-linux'
           ],
           infra_step=True,
       )

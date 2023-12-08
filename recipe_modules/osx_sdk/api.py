@@ -578,7 +578,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
       return '/opt/flutter/xcode/%s' % self._sdk_version
     runtime_version = None
     sdk_version = 'xcode_' + self._sdk_version
-    if self._runtime_versions:
+    if not self.macos_13_or_later and self._runtime_versions:
       runtime_version = "_".join(self._runtime_versions)
       sdk_version = sdk_version + '_runtime_' + runtime_version
     return self.m.path['cache'].join(_XCODE_CACHE_PATH).join(sdk_version)

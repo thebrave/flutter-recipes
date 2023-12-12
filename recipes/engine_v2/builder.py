@@ -105,12 +105,9 @@ def _should_run_test(test, branch):
 
 def run_tests(api, tests, checkout, env, env_prefixes):
   """Runs sub-build tests."""
-  branch = 'main'
-  if checkout and api.repo_util.is_release_candidate_branch(checkout):
-    branch = api.repo_util.release_candidate_branch(checkout)
   # Run local tests in the builder to optimize resource usage.
   for test in tests:
-    if not _should_run_test(test, branch):
+    if not _should_run_test(test, api.buildbucket.gitiles_commit.ref):
       continue
     # Copy and expand env, env_prefixes. This is required to
     # add configuration env variables.
@@ -385,18 +382,6 @@ def GenTests(api):
               'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
           )
       ),
-      api.step_data(
-          'Identify branches (2).git branch',
-          stdout=api.raw_io.output_text(
-              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-          )
-      ),
-      api.step_data(
-          'Identify branches (3).git branch',
-          stdout=api.raw_io.output_text(
-              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-          )
-      ),
   )
   yield api.test(
       'monorepo',
@@ -465,17 +450,5 @@ def GenTests(api):
           git_ref='refs/heads/flutter-3.17-candidate.0',
           revision='abcd' * 10,
           build_number=123,
-      ),
-      api.step_data(
-          'Identify branches.git branch',
-          stdout=api.raw_io.output_text(
-              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-          )
-      ),
-      api.step_data(
-          'Identify branches (2).git branch',
-          stdout=api.raw_io.output_text(
-              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-          )
       ),
   )

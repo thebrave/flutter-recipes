@@ -420,6 +420,10 @@ def GenTests(api):
           'Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory',
           stdout=api.raw_io.output_text('TCC.db'),
       ),
+      api.step_data(
+          'Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)',
+          stdout=api.raw_io.output_text('service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'),
+      ),
   )
   yield api.test(
       "xcode-devicelab-timeout",
@@ -446,6 +450,10 @@ def GenTests(api):
       api.step_data(
           'Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory',
           stdout=api.raw_io.output_text('TCC.db'),
+      ),
+      api.step_data(
+          'Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)',
+          stdout=api.raw_io.output_text('service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'),
       ),
       api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
       status='FAILURE',

@@ -128,7 +128,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
         self.m.file.ensure_directory('Ensure checkout cache', checkout_path)
 
     # Inner function to execute code a second time in case of failure.
-    def _InnerCheckout():
+    # pylint: disable=unused-argument
+    def _InnerCheckout(timeout=None):
       with self.m.step.nest('Checkout source code'):
         if clobber:
           _ClobberCache()
@@ -224,7 +225,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
         self.m.file.ensure_directory('Ensure checkout cache', checkout_path)
 
     # Inner function to execute code a second time in case of failure.
-    def _InnerCheckout():
+    # pylint: disable=unused-argument
+    def _InnerCheckout(timeout=None):
       with self.m.step.nest('Checkout source code'):
         if clobber:
           _ClobberCache()

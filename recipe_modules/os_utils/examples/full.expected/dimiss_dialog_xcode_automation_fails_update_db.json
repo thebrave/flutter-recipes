@@ -312,7 +312,10 @@
   },
   {
     "cmd": [],
-    "name": "Dismiss dialogs"
+    "name": "Dismiss dialogs",
+    "~followup_annotations": [
+      "@@@STEP_EXCEPTION@@@"
+    ]
   },
   {
     "cmd": [],
@@ -475,7 +478,8 @@
     "cmd": [],
     "name": "Dismiss dialogs.Dismiss Xcode automation dialogs",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_EXCEPTION@@@"
     ]
   },
   {
@@ -594,18 +598,36 @@
     "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
     ]
   },
   {
     "cmd": [
-      "sqlite3",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
-      "UPDATE access SET auth_value = 2, auth_reason = 3, flags = NULL WHERE service = 'kTCCServiceAppleEvents' AND indirect_object_identifier = 'com.apple.dt.Xcode'"
+      "osascript",
+      "-e",
+      "tell app \"Xcode\"",
+      "-e",
+      "launch",
+      "-e",
+      "count window",
+      "-e",
+      "end tell"
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Update db",
+    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Trigger dialog (2)",
+    "timeout": 4,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "UserNotificationCenter"
+    ],
+    "infra_step": true,
+    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Dismiss dialog (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -625,51 +647,52 @@
   },
   {
     "cmd": [
-      "killall",
-      "-9",
-      "Xcode"
+      "osascript",
+      "-e",
+      "tell app \"Xcode\"",
+      "-e",
+      "launch",
+      "-e",
+      "count window",
+      "-e",
+      "end tell"
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Kill Xcode",
+    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Trigger dialog (3)",
+    "timeout": 8,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
-    "cmd": [],
-    "name": "Reset Xcode automation dialogs"
-  },
-  {
     "cmd": [
-      "ls",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC"
+      "killall",
+      "-9",
+      "UserNotificationCenter"
     ],
     "infra_step": true,
-    "name": "Reset Xcode automation dialogs.Find TCC directory",
+    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Dismiss dialog (3)",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [
-      "ln",
-      "-s",
-      "/a/file",
-      "/a/b/c/simlink"
+      "sqlite3",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
+      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
     ],
     "infra_step": true,
-    "name": "Link /a/b/c/simlink to /a/file"
+    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (4)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
   },
   {
-    "cmd": [
-      "killall",
-      "-9",
-      "com.apple.CoreSimulator.CoreSimulatorDevice"
-    ],
-    "infra_step": true,
-    "name": "kill dart"
-  },
-  {
+    "failure": {
+      "humanReason": "Xcode entry not found in TCC.db"
+    },
     "name": "$result"
   }
 ]

@@ -517,7 +517,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
     cas_engine = cas_dir.join(target)
     self.m.file.copytree('Copy host_debug_unopt', build_dir, cas_engine)
 
-    def _upload():
+    # pylint: disable=unused-argument
+    def _upload(timeout=None):
       return self.m.cas_util.upload(
           cas_dir, step_name='Archive full build for %s' % target
       )

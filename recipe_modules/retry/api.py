@@ -96,29 +96,33 @@ class RetryApi(recipe_api.RecipeApi):
         sleep *= backoff_factor
 
   def basic_wrap(
-      self, func, max_attempts=3, sleep=5.0, backoff_factor=1.5, **kwargs
+      self, func, max_attempts=3, sleep=5.0, backoff_factor=1.5, timeout=0, **kwargs
   ):
     """Retry basic wrapped function without step support.
       Args:
           func (callable): A function that performs the action that should be
-            retried on failure. If it raises a `StepFailure`, it will be retried.
-            Any other exception will end the retry loop and bubble up.
+            retried on failure. If it raises a `StepFailure` or `InfraFailure`,
+            it will be retried. Any other exception will end the retry loop and
+            bubble up.
           max_attempts (int): How many times to try before giving up.
           sleep (int or float): The initial time to sleep between attempts.
           backoff_factor (int or float): The factor by which the sleep time
               will be multiplied after each attempt.
+          timeout (int or float): A value passed to the `func` argument. Is
+              multiplied by the `backoff_factor` after each attempt.
       Returns:
         The result of executing func.
       """
     for attempt in range(max_attempts):
       try:
-        result = func()
+        result = func(timeout=timeout)
         return result
-      except self.m.step.StepFailure:
+      except (self.m.step.StepFailure, self.m.step.InfraFailure):
         if attempt == max_attempts - 1:
           raise
         self.m.time.sleep(sleep)
         sleep *= backoff_factor
+        timeout *= backoff_factor
 
   def run_flutter_doctor(self):
     self.step(

@@ -351,7 +351,8 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
             cmd = [resource_name, device_id]
             self.m.step('Run app to dismiss dialogs', cmd)
         with self.m.step.nest('Dismiss Xcode automation dialogs'):
-          self._dismiss_xcode_automation_dialogs(device_id)
+          with self.m.context(infra_steps=True):
+            self._dismiss_xcode_automation_dialogs(device_id)
 
   def _dismiss_xcode_automation_dialogs(self, device_id):
     """Dismiss Xcode automation permission dialog and update permission db.
@@ -374,7 +375,6 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
             'devices',
             '-v',
         ],
-        infra_step=True,
         raise_on_failure=False,
         ok_ret='any',
     )
@@ -391,7 +391,6 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
             '-v',
         ],
         stdout=self.m.raw_io.output_text(),
-        infra_step=True,
         raise_on_failure=False,
         ok_ret='any',
     ).stdout.rstrip()
@@ -410,17 +409,10 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     tcc_directory_path, db_path, backup_db_path = self._get_tcc_path()
 
     # Ensure db exists
-    self.m.step(
-        'List TCC directory',
-        ['ls', tcc_directory_path],
-        infra_step=True,
-    )
-
     files = self.m.step(
         'Find TCC directory',
         ['ls', tcc_directory_path],
-        stdout=self.m.raw_io.output_text(),
-        infra_step=True,
+        stdout=self.m.raw_io.output_text(add_output_log=True),
     ).stdout.rstrip()
 
     if XCODE_AUTOMATION_DB not in files:
@@ -430,7 +422,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
       )
 
     # Print contents of db for potential debugging purposes.
-    self._query_automation_db_step(db_path)
+    self._query_automation_db_step_with_retry(db_path)
 
     # Create backup db if there isn't one.
     # If there is already a backup, it's most likely that a previous run did
@@ -439,13 +431,55 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
       self.m.step(
           'Create backup db',
           ['cp', db_path, backup_db_path],
-          infra_step=True,
       )
+
+    self.m.retry.basic_wrap(
+        lambda timeout: self._trigger_automation_permission(
+            db_path,
+            timeout=timeout,
+        ),
+        step_name='Wait to add entry in TCC db',
+        sleep=2.0,
+        backoff_factor=2,
+        max_attempts=3,
+        timeout=2,
+    )
+
+    # Update TCC.db. If fails, try up to 3 times. It may fail if the db is locked.
+    self.m.retry.basic_wrap(
+        lambda timeout: self._update_automation_permission_db(
+            db_path,
+            timeout=timeout,
+        ),
+        step_name='Wait to update TCC db',
+        sleep=2.0,
+        backoff_factor=2,
+        max_attempts=3
+    )
+
+    # Print contents of db for potential debugging purposes.
+    self._query_automation_db_step_with_retry(db_path)
+
+    # Xcode was opened by Applescript, so kill it.
+    self.m.step(
+        'Kill Xcode',
+        ['killall', '-9', 'Xcode'],
+        ok_ret='any',
+    )
+
+  def _trigger_automation_permission(self, db_path, timeout=2):
+    """Trigger Xcode automation dialog to appear and then kill the dialog.
+    Killing the dialog will add an entry for the permission to the TCC.db.
+    Raises an error if dialog fails to add entry to db.
+
+    Args:
+      db_path(string): A string of the path to the sqlite database.
+    """
 
     # Run an arbitrary AppleScript Xcode command to trigger permissions dialog.
     # The AppleScript counts how many Xcode windows are open.
     # The script will hang if permission has not been given, so timeout after
-    # a few seconds.
+    # a few seconds. For each attempt, use a longer timeout.
     self.m.step(
         'Trigger dialog',
         [
@@ -459,10 +493,9 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
             '-e',
             'end tell',
         ],
-        infra_step=True,
         raise_on_failure=False,
         ok_ret='any',
-        timeout=2,
+        timeout=timeout,
     )
 
     # Kill the dialog. After killing the dialog, an entry for the app requesting
@@ -470,33 +503,11 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     self.m.step(
         'Dismiss dialog',
         ['killall', '-9', 'UserNotificationCenter'],
-        infra_step=True,
         ok_ret='any',
     )
 
-    # Print contents of db for potential debugging purposes.
-    self._query_automation_db_step(db_path)
-
-    # Update the db to make it think permission was given.
-    self.m.step(
-        'Update db',
-        [
-            'sqlite3', db_path,
-            "UPDATE access SET auth_value = 2, auth_reason = 3, flags = NULL WHERE service = 'kTCCServiceAppleEvents' AND indirect_object_identifier = 'com.apple.dt.Xcode'"
-        ],
-        infra_step=True,
-    )
-
-    # Print contents of db for potential debugging purposes.
-    self._query_automation_db_step(db_path)
-
-    # Xcode was opened by Applescript, so kill it.
-    self.m.step(
-        'Kill Xcode',
-        ['killall', '-9', 'Xcode'],
-        infra_step=True,
-        ok_ret='any',
-    )
+    if 'Xcode' not in self._query_automation_db_step_with_retry(db_path):
+      raise self.m.step.InfraFailure('Xcode entry not found in TCC.db')
 
   def _get_tcc_path(self):
     """Constructs paths to the TCC directory, TCC db, and TCC backup db.
@@ -516,20 +527,58 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     )
     return tcc_directory_path, db_path, backup_db_path
 
-  def _query_automation_db_step(self, db_path):
+  # pylint: disable=unused-argument
+  def _update_automation_permission_db(self, db_path, timeout=None):
+    self.m.step(
+        'Update db',
+        [
+            'sqlite3', db_path,
+            "UPDATE access SET auth_value = 2, auth_reason = 3, flags = NULL WHERE service = 'kTCCServiceAppleEvents' AND indirect_object_identifier = 'com.apple.dt.Xcode'"
+        ],
+    )
+
+  def _query_automation_db_step_with_retry(self, db_path):
+    """Queries the TCC database with 3 retries. Sometimes if the database is
+    locked, query will fail. So wait and try again.
+
+    Args:
+      db_path(string): A string of the path to the sqlite database.
+
+    Returns:
+      A string of the query's output.
+    """
+
+    return self.m.retry.basic_wrap(
+        lambda timeout: self._query_automation_db_step(
+            db_path,
+            timeout=timeout,
+        ),
+        step_name='Wait to query TCC db',
+        sleep=2.0,
+        backoff_factor=1,
+        max_attempts=3
+    )
+
+  # pylint: disable=unused-argument
+  def _query_automation_db_step(self, db_path, timeout=None):
     """Queries the TCC database.
 
     Args:
       db_path(string): A string of the path to the sqlite database.
+
+    Returns:
+      A string of the query's output.
     """
-    self.m.step(
+    query_results = self.m.step(
         'Query TCC db',
         [
             'sqlite3', db_path,
             'SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = "kTCCServiceAppleEvents"'
         ],
-        infra_step=True,
+        stdout=self.m.raw_io.output_text(add_output_log=True),
     )
+
+    return query_results.stdout.rstrip()
 
   def reset_automation_dialogs(self):
     """Reset Xcode Automation permissions."""
@@ -560,7 +609,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
         )
 
         # Print contents of db for potential debugging purposes.
-        self._query_automation_db_step(db_path)
+        self._query_automation_db_step_with_retry(db_path)
 
   def _checkout_cocoon(self):
     """Checkout cocoon at HEAD to the cache and return the path."""

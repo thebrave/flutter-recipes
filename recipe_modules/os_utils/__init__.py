@@ -1,5 +1,6 @@
 DEPS = [
     'flutter/repo_util',
+    'flutter/retry',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
@@ -8,4 +9,5 @@ DEPS = [
     'recipe_engine/raw_io',
     'recipe_engine/step',
     'recipe_engine/swarming',
+    "recipe_engine/time",
 ]

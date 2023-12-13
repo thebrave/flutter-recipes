@@ -650,7 +650,8 @@ class OSXSDKApi(recipe_api.RecipeApi):
             runtime_dmg_cache_dir
         )
 
-  def _is_runtimes_unmounted(self):
+  # pylint: disable=unused-argument
+  def _is_runtimes_unmounted(self, timeout=None):
     '''Check if more than one runtime is currently mounted. If more than one
     is mounted, raise a `StepFailure`.
     '''

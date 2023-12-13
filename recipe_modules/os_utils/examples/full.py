@@ -45,6 +45,10 @@ def GenTests(api):
       'Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory',
       stdout=api.raw_io.output_text('TCC.db'),
   )
+  xcode_dismiss_dialog_query_db_step = api.step_data(
+      'Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)',
+      stdout=api.raw_io.output_text('service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'),
+  )
   yield api.test(
       'basic',
       api.platform('win', 64),
@@ -57,6 +61,7 @@ def GenTests(api):
       'ios_debug_symbol_doctor_fails_then_succeeds',
       api.step_data('ios_debug_symbol_doctor.diagnose', retcode=1),
       xcode_dismiss_dialog_find_db_step,
+      xcode_dismiss_dialog_query_db_step,
       api.platform('mac', 64),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
@@ -86,6 +91,7 @@ def GenTests(api):
   yield api.test(
       'clean_derived_data', api.platform('mac', 64),
       xcode_dismiss_dialog_find_db_step,
+      xcode_dismiss_dialog_query_db_step,
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       )
@@ -103,8 +109,19 @@ def GenTests(api):
       status='INFRA_FAILURE'
   )
   yield api.test(
-      'reset_dialog_xcode_automation_fails_find_db',
+      'dimiss_dialog_xcode_automation_fails_update_db',
       xcode_dismiss_dialog_find_db_step,
+      # xcode_dismiss_dialog_query_db_step,
+      api.platform('mac', 64),
+      api.properties.environ(
+          properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
+      ),
+      status='INFRA_FAILURE'
+  )
+  yield api.test(
+      'reset_dialog_xcode_automation_finds_db',
+      xcode_dismiss_dialog_find_db_step,
+      xcode_dismiss_dialog_query_db_step,
       api.step_data(
           'Reset Xcode automation dialogs.Find TCC directory',
           stdout=api.raw_io.output_text('TCC.db.backup'),

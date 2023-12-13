@@ -38,7 +38,8 @@ def RunSteps(api, max_attempts):
   def func1():
     api.step('test: mytest_func', ['ls', '-a'])
 
-  def func2():
+  # pylint: disable=unused-argument
+  def func2(timeout=None):
     api.step('test: mytest_func_basic', ['ls', '-a'])
 
   api.retry.wrap(

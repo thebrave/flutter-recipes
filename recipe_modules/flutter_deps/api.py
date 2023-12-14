@@ -455,7 +455,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env(dict): Current environment variables.
       env_prefixes(dict): Current environment prefixes variables.
     """
-    version = version or 'latest'
+    version = version or 'live'
     codesign_path = self.m.path.mkdtemp()
     codesign = self.m.cipd.EnsureFile()
     codesign.add_package('flutter/codesign/${platform}', version)

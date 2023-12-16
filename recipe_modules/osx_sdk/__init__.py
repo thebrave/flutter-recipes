@@ -5,7 +5,6 @@
 DEPS = [
     'flutter/os_utils',
     'flutter/retry',
-    'flutter/cache_micro_manager',
     'recipe_engine/cipd',
     'recipe_engine/context',
     'recipe_engine/file',

@@ -263,7 +263,6 @@ def GenTests(api):
                   ),
                   api.properties(
                       shard='tests',
-                      fuchsia_ctl_version='version:0.0.2',
                   ),
                   api.runtime(is_experimental=experimental),
                   api.repo_util.flutter_environment_data(),
@@ -285,7 +284,6 @@ def GenTests(api):
                   ),
                   api.properties(
                       shard='tests',
-                      fuchsia_ctl_version='version:0.0.2',
                   ),
                   api.runtime(is_experimental=experimental),
                   api.repo_util.flutter_environment_data(),

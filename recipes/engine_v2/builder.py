@@ -187,7 +187,9 @@ def Build(api, checkout, env, env_prefixes, outputs):
   if gn:
     with api.context(env=env, env_prefixes=env_prefixes):
       gn = list(gn)
-      if api.flutter_bcid.is_official_build():
+      if api.flutter_bcid.is_official_build() or (
+          api.platform.is_mac and api.flutter_bcid.is_prod_build() and
+          api.properties.get('release_build')):
         # Goma is not supported for official builds.
         gn.append('--no-goma')
       if api.monorepo.is_monorepo_ci_build:
@@ -434,9 +436,9 @@ def GenTests(api):
   test_if_build = {
       "tests": [{
           "name": "mytest", "script": "myscript.sh",
-          "parameters": ["param1", "param2", '${FLUTTER_LOGS_DIR}'],
-          "type": "local", "contexts": ["metric_center_token"],
-          "test_if": "main"
+          "parameters": ["param1", "param2",
+                         '${FLUTTER_LOGS_DIR}'], "type": "local",
+          "contexts": ["metric_center_token"], "test_if": "main"
       }]
   }
   yield api.test(

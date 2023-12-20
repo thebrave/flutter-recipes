@@ -456,6 +456,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
       env['FLUTTER_STORAGE_BASE_URL'
          ] = 'https://storage.googleapis.com/flutter_archives_v2'
     env_prefixes = {'PATH': ['%s' % str(flutter_bin), '%s' % str(dart_bin)]}
+    flutter_exe = 'flutter.bat' if self.m.platform.is_win else 'flutter'
+    self.m.step('flutter config --clear-features',
+                [flutter_bin.join(flutter_exe), 'config', '--clear-features'],
+    )
     return env, env_prefixes
 
   def engine_environment(self, checkout_path):

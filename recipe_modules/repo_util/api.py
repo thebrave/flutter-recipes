@@ -444,14 +444,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
             'linux' if self.m.platform.name == 'linux' else
             ('darwin' if self.m.platform.name == 'mac' else 'win'),
         'REVISION':
-            self.get_commit(checkout_path)
+            self.get_commit(checkout_path),
     }
-    channel = self.m.properties.get('channel', None)
-    if channel:
-      env['CHANNEL'] = channel
-    package_sharding = self.m.properties.get('package_sharding', None)
-    if package_sharding:
-      env['PACKAGE_SHARDING'] = package_sharding
+    self.add_property_env_variables(env)
     if self.m.properties.get('gn_artifacts', False):
       env['FLUTTER_STORAGE_BASE_URL'
          ] = 'https://storage.googleapis.com/flutter_archives_v2'
@@ -461,6 +456,15 @@ class RepoUtilApi(recipe_api.RecipeApi):
                 [flutter_bin.join(flutter_exe), 'config', '--clear-features'],
     )
     return env, env_prefixes
+
+  def add_property_env_variables(self, env):
+    """Populate env_variables defined in properties to Env.
+
+    The env_variables is in a dict format with String values.
+    """
+    env_variables = self.m.properties.get('env_variables', {})
+    for key in env_variables.keys():
+      env[key] = env_variables[key]
 
   def engine_environment(self, checkout_path):
     """Returns env and env_prefixes of an flutter/dart command environment."""

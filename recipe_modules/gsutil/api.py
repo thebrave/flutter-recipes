@@ -14,7 +14,6 @@ class GSUtilApi(recipe_api.RecipeApi):
     super().__init__(*args, **kwargs)
     self._tool_path = None
 
-  @recipe_api.non_step
   def join(self, *parts):
     """Constructs a GS path from composite parts."""
     return "/".join(p.strip("/") for p in parts)

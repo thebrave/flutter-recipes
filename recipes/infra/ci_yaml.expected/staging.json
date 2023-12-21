@@ -944,7 +944,7 @@
       }
     },
     "name": "check for no-op commit",
-    "timeout": 60.0,
+    "timeout": 300.0,
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@stdout@hello@@@",
       "@@@STEP_LOG_END@stdout@@@"
@@ -971,7 +971,7 @@
       }
     },
     "name": "git add",
-    "timeout": 60.0
+    "timeout": 300.0
   },
   {
     "cmd": [
@@ -994,7 +994,7 @@
       }
     },
     "name": "git rev-parse (2)",
-    "timeout": 60.0
+    "timeout": 300.0
   },
   {
     "cmd": [],
@@ -1025,7 +1025,7 @@
       }
     },
     "name": "calculate Change-Id.git diff",
-    "timeout": 60.0,
+    "timeout": 300.0,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@diff (without hashes)@diff --git a/foo.txt b/foo.txt@@@",
@@ -1065,7 +1065,7 @@
       }
     },
     "name": "calculate Change-Id.git hash-object",
-    "timeout": 60.0,
+    "timeout": 300.0,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -1129,7 +1129,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07"
     ],
     "cwd": "[START_DIR]/infra",
@@ -1201,7 +1201,7 @@
       "-host",
       "https://flutter-review.googlesource.com",
       "-input",
-      "{\"params\": {\"o\": [\"CURRENT_COMMIT\", \"CURRENT_REVISION\", \"MESSAGES\"], \"q\": \"change:infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\"}}",
+      "{\"params\": {\"o\": [\"CURRENT_COMMIT\", \"CURRENT_REVISION\", \"MESSAGES\", \"DETAILED_ACCOUNTS\"], \"q\": \"change:infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\"}}",
       "-output",
       "/path/to/tmp/json"
     ],
@@ -1229,7 +1229,8 @@
       "@@@STEP_LOG_LINE@json.input@    \"o\": [@@@",
       "@@@STEP_LOG_LINE@json.input@      \"CURRENT_COMMIT\",@@@",
       "@@@STEP_LOG_LINE@json.input@      \"CURRENT_REVISION\",@@@",
-      "@@@STEP_LOG_LINE@json.input@      \"MESSAGES\"@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"MESSAGES\",@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"DETAILED_ACCOUNTS\"@@@",
       "@@@STEP_LOG_LINE@json.input@    ],@@@",
       "@@@STEP_LOG_LINE@json.input@    \"q\": \"change:infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\"@@@",
       "@@@STEP_LOG_LINE@json.input@  }@@@",
@@ -1287,7 +1288,7 @@
       }
     },
     "name": "git push",
-    "timeout": 180.0,
+    "timeout": 300.0,
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@stdout@@@@",
       "@@@STEP_LOG_END@stdout@@@",
@@ -1305,7 +1306,7 @@
       "-host",
       "https://flutter-review.googlesource.com",
       "-input",
-      "{\"change_id\": \"infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\", \"params\": {\"o\": [\"CURRENT_REVISION\"]}}",
+      "{\"change_id\": \"infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\", \"params\": {\"o\": [\"CURRENT_REVISION\", \"DETAILED_ACCOUNTS\"]}}",
       "-output",
       "/path/to/tmp/json"
     ],
@@ -1341,7 +1342,8 @@
       "@@@STEP_LOG_LINE@json.input@  \"change_id\": \"infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\",@@@",
       "@@@STEP_LOG_LINE@json.input@  \"params\": {@@@",
       "@@@STEP_LOG_LINE@json.input@    \"o\": [@@@",
-      "@@@STEP_LOG_LINE@json.input@      \"CURRENT_REVISION\"@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"CURRENT_REVISION\",@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"DETAILED_ACCOUNTS\"@@@",
       "@@@STEP_LOG_LINE@json.input@    ]@@@",
       "@@@STEP_LOG_LINE@json.input@  }@@@",
       "@@@STEP_LOG_LINE@json.input@}@@@",

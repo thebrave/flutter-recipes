@@ -515,7 +515,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
     """
     cas_dir = self.m.path.mkdtemp('out-cas-directory')
     cas_engine = cas_dir.join(target)
-    self.m.file.copytree('Copy host_debug_unopt', build_dir, cas_engine)
+    self.m.file.copytree('Copy %s' % target, build_dir, cas_engine)
 
     # pylint: disable=unused-argument
     def _upload(timeout=None):

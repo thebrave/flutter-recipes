@@ -13,15 +13,15 @@ def RunSteps(api):
   env_prefixes = {}
 
   with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
-                                  version="31"):
+                                  version="34"):
     api.step('Do something', ['echo', 'hello'])
   # Calling a second time to ensure we have coverage for duplicated initialization.
   with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
-                                  version="31"):
+                                  version="34"):
     api.step('Do something', ['echo', 'hello'])
 
 def GenTests(api):
-  avd_api_version = '31'
+  avd_api_version = '34'
 
   yield api.test(
       'emulator started',

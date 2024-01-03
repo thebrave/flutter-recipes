@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from recipe_engine import recipe_api
 
 # Supports 19 though API 34.
-AVD_CIPD_IDENTIFIER = 'tpUM48N2bNA9XpJyjJpQRdyaNSKe8VCnGuw40CklJ9QC'
+AVD_CIPD_IDENTIFIER = 'nNnmIzfGCF3wVB1sB14hKaU77TdoTFbq6uq_wXHM-WQC'
 
 
 class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
@@ -55,7 +55,9 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       avd_root(Path): The root path to install the AVD package.
     """
     assert self.m.platform.is_linux
-    cipd_version = self.m.properties.get('avd_cipd_version', AVD_CIPD_IDENTIFIER)
+    cipd_version = self.m.properties.get(
+        'avd_cipd_version', AVD_CIPD_IDENTIFIER
+    )
     with self.m.step.nest('download avd package'):
       with self.m.context(
           env=env, env_prefixes=env_prefixes), self.m.depot_tools.on_path():
@@ -93,10 +95,19 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
         avd_script_path = self.avd_root.join(
             'src', 'tools', 'android', 'avd', 'avd.py'
         )
-        avd_config = self.avd_root.join(
-            'src', 'tools', 'android', 'avd', 'proto',
-            'generic_android%s.textpb' % self.version
-        )
+
+        avd_config = None
+        if int(self.version) > 33:
+          avd_config = self.avd_root.join(
+              'src', 'tools', 'android', 'avd', 'proto',
+              'android_%s_google_apis_x64.textpb' % self.version
+          )
+        else:
+          avd_config = self.avd_root.join(
+              'src', 'tools', 'android', 'avd', 'proto',
+              'generic_android%s.textpb' % self.version
+          )
+
         self.m.step(
             'Install Android emulator (API level %s)' % self.version, [
                 'vpython3', avd_script_path, 'install', '--avd-config',

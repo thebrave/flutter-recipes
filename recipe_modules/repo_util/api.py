@@ -506,7 +506,11 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'LUCI_CLEANUP':
             str(self.m.path['cleanup']),
         'REVISION':
-            self.m.buildbucket.gitiles_commit.id or ''
+            self.m.buildbucket.gitiles_commit.id or '',
+        'CLANG_CRASH_DIAGNOSTICS_DIR':
+            self.m.path.mkdtemp(),
+        'CLANG_MODULE_CACHE_PATH':
+            '',
     }
     env_prefixes = {'PATH': ['%s' % str(dart_bin)]}
     return env, env_prefixes

@@ -207,6 +207,7 @@ def Build(api, checkout, env, env_prefixes, outputs):
           ninja.get('config'),
           checkout,
           ninja.get('targets', []),
+          env,
           rbe_working_path=rbe_working_path
       )
   generator_tasks = build.get('generators', {}).get('tasks', [])
@@ -299,11 +300,15 @@ def RunSteps(api):
     )
     api.repo_util.engine_checkout(cache_root, env, env_prefixes)
   outputs = {}
-  if api.platform.is_mac:
-    with api.osx_sdk('ios'):
+  api.logs_util.initialize_logs_collection(env)
+  try:
+    if api.platform.is_mac:
+      with api.osx_sdk('ios'):
+        Build(api, checkout, env, env_prefixes, outputs)
+    else:
       Build(api, checkout, env, env_prefixes, outputs)
-  else:
-    Build(api, checkout, env, env_prefixes, outputs)
+  finally:
+    api.logs_util.upload_logs('builder', type='engine')
   output_props = api.step('Set output properties', None)
   output_props.presentation.properties['cas_output_hash'] = outputs
 

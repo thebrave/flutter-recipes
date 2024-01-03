@@ -308,6 +308,69 @@
   },
   {
     "cmd": [],
+    "name": "Initialize logs"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[CLEANUP]/flutter_logs_dir"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Initialize logs.Ensure [CLEANUP]/flutter_logs_dir",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "",
+      "[CLEANUP]/flutter_logs_dir/noop.txt"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Initialize logs.Write noop file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
     "name": "ensure goma"
   },
   {
@@ -330,6 +393,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -408,6 +473,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
@@ -477,6 +544,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
@@ -538,6 +607,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
@@ -603,6 +674,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
@@ -660,6 +733,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GOMA_DIR": "[CACHE]/goma/client",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
@@ -716,6 +791,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
@@ -774,6 +851,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
@@ -828,6 +907,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GLOG_log_dir": "[CLEANUP]",
       "GOMA_CACHE_DIR": "[CACHE]/goma",
@@ -887,6 +968,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False",
@@ -940,6 +1023,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False",
@@ -1014,6 +1099,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False",
@@ -1075,6 +1162,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False",
@@ -1128,6 +1217,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False",
@@ -1185,6 +1276,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "GOMA_TMP_DIR": "[CLEANUP]/goma",
       "GOMA_USE_LOCAL": "False",
@@ -1241,6 +1334,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -1292,6 +1387,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -1353,6 +1450,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -1397,6 +1496,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -1457,6 +1558,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -1522,6 +1625,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -1585,6 +1690,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -1649,6 +1756,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -1713,6 +1822,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -1777,6 +1888,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -1841,6 +1954,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -1905,6 +2020,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -1969,6 +2086,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2034,6 +2153,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2094,6 +2215,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2144,6 +2267,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2196,6 +2321,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2251,6 +2378,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2289,7 +2418,7 @@
   },
   {
     "cmd": [],
-    "name": "Initialize logs"
+    "name": "Initialize logs (2)"
   },
   {
     "cmd": [
@@ -2311,6 +2440,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2345,7 +2476,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Initialize logs.Ensure [CLEANUP]/flutter_logs_dir",
+    "name": "Initialize logs (2).Ensure [CLEANUP]/flutter_logs_dir",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -2369,6 +2500,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2403,7 +2536,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Initialize logs.Write noop file",
+    "name": "Initialize logs (2).Write noop file",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -2489,6 +2622,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2548,6 +2683,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2615,6 +2752,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2674,6 +2813,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2724,6 +2865,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2778,6 +2921,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2833,6 +2978,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2892,6 +3039,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -2947,6 +3096,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -3004,6 +3155,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -3063,6 +3216,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -3118,6 +3273,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -3175,6 +3332,8 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
@@ -3376,6 +3535,112 @@
     "timeout": 900.0,
     "~followup_annotations": [
       "@@@STEP_LINK@CAS UI@https://cas-viewer.appspot.com/projects/example-cas-server/instances/default_instance/blobs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0/tree@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "process logs (2)"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "-m",
+      "----",
+      "cp",
+      "-r",
+      "[CLEANUP]/flutter_logs_dir",
+      "gs://flutter_logs/engine/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/builder/00000000-0000-0000-0000-00000000133a"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "process logs (2).gsutil upload logs aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@archive logs@https://console.cloud.google.com/storage/browser/flutter_logs/engine/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/builder/00000000-0000-0000-0000-00000000133a@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "glob",
+      "[CLEANUP]/flutter_logs_dir",
+      "*"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "process logs (2).logs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@glob@[CLEANUP]/flutter_logs_dir/a.txt@@@",
+      "@@@STEP_LOG_END@glob@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "log links (2)",
+    "~followup_annotations": [
+      "@@@STEP_LINK@myfile.txt@https://storage.googleapis.com/flutter_logs/engine/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/builder/00000000-0000-0000-0000-00000000133a/myfile.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CLEANUP]/flutter_logs_dir",
+      "--recursive"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "log links (2).List logs path",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@listdir@[CLEANUP]/flutter_logs_dir/myfile.txt@@@",
+      "@@@STEP_LOG_END@listdir@@@"
     ]
   },
   {

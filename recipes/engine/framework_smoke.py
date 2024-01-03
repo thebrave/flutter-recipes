@@ -14,6 +14,7 @@ from google.protobuf import struct_pb2
 
 DEPS = [
     'flutter/build_util',
+    'flutter/logs_util',
     'flutter/repo_util',
     'flutter/test_utils',
     'recipe_engine/context',
@@ -40,11 +41,15 @@ def RunSteps(api, properties, env_properties):
 
   # Checkout Engine.
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
+  api.logs_util.initialize_logs_collection(env)
 
   # Build engine host unopt.
   with api.step.nest('Build host_debug_unopt'):
     api.build_util.run_gn(['--unoptimized', '--prebuilt-dart-sdk'], checkout)
-    api.build_util.build('host_debug_unopt', checkout, [])
+    try:
+      api.build_util.build('host_debug_unopt', checkout, [], env)
+    finally:
+      api.logs_util.upload_logs('builder', type='engine')
 
   # Checkout framework and analyze.
   flutter_checkout_path = api.path['cache'].join('flutter')

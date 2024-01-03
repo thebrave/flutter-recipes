@@ -34,7 +34,7 @@ class LogUtilsApi(recipe_api.RecipeApi):
           'Write noop file', logs_path.join('noop.txt'), '', include_log=False
       )
 
-  def upload_logs(self, task):
+  def upload_logs(self, task, type='flutter'):
     """Upload the log files in FLUTTER_LOGS_DIR to GCS.
 
     Args:
@@ -50,7 +50,7 @@ class LogUtilsApi(recipe_api.RecipeApi):
       self.m.gsutil.upload(
           bucket='flutter_logs',
           source=logs_path,
-          dest='flutter/%s/%s/%s' % (invocation_id, task, uuid),
+          dest='%s/%s/%s/%s' % (type, invocation_id, task, uuid),
           link_name='archive logs',
           args=['-r'],
           multithreaded=True,
@@ -61,7 +61,7 @@ class LogUtilsApi(recipe_api.RecipeApi):
           'logs', source=logs_path, pattern='*', test_data=['a.txt']
       )
     with self.m.step.nest('log links') as presentation:
-      pattern_str = 'https://storage.googleapis.com/%s/flutter/%s/%s/%s/%s'
+      pattern_str = 'https://storage.googleapis.com/%s/%s/%s/%s/%s/%s'
       log_files = self.m.file.listdir(
           'List logs path', logs_path, True, test_data=('myfile.txt',)
       )
@@ -69,7 +69,7 @@ class LogUtilsApi(recipe_api.RecipeApi):
         base_name = self.m.path.basename(log_file)
 
         url = pattern_str % (
-            'flutter_logs', invocation_id, task, uuid, base_name
+            'flutter_logs', type, invocation_id, task, uuid, base_name
         )
         presentation.links[base_name] = url
 

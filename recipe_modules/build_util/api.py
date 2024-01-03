@@ -82,7 +82,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
       name = 'build %s' % ' '.join([config] + list(targets))
       self.m.step(name, ninja_args)
 
-  def _build_goma(self, config, checkout_path, targets, tool):
+  def _build_goma(self, config, checkout_path, targets, tool, env):
     """Builds using ninja and goma.
 
     Args:
@@ -95,10 +95,14 @@ class BuildUtilApi(recipe_api.RecipeApi):
     ninja_args = [tool, '-j', goma_jobs, '-C', build_dir]
     ninja_args.extend(targets)
     with self.m.goma(), self.m.depot_tools.on_path():
-      name = 'build %s' % ' '.join([config] + list(targets))
-      self.m.step(name, ninja_args)
+      try:
+        name = 'build %s' % ' '.join([config] + list(targets))
+        self.m.step(name, ninja_args)
+      except self.m.step.StepFailure:
+        self._upload_crash_reproducer(env)
+        raise
 
-  def _build_no_goma(self, config, checkout_path, targets, tool):
+  def _build_no_goma(self, config, checkout_path, targets, tool, env):
     """Builds using ninja without goma.
 
     Args:
@@ -112,10 +116,39 @@ class BuildUtilApi(recipe_api.RecipeApi):
     ninja_args = [tool, '-C', build_dir, '-j', concurrent_jobs]
     ninja_args.extend(targets)
     with self.m.depot_tools.on_path():
-      name = 'build %s' % ' '.join([config] + list(targets))
-      self.m.step(name, ninja_args)
+      try:
+        name = 'build %s' % ' '.join([config] + list(targets))
+        self.m.step(name, ninja_args)
+      except self.m.step.StepFailure:
+        self._upload_crash_reproducer(env)
+        raise
 
-  def build(self, config, checkout_path, targets, rbe_working_path=None):
+  def _upload_crash_reproducer(self, env):
+    """Uploads crash reproducer files to GCS when clang crash happens."""
+    clang_crash_diagnostics_dir = env['CLANG_CRASH_DIAGNOSTICS_DIR']
+    flutter_logs_dir = env['FLUTTER_LOGS_DIR']
+    with self.m.step.nest("upload crash reproducer"), self.m.context(
+        infra_steps=True):
+      reproducers = self.m.file.glob_paths(
+          "find reproducers",
+          clang_crash_diagnostics_dir,
+          "*.sh",
+          test_data=(clang_crash_diagnostics_dir.join("foo.sh"),),
+      )
+      for reproducer in reproducers:
+        base = self.m.path.splitext(self.m.path.basename(reproducer))[0]
+        files = self.m.file.glob_paths(
+            f"find {base} files",
+            clang_crash_diagnostics_dir,
+            base + ".*",
+            test_data=(clang_crash_diagnostics_dir.join("foo.sh"),),
+        )
+        for f in files:
+          self.m.file.copy(
+              'Copy crash reproduce file %s' % f, f, flutter_logs_dir
+          )
+
+  def build(self, config, checkout_path, targets, env, rbe_working_path=None):
     """Builds using ninja.
 
     Args:
@@ -131,6 +164,6 @@ class BuildUtilApi(recipe_api.RecipeApi):
       )
     else:
       if self.use_goma:
-        self._build_goma(config, checkout_path, targets, ninja_path)
+        self._build_goma(config, checkout_path, targets, ninja_path, env)
       else:
-        self._build_no_goma(config, checkout_path, targets, ninja_path)
+        self._build_no_goma(config, checkout_path, targets, ninja_path, env)

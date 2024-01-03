@@ -18,6 +18,7 @@ DEPS = [
     'flutter/build_util',
     'flutter/display_util',
     'flutter/flutter_deps',
+    'flutter/logs_util',
     'flutter/os_utils',
     'flutter/repo_util',
     'flutter/shard_util_v2',
@@ -78,7 +79,11 @@ def RunSteps(api, properties, env_properties):
     gn_flags = ['--web', '--runtime-mode=release']
 
     api.build_util.run_gn(gn_flags, checkout)
-    api.build_util.build(target_name, checkout, [])
+    api.logs_util.initialize_logs_collection(env)
+    try:
+      api.build_util.build(target_name, checkout, [], env)
+    finally:
+      api.logs_util.upload_logs('builder', type='engine')
 
     # Archive build directory into CAS.
     cas_hash = Archive(api, target_name)

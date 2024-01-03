@@ -452,9 +452,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
          ] = 'https://storage.googleapis.com/flutter_archives_v2'
     env_prefixes = {'PATH': ['%s' % str(flutter_bin), '%s' % str(dart_bin)]}
     flutter_exe = 'flutter.bat' if self.m.platform.is_win else 'flutter'
-    self.m.step('flutter config --clear-features',
-                [flutter_bin.join(flutter_exe), 'config', '--clear-features'],
-    )
+    if not self.m.properties.get('gn_artifacts', False):
+      self.m.step('flutter config --clear-features',
+                  [flutter_bin.join(flutter_exe), 'config', '--clear-features'],
+      )
     return env, env_prefixes
 
   def add_property_env_variables(self, env):

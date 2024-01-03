@@ -403,11 +403,6 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     Returns Path to the installed sdk app bundle."""
     app_dir = self._xcode_dir(devicelab)
-    # cleanup stale xcode versions.
-    self.m.step("show app_dir", ['echo', app_dir])
-    self._show_xcode_cache()
-    self.m.cache_micro_manager.run(self.m.path['cache'].join(_XCODE_CACHE_PATH), [app_dir])
-    self._show_xcode_cache()
     tool_dir = self.m.path.mkdtemp().join('osx_sdk') if devicelab else app_dir
     sdk_app = self.m.path.join(app_dir, 'XCode.app')
     self._try_install_xcode(tool_dir, kind, app_dir, sdk_app, devicelab)

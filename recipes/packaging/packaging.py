@@ -80,15 +80,13 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
       pkg_gcs_path = GetFlutterArtifactGCSPath(api, branch, file_name)
       api.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
       # Do not upload on presubmit.
-      if ((not api.runtime.is_experimental) and
-          (api.flutter_bcid.is_official_build() or
-           api.flutter_bcid.is_prod_build())):
+      if (api.flutter_bcid.is_official_build() or
+           api.flutter_bcid.is_prod_build()):
         api.archives.upload_artifact(flutter_pkg_absolute_path, pkg_gcs_path)
         api.flutter_bcid.upload_provenance(
             flutter_pkg_absolute_path, pkg_gcs_path
         )
-      if ((not api.runtime.is_experimental) and
-          (api.flutter_bcid.is_official_build())):
+      if api.flutter_bcid.is_official_build():
         api.time.sleep(60)
         VerifyProvenance(api, pkg_gcs_path)
       if branch in ('beta', 'stable') and api.flutter_bcid.is_official_build():
@@ -224,15 +222,10 @@ def RunSteps(api):
   packaging_script = checkout_path.join('dev', 'bots', 'prepare_package.dart')
   with api.context(env=env, env_prefixes=env_prefixes):
     with api.depot_tools.on_path():
-      match = PACKAGED_REF_RE.match(git_ref)
-      if match and not api.runtime.is_experimental:
-        branch = match.group(1)
-        CreateAndUploadFlutterPackage(
-            api, release_git_hash, branch, packaging_script
-        )
-        # Nothing left to do on a packaging branch.
-        return
-      api.step('Running on test mode - no uploads will happen', [])
+      branch = api.properties.get('git_branch')
+      CreateAndUploadFlutterPackage(
+          api, release_git_hash, branch, packaging_script
+      )
 
 
 def GenTests(api):
@@ -243,48 +236,41 @@ def GenTests(api):
   }
   '''
 
-  def RequiresBcid(bucket, experimental, git_ref, branch):
-    return bucket == 'flutter' and not experimental and git_ref != 'invalid' + branch
+  def RequiresBcid(bucket, git_ref, branch):
+    return bucket == 'flutter' and git_ref != 'invalid' + branch
 
-  for experimental in (True, False):  # pylint: disable=too-many-nested-blocks
-    for platform in ('mac', 'linux', 'win'):
-      for branch in ('master', 'beta', 'stable', 'flutter-release-test'):
-        for bucket in ('prod', 'staging', 'flutter'):
-          for git_ref in ('refs/heads/' + branch, 'invalid' + branch):
-            if RequiresBcid(bucket, experimental, git_ref, branch):
-              yield api.test(
-                  '%s_%s%s_%s' % (
-                      platform, git_ref,
-                      '_experimental' if experimental else '', bucket
-                  ),
-                  api.platform(platform, 64),
-                  api.buildbucket.ci_build(
-                      git_ref=git_ref, revision=None, bucket=bucket
-                  ),
-                  api.properties(
-                      shard='tests',
-                  ),
-                  api.runtime(is_experimental=experimental),
-                  api.repo_util.flutter_environment_data(),
-                  api.step_data(
-                      'Verify flutter-archive-package.{0} provenance.verify flutter-archive-package.{0} provenance'
-                      .format('tar.xz' if platform == 'linux' else 'zip'),
-                      stdout=api.raw_io.output_text(fake_bcid_response_success)
-                  ),
-              )
-            else:
-              yield api.test(
-                  '%s_%s%s_%s' % (
-                      platform, git_ref,
-                      '_experimental' if experimental else '', bucket
-                  ),
-                  api.platform(platform, 64),
-                  api.buildbucket.ci_build(
-                      git_ref=git_ref, revision=None, bucket=bucket
-                  ),
-                  api.properties(
-                      shard='tests',
-                  ),
-                  api.runtime(is_experimental=experimental),
-                  api.repo_util.flutter_environment_data(),
-              )
+  for platform in ('mac', 'linux', 'win'):
+    for branch in ('master', 'beta', 'stable', 'flutter-release-test'):
+      for bucket in ('prod', 'staging', 'flutter'):
+        for git_ref in ('refs/heads/' + branch, 'invalid' + branch):
+          if RequiresBcid(bucket, git_ref, branch):
+            yield api.test(
+                '%s_%s_%s' % (platform, git_ref, bucket),
+                api.platform(platform, 64),
+                api.buildbucket.ci_build(
+                    git_ref=git_ref, revision=None, bucket=bucket
+                ),
+                api.properties(
+                    git_branch=branch,
+                    shard='tests',
+                ),
+                api.repo_util.flutter_environment_data(),
+                api.step_data(
+                    'Verify flutter-archive-package.{0} provenance.verify flutter-archive-package.{0} provenance'
+                    .format('tar.xz' if platform == 'linux' else 'zip'),
+                    stdout=api.raw_io.output_text(fake_bcid_response_success)
+                ),
+            )
+          else:
+            yield api.test(
+                '%s_%s_%s' % (platform, git_ref, bucket),
+                api.platform(platform, 64),
+                api.buildbucket.ci_build(
+                    git_ref=git_ref, revision=None, bucket=bucket
+                ),
+                api.properties(
+                    git_branch=branch,
+                    shard='tests',
+                ),
+                api.repo_util.flutter_environment_data(),
+            )

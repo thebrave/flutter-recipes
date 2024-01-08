@@ -203,6 +203,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
   def _setup_osx_sdk(self, kind, devicelab):
     app = None
     self._clean_xcode_cache(devicelab)
+    self._micro_manage_cache(devicelab)
     app = self._ensure_sdk(kind, devicelab)
     self.m.os_utils.kill_simulators()
     self._select_xcode(app)
@@ -412,6 +413,13 @@ class OSXSDKApi(recipe_api.RecipeApi):
     self._install_runtimes(devicelab, app_dir, tool_dir, sdk_app, kind)
 
     return sdk_app
+  
+  def _micro_manage_cache(self, devicelab):
+    app_dir = self._xcode_dir(devicelab)
+    self.m.step("show app_dir", ['echo', app_dir])
+    self._show_xcode_cache()
+    self.m.cache_micro_manager.run(self.m.path['cache'].join(_XCODE_CACHE_PATH), [app_dir])
+    self._show_xcode_cache()
 
   def _show_xcode_cache(self):
     self.m.step(

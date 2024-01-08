@@ -44,7 +44,8 @@ LUCI_TO_GCS_PREFIX = {
     'prod': 'flutter_infra_release',
     'staging': 'flutter_archives_v2/flutter_infra_release',
     'try': 'flutter_archives_v2/flutter_infra_release',
-    'try.shadow': 'flutter_archives_v2/flutter_infra_release'
+    'try.shadow': 'flutter_archives_v2/flutter_infra_release',
+    'prod.shadow': 'flutter_archives_v2/flutter_infra_release'
 }
 
 # Bucket + initial prefix for artifact destination.

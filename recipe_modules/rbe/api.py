@@ -91,6 +91,7 @@ class RbeApi(recipe_api.RecipeApi):
     cache_dir = self.m.path["cache"].join("rbe")
     deps_cache_dir = cache_dir.join("deps")
     self.m.file.ensure_directory("create rbe cache dir", deps_cache_dir)
+    rbe_server_address = 'pipe://reproxy.pipe' if self.m.platform.is_win else f"unix://{working_dir.join('reproxy.sock')}"
     # Environment. These values are used to modify the configuration in
     # Infrastructure when appropriate. These should not be used to modify
     # the behavior of the build in a meaningful way.
@@ -110,7 +111,7 @@ class RbeApi(recipe_api.RecipeApi):
         "RBE_log_dir": working_dir,
         "RBE_output_dir": working_dir,
         "RBE_proxy_log_dir": working_dir,
-        "RBE_server_address": f"unix://{working_dir.join('reproxy.sock')}",
+        "RBE_server_address": rbe_server_address,
         "RBE_socket_path": working_dir.join("reproxy.sock"),
         # Use GCE credentials by default. Infrastructure presents an
         # emulated GCE metadata server in all environments for uniformity.

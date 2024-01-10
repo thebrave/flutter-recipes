@@ -198,8 +198,9 @@ def Build(api, checkout, env, env_prefixes, outputs):
         gn.append(f'--gn-args=engine_version="{version}"')
       rbe_working_path = api.path.mkdtemp(prefix="rbe")
       if '--rbe' in gn:
-        rbe_server_address = 'pipe://{rbe_working_path}/reproxy.pipe' if api.platform.is_win else 'unix://{rbe_working_path}/reproxy.sock'
-        gn.append(f'--rbe-server-address={rbe_server_address}')
+        gn.append(
+            f'--rbe-server-address=unix://{rbe_working_path}/reproxy.sock'
+        )
       api.build_util.run_gn(gn, checkout)
       ninja = build.get('ninja')
       ninja_tool[ninja.get('tool', 'ninja')](
@@ -438,9 +439,9 @@ def GenTests(api):
   test_if_build = {
       "tests": [{
           "name": "mytest", "script": "myscript.sh",
-          "parameters": ["param1", "param2",
-                         '${FLUTTER_LOGS_DIR}'], "type": "local",
-          "contexts": ["metric_center_token"], "test_if": "main"
+          "parameters": ["param1", "param2", '${FLUTTER_LOGS_DIR}'],
+          "type": "local", "contexts": ["metric_center_token"],
+          "test_if": "main"
       }]
   }
   yield api.test(

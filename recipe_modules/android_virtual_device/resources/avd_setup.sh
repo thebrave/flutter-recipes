@@ -57,6 +57,14 @@ function validate_all_configs() {
     done
 }
 
+function print_device_list() {
+    local adb=${1}
+    local devices_output=$(${adb} devices)
+    echo ""
+    echo "${devices_output}"
+    echo ""
+}
+
 # path to the adb executable
 adb=${1}
 
@@ -67,10 +75,15 @@ fi
 
 # properties to validate
 declare -a configs_to_validate=("sys.boot_completed" "dev.bootcomplete")
-
+print_device_list "${adb}"
+echo "Stopping adb server"
+${adb} stop-server
+sleep 5
 # when you run any adb command and the server is not up it will start it.
+echo "Starting adb server"
 ${adb} start-server
-${adb} devices
+print_device_list "${adb}"
+echo "Waiting for device"
 ${adb} wait-for-device
 
 echo "Validating that emulator is booted."
@@ -87,10 +100,14 @@ ${adb} shell settings put global development_settings_enabled 1
 # depending on the version under test this is setFunctions or setFunction (no s)
 ${adb} shell svc usb setFunction mtp
 
+print_device_list "${adb}"
+
 echo "Validating that emulator is booted."
 validate_all_configs "${adb}" "${configs_to_validate[@]}"
 
 ${adb} shell input keyevent 82
+
+print_device_list "${adb}"
 
 # clear exit signal for the LUCI ci.
 echo "Emulator ready."

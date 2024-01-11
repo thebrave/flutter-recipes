@@ -45,6 +45,60 @@
   },
   {
     "cmd": [],
+    "name": "Show devices attached - before emulator install/start"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "infra_step": true,
+    "name": "Show devices attached - before emulator install/start.Set execute permission",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh",
+      "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "infra_step": true,
+    "name": "Show devices attached - before emulator install/start.adb_show_devices.sh",
+    "timeout": 3600,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@test_stdout@@@@",
+      "@@@STEP_LOG_END@test_stdout@@@",
+      "@@@STEP_LOG_LINE@test_stderr@@@@",
+      "@@@STEP_LOG_END@test_stderr@@@"
+    ]
+  },
+  {
+    "cmd": [],
     "name": "start avd"
   },
   {
@@ -222,6 +276,156 @@
   },
   {
     "cmd": [],
+    "name": "uninstall avd"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/avd/src/tools/android/avd/avd.py",
+      "uninstall",
+      "--avd-config",
+      "[CACHE]/avd/src/tools/android/avd/proto/generic_android31.textpb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "EMULATOR_PID": "17687",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "uninstall avd.Uninstall Android emulator (API level 31)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Show devices attached - after emulator uninstall"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "EMULATOR_PID": "",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "infra_step": true,
+    "name": "Show devices attached - after emulator uninstall.Set execute permission",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh",
+      "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "EMULATOR_PID": "",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "infra_step": true,
+    "name": "Show devices attached - after emulator uninstall.adb_show_devices.sh",
+    "timeout": 3600,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@test_stdout@@@@",
+      "@@@STEP_LOG_END@test_stdout@@@",
+      "@@@STEP_LOG_LINE@test_stderr@@@@",
+      "@@@STEP_LOG_END@test_stderr@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Show devices attached - before emulator install/start (2)"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "EMULATOR_PID": "",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "infra_step": true,
+    "name": "Show devices attached - before emulator install/start (2).Set execute permission",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh",
+      "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "EMULATOR_PID": "",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "infra_step": true,
+    "name": "Show devices attached - before emulator install/start (2).adb_show_devices.sh",
+    "timeout": 3600,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@test_stdout@@@@",
+      "@@@STEP_LOG_END@test_stdout@@@",
+      "@@@STEP_LOG_LINE@test_stderr@@@@",
+      "@@@STEP_LOG_END@test_stderr@@@"
+    ]
+  },
+  {
+    "cmd": [],
     "name": "start avd (2)"
   },
   {
@@ -236,7 +440,7 @@
     "env": {
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "17687",
+      "EMULATOR_PID": "",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -276,7 +480,7 @@
     "env": {
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "17687",
+      "EMULATOR_PID": "",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -397,6 +601,100 @@
     "name": "kill and cleanup avd (2).Kill zombie processes",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "uninstall avd (2)"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/avd/src/tools/android/avd/avd.py",
+      "uninstall",
+      "--avd-config",
+      "[CACHE]/avd/src/tools/android/avd/proto/generic_android31.textpb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "EMULATOR_PID": "17687",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "uninstall avd (2).Uninstall Android emulator (API level 31)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Show devices attached - after emulator uninstall (2)"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "EMULATOR_PID": "",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "infra_step": true,
+    "name": "Show devices attached - after emulator uninstall (2).Set execute permission",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh",
+      "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_ROOT": "[CACHE]/avd",
+      "EMULATOR_PID": "",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "infra_step": true,
+    "name": "Show devices attached - after emulator uninstall (2).adb_show_devices.sh",
+    "timeout": 3600,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@test_stdout@@@@",
+      "@@@STEP_LOG_END@test_stdout@@@",
+      "@@@STEP_LOG_LINE@test_stderr@@@@",
+      "@@@STEP_LOG_END@test_stderr@@@"
     ]
   },
   {

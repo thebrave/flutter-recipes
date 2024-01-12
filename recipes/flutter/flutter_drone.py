@@ -4,9 +4,7 @@
 #
 # Recipe to run shard + subshard tests for the Flutter SDK repository.
 # This recipe will run a single shard and will be used by flutter/flutter.py.
-
-from contextlib import contextmanager
-import re
+import contextlib
 
 from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 
@@ -98,39 +96,24 @@ def RunSteps(api):
         max_attempts=2,
         infra_step=True
     )
-    with api.token_util.metric_center_token(env, env_prefixes):
+    with contextlib.ExitStack() as exit_stack:
+      api.flutter_deps.enter_contexts(
+          exit_stack, api.properties.get('contexts', []), env, env_prefixes
+      )
       # Load local engine information if available.
       api.flutter_deps.flutter_engine(env, env_prefixes)
-      if api.properties.get('$flutter/osx_sdk'):
-        with api.osx_sdk('ios'):
-          deferred = []
-          deferred.append(
-              api.defer(
-                  api.step,
-                  'flutter doctor',
-                  ['flutter', 'doctor', '-v'],
-              )
-          )
-          deferred.append(
-              api.defer(RunShard, api, env, env_prefixes, checkout_path))
-          # This is to clean up leaked processes.
-          deferred.append(api.defer(api.os_utils.kill_processes))
-          # Collect memory/cpu/process after task execution.
-          deferred.append(api.defer(api.os_utils.collect_os_info))
-          api.defer.collect(deferred)
-      else:
-        deferred = []
-        deferred.append(
-            api.defer(api.step,
-                      'flutter doctor',
-                      ['flutter', 'doctor', '-v']))
-        deferred.append(
-            api.defer(RunShard, api, env, env_prefixes, checkout_path))
-        # This is to clean up leaked processes.
-        deferred.append(api.defer(api.os_utils.kill_processes))
-        # Collect memory/cpu/process after task execution.
-        deferred.append(api.defer(api.os_utils.collect_os_info))
-        api.defer.collect(deferred)
+      deferred = []
+      deferred.append(
+          api.defer(api.step, 'flutter doctor', ['flutter', 'doctor', '-v'])
+      )
+      deferred.append(
+          api.defer(RunShard, api, env, env_prefixes, checkout_path)
+      )
+      # This is to clean up leaked processes.
+      deferred.append(api.defer(api.os_utils.kill_processes))
+      # Collect memory/cpu/process after task execution.
+      deferred.append(api.defer(api.os_utils.collect_os_info))
+      api.defer.collect(deferred)
 
 
 def GenTests(api):

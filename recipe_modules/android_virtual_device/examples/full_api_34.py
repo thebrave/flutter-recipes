@@ -44,6 +44,30 @@ def GenTests(api):
   )
 
   yield api.test(
+      'emulator fails to start',
+      api.properties(use_emulator="true"),
+      api.step_data(
+          'start avd.Start Android emulator (API level %s)' % avd_api_version,
+          stdout=api.raw_io.output_text(
+              'Hostapd main loop has stopped'
+          )
+      ),
+      api.step_data(
+        'start avd.Start Android emulator (API level %s) (2)' % avd_api_version,
+          stdout=api.raw_io.output_text(
+              'Hostapd main loop has stopped'
+          )
+      ),
+      api.step_data(
+        'start avd.Start Android emulator (API level %s) (3)' % avd_api_version,
+          stdout=api.raw_io.output_text(
+              'Hostapd main loop has stopped'
+          )
+      ),
+      status='INFRA_FAILURE'
+  )
+
+  yield api.test(
       'emulator started and stopped, processes killed',
       api.properties(use_emulator="true"),
       api.step_data(

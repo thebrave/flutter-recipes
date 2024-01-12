@@ -8,6 +8,7 @@ from recipe_engine import recipe_api
 # Supports 19 though API 34.
 AVD_CIPD_IDENTIFIER = 'nNnmIzfGCF3wVB1sB14hKaU77TdoTFbq6uq_wXHM-WQC'
 
+RERUN_ATTEMPTS = 3
 
 class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
   """Installs and manages an Android AVD.
@@ -122,17 +123,28 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             ],
             stdout=self.m.raw_io.output_text(add_output_log=True)
         )
-        output = self.m.step(
-            'Start Android emulator (API level %s)' % self.version, [
-                'xvfb-run', 'vpython3', avd_script_path, 'start',
-                '--no-read-only', '--wipe-data', '--writable-system',
-                '--debug-tags', 'all', '--avd-config', avd_config
-            ],
-            stdout=self.m.raw_io.output_text(add_output_log=True)
-        ).stdout
 
-        m = re.search(r'.*pid: (\d+)\)', output)
-        self.emulator_pid = m.group(1)
+        # rerun this 3 times to see if it will start. This will prevent the
+        # hour long timeout in the test.
+        for attempt in range(RERUN_ATTEMPTS):
+          output = self.m.step(
+              'Start Android emulator (API level %s)' % self.version, [
+                  'xvfb-run', 'vpython3', avd_script_path, 'start',
+                  '--no-read-only', '--wipe-data', '--writable-system',
+                  '--debug-tags', 'all', '--avd-config', avd_config
+              ],
+              stdout=self.m.raw_io.output_text(add_output_log=True)
+          ).stdout
+
+          # Need to look for the main loop crash that signals incomplete start.
+          if "Hostapd main loop has stopped" not in output:
+            m = re.search(r'.*pid: (\d+)\)', output)
+            self.emulator_pid = m.group(1)
+            break
+          if attempt == RERUN_ATTEMPTS - 1:
+            raise self.m.step.InfraFailure(
+                'Emulator has failed to start correctly.'
+            )
 
     env['EMULATOR_PID'] = self.emulator_pid
     return self.emulator_pid

@@ -76,6 +76,31 @@
     "name": "Ensure checkout cache"
   },
   {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "rmtree",
+      "[CLEANUP]/tmp_tmp_1"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "temp dir for standalone_repo"
+  },
+  {
     "cmd": [],
     "name": "Checkout source code"
   },
@@ -102,8 +127,8 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "DEPOT_TOOLS_REPORT_BUILD": "dart/ci.sandbox/monorepo_builder/8945511751514863184",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
@@ -261,8 +286,8 @@
     "cwd": "[CACHE]/builder",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "DEPOT_TOOLS_REPORT_BUILD": "dart/ci.sandbox/monorepo_builder/8945511751514863184",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
@@ -388,8 +413,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -468,8 +493,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -539,8 +564,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -602,8 +627,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -669,8 +694,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -728,8 +753,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -786,8 +811,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -846,8 +871,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -902,8 +927,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -963,8 +988,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1018,8 +1043,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1094,8 +1119,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1157,8 +1182,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1212,8 +1237,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1271,8 +1296,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1329,8 +1354,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1382,8 +1407,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1445,8 +1470,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1491,8 +1516,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1553,8 +1578,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1620,8 +1645,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1685,8 +1710,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1751,8 +1776,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1817,8 +1842,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1883,8 +1908,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -1949,8 +1974,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2015,8 +2040,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2081,8 +2106,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2148,8 +2173,8 @@
     ],
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2210,8 +2235,8 @@
     "cwd": "[CACHE]/builder/engine/src",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2262,8 +2287,8 @@
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2316,8 +2341,8 @@
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2368,13 +2393,13 @@
       "/path/to/tmp/json",
       "copy",
       "extra.secret.token.should.not.be.logged",
-      "[CLEANUP]/tmp_tmp_2"
+      "[CLEANUP]/tmp_tmp_3"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2435,8 +2460,8 @@
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2495,8 +2520,8 @@
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2551,8 +2576,8 @@
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2566,7 +2591,7 @@
       "LUCI_WORKDIR": "[START_DIR]",
       "OS": "linux",
       "REVISION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_2"
+      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_3"
     },
     "env_prefixes": {
       "PATH": [
@@ -2617,8 +2642,8 @@
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2678,8 +2703,8 @@
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2747,8 +2772,8 @@
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2803,13 +2828,13 @@
       "--json-output",
       "/path/to/tmp/json",
       "remove",
-      "[CLEANUP]/tmp_tmp_2"
+      "[CLEANUP]/tmp_tmp_3"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2860,8 +2885,8 @@
     "cwd": "[CACHE]/builder/engine/src/../../monorepo",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2916,8 +2941,8 @@
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -2973,8 +2998,8 @@
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -3029,13 +3054,13 @@
       "ensure-directory",
       "--mode",
       "0o777",
-      "[CLEANUP]/tmp_tmp_3/monorepo/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-x86-jit-release"
+      "[CLEANUP]/tmp_tmp_4/monorepo/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-x86-jit-release"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -3086,13 +3111,13 @@
       "/path/to/tmp/json",
       "copy",
       "[CACHE]/builder/engine/src/out/android_jit_release_x86/zip_archives/android-x86-jit-release/artifacts.zip",
-      "[CLEANUP]/tmp_tmp_3/monorepo/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-x86-jit-release"
+      "[CLEANUP]/tmp_tmp_4/monorepo/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-x86-jit-release"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -3144,14 +3169,14 @@
       "----",
       "cp",
       "-r",
-      "[CLEANUP]/tmp_tmp_3/*",
+      "[CLEANUP]/tmp_tmp_4/*",
       "gs://flutter_archives_v2/"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -3206,13 +3231,13 @@
       "ensure-directory",
       "--mode",
       "0o777",
-      "[CLEANUP]/tmp_tmp_4/monorepo"
+      "[CLEANUP]/tmp_tmp_5/monorepo"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -3263,13 +3288,13 @@
       "/path/to/tmp/json",
       "copy",
       "[CACHE]/builder/engine/src/out/android_jit_release_x86/zip_archives/download.flutter.io",
-      "[CLEANUP]/tmp_tmp_4/monorepo"
+      "[CLEANUP]/tmp_tmp_5/monorepo"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",
@@ -3321,14 +3346,14 @@
       "----",
       "cp",
       "-r",
-      "[CLEANUP]/tmp_tmp_4/*",
+      "[CLEANUP]/tmp_tmp_5/*",
       "gs://flutter_archives_v2/"
     ],
     "cwd": "[CACHE]/builder/engine/src/flutter",
     "env": {
       "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
-      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
-      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_2",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_2/.android",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "ENGINE_CHECKOUT_PATH": "[CACHE]/builder/engine",
       "ENGINE_PATH": "[CACHE]/builder/engine",

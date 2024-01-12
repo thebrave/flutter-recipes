@@ -52,6 +52,7 @@ def RunSteps(api):
     api.repo_util.engine_checkout(checkout_path.join('engine'), {}, {})
   with api.context(env=env, env_prefixes=env_paths):
     api.repo_util.sdk_checkout_path()
+  api.repo_util.get_build(api.path['start_dir'])
 
 
 def GenTests(api):

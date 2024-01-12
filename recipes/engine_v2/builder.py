@@ -153,19 +153,7 @@ def run_tests(api, tests, checkout, env, env_prefixes):
         api.logs_util.upload_logs(test.get('name'))
 
 
-def ReadBuildConfig(api, checkout_path):
-  """Reads an standalone build configuration."""
-  config_name = api.properties.get('config_name')
-  config_path = checkout_path.join(
-      'flutter', 'ci', 'builders', 'standalone', '%s.json' % config_name
-  )
-  config = api.file.read_json(
-      'Read build config file', config_path, test_data={}
-  )
-  return config
-
-
-def Build(api, checkout, env, env_prefixes, outputs):
+def Build(api, checkout, env, env_prefixes, outputs, build):
   """Builds a flavor identified as a set of gn and ninja configs."""
 
   # Mock data for tests. This is required for the archive api to expand the directory to full path
@@ -179,7 +167,6 @@ def Build(api, checkout, env, env_prefixes, outputs):
   ninja_tool = {
       "ninja": api.build_util.build,
   }
-  build = api.properties.get('build') or ReadBuildConfig(api, checkout)
   deps = build.get('dependencies', [])
   api.flutter_deps.required_deps(env, env_prefixes, deps)
   api.flutter_bcid.report_stage('compile')
@@ -269,7 +256,6 @@ def Verify(api, checkout, archive_config):
         file, bucket, gcs_path_without_bucket
     )
 
-
 def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
@@ -282,6 +268,10 @@ def RunSteps(api):
   api.file.rmtree('Clobber build output', checkout.join('out'))
   cache_root = api.path['cache'].join('builder')
   api.file.ensure_directory('Ensure checkout cache', cache_root)
+
+  with api.os_utils.make_temp_directory('standalone_repo') as temp_checkout:
+    build = api.repo_util.get_build(temp_checkout)
+  gclient_variables = build.get('gclient_variables', {})
 
   # Enable long path support on Windows.
   api.os_utils.enable_long_paths()
@@ -297,15 +287,15 @@ def RunSteps(api):
     env, env_prefixes = api.repo_util.engine_environment(
         api.path['cache'].join('builder')
     )
-    api.repo_util.engine_checkout(cache_root, env, env_prefixes)
+    api.repo_util.engine_checkout(cache_root, env, env_prefixes, gclient_variables = gclient_variables)
   outputs = {}
   api.logs_util.initialize_logs_collection(env)
   try:
     if api.platform.is_mac:
       with api.osx_sdk('ios'):
-        Build(api, checkout, env, env_prefixes, outputs)
+        Build(api, checkout, env, env_prefixes, outputs, build)
     else:
-      Build(api, checkout, env, env_prefixes, outputs)
+      Build(api, checkout, env, env_prefixes, outputs, build)
   finally:
     api.logs_util.upload_logs('builder', type='engine')
   output_props = api.step('Set output properties', None)

@@ -63,13 +63,14 @@ class RepoUtilApi(recipe_api.RecipeApi):
         )
         env['GYP_MSVS_VERSION'] = metadata['version']
 
-  def engine_checkout(self, checkout_path, env, env_prefixes):
+  def engine_checkout(self, checkout_path, env, env_prefixes, gclient_variables = None):
     """Checkout code using gclient.
 
     Args:
       checkout_path(Path): The path to checkout source code and dependencies.
       env(dict): A dictionary with the environment variables to set.
       env_prefixes(dict): A dictionary with the paths to be added to environment variables.
+      gclient_variables(dict): A dictionary with custom gclient variables.
     """
     # Set vs_toolchain env to cache it.
     if self.m.platform.is_win:
@@ -95,8 +96,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
       self.m.cache.mount_cache('builder', force=True)
       self._setup_win_toolchain(env)
     # Grab any gclient custom variables passed as properties.
+    if not gclient_variables:
+      gclient_variables = self.m.properties.get('gclient_variables', {})
     local_custom_vars = self.m.shard_util_v2.unfreeze_dict(
-        self.m.properties.get('gclient_variables', {})
+        gclient_variables
     )
     # Pass a special gclient variable to identify release candidate branch checkouts. This
     # is required to prevent trying to download experimental dependencies on release candidate
@@ -584,3 +587,39 @@ class RepoUtilApi(recipe_api.RecipeApi):
     for branch in commit_branches:
       if branch.startswith('flutter-'):
         return branch
+
+  def get_build(self, checkout):
+    """Returns build config of the target.
+
+    If there exists a `build` property, then return it. This is the case when triggered
+    from an orchestrator.
+
+    If these doesn't exist a `build` property, then checkout the Engine repo and return
+    the `build` by reading the checked config file. This is the case when a standalone
+    target is scheduled.
+    """
+    if self.m.monorepo.is_monorepo_ci_build or self.m.monorepo.is_monorepo_try_build:
+      project = 'monorepo'
+    else:
+      project = 'engine'
+    build = self.m.properties.get('build', None)
+    if not build:
+      self.checkout(
+          project,
+          checkout_path=checkout.join('flutter'),
+          url=self.m.properties.get('git_url'),
+          ref=self.m.properties.get('git_ref')
+      )
+      build = self.ReadBuildConfig(checkout)
+    return build
+
+  def ReadBuildConfig(self, checkout_path):
+    """Reads an standalone build configuration."""
+    config_name = self.m.properties.get('config_name')
+    config_path = checkout_path.join(
+        'flutter', 'ci', 'builders', 'standalone', '%s.json' % config_name
+    )
+    config = self.m.file.read_json(
+        'Read build config file', config_path, test_data={}
+    )
+    return config

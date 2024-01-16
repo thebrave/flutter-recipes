@@ -106,6 +106,16 @@ class CacheMicroManagerApi(recipe_api.RecipeApi):
 
     with self.m.step.nest('Running Cache Micro Manager on {}.'.format(
         self.cache_target_directory)):
+
+      cache_exists = self.m.path.exists(self.cache_target_directory)
+      if not cache_exists:
+        self.m.step.empty(
+            'Cache Micro Manager, cache directory exists check',
+            status='SUCCESS',
+            step_text='Cache dir does not exist, skipping.'
+        )
+        return
+
       if not self.m.path.exists(self.cache_metadata_file_path):
         directory_files_list = self.m.file.listdir(
             'Reading cache directory {}'.format(self.cache_target_directory),

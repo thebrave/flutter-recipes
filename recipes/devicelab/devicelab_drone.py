@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import contextlib
+from contextlib import ExitStack
 from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 
 DEPS = [
@@ -31,23 +31,6 @@ DEPS = [
 ]
 
 MAX_DEFAULT_TIMEOUT_SECS = 30 * 60
-
-
-def _runner_command(api, env, runner_params):
-  if api.platform.is_mac:
-    resource_name = api.resource('runner.sh')
-    api.step('Set execute permission', ['chmod', '755', resource_name])
-    test_runner_command = [resource_name]
-    test_runner_command.extend(runner_params)
-  else:
-    test_runner_command = ['xvfb-run'] if api.properties.get('xvfb') else []
-    test_runner_command.extend(['dart', 'bin/test_runner.dart', 'test'])
-    test_runner_command.extend(runner_params)
-
-  if 'USE_EMULATOR' in env and env['USE_EMULATOR']:
-    test_runner_command.extend(['--use-emulator'])
-
-  return test_runner_command
 
 
 def RunSteps(api):
@@ -138,39 +121,58 @@ def RunSteps(api):
         infra_step=True,
         timeout=10 * 60,  # 10 minutes
     )
-
-    with contextlib.ExitStack() as exit_stack:
-      api.flutter_deps.enter_contexts(
-          exit_stack, api.properties.get('contexts', []), env, env_prefixes
-      )
+    if api.properties.get('$flutter/osx_sdk'):
       api.os_utils.clean_derived_data()
-      api.retry.step(
-          'flutter doctor',
-          ['flutter', 'doctor', '--verbose'],
-          max_attempts=3,
-          timeout=300,
-      )
-      # Next steps get executed only if running in mac.
-      api.os_utils.dismiss_dialogs()
-      api.os_utils.shutdown_simulators()
-      api.os_utils.ios_debug_symbol_doctor()
-
-      test_runner_command = _runner_command(api, env, runner_params)
-      try:
-        test_status = api.test_utils.run_test(
-            'run %s' % task_name,
-            test_runner_command,
-            timeout_secs=test_timeout_secs,
+      devicelab = False
+      if str(api.swarming.bot_id).startswith('flutter-devicelab'):
+        devicelab = True
+      with api.osx_sdk('ios', devicelab=devicelab):
+        test_status = mac_test(
+            api,
+            env,
+            env_prefixes,
+            flutter_path,
+            task_name,
+            runner_params,
+            test_timeout_secs,
         )
-      finally:
-        debug_after_failure(api, task_name)
+    else:
+      with api.context(env=env, env_prefixes=env_prefixes):
+        api.retry.step(
+            'flutter doctor',
+            ['flutter', 'doctor', '--verbose'],
+            max_attempts=3,
+            timeout=300,
+        )
 
-      if test_status == 'flaky':
-        api.test_utils.flaky_step('run %s' % task_name)
+        test_runner_command = ['xvfb-run'] if api.properties.get('xvfb') else []
+        test_runner_command.extend(['dart', 'bin/test_runner.dart', 'test'])
+        test_runner_command.extend(runner_params)
 
+        try:
+          with ExitStack() as stack:
+            if 'USE_EMULATOR' in env and env['USE_EMULATOR']:
+              test_runner_command.extend('--use-emulator')
+              stack.enter_context(
+                  api.android_virtual_device(
+                      env=env,
+                      env_prefixes=env_prefixes,
+                      version=env['EMULATOR_VERSION']
+                  )
+              )
+            test_status = api.test_utils.run_test(
+                'run %s' % task_name,
+                test_runner_command,
+                timeout_secs=test_timeout_secs,
+            )
+        finally:
+          debug_after_failure(api, task_name)
+
+        if test_status == 'flaky':
+          api.test_utils.flaky_step('run %s' % task_name)
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
 
-    def _retryUpload():
+    def _retryUplaod():
       api.step(
           'Upload results',
           uploadResults(
@@ -187,7 +189,8 @@ def RunSteps(api):
           )
       )
 
-    api.retry.wrap(_retryUpload, step_name='Retryable upload metrics')
+    api.retry.wrap(_retryUplaod, step_name='Retryable upload metrics')
+
     uploadMetricsToCas(api, results_path)
 
 
@@ -200,6 +203,47 @@ def debug_after_failure(api, task_name):
   api.os_utils.reset_automation_dialogs()
   # Collect memory/cpu/process after task execution.
   api.os_utils.collect_os_info()
+
+
+def mac_test(
+    api,
+    env,
+    env_prefixes,
+    flutter_path,
+    task_name,
+    runner_params,
+    test_timeout_secs,
+):
+  """Runs a devicelab mac test."""
+  api.retry.step(
+      'flutter doctor', ['flutter', 'doctor', '--verbose'],
+      max_attempts=3,
+      timeout=300
+  )
+  api.os_utils.dismiss_dialogs()
+  api.os_utils.shutdown_simulators()
+  api.os_utils.ios_debug_symbol_doctor()
+  with api.context(env=env, env_prefixes=env_prefixes):
+    resource_name = api.resource('runner.sh')
+    api.step('Set execute permission', ['chmod', '755', resource_name])
+    test_runner_command = [resource_name]
+    test_runner_command.extend(runner_params)
+    try:
+      test_status = api.test_utils.run_test(
+          'run %s' % task_name,
+          test_runner_command,
+          timeout_secs=test_timeout_secs,
+      )
+    except api.step.StepFailure as failure:
+      if failure.had_timeout:
+        # presumably diagnosis already ran and passed, but let's open Xcode anyway
+        api.os_utils.ios_debug_symbol_doctor(diagnose_first=False)
+      raise
+    finally:
+      debug_after_failure(api, task_name)
+    if test_status == 'flaky':
+      api.test_utils.flaky_step('run %s' % task_name)
+  return test_status
 
 
 def shouldNotUpdate(api, git_branch):
@@ -337,7 +381,6 @@ def GenTests(api):
           dependencies=[{
               "dependency": "android_virtual_device", "version": "31"
           }],
-          contexts=["android_virtual_device"]
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
           'run abc',
@@ -379,9 +422,7 @@ def GenTests(api):
       ),
       api.step_data(
           'Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)',
-          stdout=api.raw_io.output_text(
-              'service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'
-          ),
+          stdout=api.raw_io.output_text('service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'),
       ),
   )
   yield api.test(
@@ -412,9 +453,7 @@ def GenTests(api):
       ),
       api.step_data(
           'Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)',
-          stdout=api.raw_io.output_text(
-              'service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'
-          ),
+          stdout=api.raw_io.output_text('service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'),
       ),
       api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
       status='FAILURE',

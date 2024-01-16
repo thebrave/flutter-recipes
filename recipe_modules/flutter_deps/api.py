@@ -100,6 +100,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'ninja': self.ninja,
         'open_jdk': self.open_jdk,
         'ruby': self.ruby,
+        'swift_format': self.swift_format,
         'vs_build': self.vs_build,
     }
     parsed_deps = []
@@ -544,6 +545,26 @@ class FlutterDepsApi(recipe_api.RecipeApi):
               certs_path.join('install.ps1'),
           ],
       )
+
+  def swift_format(self, env, env_prefixes, version=None):
+    """Installs swift-format Swift formatter and linter.
+
+    Args:
+      env(dict): Current environment variables.
+      env_prefixes(dict):  Current environment prefixes variables.
+    """
+    if not self.m.platform.is_mac:
+      # noop for non Mac platforms.
+      return
+    version = version or 'latest'
+    swift_format_path = self.m.path['cache'].join('swift_format')
+    sf = self.m.cipd.EnsureFile()
+    sf.add_package("infra/3pp/tools/swift-format/${platform}", version)
+    with self.m.step.nest('Install swift-format'):
+      self.m.cipd.ensure(swift_format_path, sf)
+    paths = env_prefixes.get('PATH', [])
+    paths.append(swift_format_path)
+    env_prefixes['PATH'] = paths
 
   def vs_build(self, env, env_prefixes, version=None):
     """Installs visual studio build.

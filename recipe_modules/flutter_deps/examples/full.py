@@ -76,6 +76,7 @@ def RunSteps(api):
   api.flutter_deps.vs_build(env, env_prefixes, '')
   api.flutter_deps.ruby(env, env_prefixes, '')
   api.flutter_deps.android_virtual_device(env, env_prefixes, '34')
+  api.flutter_deps.swift_format(env, env_prefixes, '')
 
   with contextlib.ExitStack() as exit_stack:
     api.flutter_deps.enter_contexts(exit_stack, ['osx_sdk'], env, env_prefixes)

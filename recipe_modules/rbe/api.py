@@ -73,8 +73,7 @@ class RbeApi(recipe_api.RecipeApi):
         with self.m.context(infra_steps=is_infra_step):
           yield
       finally:
-        if not self.m.runtime.in_global_shutdown:
-          self._stop(working_dir=working_dir, config_path=config_path)
+        self._stop(working_dir=working_dir, config_path=config_path)
 
   @property
   def _ensure_reclient_path(self):

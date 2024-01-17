@@ -334,12 +334,26 @@ def GenTests(api):
           stderr=api.raw_io.output_text('No matching images found to delete')
       ),
       api.step_data(
+          'Cleaning up runtimes cache.check xcode version',
+          stdout=api.raw_io.output_text(
+              'Xcode 15.0\n' +
+              'Build version 15C500b'
+          )
+      ),
+      api.step_data(
           'Cleaning up runtimes cache.list runtimes',
           stdout=api.raw_io.output_text(
               '== Runtimes ==\n' +
               'iOS 16.4 (16.2 - 20E247) - com.apple.CoreSimulator.SimRuntime.iOS-16-4\n'
               +
               'iOS 16.2 (16.2 - 20C52) - com.apple.CoreSimulator.SimRuntime.iOS-16-2'
+          )
+      ),
+      api.step_data(
+          'Cleaning up runtimes cache.list runtimes (2)',
+          stdout=api.raw_io.output_text(
+              '== Runtimes ==\n' +
+              'iOS 16.4 (16.2 - 20E247) - com.apple.CoreSimulator.SimRuntime.iOS-16-4'
           )
       ),
       api.step_data(

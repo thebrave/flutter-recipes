@@ -413,7 +413,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
     self._install_runtimes(devicelab, app_dir, tool_dir, sdk_app, kind)
 
     return sdk_app
-  
+
   def _micro_manage_cache(self, devicelab):
     app_dir = self._xcode_dir(devicelab)
     self.m.step("show app_dir", ['echo', app_dir])
@@ -638,9 +638,32 @@ class OSXSDKApi(recipe_api.RecipeApi):
             step_text=simulator_cleanup_stderr,
         )
 
+      # Determine how many runtimes can remain to consider them unmounted. For
+      # Xcode versions 15 or greater, 0 are allowed to remain. Otherwise 1 is
+      # allowed. This is because in older versions of Xcode, the runtime is
+      # included in Xcode, which means it won't be unmounted.
+      max_remaining_runtimes = 1
+      xcode_version = self.m.step(
+          'check xcode version',
+          [
+              'xcrun',
+              'xcodebuild',
+              '-version',
+          ],
+          stdout=self.m.raw_io.output_text(add_output_log=True),
+      ).stdout.splitlines()
+      if len(xcode_version) > 0:
+        xcode_version = xcode_version[0].replace("Xcode", "").strip()
+        parsed_xcode_version = self.m.version.parse(xcode_version)
+        if parsed_xcode_version >= self.m.version.parse('15.0.0'):
+          max_remaining_runtimes = 0
+
       # Wait up to ~5 minutes until runtimes are unmounted.
       self.m.retry.basic_wrap(
-          self._is_runtimes_unmounted,
+          lambda timeout: self._is_runtimes_unmounted(
+              max_remaining_runtimes,
+              timeout=timeout,
+          ),
           step_name='Wait for runtimes to unmount',
           sleep=5.0,
           backoff_factor=2,
@@ -659,19 +682,20 @@ class OSXSDKApi(recipe_api.RecipeApi):
         )
 
   # pylint: disable=unused-argument
-  def _is_runtimes_unmounted(self, timeout=None):
+  def _is_runtimes_unmounted(self, max_remaining_runtimes, timeout=None):
     '''Check if more than one runtime is currently mounted. If more than one
     is mounted, raise a `StepFailure`.
+
+    Args:
+      max_remaining_runtimes: (int) How many runtimes are allowed to remain for
+      it to be considered done unmounting.
     '''
     runtime_simulators = self.m.step(
         'list runtimes', ['xcrun', 'simctl', 'list', 'runtimes'],
         stdout=self.m.raw_io.output_text(add_output_log=True)
     ).stdout.splitlines()
 
-    # There should not be more than one runtime after deleting all. There may
-    # be one if the runtime is included within Xcode, which means it won't be
-    # unmounted.
-    if len(runtime_simulators[1:]) > 1:
+    if len(runtime_simulators[1:]) > max_remaining_runtimes:
       raise self.m.step.StepFailure('Runtimes not unmounted yet')
 
   def _is_runtime_mounted(

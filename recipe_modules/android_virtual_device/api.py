@@ -10,6 +10,7 @@ AVD_CIPD_IDENTIFIER = 'nNnmIzfGCF3wVB1sB14hKaU77TdoTFbq6uq_wXHM-WQC'
 
 RERUN_ATTEMPTS = 3
 
+
 class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
   """Installs and manages an Android AVD.
   """
@@ -137,7 +138,9 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
           ).stdout
 
           # Need to look for the main loop crash that signals incomplete start.
-          if "Hostapd main loop has stopped" not in output:
+          if ("Hostapd main loop has stopped"
+              not in output) and ("explicit kill or server shutdown"
+                                  not in output):
             m = re.search(r'.*pid: (\d+)\)', output)
             self.emulator_pid = m.group(1)
             break

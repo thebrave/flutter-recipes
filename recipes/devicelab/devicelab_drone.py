@@ -400,6 +400,7 @@ def GenTests(api):
           buildername='Mac_ios abc',
           task_name='abc',
           tags=['ios'],
+          device_os='iOS-16',
           git_branch='master',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
       ),
@@ -422,7 +423,9 @@ def GenTests(api):
       ),
       api.step_data(
           'Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)',
-          stdout=api.raw_io.output_text('service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'),
+          stdout=api.raw_io.output_text(
+              'service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'
+          ),
       ),
   )
   yield api.test(
@@ -431,6 +434,7 @@ def GenTests(api):
           buildername='Mac_ios abc',
           task_name='abc',
           tags=['ios'],
+          device_os='iOS-16',
           test_timeout_secs=1,
           git_branch='master',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
@@ -453,7 +457,9 @@ def GenTests(api):
       ),
       api.step_data(
           'Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)',
-          stdout=api.raw_io.output_text('service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'),
+          stdout=api.raw_io.output_text(
+              'service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'
+          ),
       ),
       api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
       status='FAILURE',

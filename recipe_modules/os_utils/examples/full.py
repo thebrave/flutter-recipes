@@ -63,6 +63,7 @@ def GenTests(api):
       xcode_dismiss_dialog_find_db_step,
       xcode_dismiss_dialog_query_db_step,
       api.platform('mac', 64),
+      api.properties(device_os='iOS-16'),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       ),
@@ -75,6 +76,7 @@ def GenTests(api):
       api.step_data('ios_debug_symbol_doctor.diagnose (4)', retcode=1),
       api.step_data('ios_debug_symbol_doctor.diagnose (5)', retcode=1),
       api.platform('mac', 64),
+      api.properties(device_os='iOS-16'),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       ),
@@ -92,6 +94,7 @@ def GenTests(api):
       'clean_derived_data', api.platform('mac', 64),
       xcode_dismiss_dialog_find_db_step,
       xcode_dismiss_dialog_query_db_step,
+      api.properties(device_os='iOS-16'),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       )
@@ -103,6 +106,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text(''),
       ),
       api.platform('mac', 64),
+      api.properties(device_os='iOS-16'),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       ),
@@ -113,6 +117,7 @@ def GenTests(api):
       xcode_dismiss_dialog_find_db_step,
       # xcode_dismiss_dialog_query_db_step,
       api.platform('mac', 64),
+      api.properties(device_os='iOS-16'),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       ),
@@ -127,6 +132,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('TCC.db.backup'),
       ),
       api.platform('mac', 64),
+      api.properties(device_os='iOS-16'),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       ),
@@ -142,7 +148,7 @@ def GenTests(api):
           stdout=api.raw_io.output_text('No devices found.'),
       ),
       api.platform('mac', 64),
-      api.properties(buildername='Mac flutter_gallery_ios__start_up',),
+      api.properties(buildername='Mac flutter_gallery_ios__start_up', device_os='iOS-16'),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       ),

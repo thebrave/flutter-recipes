@@ -231,7 +231,7 @@ class OsUtilsApi(recipe_api.RecipeApi):
 
   def shutdown_simulators(self):
     """It stops simulators if task is running on a devicelab bot."""
-    if self._is_devicelab() and self.m.platform.is_mac:
+    if self.is_devicelab() and self.is_ios() and self.m.platform.is_mac:
       with self.m.step.nest('Shutdown simulators'):
         self.m.step(
             'Shutdown simulators',
@@ -268,7 +268,8 @@ class OsUtilsApi(recipe_api.RecipeApi):
       diagnose_first:
         (bool) Whether diagnosis will be run initially before attempting to recover.
     """
-    if not self._is_devicelab() or not self.m.platform.is_mac:
+    if not self.is_devicelab() or not self.m.platform.is_mac or not self.is_ios(
+    ):
       # if no iPhone is attached, we don't need to recover ios debug symbols
       return
     with self.m.step.nest('ios_debug_symbol_doctor'):
@@ -328,8 +329,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     Args:
       flutter_path(Path): A path to the checkout of the flutter sdk repository.
     """
-    if str(self.m.swarming.bot_id
-          ).startswith('flutter-devicelab') and self.m.platform.is_mac:
+    if self.is_devicelab() and self.is_ios() and self.m.platform.is_mac:
       with self.m.step.nest('Dismiss dialogs'):
         with self.m.step.nest('Dismiss iOS dialogs'):
           cocoon_path = self._checkout_cocoon()
@@ -582,8 +582,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
 
   def reset_automation_dialogs(self):
     """Reset Xcode Automation permissions."""
-    if str(self.m.swarming.bot_id
-          ).startswith('flutter-devicelab') and self.m.platform.is_mac:
+    if self.is_devicelab() and self.m.platform.is_mac:
       with self.m.step.nest('Reset Xcode automation dialogs'):
         tcc_directory_path, db_path, backup_db_path = self._get_tcc_path()
 
@@ -649,5 +648,9 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
         ],
     )
 
-  def _is_devicelab(self):
+  def is_devicelab(self):
     return str(self.m.swarming.bot_id).startswith('flutter-devicelab')
+
+  def is_ios(self):
+    device_os = self.m.properties.get('device_os', '')
+    return device_os.lower().startswith('ios-')

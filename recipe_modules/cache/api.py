@@ -73,7 +73,7 @@ class CacheApi(recipe_api.RecipeApi):
 
     for path in paths:
       name = self.m.path.basename(path)
-      hash_value = self.m.cas.archive('Archive %s' % name, path)
+      hash_value = self.m.cas.archive('Archive %s' % name, path, log_level='debug')
       cache_metadata['hashes'][name] = hash_value
     platform = self.m.platform.name
     local_cache_path = self.m.path['cleanup'].join(

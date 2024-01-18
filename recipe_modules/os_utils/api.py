@@ -331,6 +331,22 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     """
     if self.is_devicelab() and self.is_ios() and self.m.platform.is_mac:
       with self.m.step.nest('Dismiss dialogs'):
+        # Get list of wired CoreDevices.
+        # Allow any return code and ignore failure since this command will only
+        # work with Xcode 15 and therefore may not work for all machines.
+        self.m.step(
+            'List CoreDevices',
+            [
+                'xcrun',
+                'devicectl',
+                'list',
+                'devices',
+                '-v',
+            ],
+            raise_on_failure=False,
+            ok_ret='any',
+        )
+
         with self.m.step.nest('Dismiss iOS dialogs'):
           cocoon_path = self._checkout_cocoon()
           resource_name = self.resource('dismiss_dialogs.sh')
@@ -363,22 +379,6 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
       device_id(string): A string of the selected device's UDID.
     """
 
-    # Get list of wired CoreDevices.
-    # Allow any return code and ignore failure since this command will only
-    # work with Xcode 15 and therefore may not work for all machines.
-    self.m.step(
-        'List CoreDevices',
-        [
-            'xcrun',
-            'devicectl',
-            'list',
-            'devices',
-            '-v',
-        ],
-        raise_on_failure=False,
-        ok_ret='any',
-    )
-
     device_list = self.m.step(
         'Find wired CoreDevices',
         [
@@ -390,7 +390,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
             "connectionProperties.transportType CONTAINS 'wired'",
             '-v',
         ],
-        stdout=self.m.raw_io.output_text(),
+        stdout=self.m.raw_io.output_text(add_output_log=True),
         raise_on_failure=False,
         ok_ret='any',
     ).stdout.rstrip()
@@ -434,7 +434,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
       )
 
     self.m.retry.basic_wrap(
-        lambda timeout: self._trigger_automation_permission(
+        lambda timeout: self._create_tcc_entry(
             db_path,
             timeout=timeout,
         ),
@@ -460,6 +460,12 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     # Print contents of db for potential debugging purposes.
     self._query_automation_db_step_with_retry(db_path)
 
+    # Try and trigger Xcode automation. If fails or times out, permission was
+    # not successfully granted.
+    self._trigger_and_dismiss_automation_permission(
+        timeout=5 * 60, raise_on_failure=True
+    )
+
     # Xcode was opened by Applescript, so kill it.
     self.m.step(
         'Kill Xcode',
@@ -467,19 +473,34 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
         ok_ret='any',
     )
 
-  def _trigger_automation_permission(self, db_path, timeout=2):
+  def _dismiss_automation_permission(self):
+    """Kill the Xcode automation dialog. After killing the dialog, an entry for
+    the app requesting control of Xcode should automatically be added to the db.
+    """
+
+    self.m.step(
+        'Dismiss dialog',
+        ['killall', '-9', 'UserNotificationCenter'],
+        ok_ret='any',
+    )
+
+  def _trigger_and_dismiss_automation_permission(
+      self,
+      timeout=2,
+      raise_on_failure=False,
+  ):
     """Trigger Xcode automation dialog to appear and then kill the dialog.
-    Killing the dialog will add an entry for the permission to the TCC.db.
-    Raises an error if dialog fails to add entry to db.
 
     Args:
-      db_path(string): A string of the path to the sqlite database.
+      timeout (int or float): How many seconds to wait before timing out the
+              "Trigger dialog" step.
+      raise_on_failure (bool): Raise InfraFailure or StepFailure on failure.
     """
 
     # Run an arbitrary AppleScript Xcode command to trigger permissions dialog.
     # The AppleScript counts how many Xcode windows are open.
     # The script will hang if permission has not been given, so timeout after
-    # a few seconds. For each attempt, use a longer timeout.
+    # a few seconds.
     self.m.step(
         'Trigger dialog',
         [
@@ -493,18 +514,22 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
             '-e',
             'end tell',
         ],
-        raise_on_failure=False,
-        ok_ret='any',
+        raise_on_failure=raise_on_failure,
+        ok_ret=(0,) if raise_on_failure else 'any',
         timeout=timeout,
     )
+    self._dismiss_automation_permission()
 
-    # Kill the dialog. After killing the dialog, an entry for the app requesting
-    # control of Xcode should automatically be added to the db.
-    self.m.step(
-        'Dismiss dialog',
-        ['killall', '-9', 'UserNotificationCenter'],
-        ok_ret='any',
-    )
+  def _create_tcc_entry(self, db_path, timeout=2):
+    """Trigger Xcode automation dialog to appear and then kill the dialog.
+    Killing the dialog will add an entry for the permission to the TCC.db.
+    Raises an error if dialog fails to add entry to db.
+
+    Args:
+      db_path(string): A string of the path to the sqlite database.
+    """
+
+    self._trigger_and_dismiss_automation_permission(timeout=timeout)
 
     if 'Xcode' not in self._query_automation_db_step_with_retry(db_path):
       raise self.m.step.InfraFailure('Xcode entry not found in TCC.db')
@@ -585,6 +610,11 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     if self.is_devicelab() and self.m.platform.is_mac:
       with self.m.step.nest('Reset Xcode automation dialogs'):
         tcc_directory_path, db_path, backup_db_path = self._get_tcc_path()
+
+        self._dismiss_automation_permission()
+
+        # Print contents of db for potential debugging purposes.
+        self._query_automation_db_step_with_retry(db_path)
 
         files = self.m.step(
             'Find TCC directory',

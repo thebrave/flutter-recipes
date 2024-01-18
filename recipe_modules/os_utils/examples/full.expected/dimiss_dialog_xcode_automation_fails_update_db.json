@@ -318,6 +318,19 @@
     ]
   },
   {
+    "cmd": [
+      "xcrun",
+      "devicectl",
+      "list",
+      "devices",
+      "-v"
+    ],
+    "name": "Dismiss dialogs.List CoreDevices",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
     "cmd": [],
     "name": "Dismiss dialogs.Dismiss iOS dialogs",
     "~followup_annotations": [
@@ -488,20 +501,6 @@
       "devicectl",
       "list",
       "devices",
-      "-v"
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.List CoreDevices",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "xcrun",
-      "devicectl",
-      "list",
-      "devices",
       "--filter",
       "connectionProperties.transportType CONTAINS 'wired'",
       "-v"
@@ -509,7 +508,8 @@
     "infra_step": true,
     "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Find wired CoreDevices",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
     ]
   },
   {

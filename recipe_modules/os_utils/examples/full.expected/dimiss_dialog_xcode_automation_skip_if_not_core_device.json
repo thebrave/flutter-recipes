@@ -315,6 +315,19 @@
     "name": "Dismiss dialogs"
   },
   {
+    "cmd": [
+      "xcrun",
+      "devicectl",
+      "list",
+      "devices",
+      "-v"
+    ],
+    "name": "Dismiss dialogs.List CoreDevices",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
     "cmd": [],
     "name": "Dismiss dialogs.Dismiss iOS dialogs",
     "~followup_annotations": [
@@ -484,20 +497,6 @@
       "devicectl",
       "list",
       "devices",
-      "-v"
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.List CoreDevices",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "xcrun",
-      "devicectl",
-      "list",
-      "devices",
       "--filter",
       "connectionProperties.transportType CONTAINS 'wired'",
       "-v"
@@ -505,7 +504,9 @@
     "infra_step": true,
     "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Find wired CoreDevices",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@No devices found.@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
     ]
   },
   {
@@ -519,6 +520,29 @@
   {
     "cmd": [],
     "name": "Reset Xcode automation dialogs"
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "UserNotificationCenter"
+    ],
+    "name": "Reset Xcode automation dialogs.Dismiss dialog",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sqlite3",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
+      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
+    ],
+    "name": "Reset Xcode automation dialogs.Query TCC db",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
   },
   {
     "cmd": [

@@ -24,7 +24,7 @@ def RunSteps(api):
   api.os_utils.clean_derived_data()
   api.os_utils.shutdown_simulators()
   api.os_utils.enable_long_paths()
-  api.os_utils.dismiss_dialogs()
+  api.os_utils.prepare_ios_device()
   api.os_utils.reset_automation_dialogs()
   api.os_utils.print_pub_certs()
   api.os_utils.is_symlink('/a/b/c/simlink')
@@ -42,11 +42,11 @@ def GenTests(api):
   api.os_utils.is_symlink(True)
 
   xcode_dismiss_dialog_find_db_step = api.step_data(
-      'Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory',
+      'Prepare iOS device.Dismiss Xcode automation dialogs.Find TCC directory',
       stdout=api.raw_io.output_text('TCC.db'),
   )
   xcode_dismiss_dialog_query_db_step = api.step_data(
-      'Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)',
+      'Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db (2)',
       stdout=api.raw_io.output_text('service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'),
   )
   yield api.test(
@@ -102,7 +102,7 @@ def GenTests(api):
   yield api.test(
       'dimiss_dialog_xcode_automation_fails_find_db',
       api.step_data(
-          'Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory',
+          'Prepare iOS device.Dismiss Xcode automation dialogs.Find TCC directory',
           stdout=api.raw_io.output_text(''),
       ),
       api.platform('mac', 64),
@@ -115,7 +115,6 @@ def GenTests(api):
   yield api.test(
       'dimiss_dialog_xcode_automation_fails_update_db',
       xcode_dismiss_dialog_find_db_step,
-      # xcode_dismiss_dialog_query_db_step,
       api.platform('mac', 64),
       api.properties(device_os='iOS-16'),
       api.properties.environ(
@@ -140,16 +139,29 @@ def GenTests(api):
   yield api.test(
       'dimiss_dialog_xcode_automation_skip_if_not_core_device',
       api.step_data(
-          'Dismiss dialogs.Dismiss iOS dialogs.Find device id',
+          'Prepare iOS device.Find device id',
           stdout=api.raw_io.output_text('123456789'),
-      ),
-      api.step_data(
-          'Dismiss dialogs.Dismiss Xcode automation dialogs.Find wired CoreDevices',
-          stdout=api.raw_io.output_text('No devices found.'),
       ),
       api.platform('mac', 64),
       api.properties(buildername='Mac flutter_gallery_ios__start_up', device_os='iOS-16'),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       ),
+  )
+  yield api.test(
+      'core_device_not_found',
+      api.step_data(
+          'Prepare iOS device.Find device id',
+          stdout=api.raw_io.output_text('123456789'),
+      ),
+      api.step_data(
+          'Prepare iOS device.List CoreDevices',
+          stdout=api.raw_io.output_text('123456789'),
+      ),
+      api.platform('mac', 64),
+      api.properties(buildername='Mac flutter_gallery_ios__start_up', device_os='iOS-17'),
+      api.properties.environ(
+          properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
+      ),
+      status='INFRA_FAILURE'
   )

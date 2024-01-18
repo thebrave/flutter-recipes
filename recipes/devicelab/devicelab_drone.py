@@ -151,7 +151,7 @@ def RunSteps(api):
           timeout=300,
       )
       # Next steps get executed only if running in mac.
-      api.os_utils.dismiss_dialogs()
+      api.os_utils.prepare_ios_device()
       api.os_utils.shutdown_simulators()
       api.os_utils.ios_debug_symbol_doctor()
 
@@ -375,11 +375,11 @@ def GenTests(api):
           stdout=api.raw_io.output_text('iPhone8,1'),
       ),
       api.step_data(
-          'Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory',
+          'Prepare iOS device.Dismiss Xcode automation dialogs.Find TCC directory',
           stdout=api.raw_io.output_text('TCC.db'),
       ),
       api.step_data(
-          'Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)',
+          'Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db (2)',
           stdout=api.raw_io.output_text(
               'service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'
           ),
@@ -409,11 +409,11 @@ def GenTests(api):
           had_timeout=True,
       ),
       api.step_data(
-          'Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory',
+          'Prepare iOS device.Dismiss Xcode automation dialogs.Find TCC directory',
           stdout=api.raw_io.output_text('TCC.db'),
       ),
       api.step_data(
-          'Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)',
+          'Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db (2)',
           stdout=api.raw_io.output_text(
               'service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'
           ),

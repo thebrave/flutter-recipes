@@ -626,7 +626,51 @@
   },
   {
     "cmd": [],
-    "name": "Dismiss dialogs"
+    "name": "Prepare iOS device"
+  },
+  {
+    "cmd": [
+      "idevice_id",
+      "-l"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Prepare iOS device.Find device id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -670,21 +714,124 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.List CoreDevices",
+    "name": "Prepare iOS device.List CoreDevices",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Prepare iOS device.Wait for device to connect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "devicectl",
+      "list",
+      "devices",
+      "--filter",
+      "connectionProperties.transportType CONTAINS 'wired'",
+      "-v"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Prepare iOS device.Wait for device to connect.Find wired CoreDevices",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "Xcode"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Prepare iOS device.Wait for device to connect.Kill Xcode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Prepare iOS device.Dismiss iOS dialogs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Dismiss dialogs.Dismiss iOS dialogs",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -733,7 +880,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.git setup",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.git setup",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -784,7 +931,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.git fetch",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.git fetch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -831,7 +978,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.git checkout",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.git checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -877,7 +1024,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.read revision",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.read revision",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
@@ -927,7 +1074,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.git clean",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.git clean",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -973,7 +1120,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.submodule sync",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.submodule sync",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -1021,7 +1168,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.submodule update",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.submodule update",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -1067,52 +1214,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Set execute permission",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "idevice_id",
-      "-l"
-    ],
-    "cwd": "[CACHE]/cocoon/cipd_packages/device_doctor/tool/infra-dialog",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Find device id",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Set execute permission",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1157,72 +1259,21 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Run app to dismiss dialogs",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Run app to dismiss dialogs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
-    "cmd": [
-      "xcrun",
-      "devicectl",
-      "list",
-      "devices",
-      "--filter",
-      "connectionProperties.transportType CONTAINS 'wired'",
-      "-v"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Find wired CoreDevices",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
     "cmd": [],
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Get buildername",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Get buildername",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_TEXT@Mac_ios abc@@@"
@@ -1268,7 +1319,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Find TCC directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@raw_io.output_text@TCC.db@@@",
@@ -1316,7 +1367,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -1363,7 +1414,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Create backup db",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Create backup db",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1415,7 +1466,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Trigger dialog",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Trigger dialog",
     "timeout": 2,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -1462,7 +1513,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Dismiss dialog",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Dismiss dialog",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1508,7 +1559,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@raw_io.output_text@service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified@@@",
@@ -1556,7 +1607,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Update db",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Update db",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1602,7 +1653,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (3)",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db (3)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -1655,7 +1706,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Trigger dialog (2)",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Trigger dialog (2)",
     "timeout": 300,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -1702,7 +1753,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Dismiss dialog (2)",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Dismiss dialog (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1748,7 +1799,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Kill Xcode",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Kill Xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]

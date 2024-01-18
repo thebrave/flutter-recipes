@@ -312,9 +312,19 @@
   },
   {
     "cmd": [],
-    "name": "Dismiss dialogs",
+    "name": "Prepare iOS device",
     "~followup_annotations": [
       "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "idevice_id",
+      "-l"
+    ],
+    "name": "Prepare iOS device.Find device id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -325,21 +335,56 @@
       "devices",
       "-v"
     ],
-    "name": "Dismiss dialogs.List CoreDevices",
+    "name": "Prepare iOS device.List CoreDevices",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Prepare iOS device.Wait for device to connect",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "devicectl",
+      "list",
+      "devices",
+      "--filter",
+      "connectionProperties.transportType CONTAINS 'wired'",
+      "-v"
+    ],
+    "name": "Prepare iOS device.Wait for device to connect.Find wired CoreDevices",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "Xcode"
+    ],
+    "name": "Prepare iOS device.Wait for device to connect.Kill Xcode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Prepare iOS device.Dismiss iOS dialogs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Dismiss dialogs.Dismiss iOS dialogs",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -354,7 +399,7 @@
       "--url",
       "https://flutter.googlesource.com/mirrors/cocoon"
     ],
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.git setup",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.git setup",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -374,7 +419,7 @@
       "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
     },
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.git fetch",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.git fetch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -388,7 +433,7 @@
     ],
     "cwd": "[CACHE]/cocoon",
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.git checkout",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.git checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -401,7 +446,7 @@
     ],
     "cwd": "[CACHE]/cocoon",
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.read revision",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.read revision",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
@@ -418,7 +463,7 @@
     ],
     "cwd": "[CACHE]/cocoon",
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.git clean",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.git clean",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -431,7 +476,7 @@
     ],
     "cwd": "[CACHE]/cocoon",
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.submodule sync",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.submodule sync",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -446,7 +491,7 @@
     ],
     "cwd": "[CACHE]/cocoon",
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Checkout flutter/cocoon.submodule update",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Checkout flutter/cocoon.submodule update",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -458,19 +503,7 @@
       "RECIPE_MODULE[flutter::os_utils]/resources/dismiss_dialogs.sh"
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Set execute permission",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "idevice_id",
-      "-l"
-    ],
-    "cwd": "[CACHE]/cocoon/cipd_packages/device_doctor/tool/infra-dialog",
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Find device id",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Set execute permission",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -482,39 +515,22 @@
     ],
     "cwd": "[CACHE]/cocoon/cipd_packages/device_doctor/tool/infra-dialog",
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss iOS dialogs.Run app to dismiss dialogs",
+    "name": "Prepare iOS device.Dismiss iOS dialogs.Run app to dismiss dialogs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_EXCEPTION@@@"
     ]
   },
   {
-    "cmd": [
-      "xcrun",
-      "devicectl",
-      "list",
-      "devices",
-      "--filter",
-      "connectionProperties.transportType CONTAINS 'wired'",
-      "-v"
-    ],
-    "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Find wired CoreDevices",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
     "cmd": [],
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Get buildername",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Get buildername",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -525,7 +541,7 @@
       "Users/fakeuser/Library/Application Support/com.apple.TCC"
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Find TCC directory",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Find TCC directory",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@raw_io.output_text@TCC.db@@@",
@@ -539,7 +555,7 @@
       "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -552,7 +568,7 @@
       "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db.backup"
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Create backup db",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Create backup db",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -570,7 +586,7 @@
       "end tell"
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Trigger dialog",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Trigger dialog",
     "timeout": 2,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -583,7 +599,7 @@
       "UserNotificationCenter"
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Dismiss dialog",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Dismiss dialog",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -595,7 +611,7 @@
       "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (2)",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -614,7 +630,7 @@
       "end tell"
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Trigger dialog (2)",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Trigger dialog (2)",
     "timeout": 4,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -627,7 +643,7 @@
       "UserNotificationCenter"
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Dismiss dialog (2)",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Dismiss dialog (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -639,7 +655,7 @@
       "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (3)",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db (3)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -658,7 +674,7 @@
       "end tell"
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Trigger dialog (3)",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Trigger dialog (3)",
     "timeout": 8,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -671,7 +687,7 @@
       "UserNotificationCenter"
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Dismiss dialog (3)",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Dismiss dialog (3)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -683,7 +699,7 @@
       "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
     ],
     "infra_step": true,
-    "name": "Dismiss dialogs.Dismiss Xcode automation dialogs.Query TCC db (4)",
+    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db (4)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"

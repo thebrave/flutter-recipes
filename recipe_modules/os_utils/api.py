@@ -323,29 +323,44 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
             step_text=message,
         )
 
-  def dismiss_dialogs(self):
-    """Dismisses iOS and macOS dialogs to avoid problems.
+  def prepare_ios_device(self):
+    """Prepare iOS device for running tests.
+
+    If the device is a CoreDevice (physical iOS 17+ devices), wait for the
+    device to show as connected.
+
+    Dismisses iOS and macOS dialogs to avoid problems.
 
     Args:
       flutter_path(Path): A path to the checkout of the flutter sdk repository.
     """
     if self.is_devicelab() and self.is_ios() and self.m.platform.is_mac:
-      with self.m.step.nest('Dismiss dialogs'):
-        # Get list of wired CoreDevices.
-        # Allow any return code and ignore failure since this command will only
-        # work with Xcode 15 and therefore may not work for all machines.
-        self.m.step(
-            'List CoreDevices',
-            [
-                'xcrun',
-                'devicectl',
-                'list',
-                'devices',
-                '-v',
-            ],
-            raise_on_failure=False,
-            ok_ret='any',
-        )
+      with self.m.step.nest('Prepare iOS device'):
+        device_id = self.m.step(
+            'Find device id', ['idevice_id', '-l'],
+            stdout=self.m.raw_io.output_text()
+        ).stdout.rstrip()
+
+        is_core_device = self._is_core_device(device_id)
+
+        # Wait up to ~10 minutes for device to connect.
+        if is_core_device:
+          with self.m.step.nest('Wait for device to connect'):
+            self.m.retry.basic_wrap(
+                lambda timeout: self._wait_for_core_device_to_connect(
+                    device_id,
+                    timeout=timeout,
+                ),
+                step_name='Wait for device to connect',
+                sleep=10.0,
+                backoff_factor=2,
+                max_attempts=7
+            )
+            self.m.step(
+                'Kill Xcode',
+                ['killall', '-9', 'Xcode'],
+                ok_ret='any',
+            )
 
         with self.m.step.nest('Dismiss iOS dialogs'):
           cocoon_path = self._checkout_cocoon()
@@ -360,25 +375,51 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
                                    'infra-dialog'),
               infra_steps=True,
           ):
-            device_id = self.m.step(
-                'Find device id', ['idevice_id', '-l'],
-                stdout=self.m.raw_io.output_text()
-            ).stdout.rstrip()
             cmd = [resource_name, device_id]
             self.m.step('Run app to dismiss dialogs', cmd)
         with self.m.step.nest('Dismiss Xcode automation dialogs'):
           with self.m.context(infra_steps=True):
-            self._dismiss_xcode_automation_dialogs(device_id)
+            self._dismiss_xcode_automation_dialogs(is_core_device)
 
-  def _dismiss_xcode_automation_dialogs(self, device_id):
-    """Dismiss Xcode automation permission dialog and update permission db.
+  def _is_core_device(self, device_id):
+    """Check if device is a CoreDevice (physical iOS 17+ devices).
 
-    Only required for CoreDevices (physical iOS 17+ devices) or "xcode_debug" tests.
+    Only CoreDevices appear in `devicectl list devices` command.
 
     Args:
       device_id(string): A string of the selected device's UDID.
     """
+    # Get list of CoreDevices.
+    # Allow any return code and ignore failure since this command will only
+    # work with Xcode 15 and therefore may not work for all machines.
+    device_list = self.m.step(
+        'List CoreDevices',
+        [
+            'xcrun',
+            'devicectl',
+            'list',
+            'devices',
+            '-v',
+        ],
+        raise_on_failure=False,
+        ok_ret='any',
+        stdout=self.m.raw_io.output_text(add_output_log=True),
+    ).stdout.rstrip()
 
+    if device_id in device_list:
+      return True
+    return False
+
+  # pylint: disable=unused-argument
+  def _wait_for_core_device_to_connect(self, device_id, timeout):
+    """Use `devicectl` command to determine if device is connected via cable.
+    If not connected, open Xcode to attempt to help it reconnect.
+    Only accept if `transportType` is wired in case other devices are paired
+    but not connected via cable (aka connected wirelessly).
+
+    Args:
+      device_id(string): A string of the selected device's UDID.
+    """
     device_list = self.m.step(
         'Find wired CoreDevices',
         [
@@ -391,9 +432,24 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
             '-v',
         ],
         stdout=self.m.raw_io.output_text(add_output_log=True),
-        raise_on_failure=False,
-        ok_ret='any',
     ).stdout.rstrip()
+
+    if device_id not in device_list:
+      # Try opening Xcode to see if it helps device connect.
+      self.m.step(
+          'Open Xcode',
+          ['open', '-a', 'Xcode'],
+      )
+      raise self.m.step.InfraFailure('Device not connected.')
+
+  def _dismiss_xcode_automation_dialogs(self, is_core_device):
+    """Dismiss Xcode automation permission dialog and update permission db.
+
+    Only required for CoreDevices (physical iOS 17+ devices) or "xcode_debug" tests.
+
+    Args:
+      is_core_device(bool): Indicates if device is a CoreDevice.
+    """
 
     builder_name = self.m.properties.get('buildername')
 
@@ -403,7 +459,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     # builder name doesn't contain 'xcode_debug'.
     # Builders with 'xcode_debug' in the name force tests the workflow that
     # requires this permission.
-    if device_id not in device_list and 'xcode_debug' not in builder_name:
+    if not is_core_device and 'xcode_debug' not in builder_name:
       return
 
     tcc_directory_path, db_path, backup_db_path = self._get_tcc_path()

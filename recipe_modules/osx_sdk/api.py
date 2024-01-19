@@ -27,8 +27,6 @@ _RUNTIMESPATH = [
     'Developer', 'CoreSimulator', 'Profiles', 'Runtimes'
 ]
 
-_XCODE_CACHE_PATH = 'osx_sdk'
-
 # This CIPD source contains Xcode and iOS runtimes create and maintained by the
 # Flutter team.
 _FLUTTER_XCODE_CIPD = 'flutter_internal/ios/xcode'
@@ -155,7 +153,6 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     try:
       with self.m.context(infra_steps=True):
-        self._show_xcode_cache()
         self._setup_osx_sdk(kind, devicelab)
         runtime_simulators = self.m.step(
             'list runtimes', ['xcrun', 'simctl', 'list', 'runtimes'],
@@ -200,10 +197,22 @@ class OSXSDKApi(recipe_api.RecipeApi):
       return not runtime_simulators
     return len(self._runtime_versions) != len(runtime_simulators)
 
+  def _get_xcode_base_cache_path(self, devicelab: bool):
+    """Returns the base cache path for xcode.
+
+    Args:
+      devicelab - Whether or not the machine this code is running is a devicelab
+        machine.
+    """
+    if devicelab:
+      return '/opt/flutter/xcode'
+    return self.m.path['cache'].join('osx_sdk')
+
   def _setup_osx_sdk(self, kind, devicelab):
     app = None
     self._clean_xcode_cache(devicelab)
-    self._micro_manage_cache(devicelab)
+    #TODO reenable after fixing type issues on path
+    # self._micro_manage_cache(devicelab=devicelab)
     app = self._ensure_sdk(kind, devicelab)
     self.m.os_utils.kill_simulators()
     self._select_xcode(app)
@@ -239,11 +248,11 @@ class OSXSDKApi(recipe_api.RecipeApi):
     self.m.step('select xcode', ['sudo', 'xcode-select', '--switch', sdk_app])
 
   def _verify_xcode(self, sdk_app):
-    '''If Xcode is already downloaded, verify that it's not damaged.
+    """If Xcode is already downloaded, verify that it's not damaged.
 
     Args:
     sdk_app: (Path) Path to installed Xcode app bundle.
-    '''
+    """
     if not self.m.path.exists(sdk_app):
       return
 
@@ -273,9 +282,9 @@ class OSXSDKApi(recipe_api.RecipeApi):
           self._diagnose_codesign_failure(sdk_app)
 
   def _diagnose_codesign_failure(self, sdk_app):
-    '''Check if Xcode verification may have failed due to code not matching
+    """Check if Xcode verification may have failed due to code not matching
     original signed code. Used to help debug issues.
-    '''
+    """
     self.m.step(
         'verify codesign',
         [
@@ -287,10 +296,10 @@ class OSXSDKApi(recipe_api.RecipeApi):
     )
 
   def _dimiss_damaged_notification(self):
-    '''If Xcode is damaged, it may show a notification that can cause
+    """If Xcode is damaged, it may show a notification that can cause
     Xcode processes to hang until it's closed. Kill `CoreServicesUIAgent`
     to close it.
-    '''
+    """
     self.m.step(
         'dismiss damaged notification',
         ['killall', '-9', 'CoreServicesUIAgent'],
@@ -356,9 +365,16 @@ class OSXSDKApi(recipe_api.RecipeApi):
       self.m.step(
           'install xcode from cipd',
           [
-              tool_dir.join('mac_toolchain'), 'install', '-kind', kind,
-              '-xcode-version', self._sdk_version, '-output-dir', install_path,
-              '-cipd-package-prefix', self._xcode_cipd_package_source,
+              tool_dir.join('mac_toolchain'),
+              'install',
+              '-kind',
+              kind,
+              '-xcode-version',
+              self._sdk_version,
+              '-output-dir',
+              install_path,
+              '-cipd-package-prefix',
+              self._xcode_cipd_package_source,
               '-with-runtime=%s' % (not bool(self._runtime_versions)),
               '-verbose',
           ],
@@ -414,22 +430,24 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     return sdk_app
 
-  def _micro_manage_cache(self, devicelab):
-    app_dir = self._xcode_dir(devicelab)
-    self.m.step("show app_dir", ['echo', app_dir])
-    self._show_xcode_cache()
-    self.m.cache_micro_manager.run(self.m.path['cache'].join(_XCODE_CACHE_PATH), [app_dir])
-    self._show_xcode_cache()
+  # def _micro_manage_cache(self, devicelab):
+  #   cache_path = self._get_xcode_base_cache_path(devicelab)
+  #   app_dir = self._xcode_dir(devicelab)
+  #   self.m.step("show app_dir", ['echo', app_dir])
+  #   self._show_xcode_cache(devicelab=devicelab)
+  #   self.m.cache_micro_manager.run(cache_path, [app_dir])
+  #   self._show_xcode_cache(devicelab=devicelab)
 
-  def _show_xcode_cache(self):
-    self.m.step(
-        'Show xcode cache',
-        ['ls', '-al', self.m.path['cache'].join(_XCODE_CACHE_PATH)],
-        ok_ret='any',
-    )
+  # def _show_xcode_cache(self, devicelab):
+  #   cache_path = self._get_xcode_base_cache_path(devicelab)
+  #   self.m.step(
+  #       'Show xcode cache',
+  #       ['ls', '-al', cache_path],
+  #       ok_ret='any',
+  #   )
 
   def _install_runtimes(self, devicelab, app_dir, tool_dir, sdk_app, kind):
-    '''Ensure runtimes are installed.
+    """Ensure runtimes are installed.
 
     For macOS lower than 13, this involves downloading the runtime and copying
     it into the Xcode app bundle.
@@ -446,7 +464,8 @@ class OSXSDKApi(recipe_api.RecipeApi):
       tool_dir: (Path) Path to mac_toolchain cache directory.
       sdk_app: (Path) Path to installed Xcode app bundle.
       kind ('mac'|'ios'): How the SDK should be configured.
-    '''
+    """
+
     if not self._runtime_versions:
       # On macOS 13, when cleanup_cache is True, we first clear the Xcode cache,
       # install Xcode, and then clean up the runtimes cache. It happens in this
@@ -480,6 +499,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
             )
           runtime_version = runtime_version_parts[0]
           xcode_version = runtime_version_parts[1]
+          # we can assume devicelab False and build this with base path.
           runtime_dmg_cache_dir = self._runtime_dmg_dir_cache_path(version)
 
           self.m.step(
@@ -542,11 +562,10 @@ class OSXSDKApi(recipe_api.RecipeApi):
           ).replace('ios-', '').replace('-', '.')
           dest = self.m.path.join(sdk_app, *_RUNTIMESPATH, runtime_name)
           if not self.m.path.exists(dest):
-            runtime_cache_dir = self.m.path['cache'].join(_XCODE_CACHE_PATH
-                                                         ).join(
-                                                             'xcode_runtime_%s'
-                                                             % version.lower()
-                                                         )
+            cache_base_path = self._get_xcode_base_cache_path(False)
+            runtime_cache_dir = cache_base_path.join(
+                'xcode_runtime_%s' % version.lower()
+            )
             self.m.step(
                 'install xcode runtime %s' % version.lower(),
                 [
@@ -572,7 +591,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
             )
 
   def _xcode_dir(self, devicelab):
-    """Returns xcode cache dir.
+    """Returns the location of the xcode app in the cache dir.
 
     For a devicelab task, the path is prefixed at `/opt/flutter/xcode`.
 
@@ -582,25 +601,27 @@ class OSXSDKApi(recipe_api.RecipeApi):
     a host only task with runtimes, the path looks like
         xcode_<xcode-version>_runtime1_<runtime1-version>_..._runtimeN_<runtimeN-version>
     """
+
+    xcode_cache_base_path = self._get_xcode_base_cache_path(devicelab)
     if devicelab:
-      return '/opt/flutter/xcode/%s' % self._sdk_version
+      return f"{xcode_cache_base_path}/{self._sdk_version}"
     runtime_version = None
-    sdk_version = 'xcode_' + self._sdk_version
+    sdk_version = f"xcode_{self._sdk_version}"
     if not self.macos_13_or_later and self._runtime_versions:
       runtime_version = "_".join(self._runtime_versions)
-      sdk_version = sdk_version + '_runtime_' + runtime_version
-    return self.m.path['cache'].join(_XCODE_CACHE_PATH).join(sdk_version)
+      sdk_version = f"{sdk_version}_runtime_{runtime_version}"
+    return xcode_cache_base_path.join(sdk_version)
 
   def _runtime_dmg_dir_cache_path(self, version):
-    return self.m.path['cache'].join(_XCODE_CACHE_PATH).join(
-        'xcode_runtime_dmg_%s' % version.lower()
-    )
+    cache_base_path = self._get_xcode_base_cache_path(False)
+    # this method seems to be only used for non-devicelab cache path.
+    return cache_base_path.join('xcode_runtime_dmg_%s' % version.lower())
 
   def _cleanup_runtimes_cache(self, sdk_app):
-    '''Deletes all mounted runtimes and deletes corresponding cached runtime dmgs.
+    """Deletes all mounted runtimes and deletes corresponding cached runtime dmgs.
 
     This is only used for macOS 13+ since runtimes are installed and mounted separately.
-    '''
+    """
 
     if not self._cleanup_cache or not self.macos_13_or_later:
       return
@@ -701,7 +722,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
   def _is_runtime_mounted(
       self, runtime_version, xcode_version, runtime_simulators
   ):
-    '''Determine if iOS runtime version is already mounted.
+    """Determine if iOS runtime version is already mounted.
 
     Args:
       runtime_version: (string) The iOS version (e.g. "ios-16-4").
@@ -709,7 +730,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
       runtime_simulators: (list) A list of strings of runtime versions.
     Returns:
       A boolean for whether or not the runtime is already mounted.
-    '''
+    """
 
     with self.m.step.nest('cipd describe %s_%s' %
                           (runtime_version, xcode_version)) as display_step:
@@ -744,7 +765,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
     return False
 
   def _get_ios_runtime_build_version(self, runtime_version, xcode_version=None):
-    '''Gets the iOS runtime build version from CIPD.
+    """Gets the iOS runtime build version from CIPD.
 
     If `xcode_version` is provided, it will use it to search for the CIPD package.
     If not provided, the `runtime_version` will be used. In both cases, it ensures
@@ -755,7 +776,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
       xcode_version: (string) A version of Xcode to use to find CIPD package (e.g. "14e300c").
     Returns:
       A string of the build version or None if unable to get the build version.
-    '''
+    """
 
     search_ref = runtime_version
     if xcode_version is not None:
@@ -789,14 +810,14 @@ class OSXSDKApi(recipe_api.RecipeApi):
     return None
 
   def _parse_cipd_description_tag(self, tag):
-    '''Parse a colon separated CIPD description tag.
+    """Parse a colon separated CIPD description tag.
 
     Args:
       tag: (string) A colon separated string describing a CIPD tag.
         (e.g "ios_runtime_build:21A5303d" or "ios_runtime_version:ios-17-0")
     Returns:
       A string of the value following the colon or None if unable to parse.
-    '''
+    """
     tag_parts = tag.split(':')
     if len(tag_parts) == 2:
       return tag_parts[1]

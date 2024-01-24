@@ -92,7 +92,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         self.m.path['cache'].join('builder')
     )
     if (not clobber) and (mount_git or
-                          mount_builder) and (bucket != OFFICIAL_BUILD_BUCKET):
+                          mount_builder or self.m.platform.is_mac) and (bucket != OFFICIAL_BUILD_BUCKET):
       self.m.cache.mount_cache('builder', force=True)
       self._setup_win_toolchain(env)
     # Grab any gclient custom variables passed as properties.

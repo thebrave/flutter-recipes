@@ -9,8 +9,8 @@ from recipe_engine import recipe_api
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
 TIMEOUT_PROPERTY = 'ios_debug_symbol_doctor_timeout_seconds'
-XCODE_AUTOMATION_DB = 'TCC.db'
-XCODE_AUTOMATION_BACKUP_DB = 'TCC.db.backup'
+TCC_AUTOMATION_DB = 'TCC.db'
+TCC_AUTOMATION_BACKUP_DB = 'TCC.db.backup'
 
 
 class OsUtilsApi(recipe_api.RecipeApi):
@@ -183,17 +183,22 @@ class OsUtilsApi(recipe_api.RecipeApi):
             infra_step=True
         )
         self.m.step(
-            'kill Safari', ['killall', '-9', 'java'],
+            'kill java', ['killall', '-9', 'java'],
             ok_ret='any',
             infra_step=True
         )
         self.m.step(
-            'kill Safari', ['killall', '-9', 'adb'],
+            'kill adb', ['killall', '-9', 'adb'],
             ok_ret='any',
             infra_step=True
         )
         self.m.step(
             'kill Xcode', ['killall', '-9', 'Xcode'],
+            ok_ret='any',
+            infra_step=True
+        )
+        self.m.step(
+            'kill QuickTime', ['killall', '-9', 'QuickTime Player'],
             ok_ret='any',
             infra_step=True
         )
@@ -343,27 +348,49 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
 
         is_core_device = self._is_core_device(device_id)
 
-        # Wait up to ~10 minutes for device to connect.
+        cocoon_path = self._checkout_cocoon()
+
         if is_core_device:
-          with self.m.step.nest('Wait for device to connect'):
-            self.m.retry.basic_wrap(
-                lambda timeout: self._wait_for_core_device_to_connect(
-                    device_id,
-                    timeout=timeout,
-                ),
-                step_name='Wait for device to connect',
-                sleep=10.0,
-                backoff_factor=2,
-                max_attempts=7
-            )
-            self.m.step(
-                'Kill Xcode',
-                ['killall', '-9', 'Xcode'],
-                ok_ret='any',
-            )
+          with self.m.step.nest('Wait for device to connect'
+                               ) as wait_connect_step:
+            try:
+              self._is_core_device_connected(device_id)
+            except self.m.step.InfraFailure:
+              infra_dialog_project_path = self._infra_dialog_directory_path(
+                  cocoon_path
+              ).join('infra-dialog.xcodeproj')
+              self.m.step(
+                  'Open infra-dialog in Xcode',
+                  ['open', infra_dialog_project_path],
+              )
+              # Open device in QuickTime to try to establish a connection.
+              self._open_quick_time(device_id)
+
+              # Wait up to ~5 minutes for device to connect.
+              try:
+                self.m.retry.basic_wrap(
+                    lambda timeout: self._is_core_device_connected(
+                        device_id,
+                        timeout=timeout,
+                    ),
+                    step_name='Wait for device to connect',
+                    sleep=10.0,
+                    backoff_factor=2,
+                    max_attempts=6
+                )
+              except self.m.step.InfraFailure:
+                # If fails continue to "Run app to dismiss dialogs" step. That
+                # step should also fail.
+                wait_connect_step.presentation.status = self.m.step.INFRA_FAILURE
+              finally:
+                self._list_core_devices()
+                self.m.step(
+                    'Kill Xcode',
+                    ['killall', '-9', 'Xcode'],
+                    ok_ret='any',
+                )
 
         with self.m.step.nest('Dismiss iOS dialogs'):
-          cocoon_path = self._checkout_cocoon()
           resource_name = self.resource('dismiss_dialogs.sh')
           self.m.step(
               'Set execute permission',
@@ -371,27 +398,140 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
               infra_step=True,
           )
           with self.m.context(
-              cwd=cocoon_path.join('cipd_packages', 'device_doctor', 'tool',
-                                   'infra-dialog'),
+              cwd=self._infra_dialog_directory_path(cocoon_path),
               infra_steps=True,
           ):
             cmd = [resource_name, device_id]
-            self.m.step('Run app to dismiss dialogs', cmd)
+            try:
+              self.m.step('Run app to dismiss dialogs', cmd)
+            finally:
+              self._list_core_devices()
+              self.m.step(
+                  'Kill QuickTime',
+                  ['killall', '-9', 'QuickTime Player'],
+                  ok_ret='any',
+              )
         with self.m.step.nest('Dismiss Xcode automation dialogs'):
           with self.m.context(infra_steps=True):
-            self._dismiss_xcode_automation_dialogs(is_core_device)
+            builder_name = self.m.properties.get('buildername')
+            self.m.step.empty("Get buildername", step_text=builder_name)
 
-  def _is_core_device(self, device_id):
-    """Check if device is a CoreDevice (physical iOS 17+ devices).
+            # Only required for CoreDevices (physical iOS 17+ devices) or
+            # "xcode_debug" tests. Builders with 'xcode_debug' in the name
+            # force tests the workflow that requires this permission.
+            if is_core_device or 'xcode_debug' in builder_name:
+              self._dismiss_automation_dialog('Xcode', 'com.apple.dt.Xcode')
 
-    Only CoreDevices appear in `devicectl list devices` command.
+  def _infra_dialog_directory_path(self, cocoon_path):
+    return cocoon_path.join(
+        'cipd_packages', 'device_doctor', 'tool', 'infra-dialog'
+    )
+
+  def _open_quick_time(self, device_id):
+    """Gives permissions to automate QuickTime. Then opens QuickTime with
+    screen and audio to set to `device_id`.
+
+    Opening QuickTime and switching the "Screen" to the device may help the
+    device connect.
 
     Args:
       device_id(string): A string of the selected device's UDID.
     """
-    # Get list of CoreDevices.
-    # Allow any return code and ignore failure since this command will only
-    # work with Xcode 15 and therefore may not work for all machines.
+    with self.m.step.nest('Trigger device connect with QuickTime'):
+      with self.m.context(infra_steps=True):
+        with self.m.step.nest('Dismiss QuickTime automation dialogs'):
+          self._dismiss_automation_dialog(
+              'QuickTime Player', 'com.apple.QuickTimePlayerX'
+          )
+        self.m.step(
+            'Open QuickTime',
+            ['open', '-a', 'QuickTime Player'],
+        )
+        self.m.step(
+            'Set Audio Device in QuickTime',
+            [
+                'defaults', 'write', 'com.apple.QuickTimePlayerX',
+                'MGDeviceRecordingDocumentViewControllerAudioDeviceSelectionUniqueID',
+                device_id
+            ],
+        )
+        self.m.step(
+            'Set Video Device in QuickTime',
+            [
+                'defaults', 'write', 'com.apple.QuickTimePlayerX',
+                'MGDeviceRecordingDocumentViewControllerVideoDeviceSelectionUniqueID',
+                device_id
+            ],
+        )
+        self.m.step(
+            'View defaults in QuickTime',
+            ['defaults', 'read', 'com.apple.QuickTimePlayerX'],
+        )
+
+        self._apple_script_command(
+            'Open QuickTime Recording',
+            'QuickTime Player',
+            ['new movie recording'],
+            timeout=30,
+        )
+        # For some reason, the first time you open a QuickTime recording, the
+        # device will not be selected. Close the window and try again. The
+        # second time should work.
+        self._apple_script_command(
+            'Close QuickTime Recording',
+            'QuickTime Player',
+            ['close its front window'],
+            timeout=30,
+        )
+        self._apple_script_command(
+            'Open QuickTime Recording',
+            'QuickTime Player',
+            ['new movie recording'],
+            timeout=30,
+        )
+
+  def _apple_script_command(
+      self,
+      title,
+      app_name,
+      commands,
+      timeout=2,
+      raise_on_failure=False,
+  ):
+    """Run an AppleScript command.
+
+    Args:
+      title(string): A string of step's title.
+      app_name(string): The name of the app to tell the commands to.
+      commands(list): A list of strings of commands to tell the app to do.
+      timeout (int or float): How many seconds to wait before timing out the step.
+      raise_on_failure (bool): Raise InfraFailure or StepFailure on failure.
+    """
+
+    apple_script_to_run = []
+    for command in commands:
+      apple_script_to_run.append('-e')
+      apple_script_to_run.append(command)
+    self.m.step(
+        title,
+        [
+            'osascript',
+            '-e',
+            'tell app "%s"' % app_name,
+            *apple_script_to_run,
+            '-e',
+            'end tell',
+        ],
+        raise_on_failure=raise_on_failure,
+        ok_ret=(0,) if raise_on_failure else 'any',
+        timeout=timeout,
+    )
+
+  def _list_core_devices(self):
+    """Get list of CoreDevices.
+    Allow any return code and ignore failure since this command will only
+    work with Xcode 15 and therefore may not work for all machines.
+    """
     device_list = self.m.step(
         'List CoreDevices',
         [
@@ -406,19 +546,32 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
         stdout=self.m.raw_io.output_text(add_output_log=True),
     ).stdout.rstrip()
 
+    return device_list
+
+  def _is_core_device(self, device_id):
+    """Check if device is a CoreDevice (physical iOS 17+ devices).
+
+    Only CoreDevices appear in `devicectl list devices` command.
+
+    Args:
+      device_id(string): A string of the selected device's UDID.
+    """
+    device_list = self._list_core_devices()
+
     if device_id in device_list:
       return True
     return False
 
   # pylint: disable=unused-argument
-  def _wait_for_core_device_to_connect(self, device_id, timeout):
+  def _is_core_device_connected(self, device_id, timeout=None):
     """Use `devicectl` command to determine if device is connected via cable.
-    If not connected, open Xcode to attempt to help it reconnect.
     Only accept if `transportType` is wired in case other devices are paired
     but not connected via cable (aka connected wirelessly).
 
     Args:
       device_id(string): A string of the selected device's UDID.
+
+    Throws an InfraFailure if device is not connected.
     """
     device_list = self.m.step(
         'Find wired CoreDevices',
@@ -435,32 +588,15 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     ).stdout.rstrip()
 
     if device_id not in device_list:
-      # Try opening Xcode to see if it helps device connect.
-      self.m.step(
-          'Open Xcode',
-          ['open', '-a', 'Xcode'],
-      )
       raise self.m.step.InfraFailure('Device not connected.')
 
-  def _dismiss_xcode_automation_dialogs(self, is_core_device):
-    """Dismiss Xcode automation permission dialog and update permission db.
-
-    Only required for CoreDevices (physical iOS 17+ devices) or "xcode_debug" tests.
+  def _dismiss_automation_dialog(self, app_name, app_identifer):
+    """Dismiss automation permission dialog and update permission db.
 
     Args:
-      is_core_device(bool): Indicates if device is a CoreDevice.
+      app_name(string): Name of the application to get permission for.
+      app_identifer(string): Bundle id of the application.
     """
-
-    builder_name = self.m.properties.get('buildername')
-
-    self.m.step.empty("Get buildername", step_text=builder_name)
-
-    # Skip the rest of this step if the device is not a CoreDevice and the
-    # builder name doesn't contain 'xcode_debug'.
-    # Builders with 'xcode_debug' in the name force tests the workflow that
-    # requires this permission.
-    if not is_core_device and 'xcode_debug' not in builder_name:
-      return
 
     tcc_directory_path, db_path, backup_db_path = self._get_tcc_path()
 
@@ -471,7 +607,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
         stdout=self.m.raw_io.output_text(add_output_log=True),
     ).stdout.rstrip()
 
-    if XCODE_AUTOMATION_DB not in files:
+    if TCC_AUTOMATION_DB not in files:
       self.m.step.empty(
           'Failed to find TCC.db',
           status=self.m.step.INFRA_FAILURE,
@@ -483,7 +619,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     # Create backup db if there isn't one.
     # If there is already a backup, it's most likely that a previous run did
     # not complete correctly and did not get reset, so don't overwrite the backup.
-    if XCODE_AUTOMATION_BACKUP_DB not in files:
+    if TCC_AUTOMATION_BACKUP_DB not in files:
       self.m.step(
           'Create backup db',
           ['cp', db_path, backup_db_path],
@@ -492,6 +628,8 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     self.m.retry.basic_wrap(
         lambda timeout: self._create_tcc_entry(
             db_path,
+            app_name,
+            app_identifer,
             timeout=timeout,
         ),
         step_name='Wait to add entry in TCC db',
@@ -505,6 +643,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     self.m.retry.basic_wrap(
         lambda timeout: self._update_automation_permission_db(
             db_path,
+            app_identifer,
             timeout=timeout,
         ),
         step_name='Wait to update TCC db',
@@ -516,22 +655,24 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     # Print contents of db for potential debugging purposes.
     self._query_automation_db_step_with_retry(db_path)
 
-    # Try and trigger Xcode automation. If fails or times out, permission was
+    # Try and trigger automation. If fails or times out, permission was
     # not successfully granted.
     self._trigger_and_dismiss_automation_permission(
-        timeout=5 * 60, raise_on_failure=True
+        app_name,
+        timeout=5 * 60,
+        raise_on_failure=True,
     )
 
-    # Xcode was opened by Applescript, so kill it.
+    # The app was opened by Applescript, so kill it.
     self.m.step(
-        'Kill Xcode',
-        ['killall', '-9', 'Xcode'],
+        'Kill %s' % app_name,
+        ['killall', '-9', app_name],
         ok_ret='any',
     )
 
   def _dismiss_automation_permission(self):
-    """Kill the Xcode automation dialog. After killing the dialog, an entry for
-    the app requesting control of Xcode should automatically be added to the db.
+    """Kill the automation dialog. After killing the dialog, an entry for
+    the client requesting control of app should automatically be added to the db.
     """
 
     self.m.step(
@@ -541,54 +682,47 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     )
 
   def _trigger_and_dismiss_automation_permission(
-      self,
-      timeout=2,
-      raise_on_failure=False,
+      self, app_name, timeout=2, raise_on_failure=False
   ):
-    """Trigger Xcode automation dialog to appear and then kill the dialog.
+    """Trigger automation dialog to appear and then kill the dialog.
 
     Args:
+      app_name(string): Name of the application to get permission for.
       timeout (int or float): How many seconds to wait before timing out the
               "Trigger dialog" step.
       raise_on_failure (bool): Raise InfraFailure or StepFailure on failure.
     """
 
-    # Run an arbitrary AppleScript Xcode command to trigger permissions dialog.
-    # The AppleScript counts how many Xcode windows are open.
+    # Run an arbitrary AppleScript command to trigger permissions dialog.
+    # The AppleScript counts how many windows of the app are open.
     # The script will hang if permission has not been given, so timeout after
     # a few seconds.
-    self.m.step(
+    self._apple_script_command(
         'Trigger dialog',
-        [
-            'osascript',
-            '-e',
-            'tell app "Xcode"',
-            '-e',
-            'launch',
-            '-e',
-            'count window',
-            '-e',
-            'end tell',
-        ],
-        raise_on_failure=raise_on_failure,
-        ok_ret=(0,) if raise_on_failure else 'any',
-        timeout=timeout,
+        app_name,
+        ['launch', 'count window'],
+        timeout,
+        raise_on_failure,
     )
     self._dismiss_automation_permission()
 
-  def _create_tcc_entry(self, db_path, timeout=2):
-    """Trigger Xcode automation dialog to appear and then kill the dialog.
+  def _create_tcc_entry(self, db_path, app_name, app_identifer, timeout=2):
+    """Trigger automation dialog to appear and then kill the dialog.
     Killing the dialog will add an entry for the permission to the TCC.db.
     Raises an error if dialog fails to add entry to db.
 
     Args:
+      app_name(string): Name of the application to get permission for.
+      app_identifer(string): Bundle id of the application.
       db_path(string): A string of the path to the sqlite database.
     """
 
-    self._trigger_and_dismiss_automation_permission(timeout=timeout)
+    self._trigger_and_dismiss_automation_permission(app_name, timeout=timeout)
 
-    if 'Xcode' not in self._query_automation_db_step_with_retry(db_path):
-      raise self.m.step.InfraFailure('Xcode entry not found in TCC.db')
+    if app_identifer not in self._query_automation_db_step_with_retry(db_path):
+      raise self.m.step.InfraFailure(
+          '%s entry not found in TCC.db' % app_identifer
+      )
 
   def _get_tcc_path(self):
     """Constructs paths to the TCC directory, TCC db, and TCC backup db.
@@ -602,19 +736,20 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     tcc_directory_path = os.path.join(
         str(home_path), 'Library/Application Support/com.apple.TCC'
     )
-    db_path = os.path.join(tcc_directory_path, XCODE_AUTOMATION_DB)
-    backup_db_path = os.path.join(
-        tcc_directory_path, XCODE_AUTOMATION_BACKUP_DB
-    )
+    db_path = os.path.join(tcc_directory_path, TCC_AUTOMATION_DB)
+    backup_db_path = os.path.join(tcc_directory_path, TCC_AUTOMATION_BACKUP_DB)
     return tcc_directory_path, db_path, backup_db_path
 
   # pylint: disable=unused-argument
-  def _update_automation_permission_db(self, db_path, timeout=None):
+  def _update_automation_permission_db(
+      self, db_path, app_identifer, timeout=None
+  ):
     self.m.step(
         'Update db',
         [
             'sqlite3', db_path,
-            "UPDATE access SET auth_value = 2, auth_reason = 3, flags = NULL WHERE service = 'kTCCServiceAppleEvents' AND indirect_object_identifier = 'com.apple.dt.Xcode'"
+            "UPDATE access SET auth_value = 2, auth_reason = 3, flags = NULL WHERE service = 'kTCCServiceAppleEvents' AND indirect_object_identifier = '%s'"
+            % app_identifer
         ],
     )
 
@@ -662,9 +797,9 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     return query_results.stdout.rstrip()
 
   def reset_automation_dialogs(self):
-    """Reset Xcode Automation permissions."""
+    """Reset Automation permissions."""
     if self.is_devicelab() and self.m.platform.is_mac:
-      with self.m.step.nest('Reset Xcode automation dialogs'):
+      with self.m.step.nest('Reset automation dialogs'):
         tcc_directory_path, db_path, backup_db_path = self._get_tcc_path()
 
         self._dismiss_automation_permission()
@@ -681,7 +816,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
             ok_ret='any',
         ).stdout.rstrip()
 
-        if XCODE_AUTOMATION_BACKUP_DB not in files:
+        if TCC_AUTOMATION_BACKUP_DB not in files:
           return
 
         self.m.step(

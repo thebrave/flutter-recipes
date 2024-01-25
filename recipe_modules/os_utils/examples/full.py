@@ -47,7 +47,9 @@ def GenTests(api):
   )
   xcode_dismiss_dialog_query_db_step = api.step_data(
       'Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db (2)',
-      stdout=api.raw_io.output_text('service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'),
+      stdout=api.raw_io.output_text(
+          'service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified'
+      ),
   )
   yield api.test(
       'basic',
@@ -91,13 +93,14 @@ def GenTests(api):
       api.step_data("Killing Processes.stop dart", retcode=1)
   )
   yield api.test(
-      'clean_derived_data', api.platform('mac', 64),
+      'clean_derived_data',
+      api.platform('mac', 64),
       xcode_dismiss_dialog_find_db_step,
       xcode_dismiss_dialog_query_db_step,
       api.properties(device_os='iOS-16'),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
-      )
+      ),
   )
   yield api.test(
       'dimiss_dialog_xcode_automation_fails_find_db',
@@ -127,7 +130,7 @@ def GenTests(api):
       xcode_dismiss_dialog_find_db_step,
       xcode_dismiss_dialog_query_db_step,
       api.step_data(
-          'Reset Xcode automation dialogs.Find TCC directory',
+          'Reset automation dialogs.Find TCC directory',
           stdout=api.raw_io.output_text('TCC.db.backup'),
       ),
       api.platform('mac', 64),
@@ -143,13 +146,22 @@ def GenTests(api):
           stdout=api.raw_io.output_text('123456789'),
       ),
       api.platform('mac', 64),
-      api.properties(buildername='Mac flutter_gallery_ios__start_up', device_os='iOS-16'),
+      api.properties(
+          buildername='Mac flutter_gallery_ios__start_up', device_os='iOS-16'
+      ),
       api.properties.environ(
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       ),
   )
   yield api.test(
-      'core_device_not_found',
+      'fail_to_prepare_device',
+      api.platform('mac', 64),
+      api.properties(
+          buildername='Mac flutter_gallery_ios__start_up', device_os='iOS-17'
+      ),
+      api.properties.environ(
+          properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
+      ),
       api.step_data(
           'Prepare iOS device.Find device id',
           stdout=api.raw_io.output_text('123456789'),
@@ -158,10 +170,19 @@ def GenTests(api):
           'Prepare iOS device.List CoreDevices',
           stdout=api.raw_io.output_text('123456789'),
       ),
-      api.platform('mac', 64),
-      api.properties(buildername='Mac flutter_gallery_ios__start_up', device_os='iOS-17'),
-      api.properties.environ(
-          properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
+      api.step_data(
+          'Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Find TCC directory',
+          stdout=api.raw_io.output_text('TCC.db'),
+      ),
+      api.step_data(
+          'Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Query TCC db (2)',
+          stdout=api.raw_io.output_text(
+              'service|client|client_type|auth_value|auth_reason|auth_version|com.apple.QuickTimePlayerX|flags|last_modified'
+          ),
+      ),
+      api.step_data(
+          'Prepare iOS device.Dismiss iOS dialogs.Run app to dismiss dialogs',
+          retcode=1,
       ),
       status='INFRA_FAILURE'
   )

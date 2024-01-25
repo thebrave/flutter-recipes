@@ -324,7 +324,10 @@
   },
   {
     "cmd": [],
-    "name": "Prepare iOS device"
+    "name": "Prepare iOS device",
+    "~followup_annotations": [
+      "@@@STEP_EXCEPTION@@@"
+    ]
   },
   {
     "cmd": [
@@ -347,6 +350,7 @@
     "name": "Prepare iOS device.List CoreDevices",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@123456789@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
     ]
   },
@@ -468,7 +472,8 @@
     "cmd": [],
     "name": "Prepare iOS device.Wait for device to connect",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_EXCEPTION@@@"
     ]
   },
   {
@@ -488,10 +493,424 @@
     ]
   },
   {
+    "cmd": [
+      "open",
+      "[CACHE]/cocoon/cipd_packages/device_doctor/tool/infra-dialog/infra-dialog.xcodeproj"
+    ],
+    "name": "Prepare iOS device.Wait for device to connect.Open infra-dialog in Xcode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ls",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Find TCC directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@TCC.db@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sqlite3",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
+      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Query TCC db",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cp",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db.backup"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Create backup db",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "osascript",
+      "-e",
+      "tell app \"QuickTime Player\"",
+      "-e",
+      "launch",
+      "-e",
+      "count window",
+      "-e",
+      "end tell"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Trigger dialog",
+    "timeout": 2,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "UserNotificationCenter"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Dismiss dialog",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sqlite3",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
+      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Query TCC db (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@service|client|client_type|auth_value|auth_reason|auth_version|com.apple.QuickTimePlayerX|flags|last_modified@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sqlite3",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
+      "UPDATE access SET auth_value = 2, auth_reason = 3, flags = NULL WHERE service = 'kTCCServiceAppleEvents' AND indirect_object_identifier = 'com.apple.QuickTimePlayerX'"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Update db",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sqlite3",
+      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
+      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Query TCC db (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "osascript",
+      "-e",
+      "tell app \"QuickTime Player\"",
+      "-e",
+      "launch",
+      "-e",
+      "count window",
+      "-e",
+      "end tell"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Trigger dialog (2)",
+    "timeout": 300,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "UserNotificationCenter"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Dismiss dialog (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "QuickTime Player"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Dismiss QuickTime automation dialogs.Kill QuickTime Player",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@4@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "open",
+      "-a",
+      "QuickTime Player"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Open QuickTime",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "defaults",
+      "write",
+      "com.apple.QuickTimePlayerX",
+      "MGDeviceRecordingDocumentViewControllerAudioDeviceSelectionUniqueID",
+      "123456789"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Set Audio Device in QuickTime",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "defaults",
+      "write",
+      "com.apple.QuickTimePlayerX",
+      "MGDeviceRecordingDocumentViewControllerVideoDeviceSelectionUniqueID",
+      "123456789"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Set Video Device in QuickTime",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "defaults",
+      "read",
+      "com.apple.QuickTimePlayerX"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.View defaults in QuickTime",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "osascript",
+      "-e",
+      "tell app \"QuickTime Player\"",
+      "-e",
+      "new movie recording",
+      "-e",
+      "end tell"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Open QuickTime Recording",
+    "timeout": 30,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "osascript",
+      "-e",
+      "tell app \"QuickTime Player\"",
+      "-e",
+      "close its front window",
+      "-e",
+      "end tell"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Close QuickTime Recording",
+    "timeout": 30,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "osascript",
+      "-e",
+      "tell app \"QuickTime Player\"",
+      "-e",
+      "new movie recording",
+      "-e",
+      "end tell"
+    ],
+    "infra_step": true,
+    "name": "Prepare iOS device.Wait for device to connect.Trigger device connect with QuickTime.Open QuickTime Recording (2)",
+    "timeout": 30,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "devicectl",
+      "list",
+      "devices",
+      "--filter",
+      "connectionProperties.transportType CONTAINS 'wired'",
+      "-v"
+    ],
+    "name": "Prepare iOS device.Wait for device to connect.Find wired CoreDevices (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "devicectl",
+      "list",
+      "devices",
+      "--filter",
+      "connectionProperties.transportType CONTAINS 'wired'",
+      "-v"
+    ],
+    "name": "Prepare iOS device.Wait for device to connect.Find wired CoreDevices (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "devicectl",
+      "list",
+      "devices",
+      "--filter",
+      "connectionProperties.transportType CONTAINS 'wired'",
+      "-v"
+    ],
+    "name": "Prepare iOS device.Wait for device to connect.Find wired CoreDevices (4)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "devicectl",
+      "list",
+      "devices",
+      "--filter",
+      "connectionProperties.transportType CONTAINS 'wired'",
+      "-v"
+    ],
+    "name": "Prepare iOS device.Wait for device to connect.Find wired CoreDevices (5)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Prepare iOS device.Wait for device to connect.sleep 80",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "devicectl",
+      "list",
+      "devices",
+      "--filter",
+      "connectionProperties.transportType CONTAINS 'wired'",
+      "-v"
+    ],
+    "name": "Prepare iOS device.Wait for device to connect.Find wired CoreDevices (6)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Prepare iOS device.Wait for device to connect.sleep 160",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "devicectl",
+      "list",
+      "devices",
+      "--filter",
+      "connectionProperties.transportType CONTAINS 'wired'",
+      "-v"
+    ],
+    "name": "Prepare iOS device.Wait for device to connect.Find wired CoreDevices (7)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "devicectl",
+      "list",
+      "devices",
+      "-v"
+    ],
+    "name": "Prepare iOS device.Wait for device to connect.List CoreDevices",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "Xcode"
+    ],
+    "name": "Prepare iOS device.Wait for device to connect.Kill Xcode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
     "cmd": [],
     "name": "Prepare iOS device.Dismiss iOS dialogs",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_EXCEPTION@@@"
     ]
   },
   {
@@ -509,13 +928,14 @@
   {
     "cmd": [
       "RECIPE_MODULE[flutter::os_utils]/resources/dismiss_dialogs.sh",
-      ""
+      "123456789"
     ],
     "cwd": "[CACHE]/cocoon/cipd_packages/device_doctor/tool/infra-dialog",
     "infra_step": true,
     "name": "Prepare iOS device.Dismiss iOS dialogs.Run app to dismiss dialogs",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_EXCEPTION@@@"
     ]
   },
   {
@@ -548,228 +968,9 @@
     ]
   },
   {
-    "cmd": [],
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Get buildername",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "ls",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC"
-    ],
-    "infra_step": true,
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Find TCC directory",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@TCC.db@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "sqlite3",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
-      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
-    ],
-    "infra_step": true,
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cp",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db.backup"
-    ],
-    "infra_step": true,
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Create backup db",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "osascript",
-      "-e",
-      "tell app \"Xcode\"",
-      "-e",
-      "launch",
-      "-e",
-      "count window",
-      "-e",
-      "end tell"
-    ],
-    "infra_step": true,
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Trigger dialog",
-    "timeout": 2,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "UserNotificationCenter"
-    ],
-    "infra_step": true,
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Dismiss dialog",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "sqlite3",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
-      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
-    ],
-    "infra_step": true,
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@service|client|client_type|auth_value|auth_reason|auth_version|com.apple.dt.Xcode|flags|last_modified@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "sqlite3",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
-      "UPDATE access SET auth_value = 2, auth_reason = 3, flags = NULL WHERE service = 'kTCCServiceAppleEvents' AND indirect_object_identifier = 'com.apple.dt.Xcode'"
-    ],
-    "infra_step": true,
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Update db",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "sqlite3",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
-      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
-    ],
-    "infra_step": true,
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Query TCC db (3)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "osascript",
-      "-e",
-      "tell app \"Xcode\"",
-      "-e",
-      "launch",
-      "-e",
-      "count window",
-      "-e",
-      "end tell"
-    ],
-    "infra_step": true,
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Trigger dialog (2)",
-    "timeout": 300,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "UserNotificationCenter"
-    ],
-    "infra_step": true,
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Dismiss dialog (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "Xcode"
-    ],
-    "infra_step": true,
-    "name": "Prepare iOS device.Dismiss Xcode automation dialogs.Kill Xcode",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Reset automation dialogs"
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "UserNotificationCenter"
-    ],
-    "name": "Reset automation dialogs.Dismiss dialog",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "sqlite3",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC/TCC.db",
-      "SELECT service, client, client_type, auth_value, auth_reason, indirect_object_identifier_type, indirect_object_identifier, flags, last_modified FROM access WHERE service = \"kTCCServiceAppleEvents\""
-    ],
-    "name": "Reset automation dialogs.Query TCC db",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "ls",
-      "Users/fakeuser/Library/Application Support/com.apple.TCC"
-    ],
-    "infra_step": true,
-    "name": "Reset automation dialogs.Find TCC directory",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "ln",
-      "-s",
-      "/a/file",
-      "/a/b/c/simlink"
-    ],
-    "infra_step": true,
-    "name": "Link /a/b/c/simlink to /a/file"
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "com.apple.CoreSimulator.CoreSimulatorDevice"
-    ],
-    "infra_step": true,
-    "name": "kill dart"
-  },
-  {
+    "failure": {
+      "humanReason": "Infra Failure: Step('Prepare iOS device.Dismiss iOS dialogs.Run app to dismiss dialogs') (retcode: 1)"
+    },
     "name": "$result"
   }
 ]

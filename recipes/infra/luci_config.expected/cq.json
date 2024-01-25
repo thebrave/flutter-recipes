@@ -90,6 +90,33 @@
     "cmd": [
       "git",
       "config",
+      "core.longpaths",
+      "true"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.set core.longpaths",
+    "timeout": 300.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
       "fetch.uriprotocols",
       "https"
     ],
@@ -260,6 +287,33 @@
       }
     },
     "name": "checkout.cache.remote set-url",
+    "timeout": 300.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "config",
+      "core.longpaths",
+      "true"
+    ],
+    "cwd": "[CACHE]/git/flutter.googlesource.com-infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "checkout.cache.set core.longpaths",
     "timeout": 300.0,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"

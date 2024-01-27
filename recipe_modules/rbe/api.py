@@ -96,7 +96,6 @@ class RbeApi(recipe_api.RecipeApi):
     # the behavior of the build in a meaningful way.
     return {
         "RBE_service": "remotebuildexecution.googleapis.com:443",
-        "RBE_platform": self._platform,
         # Override default instance. Infrastructure uses different RBE
         # backends for different environments.
         "RBE_instance": self._instance,

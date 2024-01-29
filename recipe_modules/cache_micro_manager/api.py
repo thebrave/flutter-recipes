@@ -102,6 +102,7 @@ class CacheMicroManagerApi(recipe_api.RecipeApi):
     Args:
       * deps_list(list[str]): the list of dependencies that are currently being used.
     """
+
     self._initialize(target_dir=target_dir)
 
     with self.m.step.nest('Running Cache Micro Manager on {}.'.format(

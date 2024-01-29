@@ -7,8 +7,6 @@ XCode installation.
 
 Available only to Google-run bots."""
 
-import os
-
 from contextlib import contextmanager
 
 from recipe_engine import recipe_api
@@ -211,8 +209,9 @@ class OSXSDKApi(recipe_api.RecipeApi):
   def _setup_osx_sdk(self, kind, devicelab):
     app = None
     self._clean_xcode_cache(devicelab)
-    #TODO reenable after fixing type issues on path
-    # self._micro_manage_cache(devicelab=devicelab)
+    # NOTE: cleaning of the cache on devicelab will happen via salt.
+    if not devicelab:
+      self._micro_manage_cache(devicelab=devicelab)
     app = self._ensure_sdk(kind, devicelab)
     self.m.os_utils.kill_simulators()
     self._select_xcode(app)
@@ -430,21 +429,26 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     return sdk_app
 
-  # def _micro_manage_cache(self, devicelab):
-  #   cache_path = self._get_xcode_base_cache_path(devicelab)
-  #   app_dir = self._xcode_dir(devicelab)
-  #   self.m.step("show app_dir", ['echo', app_dir])
-  #   self._show_xcode_cache(devicelab=devicelab)
-  #   self.m.cache_micro_manager.run(cache_path, [app_dir])
-  #   self._show_xcode_cache(devicelab=devicelab)
+  def _micro_manage_cache(self, devicelab: bool):
+    """Tracks the age of packages in the target cache. If older than a
+    specific date then delete them.
 
-  # def _show_xcode_cache(self, devicelab):
-  #   cache_path = self._get_xcode_base_cache_path(devicelab)
-  #   self.m.step(
-  #       'Show xcode cache',
-  #       ['ls', '-al', cache_path],
-  #       ok_ret='any',
-  #   )
+    Params:
+      devicelab: (bool) tells the module which path we should be working with.
+    """
+    cache_path = self._get_xcode_base_cache_path(devicelab)
+    app_dir = self._xcode_dir(devicelab)
+    self.m.step("show app_dir", ['echo', app_dir])
+    self._show_xcode_cache(cache_path)
+    self.m.cache_micro_manager.run(cache_path, [app_dir])
+    self._show_xcode_cache(cache_path)
+
+  def _show_xcode_cache(self, cache_path):
+    self.m.step(
+        'Show xcode cache',
+        ['ls', '-al', cache_path],
+        ok_ret='any',
+    )
 
   def _install_runtimes(self, devicelab, app_dir, tool_dir, sdk_app, kind):
     """Ensure runtimes are installed.

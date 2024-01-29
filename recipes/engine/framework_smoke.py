@@ -34,9 +34,8 @@ def RunSteps(api, properties, env_properties):
   api.file.rmtree('Clobber build output', checkout.join('out'))
   cache_root = api.path['cache'].join('builder')
   api.file.ensure_directory('Ensure checkout cache', cache_root)
-  env = {
-      'FLUTTER_PREBUILT_DART_SDK': 'True',
-  }
+  env, env_prefixes = api.repo_util.engine_environment(cache_root)
+  env['FLUTTER_PREBUILT_DART_SDK'] = 'True'
   env_prefixes = {}
 
   # Checkout Engine.

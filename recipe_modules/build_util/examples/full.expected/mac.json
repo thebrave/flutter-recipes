@@ -563,6 +563,155 @@
   },
   {
     "cmd": [],
+    "name": "collect rbe logs"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/bootstrap.WARNING",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "collect rbe logs.read bootstrap.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@bootstrap.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/rbe_metrics.txt",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "collect rbe logs.read rbe_metrics.txt",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@rbe_metrics.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/reproxy.WARNING",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "collect rbe logs.read reproxy.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@reproxy.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/reproxy-gomaip.WARNING",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "collect rbe logs.read reproxy-gomaip.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@reproxy-gomaip.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/reproxy_outerr.log",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "collect rbe logs.read reproxy_outerr.log",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@reproxy_outerr.log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/rewrapper.WARNING",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "collect rbe logs.read rewrapper.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@rewrapper.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "glob",
+      "[CLEANUP]/rbe",
+      "*.rrpl"
+    ],
+    "infra_step": true,
+    "name": "collect rbe logs.find rrpl files",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@glob@[CLEANUP]/rbe/reproxy_2021-10-16_22_52_23.rrpl@@@",
+      "@@@STEP_LOG_END@glob@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe/reproxy_2021-10-16_22_52_23.rrpl",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "collect rbe logs.read reproxy_2021-10-16_22_52_23.rrpl",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@reproxy_2021-10-16_22_52_23.rrpl@@@"
+    ]
+  },
+  {
+    "cmd": [],
     "name": "install infra/rbe/client"
   },
   {
@@ -723,6 +872,13 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "teardown remote execution.collect rbe logs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
     "cmd": [
       "vpython3",
       "-u",
@@ -749,9 +905,9 @@
       "RBE_use_gce_credentials": "true"
     },
     "infra_step": true,
-    "name": "teardown remote execution.read bootstrap.WARNING",
+    "name": "teardown remote execution.collect rbe logs.read bootstrap.WARNING",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@bootstrap.WARNING@@@"
     ]
   },
@@ -782,9 +938,9 @@
       "RBE_use_gce_credentials": "true"
     },
     "infra_step": true,
-    "name": "teardown remote execution.read rbe_metrics.txt",
+    "name": "teardown remote execution.collect rbe logs.read rbe_metrics.txt",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@rbe_metrics.txt@@@"
     ]
   },
@@ -815,9 +971,9 @@
       "RBE_use_gce_credentials": "true"
     },
     "infra_step": true,
-    "name": "teardown remote execution.read reproxy.WARNING",
+    "name": "teardown remote execution.collect rbe logs.read reproxy.WARNING",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@reproxy.WARNING@@@"
     ]
   },
@@ -848,9 +1004,9 @@
       "RBE_use_gce_credentials": "true"
     },
     "infra_step": true,
-    "name": "teardown remote execution.read reproxy-gomaip.WARNING",
+    "name": "teardown remote execution.collect rbe logs.read reproxy-gomaip.WARNING",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@reproxy-gomaip.WARNING@@@"
     ]
   },
@@ -881,9 +1037,9 @@
       "RBE_use_gce_credentials": "true"
     },
     "infra_step": true,
-    "name": "teardown remote execution.read reproxy_outerr.log",
+    "name": "teardown remote execution.collect rbe logs.read reproxy_outerr.log",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@reproxy_outerr.log@@@"
     ]
   },
@@ -914,9 +1070,9 @@
       "RBE_use_gce_credentials": "true"
     },
     "infra_step": true,
-    "name": "teardown remote execution.read rewrapper.WARNING",
+    "name": "teardown remote execution.collect rbe logs.read rewrapper.WARNING",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@rewrapper.WARNING@@@"
     ]
   },
@@ -947,9 +1103,9 @@
       "RBE_use_gce_credentials": "true"
     },
     "infra_step": true,
-    "name": "teardown remote execution.find rrpl files",
+    "name": "teardown remote execution.collect rbe logs.find rrpl files",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@glob@[CLEANUP]/rbe/reproxy_2021-10-16_22_52_23.rrpl@@@",
       "@@@STEP_LOG_END@glob@@@"
     ]
@@ -981,9 +1137,9 @@
       "RBE_use_gce_credentials": "true"
     },
     "infra_step": true,
-    "name": "teardown remote execution.read reproxy_2021-10-16_22_52_23.rrpl",
+    "name": "teardown remote execution.collect rbe logs.read reproxy_2021-10-16_22_52_23.rrpl",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@reproxy_2021-10-16_22_52_23.rrpl@@@"
     ]
   },

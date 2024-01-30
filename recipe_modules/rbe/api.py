@@ -32,7 +32,34 @@ class RbeApi(recipe_api.RecipeApi):
     if not self._instance and self._test_data.enabled:
       self._instance = "fake_rbe_instance"
     self._log_format = props.log_format or "reducedtext"
-    self._started = False
+    self._started = False  # A flag tracking if rbe service is running.
+    self._rbe_triggered = False  # A flag tracking if rbe service has ever been started.
+
+  def set_rbe_triggered(self, triggered):
+    self._rbe_triggered = triggered
+
+  def wait_and_collect_logs(self, collect_rbe_logs_latency, working_dir):
+    """Collect logs if build running time exceeds collect_rbe_logs_latency.
+
+    collect_rbe_logs_latency(int): the latency (in seconds) to wait before collecting rbe logs.
+    working_dir(path): the working path.
+    """
+    timer_seconds = 0  # tracks how long this has been waiting
+    sleep_period_seconds = 60  # in seconds
+    while True:
+      # If build has been running over the `collect_rbe_logs_latency`,
+      # we will proactivelly collect rbe logs to avoid logs loss when
+      # timeout happens.
+      if timer_seconds > collect_rbe_logs_latency:
+        self._collect_logs(working_dir)
+        break
+      # If rbe service started before and is not running now, it means
+      # rbe has finished building and has been shutdown normally. For
+      # This case, we just exit.
+      if self._rbe_triggered and not self._started:
+        break
+      timer_seconds += sleep_period_seconds
+      self.m.time.sleep(sleep_period_seconds)
 
   @contextmanager
   def __call__(
@@ -40,6 +67,7 @@ class RbeApi(recipe_api.RecipeApi):
       reclient_path=None,
       config_path=None,
       working_path=None,
+      collect_rbe_logs_latency=None,
   ):
     """Make context wrapping reproxy start/stop.
 
@@ -51,6 +79,11 @@ class RbeApi(recipe_api.RecipeApi):
         Raises:
             StepFailure or InfraFailure if it fails to start/stop.
         """
+    # Spawns a backend process to wait and collect rbe build logs in case build timing out.
+    self.m.futures.spawn(
+        self.wait_and_collect_logs, collect_rbe_logs_latency, working_path
+    )
+
     if reclient_path:
       self._reclient_path = reclient_path
     else:
@@ -70,6 +103,7 @@ class RbeApi(recipe_api.RecipeApi):
     with self.m.context(env=self._environment(working_dir), infra_steps=True):
       try:
         self._start(config_path=config_path)
+        self.set_rbe_triggered(True)
         with self.m.context(infra_steps=is_infra_step):
           yield
       finally:
@@ -143,71 +177,75 @@ class RbeApi(recipe_api.RecipeApi):
         self.m.step("stop reproxy", cmd)
         self._started = False
       finally:
-        # reproxy/rewrapper/bootstrap record various log information in
-        # a number of locations. At the time of this implementation,
-        # the following log files are used:
-        # 1. bootstrap.<INFO|WARNING|ERROR|FATAL> is standard logging
-        # for `bootstrap`. Each log file includes more severe logging
-        # levels, e.g. bootstrap.WARNING includes WARNING, ERROR & FATAL
-        # log messages.
-        # 2. rbe_metrics.txt is the text representation of a proto
-        # message that describes metrics related to the rbe execution.
-        # 3. reproxy.<INFO|WARNING|ERROR|FATAL> is standard logging for
-        # `reproxy`. See notes in #1 for more details.
-        # 4. reproxy_log.txt is the log file that records all info
-        # about all actions that are processed through reproxy.
-        # 5. reproxy_outerr.log is merged stderr/stdout of `reproxy`.
-        # 6. rewrapper.<INFO|WARNING|ERROR|FATAL> is standard logging
-        # for `rewrapper`. See notes in #1 for more details.
-        # 7. reproxy-gomaip.<INFO|WARNING|ERROR|FATAL> is logging
-        # for `gomaip` which is the input processor used by `reclient`
-        # for finding dependencies of `clang` compile invocations.
-        #
-        # We extract the WARNING log messages for each portion of the
-        # local rbe client as well as reproxy stdout/stderr and metrics
-        # from the build by default. If further debugging is required,
-        # you could increase the verbosity of log messages that we
-        # retain in logdog or add the full reproxy_log.txt log file to
-        # the list of outputs.
-        diagnostic_outputs = [
-            "bootstrap.WARNING",
-            "rbe_metrics.txt",
-            "reproxy.WARNING",
-            "reproxy-gomaip.WARNING",
-            "reproxy_outerr.log",
-            "rewrapper.WARNING",
-        ]
+        self._collect_logs(working_dir)
 
-        for output in diagnostic_outputs:
-          path = working_dir.join(output)
-          # Not all builds use rbe, so it might not exist.
-          self.m.path.mock_add_paths(path)
-          if self.m.path.exists(path):
-            # Read the log so it shows up in Milo for debugging.
-            self.m.file.read_text(f"read {output}", path)
+  def _collect_logs(self, working_dir):
+    # reproxy/rewrapper/bootstrap record various log information in
+    # a number of locations. At the time of this implementation,
+    # the following log files are used:
+    # 1. bootstrap.<INFO|WARNING|ERROR|FATAL> is standard logging
+    # for `bootstrap`. Each log file includes more severe logging
+    # levels, e.g. bootstrap.WARNING includes WARNING, ERROR & FATAL
+    # log messages.
+    # 2. rbe_metrics.txt is the text representation of a proto
+    # message that describes metrics related to the rbe execution.
+    # 3. reproxy.<INFO|WARNING|ERROR|FATAL> is standard logging for
+    # `reproxy`. See notes in #1 for more details.
+    # 4. reproxy_log.txt is the log file that records all info
+    # about all actions that are processed through reproxy.
+    # 5. reproxy_outerr.log is merged stderr/stdout of `reproxy`.
+    # 6. rewrapper.<INFO|WARNING|ERROR|FATAL> is standard logging
+    # for `rewrapper`. See notes in #1 for more details.
+    # 7. reproxy-gomaip.<INFO|WARNING|ERROR|FATAL> is logging
+    # for `gomaip` which is the input processor used by `reclient`
+    # for finding dependencies of `clang` compile invocations.
+    #
+    # We extract the WARNING log messages for each portion of the
+    # local rbe client as well as reproxy stdout/stderr and metrics
+    # from the build by default. If further debugging is required,
+    # you could increase the verbosity of log messages that we
+    # retain in logdog or add the full reproxy_log.txt log file to
+    # the list of outputs.
+    with self.m.step.nest("collect rbe logs"):
+      diagnostic_outputs = [
+          "bootstrap.WARNING",
+          "rbe_metrics.txt",
+          "reproxy.WARNING",
+          "reproxy-gomaip.WARNING",
+          "reproxy_outerr.log",
+          "rewrapper.WARNING",
+      ]
 
-        # reproxy also produces a log file of all the actions which
-        # it handles including more detailed debugging information
-        # useful for debugging.
-        rpl_ext = {
-            "text": "rpl",
-            "reducedtext": "rrpl",
-        }[self._log_format]
-        rpl_file_glob = f"*.{rpl_ext}"
-        rpl_paths = self.m.file.glob_paths(
-            name=f"find {rpl_ext} files",
-            source=working_dir,
-            pattern=rpl_file_glob,
-            test_data=[
-                f"reproxy_2021-10-16_22_52_23.{rpl_ext}",
-            ],
-        )
+      for output in diagnostic_outputs:
+        path = working_dir.join(output)
+        # Not all builds use rbe, so it might not exist.
+        self.m.path.mock_add_paths(path)
+        if self.m.path.exists(path):
+          # Read the log so it shows up in Milo for debugging.
+          self.m.file.read_text(f"read {output}", path)
 
-        # More than 1 rpl file is likely a bug but we can punt until
-        # that breaks someone.
-        for p in rpl_paths:
-          self.m.path.mock_add_paths(p)
-          # Not all builds use rbe, so it might not exist.
-          if self.m.path.exists(p):
-            # Read the log so it shows up in Milo for debugging.
-            self.m.file.read_text(f"read {self.m.path.basename(p)}", p)
+      # reproxy also produces a log file of all the actions which
+      # it handles including more detailed debugging information
+      # useful for debugging.
+      rpl_ext = {
+          "text": "rpl",
+          "reducedtext": "rrpl",
+      }[self._log_format]
+      rpl_file_glob = f"*.{rpl_ext}"
+      rpl_paths = self.m.file.glob_paths(
+          name=f"find {rpl_ext} files",
+          source=working_dir,
+          pattern=rpl_file_glob,
+          test_data=[
+              f"reproxy_2021-10-16_22_52_23.{rpl_ext}",
+          ],
+      )
+
+      # More than 1 rpl file is likely a bug but we can punt until
+      # that breaks someone.
+      for p in rpl_paths:
+        self.m.path.mock_add_paths(p)
+        # Not all builds use rbe, so it might not exist.
+        if self.m.path.exists(p):
+          # Read the log so it shows up in Milo for debugging.
+          self.m.file.read_text(f"read {self.m.path.basename(p)}", p)

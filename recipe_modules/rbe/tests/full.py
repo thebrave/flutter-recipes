@@ -24,6 +24,17 @@ def RunSteps(api):
                working_path=api.path["cleanup"].join("rbe")):
     # build something using rbe.
     api.step("build", ["echo", "Misison Accomplished!"])
+  api.rbe.wait_and_collect_logs(
+      working_dir=api.path["cleanup"].join("rbe"), collect_rbe_logs_latency=-1
+  )
+  api.rbe.set_rbe_triggered(False)
+  api.rbe.wait_and_collect_logs(
+      working_dir=api.path["cleanup"].join("rbe"), collect_rbe_logs_latency=61
+  )
+  api.rbe.set_rbe_triggered(True)
+  api.rbe.wait_and_collect_logs(
+      working_dir=api.path["cleanup"].join("rbe"), collect_rbe_logs_latency=61
+  )
 
 
 def GenTests(api):

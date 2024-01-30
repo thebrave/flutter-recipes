@@ -7,6 +7,9 @@ import sys
 
 from recipe_engine import recipe_api
 
+# The default latency (seconds) to collect RBE logs.
+COLLECT_RBE_LOGS_LATENCY_SECS = 1800
+
 
 class BuildUtilApi(recipe_api.RecipeApi):
   """Gn and Ninja wrapper functions."""
@@ -77,8 +80,11 @@ class BuildUtilApi(recipe_api.RecipeApi):
     rbe_jobs = self.m.properties.get('rbe_jobs') or self._calculate_j_value()
     ninja_args = [tool, '-j', rbe_jobs, '-C', build_dir]
     ninja_args.extend(targets)
-    with self.m.rbe(working_path=rbe_working_path
-                   ), self.m.depot_tools.on_path():
+    with self.m.rbe(
+        working_path=rbe_working_path,
+        collect_rbe_logs_latency=self.m.properties.get(
+            'collect_rbe_logs_latency',
+            COLLECT_RBE_LOGS_LATENCY_SECS)), self.m.depot_tools.on_path():
       name = 'build %s' % ' '.join([config] + list(targets))
       self.m.step(name, ninja_args)
 

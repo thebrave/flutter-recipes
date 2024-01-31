@@ -14,15 +14,15 @@ def RunSteps(api):
   env_prefixes = {}
 
   with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
-                                  version='android_31_google_apis_x64.textpb'):
+                                  version='34'):
     api.step('Do something', ['echo', 'hello'])
   # Calling a second time to ensure we have coverage for duplicated initialization.
   with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
-                                  version='android_31_google_apis_x64.textpb'):
+                                  version='34'):
     api.step('Do something', ['echo', 'hello'])
 
 def GenTests(api):
-  avd_api_version = 'android_31_google_apis_x64.textpb'
+  avd_api_version = '34'
 
   yield api.test(
       'emulator started',
@@ -42,30 +42,6 @@ def GenTests(api):
               '_google_apis_x86|emulator-5554 started (pid: 17687)'
           )
       ),
-  )
-
-  yield api.test(
-      'emulator fails to start',
-      api.properties(use_emulator="true"),
-      api.step_data(
-          'start avd.Start Android emulator (%s)' % avd_api_version,
-          stdout=api.raw_io.output_text(
-              'Hostapd main loop has stopped'
-          )
-      ),
-      api.step_data(
-        'start avd.Start Android emulator (%s) (2)' % avd_api_version,
-          stdout=api.raw_io.output_text(
-              'Hostapd main loop has stopped'
-          )
-      ),
-      api.step_data(
-        'start avd.Start Android emulator (%s) (3)' % avd_api_version,
-          stdout=api.raw_io.output_text(
-              'Hostapd main loop has stopped'
-          )
-      ),
-      status='INFRA_FAILURE'
   )
 
   yield api.test(

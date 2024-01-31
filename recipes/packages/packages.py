@@ -71,6 +71,8 @@ def RunSteps(api):
     if 'android_virtual_device' in dep_list.keys():
       env['USE_EMULATOR'] = True
       env['EMULATOR_VERSION'] = dep_list.get('android_virtual_device')
+    if 'avd_cipd_version' in dep_list.keys():
+      env['AVD_CIPD_VERSION'] = dep_list.get('avd_cipd_version')
 
   with api.context(env=env, env_prefixes=env_prefixes,
                    cwd=flutter_checkout_path):
@@ -178,12 +180,13 @@ def GenTests(api):
           channel='master',
           version_file='flutter_master.version',
           git_branch='master',
-          dependencies=[{
-              "dependency": "android_virtual_device", "version": "31"
-          }],
+          dependencies=[
+              {"dependency": "android_virtual_device", "version": "android_31_google_apis_x64.textpb"},
+              {"dependency": "avd_cipd_version", "version": "AVDCIPDVERSION"}
+          ],
       ), api.step_data('read yaml.parse', api.json.output(tasks_dict)),
       api.step_data(
-          'Run package tests.start avd.Start Android emulator (API level 31)',
+          'Run package tests.start avd.Start Android emulator (android_31_google_apis_x64.textpb)',
           stdout=api.raw_io.output_text(
               'android_31_google_apis_x86|emulator-5554 started (pid: 17687)'
           )

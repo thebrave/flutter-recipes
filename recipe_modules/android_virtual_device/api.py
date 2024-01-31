@@ -40,7 +40,9 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
     self._initialized = True
 
   @contextmanager
-  def __call__(self, env, env_prefixes, version='31'):
+  def __call__(
+      self, env, env_prefixes, version='android_31_google_apis_x64.textpb'
+  ):
     # check for emulator version in env
     self._initialize(env, env_prefixes)
     try:
@@ -53,7 +55,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       yield
     finally:
       self.kill(self.emulator_pid)
-      self.uninstall(env, env_prefixes)
+      self.uninstall(env, env_prefixes, version=version)
       self.show_devices(env, env_prefixes, "after emulator uninstall")
 
   def download(self, env, env_prefixes):
@@ -64,9 +66,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       avd_root(Path): The root path to install the AVD package.
     """
-    cipd_version = self.m.properties.get(
-        'avd_cipd_version', AVD_CIPD_IDENTIFIER
-    )
+    cipd_version = env.get('AVD_CIPD_VERSION', AVD_CIPD_IDENTIFIER)
     with self.m.step.nest('download avd package'):
       with self.m.context(
           env=env, env_prefixes=env_prefixes), self.m.depot_tools.on_path():
@@ -88,6 +88,36 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
     env['AVD_ROOT'] = self.avd_root
     env['ADB_PATH'] = self.adb_path
 
+  def _get_config_version(self, version):
+    """Get the config if given an integer version
+    
+    Args:
+    """
+    avd_config = None
+    is_int_version = True
+    try:
+      int(version)
+    except ValueError:
+      is_int_version = False
+
+    if is_int_version:
+      if int(version) > 33:
+        avd_config = self.avd_root.join(
+            'src', 'tools', 'android', 'avd', 'proto',
+            'android_%s_google_apis_x64.textpb' % version
+        )
+      else:
+        avd_config = self.avd_root.join(
+            'src', 'tools', 'android', 'avd', 'proto',
+            'generic_android%s.textpb' % version
+        )
+    else:
+      avd_config = self.avd_root.join(
+            'src', 'tools', 'android', 'avd', 'proto', '%s' % version
+        )
+    
+    return avd_config
+
   def start(self, env, env_prefixes, version):
     """Starts an android avd emulator.
 
@@ -96,7 +126,6 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       version(string): The android API version of the emulator as a string.
     """
-    self.version = version
     self.emulator_pid = ''
     with self.m.step.nest('start avd'):
       with self.m.context(env=env, env_prefixes=env_prefixes,
@@ -105,20 +134,10 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             'src', 'tools', 'android', 'avd', 'avd.py'
         )
 
-        avd_config = None
-        if int(self.version) > 33:
-          avd_config = self.avd_root.join(
-              'src', 'tools', 'android', 'avd', 'proto',
-              'android_%s_google_apis_x64.textpb' % self.version
-          )
-        else:
-          avd_config = self.avd_root.join(
-              'src', 'tools', 'android', 'avd', 'proto',
-              'generic_android%s.textpb' % self.version
-          )
+        avd_config = self._get_config_version(version=version)
 
         self.m.step(
-            'Install Android emulator (API level %s)' % self.version, [
+            'Install Android emulator (%s)' % version, [
                 'vpython3', avd_script_path, 'install', '--avd-config',
                 avd_config
             ],
@@ -129,7 +148,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
         # hour long timeout in the test.
         for attempt in range(RERUN_ATTEMPTS):
           output = self.m.step(
-              'Start Android emulator (API level %s)' % self.version, [
+              'Start Android emulator (%s)' % version, [
                   'xvfb-run', 'vpython3', avd_script_path, 'start',
                   '--no-read-only', '--wipe-data', '--writable-system',
                   '--debug-tags', 'all', '--avd-config', avd_config
@@ -191,7 +210,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             infra_step=True
         )
 
-  def uninstall(self, env, env_prefixes):
+  def uninstall(self, env, env_prefixes, version):
     """Uninstall all packages related to an android avd emulator.
 
     Args:
@@ -206,20 +225,10 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             'src', 'tools', 'android', 'avd', 'avd.py'
         )
 
-        avd_config = None
-        if int(self.version) > 33:
-          avd_config = self.avd_root.join(
-              'src', 'tools', 'android', 'avd', 'proto',
-              'android_%s_google_apis_x64.textpb' % self.version
-          )
-        else:
-          avd_config = self.avd_root.join(
-              'src', 'tools', 'android', 'avd', 'proto',
-              'generic_android%s.textpb' % self.version
-          )
+        avd_config = self._get_config_version(version=version)
 
         self.m.step(
-            'Uninstall Android emulator (API level %s)' % self.version, [
+            'Uninstall Android emulator (%s)' % version, [
                 'vpython3', avd_script_path, 'uninstall', '--avd-config',
                 avd_config
             ],

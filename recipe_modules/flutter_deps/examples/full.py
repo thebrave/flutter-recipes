@@ -27,9 +27,11 @@ def RunSteps(api):
   api.assertions.assertTrue(env.get('ARM_TOOLS'))
   api.flutter_deps.goldctl(env, env_prefixes, 'v2')
   api.assertions.assertTrue(env.get('GOLDCTL'))
-  api.flutter_deps.android_virtual_device(env, env_prefixes, "34")
+  api.flutter_deps.android_virtual_device(env, env_prefixes, "android_31_google_apis_x64.textpb")
   api.assertions.assertTrue(env.get('EMULATOR_VERSION'))
   api.assertions.assertTrue(env.get('USE_EMULATOR'))
+  api.flutter_deps.avd_cipd_version(env, env_prefixes, "AVDCIPDVERSION")
+  api.assertions.assertTrue(env.get('AVD_CIPD_VERSION'))
   env_prefixes = {}
   env = {}
   api.flutter_deps.chrome_and_driver(env, env_prefixes, 'v3')

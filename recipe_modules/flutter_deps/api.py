@@ -76,6 +76,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     available_deps = {
         'android_sdk': self.android_sdk,
         'android_virtual_device': self.android_virtual_device,
+        'avd_cipd_version': self.avd_cipd_version,
         'apple_signing': self.apple_signing,
         'arm_tools': self.arm_tools,
         'certs': self.certs,
@@ -132,10 +133,20 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     Args:
       env(dict): Current environment variables.
       env_prefixes(dict):  Current environment prefixes variables.
-      version(str): The OpenJdk version to install.
+      version(str): The android virtual device version to install.
     """
     env['USE_EMULATOR'] = True
     env['EMULATOR_VERSION'] = version
+
+  def avd_cipd_version(self, env, env_prefixes, version):
+    """Simply set the avd_cipd_version of emulator package globally.
+
+    Args:
+      env(dict): Current environment variables.
+      env_prefixes(dict): current environment prefixes variables.
+      version(str): the tagged version of the avd proto configs for android virtual devices.
+    """
+    env['AVD_CIPD_VERSION'] = version
 
   def open_jdk(self, env, env_prefixes, version):
     """Downloads OpenJdk CIPD package and updates environment variables.

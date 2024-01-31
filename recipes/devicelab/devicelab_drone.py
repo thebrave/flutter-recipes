@@ -45,6 +45,7 @@ def _runner_command(api, env, runner_params):
     test_runner_command.extend(runner_params)
 
   if 'USE_EMULATOR' in env and env['USE_EMULATOR']:
+    # use-emulator is a flag for the test_runner.
     test_runner_command.extend(['--use-emulator'])
 
   return test_runner_command
@@ -303,6 +304,8 @@ def uploadMetricsToCas(api, results_path):
 
 def GenTests(api):
   checkout_path = api.path['cleanup'].join('tmp_tmp_1', 'flutter sdk')
+  avd_version = "android_31_google_apis_x64.textpb"
+  avd_cipd_version = "AVDCIPDVERSION"
   yield api.test(
       "no-task-name",
       api.expect_exception('ValueError'),
@@ -333,10 +336,10 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           git_branch='master',
-          use_emulator="true",
-          dependencies=[{
-              "dependency": "android_virtual_device", "version": "31"
-          }],
+          dependencies=[
+            {"dependency": "android_virtual_device", "version": avd_version},
+            {"dependency": "avd_cipd_version", "version": avd_cipd_version}
+          ],
           contexts=["android_virtual_device"]
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -345,7 +348,7 @@ def GenTests(api):
           retcode=0
       ),
       api.step_data(
-          'start avd.Start Android emulator (API level 31)',
+          f'start avd.Start Android emulator ({avd_version})',
           stdout=api.raw_io.output_text(
               'android_31_google_apis_x86|emulator-5554 started (pid: 17687)'
           )

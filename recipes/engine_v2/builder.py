@@ -98,8 +98,8 @@ def run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes):
 def _should_run_test(test, branch):
   """Whether the current test should on this branch."""
   # Default to wildcard to run tests everywhere.
-  test_if = test.get('test_if', '.*')
-  regex = re.compile(test_if)
+  test_if = test.get('test_if', '')
+  regex = re.compile(f'.*{test_if}')
   return regex.match(branch)
 
 

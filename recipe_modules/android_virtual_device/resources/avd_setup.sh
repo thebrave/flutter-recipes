@@ -65,6 +65,22 @@ function print_device_list() {
     echo ""
 }
 
+function wait-for-device() {
+    local remaining_attempts=20
+    until adb shell true
+    do
+      remaining_attemps = remaining_attemps - 1
+      if (( remaining_attempts <= 0 ))
+      then
+        echo "Emulator not found"
+        exit 1
+      fi
+      echo "Waiting for emulator to be available. Remaining attempts: $remaining_attempts"
+      sleep 10
+    done
+    echo "Emulator is now available"
+}
+
 # path to the adb executable
 adb=${1}
 
@@ -84,7 +100,7 @@ echo "Starting adb server"
 ${adb} start-server
 print_device_list "${adb}"
 echo "Waiting for device"
-${adb} wait-for-device
+wait-for-device
 
 echo "Validating that emulator is booted."
 validate_all_configs "${adb}" "${configs_to_validate[@]}"

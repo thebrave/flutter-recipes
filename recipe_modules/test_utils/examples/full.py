@@ -15,7 +15,6 @@ DEPS = [
 
 def RunSteps(api):
   api.test_utils.run_test('mytest', ['ls', '-la'])
-  api.test_utils.is_devicelab_bot()
   api.test_utils.test_step_name('test')
   api.test_utils.flaky_step('test step')
   env = {}

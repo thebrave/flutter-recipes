@@ -106,12 +106,12 @@ class TestUtilsApi(recipe_api.RecipeApi):
         return True
     return False
 
-  def is_devicelab_bot(self):
-    """Whether the current bot is a devicelab bot or not."""
-    return (
-        str(self.m.swarming.bot_id).startswith('flutter-devicelab') or
-        str(self.m.swarming.bot_id).startswith('flutter-win')
-    )
+  #def is_devicelab_bot(self):
+  #  """Whether the current bot is a devicelab bot or not."""
+  #  return (
+  #      str(self.m.swarming.bot_id).startswith('flutter-devicelab') or
+  #      str(self.m.swarming.bot_id).startswith('flutter-win')
+  #  )
 
   def run_test(
       self,

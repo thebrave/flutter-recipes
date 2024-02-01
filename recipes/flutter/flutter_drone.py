@@ -41,7 +41,7 @@ def RunShard(api, env, env_prefixes, checkout_path):
       cmd_list.extend(['--local-web-sdk', env.get('LOCAL_WEB_SDK')])
 
     # Default timeout for tasks in either devicelab or hostonly.
-    default_timeout_secs = DEVICELAB_TIMEOUT_SECS if api.test_utils.is_devicelab_bot(
+    default_timeout_secs = DEVICELAB_TIMEOUT_SECS if api.os_utils.is_devicelab(
     ) else HOSTONLY_TIMEOUT_SECS
     deps_timeout_secs = api.properties.get(
         'test_timeout_secs'

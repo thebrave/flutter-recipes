@@ -611,7 +611,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     """
     with self.m.step.nest('Prepare code signing'):
       # Unlock keychain for devicelab tasks.
-      if self.m.test_utils.is_devicelab_bot():
+      if self.m.os_utils.is_devicelab():
         self.m.step(
             'unlock login keychain',
             ['unlock_login_keychain.sh'],

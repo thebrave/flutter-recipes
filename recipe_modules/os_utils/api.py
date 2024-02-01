@@ -188,9 +188,7 @@ class OsUtilsApi(recipe_api.RecipeApi):
             infra_step=True
         )
         self.m.step(
-            'kill adb', ['killall', '-9', 'adb'],
-            ok_ret='any',
-            infra_step=True
+            'kill adb', ['killall', '-9', 'adb'], ok_ret='any', infra_step=True
         )
         self.m.step(
             'kill Xcode', ['killall', '-9', 'Xcode'],
@@ -870,7 +868,9 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     )
 
   def is_devicelab(self):
-    return str(self.m.swarming.bot_id).startswith('flutter-devicelab')
+    return str(self.m.swarming.bot_id).startswith('flutter-devicelab') or str(
+        self.m.swarming.bot_id
+    ).startswith('flutter-win')
 
   def is_ios(self):
     device_os = self.m.properties.get('device_os', '')

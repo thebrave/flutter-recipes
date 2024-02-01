@@ -133,36 +133,48 @@ class TestUtilsApi(recipe_api.RecipeApi):
       be returned when step succeeds, and an exception will be thrown out when
       step fails.
     """
-    try:
-      step = self.m.step(
-          step_name,
-          command_list,
-          infra_step=infra_step,
-          stdout=self.m.raw_io.output_text(),
-          stderr=self.m.raw_io.output_text(),
-          timeout=timeout_secs
-      )
-    except self.m.step.StepFailure as f:
-      result = f.result
-      # Truncate stdout
-      stdout = self._truncateString(result.stdout)
-      # Truncate stderr
-      stderr = self._truncateString(result.stderr)
-      raise PrettyFailure(
-          '\n\n```\n%s\n```\n' % (stdout or stderr),
-          result=result,
-      )
-    finally:
-      self.m.step.active_result.presentation.logs[
-          'test_stdout'] = self.m.step.active_result.stdout
-      self.m.step.active_result.presentation.logs[
-          'test_stderr'] = self.m.step.active_result.stderr
-    if self._is_flaky(step.stdout):
-      test_run_status = 'flaky'
-      step.presentation.status = self.m.step.FAILURE
+    if self.m.platform.is_win:
+      resource_name = self.resource('runner.ps1')
+      shell = 'powershell'
     else:
-      test_run_status = 'success'
-    return test_run_status
+      resource_name = self.resource('runner.sh')
+      shell = 'bash'
+
+    logs_file = self.m.path.mkstemp()
+    env = {'LOGS_FILE': logs_file}
+    with self.m.context(env=env):
+      try:
+        final_cmd = [shell, resource_name]
+        final_cmd.extend(command_list)
+        self.m.step(
+            step_name,
+            final_cmd,
+            infra_step=infra_step,
+            timeout=timeout_secs,
+        )
+        # Read logs to analyze flakiness.
+        logs = self.m.file.read_text('read_logs', logs_file)
+        step_stdout = self.m.properties.get(
+            'fake_data'
+        ) if self._test_data.enabled else logs
+        if self._is_flaky(step_stdout):
+          test_run_status = 'flaky'
+          self.flaky_step(step_name, step_stdout)
+        else:
+          test_run_status = 'success'
+      except self.m.step.StepFailure as f:
+        result = f.result
+        logs = self.m.file.read_text('read_logs', logs_file)
+        # Truncate stdout
+        result_stdout = self.m.properties.get(
+            'fake_data'
+        ) if self._test_data.enabled else logs
+        truncated_stdout = self._truncateString(result_stdout)
+        raise PrettyFailure(
+            '\n\n```\n%s\n```\n' % (truncated_stdout),
+            result=result,
+        )
+      return test_run_status
 
   def test_step_name(self, step_name):
     """Append keyword test to test step name to be consistent.
@@ -173,23 +185,14 @@ class TestUtilsApi(recipe_api.RecipeApi):
     """
     return 'test: %s' % step_name
 
-  def flaky_step(self, step_name):
+  def flaky_step(self, step_name, stdout=''):
     """Add a flaky step when test is flaky.
     Args:
       step_name(str): The name of the step.
     """
-    if self.m.platform.is_win:
-      self.m.step(
-          'step is flaky: %s' % step_name,
-          ['powershell.exe', 'echo "test run is flaky"'],
-          infra_step=True,
-      )
-    else:
-      self.m.step(
-          'step is flaky: %s' % step_name,
-          ['echo', 'test run is flaky'],
-          infra_step=True,
-      )
+    with self.m.step.nest('step is flaky: %s' % step_name) as presentation:
+      presentation.links['stdout'] = stdout
+      presentation.status = self.m.step.WARNING
 
   def collect_benchmark_tags(self, env, env_prefixes, target_tags):
     """Collect host and device tags for devicelab benchmarks.

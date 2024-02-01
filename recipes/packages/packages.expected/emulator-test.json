@@ -534,6 +534,8 @@
   },
   {
     "cmd": [
+      "bash",
+      "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
       "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh",
       "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
     ],
@@ -546,6 +548,7 @@
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
       "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
       "GIT_BRANCH": "master",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_1",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -569,11 +572,54 @@
     "name": "Run package tests.Show devices attached - before emulator install/start.adb_show_devices.sh",
     "timeout": 3600,
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/tmp_tmp_1",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "AVD_CIPD_VERSION": "AVDCIPDVERSION",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
+      "GIT_BRANCH": "master",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_1",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PR_OVERRIDE_LABELS": "",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "USE_EMULATOR": "True"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "Run package tests.Show devices attached - before emulator install/start.read_logs",
+    "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@test_stdout@@@@",
-      "@@@STEP_LOG_END@test_stdout@@@",
-      "@@@STEP_LOG_LINE@test_stderr@@@@",
-      "@@@STEP_LOG_END@test_stderr@@@"
+      "@@@STEP_LOG_END@tmp_tmp_1@@@"
     ]
   },
   {
@@ -740,6 +786,8 @@
   },
   {
     "cmd": [
+      "bash",
+      "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
       "RECIPE_MODULE[flutter::android_virtual_device]/resources/avd_setup.sh",
       "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
     ],
@@ -753,6 +801,7 @@
       "EMULATOR_PID": "17687",
       "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
       "GIT_BRANCH": "master",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_2",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -776,11 +825,55 @@
     "name": "Run package tests.avd setup.avd_setup.sh",
     "timeout": 3600,
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/tmp_tmp_2",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "AVD_CIPD_VERSION": "AVDCIPDVERSION",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "EMULATOR_PID": "17687",
+      "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
+      "GIT_BRANCH": "master",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_2",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PR_OVERRIDE_LABELS": "",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "USE_EMULATOR": "True"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "Run package tests.avd setup.read_logs",
+    "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@test_stdout@@@@",
-      "@@@STEP_LOG_END@test_stdout@@@",
-      "@@@STEP_LOG_LINE@test_stderr@@@@",
-      "@@@STEP_LOG_END@test_stderr@@@"
+      "@@@STEP_LOG_END@tmp_tmp_2@@@"
     ]
   },
   {
@@ -1244,6 +1337,8 @@
   },
   {
     "cmd": [
+      "bash",
+      "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
       "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh",
       "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
     ],
@@ -1259,6 +1354,7 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_3",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -1282,11 +1378,57 @@
     "name": "Run package tests.Show devices attached - after emulator uninstall.adb_show_devices.sh",
     "timeout": 3600,
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/tmp_tmp_3",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "AVD_CIPD_VERSION": "AVDCIPDVERSION",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "EMULATOR_PID": "",
+      "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_3",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PR_OVERRIDE_LABELS": "",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "USE_EMULATOR": "True"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "Run package tests.Show devices attached - after emulator uninstall.read_logs",
+    "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@test_stdout@@@@",
-      "@@@STEP_LOG_END@test_stdout@@@",
-      "@@@STEP_LOG_LINE@test_stderr@@@@",
-      "@@@STEP_LOG_END@test_stderr@@@"
+      "@@@STEP_LOG_END@tmp_tmp_3@@@"
     ]
   },
   {

@@ -227,6 +227,7 @@ def GenTests(api):
           drone_dimensions=['os=Linux'],
           task_name='abc',
           git_branch='master',
+          fake_data='fake data',
           artifact='def',
           git_ref='refs/pull/1/head',
           git_url='test/repo'
@@ -243,6 +244,7 @@ def GenTests(api):
       api.properties(
           buildername='Linux abc',
           drone_dimensions=['os=Linux'],
+          fake_data='fake data',
           task_name='abc',
           git_branch='master',
           artifact='def',
@@ -260,11 +262,12 @@ def GenTests(api):
           buildername='Linux abc',
           drone_dimensions=['os=Linux'],
           task_name='abc',
-          artifact='def',
+          rtifact='def',
           local_engine_cas_hash='isolatehashlocalengine/22',
           local_engine='android-release',
           local_engine_host='host-release',
           git_branch='master',
+          fake_data='fake data',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',
@@ -280,6 +283,7 @@ def GenTests(api):
           task_name='abc',
           tags=['ios'],
           git_branch='master',
+          fake_data='fake data',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.platform.name('mac'),

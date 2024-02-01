@@ -185,6 +185,7 @@ def GenTests(api):
               {"dependency": "avd_cipd_version", "version": "AVDCIPDVERSION"}
           ],
       ), api.step_data('read yaml.parse', api.json.output(tasks_dict)),
+      api.properties(fake_data='fake data'),
       api.step_data(
           'Run package tests.start avd.Start Android emulator (android_31_google_apis_x64.textpb)',
           stdout=api.raw_io.output_text(

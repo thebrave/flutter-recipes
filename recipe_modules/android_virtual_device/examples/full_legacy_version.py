@@ -26,7 +26,7 @@ def GenTests(api):
 
   yield api.test(
       'emulator started',
-      api.properties(use_emulator="true"),
+      api.properties(use_emulator="true", fake_data='fake data'),
       api.step_data(
           'start avd.Start Android emulator (%s)' % avd_api_version,
           stdout=api.raw_io.output_text(
@@ -46,7 +46,7 @@ def GenTests(api):
 
   yield api.test(
       'emulator started and stopped, processes killed',
-      api.properties(use_emulator="true"),
+      api.properties(use_emulator="true", fake_data='fake data'),
       api.step_data(
           'start avd.Start Android emulator (%s)' % avd_api_version,
           stdout=api.raw_io.output_text(

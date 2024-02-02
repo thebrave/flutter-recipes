@@ -9,6 +9,7 @@ DEPS = [
     'recipe_engine/properties',
     'recipe_engine/raw_io',
     'recipe_engine/step',
+    'recipe_engine/context',
 ]
 
 PROPERTIES = {
@@ -36,17 +37,22 @@ def RunSteps(api, max_attempts):
   api.retry.step('test: mytest', ['ls', '-la'], max_attempts=max_attempts)
 
   def func1():
-    api.step('test: mytest_func', ['ls', '-a'])
+    with api.step.nest('nested'):
+      api.step('test: mytest_func', ['ls', '-a'])
 
   # pylint: disable=unused-argument
   def func2(timeout=None):
     api.step('test: mytest_func_basic', ['ls', '-a'])
 
+  def func3():
+    api.step('test: mytest_func_3', ['ls', '-a'])
+
   api.retry.wrap(
-      func1, step_name='test: mytest_func', max_attempts=max_attempts
+      func1, step_name='nested.test: mytest_func', max_attempts=max_attempts
   )
   api.retry.basic_wrap(func2, max_attempts=max_attempts)
   api.retry.run_flutter_doctor()
+  api.retry.wrap(func3, max_attempts=max_attempts, retriable_codes=(1,))
 
 
 def GenTests(api):
@@ -60,7 +66,13 @@ def GenTests(api):
   yield api.test(
       'failing_wrap',
       api.properties(max_attempts=1),
-      api.step_data('test: mytest_func', retcode=1),
+      api.step_data('nested.test: mytest_func', retcode=1),
+      status='FAILURE'
+  )
+  yield api.test(
+      'failing_wrap_with_nested',
+      api.properties(max_attempts=1),
+      api.step_data('test: mytest_func_3', retcode=1),
       status='FAILURE'
   )
   yield api.test(
@@ -72,6 +84,6 @@ def GenTests(api):
   yield api.test(
       'pass_with_retries', api.properties(max_attempts=2),
       api.step_data('test: mytest', retcode=1),
-      api.step_data('test: mytest_func', retcode=1),
+      api.step_data('nested.test: mytest_func', retcode=1),
       api.step_data('test: mytest_func_basic', retcode=1)
   )

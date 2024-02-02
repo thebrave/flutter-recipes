@@ -336,10 +336,9 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           git_branch='master',
-          dependencies=[
-            {"dependency": "android_virtual_device", "version": avd_version},
-            {"dependency": "avd_cipd_version", "version": avd_cipd_version}
-          ],
+          dependencies=[{
+              "dependency": "android_virtual_device", "version": avd_version
+          }, {"dependency": "avd_cipd_version", "version": avd_cipd_version}],
           contexts=["android_virtual_device"]
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -517,4 +516,25 @@ def GenTests(api):
           git_repo='git.example.com/test/repo',
           git_ref='refs/heads/master',
       )
+  )
+  yield api.test(
+      "upload-metrics-mac-with-failures",
+      api.properties(
+          buildername='Mac_ios abc',
+          **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
+          tags=['ios'],
+          task_name='abc',
+          upload_metrics=True,
+          upload_metrics_to_cas=True,
+          git_branch='master',
+      ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.platform.name('mac'),
+      api.step_data(
+          'Upload metrics.upload results',
+          retcode=1,
+      ),
+      api.step_data(
+          'Find device type',
+          stdout=api.raw_io.output_text('iPhone8,1'),
+      ), api.buildbucket.ci_build(git_ref='refs/heads/master',)
   )

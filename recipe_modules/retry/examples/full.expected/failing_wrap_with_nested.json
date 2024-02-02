@@ -27,26 +27,8 @@
     "name": "test: mytest"
   },
   {
-    "cmd": [
-      "ls",
-      "-la"
-    ],
-    "name": "test: mytest (2)"
-  },
-  {
-    "cmd": [
-      "echo",
-      "test run is flaky"
-    ],
-    "infra_step": true,
-    "name": "step is flaky: test: mytest"
-  },
-  {
     "cmd": [],
-    "name": "nested",
-    "~followup_annotations": [
-      "@@@STEP_FAILURE@@@"
-    ]
+    "name": "nested"
   },
   {
     "cmd": [
@@ -55,48 +37,15 @@
     ],
     "name": "nested.test: mytest_func",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_FAILURE@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "nested (2)"
-  },
-  {
-    "cmd": [
-      "ls",
-      "-a"
-    ],
-    "name": "nested (2).test: mytest_func",
-    "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "echo",
-      "test run is flaky"
-    ],
-    "infra_step": true,
-    "name": "step is flaky: nested.test: mytest_func"
-  },
-  {
-    "cmd": [
       "ls",
       "-a"
     ],
-    "name": "test: mytest_func_basic",
-    "~followup_annotations": [
-      "@@@STEP_FAILURE@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "ls",
-      "-a"
-    ],
-    "name": "test: mytest_func_basic (2)"
+    "name": "test: mytest_func_basic"
   },
   {
     "cmd": [
@@ -112,9 +61,16 @@
       "ls",
       "-a"
     ],
-    "name": "test: mytest_func_3"
+    "name": "test: mytest_func_3",
+    "~followup_annotations": [
+      "@@@STEP_FAILURE@@@"
+    ]
   },
   {
+    "failure": {
+      "failure": {},
+      "humanReason": "Step('test: mytest_func_3') (retcode: 1)"
+    },
     "name": "$result"
   }
 ]

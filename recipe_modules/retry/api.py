@@ -87,16 +87,28 @@ class RetryApi(recipe_api.RecipeApi):
           self.m.test_utils.flaky_step(step_name)
         return result
       except self.m.step.StepFailure:
-        step = self.m.step.active_result
+        # Retrying with nested steps is not supported with retriable codes
+        # different than any.
+        retcode = 0
+        if retriable_codes != 'any':
+          step = self.m.step.active_result
+          retcode = step.retcode
+
         retriable_failure = retriable_codes == 'any' or \
-            step.retcode in retriable_codes
+            retcode in retriable_codes
         if not retriable_failure or attempt == max_attempts - 1:
           raise
         self.m.time.sleep(sleep)
         sleep *= backoff_factor
 
   def basic_wrap(
-      self, func, max_attempts=3, sleep=5.0, backoff_factor=1.5, timeout=0, **kwargs
+      self,
+      func,
+      max_attempts=3,
+      sleep=5.0,
+      backoff_factor=1.5,
+      timeout=0,
+      **kwargs
   ):
     """Retry basic wrapped function without step support.
       Args:

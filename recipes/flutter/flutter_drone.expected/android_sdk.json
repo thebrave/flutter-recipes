@@ -245,6 +245,8 @@
   },
   {
     "cmd": [
+      "bash",
+      "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
       "dart",
       "--enable-asserts",
       "[START_DIR]/flutter/dev/bots/test.dart"
@@ -262,6 +264,7 @@
       "GIT_BRANCH": "",
       "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
       "GRADLE_USER_HOME": "[CACHE]/gradle",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_2",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -284,12 +287,58 @@
       ]
     },
     "name": "run test.dart for None shard and subshard None",
-    "timeout": 1800,
+    "timeout": 1800
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/tmp_tmp_2",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/android/sdk",
+      "ANDROID_NDK_PATH": "[CACHE]/android/ndk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_SDK_ROOT": "[CACHE]/android/sdk",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GCP_PROJECT": "flutter-infra",
+      "GIT_BRANCH": "",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]/gradle",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_2",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REDUCED_TEST_SET": "False",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "SHARD": null,
+      "SUBSHARD": null
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "read_logs",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@test_stdout@@@@",
-      "@@@STEP_LOG_END@test_stdout@@@",
-      "@@@STEP_LOG_LINE@test_stderr@@@@",
-      "@@@STEP_LOG_END@test_stderr@@@"
+      "@@@STEP_LOG_END@tmp_tmp_2@@@"
     ]
   },
   {

@@ -1,18 +1,38 @@
 [
   {
     "cmd": [
+      "bash",
+      "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
       "ls",
       "-la"
     ],
+    "env": {
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_1"
+    },
     "name": "mytest",
     "timeout": 3600,
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@test_stdout@#failure@@@",
-      "@@@STEP_LOG_LINE@test_stdout@this is a failure@@@",
-      "@@@STEP_LOG_END@test_stdout@@@",
-      "@@@STEP_LOG_LINE@test_stderr@@@@",
-      "@@@STEP_LOG_END@test_stderr@@@",
       "@@@STEP_FAILURE@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/tmp_tmp_1",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "name": "read_logs",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@tmp_tmp_1@@@"
     ]
   },
   {

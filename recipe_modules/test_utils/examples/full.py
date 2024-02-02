@@ -26,46 +26,33 @@ def RunSteps(api):
 def GenTests(api):
   yield api.test(
       'passing',
-      api.step_data(
-          'mytest',
-          stdout=api.raw_io.output_text('#success\nthis is a success'),
-      ),
+      api.properties(fake_data='#success\nthis is a success'),
       api.platform.name('win'),
       api.properties(tags=['hostonly']),
   )
   yield api.test(
-      'passing-mac',
-      api.step_data(
-          'mytest',
-          stdout=api.raw_io.output_text('#success\nthis is a success'),
-      ), api.platform.name('mac'), api.properties(tags=['ios']),
+      'passing-mac', api.platform.name('mac'), api.properties(tags=['ios']),
+      api.properties(fake_data='#success\nthis is a success'),
       api.step_data(
           'Find device type',
           stdout=api.raw_io.output_text('iPhone8,1'),
       )
   )
   yield api.test(
-      'flaky',
-      api.step_data(
-          'mytest',
-          stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
-      ), api.properties(tags=['hostonly', 'android']),
+      'flaky', api.properties(tags=['hostonly', 'android']),
+      api.properties(fake_data='#flaky\nthis is a flaky\nflaky: true'),
       api.platform.name('linux')
   )
   yield api.test(
       'failing',
-      api.step_data(
-          'mytest',
-          stdout=api.raw_io.output_text('#failure\nthis is a failure'),
-          retcode=1
-      ),
+      api.step_data('mytest', retcode=1),
+      api.properties(fake_data='#failure\nthis is a failure'),
       status='FAILURE'
   )
   very_long_string = "xyz\n" * 1500
   yield api.test(
       'long_stdout',
-      api.step_data(
-          'mytest', stdout=api.raw_io.output_text(very_long_string), retcode=1
-      ),
+      api.step_data('mytest', retcode=1),
+      api.properties(fake_data=very_long_string),
       status='FAILURE'
   )

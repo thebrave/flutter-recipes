@@ -32,7 +32,7 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "ls",
-      "gs://flutter_devicelab/flutter/ci/2d72510e447ab60a9728aeea2362d8be2cbd7789/def"
+      "gs://flutter_devicelab/flutter/ci/2d72510e447ab60a9728aeea2362d8be2cbd7789/abc"
     ],
     "infra_step": true,
     "luci_context": {
@@ -438,7 +438,7 @@
       "ensure-directory",
       "--mode",
       "0o777",
-      "[CLEANUP]/tmp_tmp_2/def"
+      "[CLEANUP]/tmp_tmp_2/abc"
     ],
     "infra_step": true,
     "luci_context": {
@@ -453,7 +453,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "mkdir def"
+    "name": "mkdir abc"
   },
   {
     "cmd": [
@@ -589,6 +589,8 @@
   },
   {
     "cmd": [
+      "bash",
+      "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
       "dart",
       "bin/test_runner.dart",
       "test",
@@ -599,7 +601,7 @@
       "--task-args",
       "build",
       "--task-args",
-      "application-binary-path=[CLEANUP]/tmp_tmp_2/def",
+      "application-binary-path=[CLEANUP]/tmp_tmp_2/abc",
       "--local-engine",
       "[CLEANUP]/builder/src/out/android-release",
       "--local-engine-host",
@@ -614,6 +616,7 @@
       "GIT_BRANCH": "master",
       "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/android-release",
       "LOCAL_ENGINE_HOST": "host-release",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_3",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -645,12 +648,61 @@
       }
     },
     "name": "build abc",
-    "timeout": 1800,
+    "timeout": 1800
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/tmp_tmp_3",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "master",
+      "LOCAL_ENGINE": "[CLEANUP]/builder/src/out/android-release",
+      "LOCAL_ENGINE_HOST": "host-release",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_3",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/builder/src/out/android-release/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/builder/src/out/android-release/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "test:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "read_logs",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@test_stdout@@@@",
-      "@@@STEP_LOG_END@test_stdout@@@",
-      "@@@STEP_LOG_LINE@test_stderr@@@@",
-      "@@@STEP_LOG_END@test_stderr@@@"
+      "@@@STEP_LOG_END@tmp_tmp_3@@@"
     ]
   },
   {
@@ -958,7 +1010,7 @@
       "cp",
       "-r",
       "[CLEANUP]/tmp_tmp_2/*",
-      "gs://flutter_devicelab/flutter/ci/2d72510e447ab60a9728aeea2362d8be2cbd7789/def"
+      "gs://flutter_devicelab/flutter/ci/2d72510e447ab60a9728aeea2362d8be2cbd7789/abc"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -1000,7 +1052,7 @@
     },
     "name": "gsutil upload artifacts",
     "~followup_annotations": [
-      "@@@STEP_LINK@artifacts@https://console.cloud.google.com/storage/browser/flutter_devicelab/flutter/ci/2d72510e447ab60a9728aeea2362d8be2cbd7789/def@@@"
+      "@@@STEP_LINK@artifacts@https://console.cloud.google.com/storage/browser/flutter_devicelab/flutter/ci/2d72510e447ab60a9728aeea2362d8be2cbd7789/abc@@@"
     ]
   },
   {
@@ -1028,7 +1080,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"ci\", \"builder\": \"Linux Engine Drone\", \"project\": \"test\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"git.example.com\", \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", \"project\": \"test/repo\", \"ref\": \"refs/heads/master\"}, \"priority\": 30, \"properties\": {\"$flutter/osx_sdk\": {}, \"artifact\": \"def\", \"build\": {\"drone_dimensions\": [\"os=Linux\"], \"name\": \"abc\", \"properties\": {\"$flutter/osx_sdk\": {}, \"artifact\": \"def\", \"dependencies\": [], \"git_branch\": \"master\", \"parent_builder\": \"Linux abc\", \"tags\": [], \"task_name\": \"abc\"}, \"recipe\": \"devicelab/devicelab_test_drone\"}, \"dependencies\": [], \"drone_dimensions\": [\"os=Linux\"], \"gclient_variables\": {}, \"git_branch\": \"master\", \"local_engine\": \"android-release\", \"local_engine_cas_hash\": \"isolatehashlocalengine/22\", \"local_engine_host\": \"host-release\", \"parent_builder\": \"Linux abc\", \"recipe\": \"devicelab/devicelab_test_drone\", \"tags\": [], \"task_name\": \"abc\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"ci\", \"builder\": \"Linux Engine Drone\", \"project\": \"test\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"git.example.com\", \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", \"project\": \"test/repo\", \"ref\": \"refs/heads/master\"}, \"priority\": 30, \"properties\": {\"$flutter/osx_sdk\": {}, \"artifact\": \"abc\", \"build\": {\"drone_dimensions\": [\"os=Linux\"], \"name\": \"abc\", \"properties\": {\"$flutter/osx_sdk\": {}, \"artifact\": \"abc\", \"dependencies\": [], \"git_branch\": \"master\", \"parent_builder\": \"Linux abc\", \"tags\": [], \"task_name\": \"abc\"}, \"recipe\": \"devicelab/devicelab_test_drone\"}, \"dependencies\": [], \"drone_dimensions\": [\"os=Linux\"], \"fake_data\": \"fake data\", \"gclient_variables\": {}, \"git_branch\": \"master\", \"local_engine\": \"android-release\", \"local_engine_cas_hash\": \"isolatehashlocalengine/22\", \"local_engine_host\": \"host-release\", \"parent_builder\": \"Linux abc\", \"recipe\": \"devicelab/devicelab_test_drone\", \"rtifact\": \"def\", \"tags\": [], \"task_name\": \"abc\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -1078,7 +1130,7 @@
       "@@@STEP_LOG_LINE@request@        \"priority\": 30,@@@",
       "@@@STEP_LOG_LINE@request@        \"properties\": {@@@",
       "@@@STEP_LOG_LINE@request@          \"$flutter/osx_sdk\": {},@@@",
-      "@@@STEP_LOG_LINE@request@          \"artifact\": \"def\",@@@",
+      "@@@STEP_LOG_LINE@request@          \"artifact\": \"abc\",@@@",
       "@@@STEP_LOG_LINE@request@          \"build\": {@@@",
       "@@@STEP_LOG_LINE@request@            \"drone_dimensions\": [@@@",
       "@@@STEP_LOG_LINE@request@              \"os=Linux\"@@@",
@@ -1086,7 +1138,7 @@
       "@@@STEP_LOG_LINE@request@            \"name\": \"abc\",@@@",
       "@@@STEP_LOG_LINE@request@            \"properties\": {@@@",
       "@@@STEP_LOG_LINE@request@              \"$flutter/osx_sdk\": {},@@@",
-      "@@@STEP_LOG_LINE@request@              \"artifact\": \"def\",@@@",
+      "@@@STEP_LOG_LINE@request@              \"artifact\": \"abc\",@@@",
       "@@@STEP_LOG_LINE@request@              \"dependencies\": [],@@@",
       "@@@STEP_LOG_LINE@request@              \"git_branch\": \"master\",@@@",
       "@@@STEP_LOG_LINE@request@              \"parent_builder\": \"Linux abc\",@@@",
@@ -1099,6 +1151,7 @@
       "@@@STEP_LOG_LINE@request@          \"drone_dimensions\": [@@@",
       "@@@STEP_LOG_LINE@request@            \"os=Linux\"@@@",
       "@@@STEP_LOG_LINE@request@          ],@@@",
+      "@@@STEP_LOG_LINE@request@          \"fake_data\": \"fake data\",@@@",
       "@@@STEP_LOG_LINE@request@          \"gclient_variables\": {},@@@",
       "@@@STEP_LOG_LINE@request@          \"git_branch\": \"master\",@@@",
       "@@@STEP_LOG_LINE@request@          \"local_engine\": \"android-release\",@@@",
@@ -1106,6 +1159,7 @@
       "@@@STEP_LOG_LINE@request@          \"local_engine_host\": \"host-release\",@@@",
       "@@@STEP_LOG_LINE@request@          \"parent_builder\": \"Linux abc\",@@@",
       "@@@STEP_LOG_LINE@request@          \"recipe\": \"devicelab/devicelab_test_drone\",@@@",
+      "@@@STEP_LOG_LINE@request@          \"rtifact\": \"def\",@@@",
       "@@@STEP_LOG_LINE@request@          \"tags\": [],@@@",
       "@@@STEP_LOG_LINE@request@          \"task_name\": \"abc\"@@@",
       "@@@STEP_LOG_LINE@request@        },@@@",

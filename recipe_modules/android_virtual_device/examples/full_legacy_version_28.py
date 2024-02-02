@@ -9,10 +9,8 @@ DEPS = [
 
 
 def RunSteps(api):
-  env = {
-      'USE_EMULATOR': api.properties.get('use_emulator', False),
-      'AVD_CIPD_VERSION': 'TESTVERSIONSTR'
-  }
+  env = {'USE_EMULATOR': api.properties.get('use_emulator', False),
+         'AVD_CIPD_VERSION': 'TESTVERSIONSTR'}
   env_prefixes = {}
 
   with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
@@ -23,13 +21,12 @@ def RunSteps(api):
                                   version='28'):
     api.step('Do something', ['echo', 'hello'])
 
-
 def GenTests(api):
   avd_api_version = '28'
 
   yield api.test(
       'emulator started',
-      api.properties(use_emulator="true", fake_data='fake data'),
+      api.properties(use_emulator="true"),
       api.step_data(
           'start avd.Start Android emulator (%s)' % avd_api_version,
           stdout=api.raw_io.output_text(
@@ -38,7 +35,8 @@ def GenTests(api):
           )
       ),
       api.step_data(
-          'start avd (2).Start Android emulator (%s)' % avd_api_version,
+          'start avd (2).Start Android emulator (%s)' %
+          avd_api_version,
           stdout=api.raw_io.output_text(
               'android_' + avd_api_version +
               '_google_apis_x86|emulator-5554 started (pid: 17687)'
@@ -48,7 +46,7 @@ def GenTests(api):
 
   yield api.test(
       'emulator started and stopped, processes killed',
-      api.properties(use_emulator="true", fake_data='fake data'),
+      api.properties(use_emulator="true"),
       api.step_data(
           'start avd.Start Android emulator (%s)' % avd_api_version,
           stdout=api.raw_io.output_text(
@@ -61,7 +59,8 @@ def GenTests(api):
           stdout=api.raw_io.output_text('12345 qemu-system blah')
       ),
       api.step_data(
-          'start avd (2).Start Android emulator (%s)' % avd_api_version,
+          'start avd (2).Start Android emulator (%s)' %
+          avd_api_version,
           stdout=api.raw_io.output_text(
               'android_' + avd_api_version +
               '_google_apis_x86|emulator-5554 started (pid: 17687)'

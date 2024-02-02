@@ -1,44 +1,26 @@
 [
   {
     "cmd": [
-      "bash",
-      "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
       "ls",
       "-la"
     ],
-    "env": {
-      "LOGS_FILE": "[CLEANUP]/tmp_tmp_1"
-    },
     "name": "mytest",
-    "timeout": 3600
+    "timeout": 3600,
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@test_stdout@#success@@@",
+      "@@@STEP_LOG_LINE@test_stdout@this is a success@@@",
+      "@@@STEP_LOG_END@test_stdout@@@",
+      "@@@STEP_LOG_LINE@test_stderr@@@@",
+      "@@@STEP_LOG_END@test_stderr@@@"
+    ]
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CLEANUP]/tmp_tmp_1",
-      "/path/to/tmp/"
+      "echo",
+      "test run is flaky"
     ],
-    "env": {
-      "LOGS_FILE": "[CLEANUP]/tmp_tmp_1"
-    },
     "infra_step": true,
-    "name": "read_logs",
-    "~followup_annotations": [
-      "@@@STEP_LOG_END@tmp_tmp_1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "step is flaky: test step",
-    "~followup_annotations": [
-      "@@@STEP_LINK@stdout@@@@",
-      "@@@STEP_WARNINGS@@@"
-    ]
+    "name": "step is flaky: test step"
   },
   {
     "cmd": [

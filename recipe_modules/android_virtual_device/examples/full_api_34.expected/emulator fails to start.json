@@ -74,8 +74,6 @@
   },
   {
     "cmd": [
-      "bash",
-      "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
       "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh",
       "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
     ],
@@ -84,7 +82,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "LOGS_FILE": "[CLEANUP]/tmp_tmp_1",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -96,38 +93,11 @@
     "name": "Show devices attached - before emulator install/start.adb_show_devices.sh",
     "timeout": 3600,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CLEANUP]/tmp_tmp_1",
-      "/path/to/tmp/"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "LOGS_FILE": "[CLEANUP]/tmp_tmp_1",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "name": "Show devices attached - before emulator install/start.read_logs",
-    "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@tmp_tmp_1@@@"
+      "@@@STEP_LOG_LINE@test_stdout@@@@",
+      "@@@STEP_LOG_END@test_stdout@@@",
+      "@@@STEP_LOG_LINE@test_stderr@@@@",
+      "@@@STEP_LOG_END@test_stderr@@@"
     ]
   },
   {
@@ -389,8 +359,6 @@
   },
   {
     "cmd": [
-      "bash",
-      "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
       "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh",
       "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
     ],
@@ -400,7 +368,6 @@
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
       "EMULATOR_PID": "",
-      "LOGS_FILE": "[CLEANUP]/tmp_tmp_2",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -412,39 +379,11 @@
     "name": "Show devices attached - after emulator uninstall.adb_show_devices.sh",
     "timeout": 3600,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CLEANUP]/tmp_tmp_2",
-      "/path/to/tmp/"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
-      "LOGS_FILE": "[CLEANUP]/tmp_tmp_2",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "name": "Show devices attached - after emulator uninstall.read_logs",
-    "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@tmp_tmp_2@@@"
+      "@@@STEP_LOG_LINE@test_stdout@@@@",
+      "@@@STEP_LOG_END@test_stdout@@@",
+      "@@@STEP_LOG_LINE@test_stderr@@@@",
+      "@@@STEP_LOG_END@test_stderr@@@"
     ]
   },
   {

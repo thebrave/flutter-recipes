@@ -272,8 +272,8 @@ def uploadResults(
       return
     else:
       runner_params.extend([
-          '--git-branch', git_branch, '--luci-builder',
-          '"%s"' % builder_name, '--test-status', test_status
+          '--git-branch', git_branch, '--luci-builder', builder_name,
+          '--test-status', test_status
       ])
 
   with api.step.nest('Upload metrics'):
@@ -316,7 +316,6 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           git_branch='master',
-          fake_data='fake data',
           openpay=True,
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
@@ -337,7 +336,6 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           git_branch='master',
-          fake_data='fake data',
           dependencies=[{
               "dependency": "android_virtual_device", "version": avd_version
           }, {"dependency": "avd_cipd_version", "version": avd_cipd_version}],
@@ -363,7 +361,6 @@ def GenTests(api):
           tags=['ios'],
           device_os='iOS-16',
           git_branch='master',
-          fake_data='#flaky\nthis is a flaky\nflaky: true',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
@@ -399,7 +396,6 @@ def GenTests(api):
           device_os='iOS-16',
           test_timeout_secs=1,
           git_branch='master',
-          fake_data='fake data',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
@@ -436,7 +432,6 @@ def GenTests(api):
           device_os='iOS-16',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
           git_branch='master',
-          fake_data='fake data',
       ),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
@@ -453,7 +448,6 @@ def GenTests(api):
           task_name='abc',
           upload_metrics=True,
           git_branch='master',
-          fake_data='fake data',
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -473,7 +467,6 @@ def GenTests(api):
           upload_metrics=True,
           upload_metrics_to_cas=True,
           git_branch='master',
-          fake_data='fake data',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.platform.name('mac'),
       api.step_data(
@@ -488,7 +481,6 @@ def GenTests(api):
           task_name='abc',
           upload_metrics_to_cas=True,
           git_branch='master',
-          fake_data='fake data',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           git_ref='refs/heads/master',
@@ -502,7 +494,6 @@ def GenTests(api):
           task_name='abc',
           upload_metrics_to_cas=True,
           git_branch='master',
-          fake_data='fake data',
           xvfb=1,
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
@@ -519,7 +510,6 @@ def GenTests(api):
           local_engine='android-release',
           local_engine_host='host-release',
           git_branch='master',
-          fake_data='fake data',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.buildbucket.ci_build(
           project='test',
@@ -537,7 +527,6 @@ def GenTests(api):
           upload_metrics=True,
           upload_metrics_to_cas=True,
           git_branch='master',
-          fake_data='fake data',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.platform.name('mac'),
       api.step_data(

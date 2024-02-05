@@ -668,6 +668,8 @@
   },
   {
     "cmd": [
+      "bash",
+      "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
       "RECIPE[flutter::devicelab/devicelab_drone].resources/runner.sh",
       "-t",
       "abc",
@@ -685,6 +687,7 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_2",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -713,12 +716,58 @@
       }
     },
     "name": "run abc",
-    "timeout": 1800,
+    "timeout": 1800
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/tmp_tmp_2",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_2",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "darwin",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
+      "USE_EMULATOR": "False"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "read_logs",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@test_stdout@@@@",
-      "@@@STEP_LOG_END@test_stdout@@@",
-      "@@@STEP_LOG_LINE@test_stderr@@@@",
-      "@@@STEP_LOG_END@test_stderr@@@"
+      "@@@STEP_LOG_END@tmp_tmp_2@@@"
     ]
   },
   {
@@ -1456,7 +1505,7 @@
       "/path/to/tmp/json",
       "copy",
       "extra.secret.token.should.not.be.logged",
-      "[CLEANUP]/tmp_tmp_2"
+      "[CLEANUP]/tmp_tmp_3"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -1554,7 +1603,7 @@
       "/path/to/tmp/json",
       "copy",
       "extra.secret.token.should.not.be.logged",
-      "[CLEANUP]/tmp_tmp_3"
+      "[CLEANUP]/tmp_tmp_4"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -1614,7 +1663,7 @@
       "--benchmark-tags",
       "{\"arch\": \"intel\", \"device_type\": \"iPhone 6s\", \"device_version\": \"none\", \"host_type\": \"mac\"}",
       "--service-account-token-file",
-      "[CLEANUP]/tmp_tmp_3"
+      "[CLEANUP]/tmp_tmp_4"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -1631,7 +1680,7 @@
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_2",
+      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_3",
       "USE_EMULATOR": "False"
     },
     "env_prefixes": {
@@ -1668,7 +1717,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "remove",
-      "[CLEANUP]/tmp_tmp_2"
+      "[CLEANUP]/tmp_tmp_3"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {

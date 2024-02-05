@@ -21,12 +21,14 @@ def RunSteps(api):
                                   version='android_31_google_apis_x64.textpb'):
     api.step('Do something', ['echo', 'hello'])
 
+
 def GenTests(api):
   avd_api_version = 'android_31_google_apis_x64.textpb'
 
   yield api.test(
       'emulator started',
       api.properties(use_emulator="true"),
+      api.properties(fake_data='fake data'),
       api.step_data(
           'start avd.Start Android emulator (%s)' % avd_api_version,
           stdout=api.raw_io.output_text(
@@ -47,6 +49,7 @@ def GenTests(api):
   yield api.test(
       'emulator started and stopped, processes killed',
       api.properties(use_emulator="true"),
+      api.properties(fake_data='fake data'),
       api.step_data(
           'start avd.Start Android emulator (%s)' % avd_api_version,
           stdout=api.raw_io.output_text(

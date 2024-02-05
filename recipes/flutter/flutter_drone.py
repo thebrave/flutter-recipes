@@ -121,11 +121,13 @@ def GenTests(api):
     yield api.test(
         'no_requirements%s' % ('_reduced' if should_run_reduced else ''),
         api.repo_util.flutter_environment_data(),
-        api.properties(reduced_test_set=should_run_reduced)
+        api.properties(reduced_test_set=should_run_reduced),
+        api.properties(fake_data='fake data'),
     )
     yield api.test(
         'android_sdk%s' % ('_reduced' if should_run_reduced else ''),
         api.repo_util.flutter_environment_data(),
+        api.properties(fake_data='fake data'),
         api.properties(
             dependencies=[{'dependency': 'android_sdk'}],
             android_sdk=True,
@@ -137,6 +139,7 @@ def GenTests(api):
     yield api.test(
         'web_engine%s' % ('_reduced' if should_run_reduced else ''),
         api.repo_util.flutter_environment_data(),
+        api.properties(fake_data='fake data'),
         api.properties(
             local_web_sdk_cas_hash='abceqwe',
             reduced_test_set=should_run_reduced
@@ -145,6 +148,7 @@ def GenTests(api):
     yield api.test(
         'xcode%s' % ('_reduced' if should_run_reduced else ''),
         api.repo_util.flutter_environment_data(),
+        api.properties(fake_data='fake data'),
         api.properties(
             **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
             reduced_test_set=should_run_reduced

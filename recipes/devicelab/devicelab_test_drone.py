@@ -91,6 +91,8 @@ def RunSteps(api):
   results_path = api.path.mkdtemp(prefix='results').join('results')
   # Run test
   parent_builder = api.properties.get('parent_builder')
+  # Quote builder name if running on windows.
+  parent_builder = f'\"{parent_builder}\"' if api.platform.is_win else parent_builder
   runner_params = [
       '-t', task_name, '--results-file', results_path, '--luci-builder',
       parent_builder
@@ -301,6 +303,7 @@ def GenTests(api):
           task_name='abc',
           git_branch='master',
           artifact='def',
+          fake_data='fake data',
           git_ref='refs/pull/1/head',
           parent_builder='ghi',
       ),
@@ -312,17 +315,13 @@ def GenTests(api):
           buildername='Linux abc',
           task_name='abc',
           git_branch='master',
+          fake_data='#flaky\nthis is a flaky\nflaky: true',
           artifact='def',
           upload_metrics=True,
           upload_metrics_to_cas=True,
           parent_builder='ghi',
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-      api.step_data(
-          'run abc',
-          stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
-          retcode=0
-      ),
       api.buildbucket.ci_build(
           project='test',
           git_repo='git.example.com/test/repo',
@@ -335,14 +334,10 @@ def GenTests(api):
           task_name='abc',
           git_branch='master',
           artifact='def',
+          fake_data='#flaky\nthis is a flaky\nflaky: true',
           parent_builder='ghi',
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-      api.step_data(
-          'run abc',
-          stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
-          retcode=0
-      ),
       api.buildbucket.ci_build(
           project='test',
           git_repo='git.example.com/test/repo',
@@ -354,6 +349,7 @@ def GenTests(api):
       api.properties(
           buildername='Linux abc',
           task_name='abc',
+          fake_data='fake data',
           artifact='def',
           upload_metrics_to_cas=True,
           git_branch='master',
@@ -373,6 +369,7 @@ def GenTests(api):
           local_engine='android-release',
           local_engine_host='host-release',
           git_branch='master',
+          fake_data='fake data',
           artifact='def',
           parent_builder='ghi',
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
@@ -391,15 +388,12 @@ def GenTests(api):
           git_branch='master',
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
           artifact='def',
+          fake_data='#flaky\nthis is a flaky\nflaky: true',
           parent_builder='ghi'
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.platform.name('mac'),
       api.buildbucket.ci_build(git_ref='refs/heads/master',),
-      api.step_data(
-          'run abc',
-          stdout=api.raw_io.output_text('#flaky\nthis is a flaky\nflaky: true'),
-          retcode=0
-      ), api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
+      api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
       api.step_data(
           'Find device type',
           stdout=api.raw_io.output_text('iPhone8,1'),

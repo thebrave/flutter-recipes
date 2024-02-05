@@ -69,8 +69,8 @@ function wait-for-device() {
     local remaining_attempts=20
     until adb shell true
     do
-      remaining_attemps = remaining_attemps - 1
-      if (( remaining_attempts <= 0 ))
+      ((remaining_attempts--))
+      if [[ remaining_attempts -le 0 ]]
       then
         echo "Emulator not found"
         exit 1

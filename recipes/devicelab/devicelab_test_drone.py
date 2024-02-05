@@ -125,6 +125,10 @@ def RunSteps(api):
       if str(api.swarming.bot_id).startswith('flutter-devicelab'):
         with api.osx_sdk('ios', devicelab=True):
           with api.context(env=env, env_prefixes=env_prefixes):
+            # Next steps get executed only if running in mac.
+            api.os_utils.prepare_ios_device()
+            api.os_utils.shutdown_simulators()
+            api.os_utils.ios_debug_symbol_doctor()
             run_test(api, task_name, runner_params)
 
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):

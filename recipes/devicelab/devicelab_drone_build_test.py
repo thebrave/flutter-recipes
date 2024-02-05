@@ -113,9 +113,13 @@ def test(api, task_name, deps, artifact):
               api.properties.get('$flutter/osx_sdk', {})
           ),
   }
+  drone_dimensions = api.properties.get('drone_dimensions', [])
+  for d in drone_dimensions:
+        k, v = d.split('=')
+        test_props[k] = v
   reqs.append({
       'name': task_name, 'properties': test_props,
-      'drone_dimensions': api.properties.get('drone_dimensions', []),
+      'drone_dimensions': drone_dimensions,
       'recipe': 'devicelab/devicelab_test_drone'
   })
   return reqs

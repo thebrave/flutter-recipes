@@ -4,4 +4,5 @@
 set -e
 
 args=( "$@" )
+set -o pipefail
 "${args[@]}" 2>&1 | tee $LOGS_FILE

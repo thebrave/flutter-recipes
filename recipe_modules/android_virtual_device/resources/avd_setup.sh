@@ -9,6 +9,7 @@
 # Usage: ./avd_setup.sh <path-to-adb-executable>
 
 set -x
+set -e
 
 # Monitor but it appears the device is always ready within a couple seconds.
 readonly WAIT_ITERS=60
@@ -66,7 +67,7 @@ function print_device_list() {
 }
 
 function wait-for-device() {
-    local remaining_attempts=20
+    local remaining_attempts=6
     until adb shell true
     do
       ((remaining_attempts--))

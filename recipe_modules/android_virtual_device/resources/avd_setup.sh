@@ -93,8 +93,8 @@ fi
 # properties to validate
 declare -a configs_to_validate=("sys.boot_completed" "dev.bootcomplete")
 print_device_list "${adb}"
-echo "Stopping adb server"
-${adb} stop-server
+echo "Killing adb server"
+${adb} kill-server
 sleep 5
 # when you run any adb command and the server is not up it will start it.
 echo "Starting adb server"

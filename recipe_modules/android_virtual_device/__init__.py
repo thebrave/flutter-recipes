@@ -1,5 +1,6 @@
 DEPS = [
     'depot_tools/depot_tools',
+    'flutter/retry',
     'flutter/test_utils',
     'recipe_engine/cipd',
     'recipe_engine/context',

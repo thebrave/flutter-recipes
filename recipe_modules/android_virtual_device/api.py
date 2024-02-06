@@ -50,8 +50,6 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       # previous run.
       self.show_devices(env, env_prefixes, "before emulator install/start")
       self.emulator_pid = self.start(env, env_prefixes, version)
-      env['EMULATOR_PID'] = self.emulator_pid
-      self.setup(env, env_prefixes)
       yield
     finally:
       self.kill(self.emulator_pid)
@@ -113,9 +111,9 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
         )
     else:
       avd_config = self.avd_root.join(
-            'src', 'tools', 'android', 'avd', 'proto', '%s' % version
-        )
-    
+          'src', 'tools', 'android', 'avd', 'proto', '%s' % version
+      )
+
     return avd_config
 
   def start(self, env, env_prefixes, version):
@@ -144,34 +142,31 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             stdout=self.m.raw_io.output_text(add_output_log=True)
         )
 
-        # rerun this 3 times to see if it will start. This will prevent the
-        # hour long timeout in the test.
-        for attempt in range(RERUN_ATTEMPTS):
+        def _start():
+          # In case of retries we need to kill the previous emulator to ensure a fresh
+          # start.
+          self.kill()
           output = self.m.step(
-              'Start Android emulator (%s)' % version, [
+              'Start Android emulator (%s)' % version,
+              [
                   'xvfb-run', 'vpython3', avd_script_path, 'start',
                   '--no-read-only', '--wipe-data', '--writable-system',
                   '--debug-tags', 'all', '--avd-config', avd_config
               ],
-              stdout=self.m.raw_io.output_text(add_output_log=True)
+              stdout=self.m.raw_io.output_text(add_output_log=True),
+              infra_step=True,
           ).stdout
 
-          # Need to look for the main loop crash that signals incomplete start.
-          if ("Hostapd main loop has stopped"
-              not in output) and ("explicit kill or server shutdown"
-                                  not in output):
-            m = re.search(r'.*pid: (\d+)\)', output)
-            self.emulator_pid = m.group(1)
-            break
-          if attempt == RERUN_ATTEMPTS - 1:
-            raise self.m.step.InfraFailure(
-                'Emulator has failed to start correctly.'
-            )
+          m = re.search(r'.*pid: (\d+)\)', output)
+          self.emulator_pid = m.group(1)
+          env['EMULATOR_PID'] = self.emulator_pid
+          self._setup(env, env_prefixes)
 
-    env['EMULATOR_PID'] = self.emulator_pid
+        self.m.retry.wrap(_start, max_attempts=3)
+
     return self.emulator_pid
 
-  def setup(self, env, env_prefixes):
+  def _setup(self, env, env_prefixes):
     """Configures a running emulator and waits for it to reach the home screen.
 
     Args:
@@ -188,7 +183,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             ['chmod', '755', resource_name],
             infra_step=True,
         )
-        self.m.test_utils.run_test(
+        self.m.step(
             'avd_setup.sh', [resource_name, str(self.adb_path)],
             infra_step=True
         )
@@ -247,6 +242,9 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
     assert self.m.platform.is_linux
     with self.m.step.nest('kill and cleanup avd'):
       pid_to_kill = emulator_pid or self.emulator_pid
+      if not pid_to_kill:
+        # Noop if there is not emulator to kill.
+        return
       self.m.step('Kill emulator cleanup', ['kill', '-9', pid_to_kill])
 
       # Kill zombie processes left over by QEMU on the host.

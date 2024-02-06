@@ -132,7 +132,10 @@
   },
   {
     "cmd": [],
-    "name": "start avd"
+    "name": "start avd",
+    "~followup_annotations": [
+      "@@@STEP_EXCEPTION@@@"
+    ]
   },
   {
     "cmd": [
@@ -140,7 +143,7 @@
       "[CACHE]/avd/src/tools/android/avd/avd.py",
       "install",
       "--avd-config",
-      "[CACHE]/avd/src/tools/android/avd/proto/generic_android28.textpb"
+      "[CACHE]/avd/src/tools/android/avd/proto/android_31_google_apis_x64.textpb"
     ],
     "cwd": "[CACHE]/avd",
     "env": {
@@ -162,7 +165,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "start avd.Install Android emulator (28)",
+    "name": "start avd.Install Android emulator (android_31_google_apis_x64.textpb)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -187,7 +190,7 @@
       "--debug-tags",
       "all",
       "--avd-config",
-      "[CACHE]/avd/src/tools/android/avd/proto/generic_android28.textpb"
+      "[CACHE]/avd/src/tools/android/avd/proto/android_31_google_apis_x64.textpb"
     ],
     "cwd": "[CACHE]/avd",
     "env": {
@@ -210,10 +213,10 @@
       ]
     },
     "infra_step": true,
-    "name": "start avd.Start Android emulator (28)",
+    "name": "start avd.Start Android emulator (android_31_google_apis_x64.textpb)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@android_28_google_apis_x86|emulator-5554 started (pid: 17687)@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@android_android_31_google_apis_x64.textpb_google_apis_x86|emulator-5554 started (pid: 17687)@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
     ]
   },
@@ -221,7 +224,8 @@
     "cmd": [],
     "name": "start avd.avd setup",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_EXCEPTION@@@"
     ]
   },
   {
@@ -288,15 +292,383 @@
     "infra_step": true,
     "name": "start avd.avd setup.avd_setup.sh",
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "start avd.kill and cleanup avd (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "kill",
+      "-9",
+      "17687"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd.kill and cleanup avd (2).Kill emulator cleanup",
+    "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
     "cmd": [
-      "echo",
-      "hello"
+      "ps",
+      "-axww"
     ],
-    "name": "Do something"
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd.kill and cleanup avd (2).list processes",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xvfb-run",
+      "vpython3",
+      "[CACHE]/avd/src/tools/android/avd/avd.py",
+      "start",
+      "--no-read-only",
+      "--wipe-data",
+      "--writable-system",
+      "--debug-tags",
+      "all",
+      "--avd-config",
+      "[CACHE]/avd/src/tools/android/avd/proto/android_31_google_apis_x64.textpb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "start avd.Start Android emulator (android_31_google_apis_x64.textpb) (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@android_android_31_google_apis_x64.textpb_google_apis_x86|emulator-5554 started (pid: 17687)@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "start avd.avd setup (2)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/avd_setup.sh"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "EMULATOR_PID": "17687",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "start avd.avd setup (2).Set execute permission",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/avd_setup.sh",
+      "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "EMULATOR_PID": "17687",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "start avd.avd setup (2).avd_setup.sh",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "start avd.kill and cleanup avd (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "kill",
+      "-9",
+      "17687"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd.kill and cleanup avd (3).Kill emulator cleanup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ps",
+      "-axww"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd.kill and cleanup avd (3).list processes",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xvfb-run",
+      "vpython3",
+      "[CACHE]/avd/src/tools/android/avd/avd.py",
+      "start",
+      "--no-read-only",
+      "--wipe-data",
+      "--writable-system",
+      "--debug-tags",
+      "all",
+      "--avd-config",
+      "[CACHE]/avd/src/tools/android/avd/proto/android_31_google_apis_x64.textpb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "start avd.Start Android emulator (android_31_google_apis_x64.textpb) (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@android_android_31_google_apis_x64.textpb_google_apis_x86|emulator-5554 started (pid: 17687)@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "start avd.avd setup (3)",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/avd_setup.sh"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "EMULATOR_PID": "17687",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "start avd.avd setup (3).Set execute permission",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::android_virtual_device]/resources/avd_setup.sh",
+      "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "EMULATOR_PID": "17687",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "start avd.avd setup (3).avd_setup.sh",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_EXCEPTION@@@"
+    ]
   },
   {
     "cmd": [],
@@ -334,7 +706,7 @@
       "[CACHE]/avd/src/tools/android/avd/avd.py",
       "uninstall",
       "--avd-config",
-      "[CACHE]/avd/src/tools/android/avd/proto/generic_android28.textpb"
+      "[CACHE]/avd/src/tools/android/avd/proto/android_31_google_apis_x64.textpb"
     ],
     "cwd": "[CACHE]/avd",
     "env": {
@@ -357,7 +729,7 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "uninstall avd.Uninstall Android emulator (28)",
+    "name": "uninstall avd.Uninstall Android emulator (android_31_google_apis_x64.textpb)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -453,419 +825,9 @@
     ]
   },
   {
-    "cmd": [],
-    "name": "Show devices attached - before emulator install/start (2)"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "755",
-      "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
-      "USE_EMULATOR": "true"
+    "failure": {
+      "humanReason": "Infra Failure: Step('start avd.avd setup (3).avd_setup.sh') (retcode: 1)"
     },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "name": "Show devices attached - before emulator install/start (2).Set execute permission",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "bash",
-      "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
-      "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh",
-      "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
-      "LOGS_FILE": "[CLEANUP]/tmp_tmp_3",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "name": "Show devices attached - before emulator install/start (2).adb_show_devices.sh",
-    "timeout": 3600,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CLEANUP]/tmp_tmp_3",
-      "/path/to/tmp/"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
-      "LOGS_FILE": "[CLEANUP]/tmp_tmp_3",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "name": "Show devices attached - before emulator install/start (2).read_logs",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@tmp_tmp_3@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "start avd (2)"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]/avd/src/tools/android/avd/avd.py",
-      "install",
-      "--avd-config",
-      "[CACHE]/avd/src/tools/android/avd/proto/generic_android28.textpb"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "name": "start avd (2).Install Android emulator (28)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "start avd (2).kill and cleanup avd",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "xvfb-run",
-      "vpython3",
-      "[CACHE]/avd/src/tools/android/avd/avd.py",
-      "start",
-      "--no-read-only",
-      "--wipe-data",
-      "--writable-system",
-      "--debug-tags",
-      "all",
-      "--avd-config",
-      "[CACHE]/avd/src/tools/android/avd/proto/generic_android28.textpb"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "start avd (2).Start Android emulator (28)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@raw_io.output_text@android_28_google_apis_x86|emulator-5554 started (pid: 17687)@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "start avd (2).avd setup",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "chmod",
-      "755",
-      "RECIPE_MODULE[flutter::android_virtual_device]/resources/avd_setup.sh"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "17687",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "start avd (2).avd setup.Set execute permission",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "RECIPE_MODULE[flutter::android_virtual_device]/resources/avd_setup.sh",
-      "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "17687",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "start avd (2).avd setup.avd_setup.sh",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "echo",
-      "hello"
-    ],
-    "name": "Do something (2)"
-  },
-  {
-    "cmd": [],
-    "name": "kill and cleanup avd (2)"
-  },
-  {
-    "cmd": [
-      "kill",
-      "-9",
-      "17687"
-    ],
-    "name": "kill and cleanup avd (2).Kill emulator cleanup",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "ps",
-      "-axww"
-    ],
-    "name": "kill and cleanup avd (2).list processes",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "uninstall avd (2)"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]/avd/src/tools/android/avd/avd.py",
-      "uninstall",
-      "--avd-config",
-      "[CACHE]/avd/src/tools/android/avd/proto/generic_android28.textpb"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "17687",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "name": "uninstall avd (2).Uninstall Android emulator (28)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Show devices attached - after emulator uninstall (2)"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "755",
-      "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "name": "Show devices attached - after emulator uninstall (2).Set execute permission",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "bash",
-      "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
-      "RECIPE_MODULE[flutter::android_virtual_device]/resources/adb_show_devices.sh",
-      "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
-      "LOGS_FILE": "[CLEANUP]/tmp_tmp_4",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "name": "Show devices attached - after emulator uninstall (2).adb_show_devices.sh",
-    "timeout": 3600,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CLEANUP]/tmp_tmp_4",
-      "/path/to/tmp/"
-    ],
-    "cwd": "[CACHE]/avd",
-    "env": {
-      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
-      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
-      "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
-      "LOGS_FILE": "[CLEANUP]/tmp_tmp_4",
-      "USE_EMULATOR": "true"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
-      ]
-    },
-    "infra_step": true,
-    "name": "Show devices attached - after emulator uninstall (2).read_logs",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@tmp_tmp_4@@@"
-    ]
-  },
-  {
     "name": "$result"
   }
 ]

@@ -96,6 +96,8 @@ def RunSteps(api, properties, env_properties):
               'test',
               '--local-engine=%s' % str(build_dir),
               '--local-engine-host=host_debug_unopt',
+              '-j',
+              '8',
           ]
       )
 

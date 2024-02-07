@@ -25,7 +25,6 @@ def RunSteps(api):
   api.os_utils.shutdown_simulators()
   api.os_utils.enable_long_paths()
   api.os_utils.prepare_ios_device()
-  api.os_utils.reset_automation_dialogs()
   api.os_utils.print_pub_certs()
   api.os_utils.is_symlink('/a/b/c/simlink')
   api.os_utils.symlink('/a/file', '/a/b/c/simlink')
@@ -124,20 +123,6 @@ def GenTests(api):
           properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
       ),
       status='INFRA_FAILURE'
-  )
-  yield api.test(
-      'reset_dialog_xcode_automation_finds_db',
-      xcode_dismiss_dialog_find_db_step,
-      xcode_dismiss_dialog_query_db_step,
-      api.step_data(
-          'Reset automation dialogs.Find TCC directory',
-          stdout=api.raw_io.output_text('TCC.db.backup'),
-      ),
-      api.platform('mac', 64),
-      api.properties(device_os='iOS-16'),
-      api.properties.environ(
-          properties.EnvProperties(SWARMING_BOT_ID='flutter-devicelab-mac-1')
-      ),
   )
   yield api.test(
       'dimiss_dialog_xcode_automation_skip_if_not_core_device',

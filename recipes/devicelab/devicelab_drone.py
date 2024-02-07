@@ -199,8 +199,6 @@ def debug_after_failure(api, task_name):
   api.logs_util.upload_logs(task_name)
   # This is to clean up leaked processes.
   api.os_utils.kill_processes()
-  # This is to reset permission dialogs.
-  api.os_utils.reset_automation_dialogs()
   # Collect memory/cpu/process after task execution.
   api.os_utils.collect_os_info()
 

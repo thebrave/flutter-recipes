@@ -377,8 +377,8 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
                     max_attempts=6
                 )
               except self.m.step.InfraFailure:
-                # If fails continue to "Run app to dismiss dialogs" step. That
-                # step should also fail.
+                # If step fails, continue to "Run app to dismiss dialogs" step.
+                # That step should also fail.
                 wait_connect_step.presentation.status = self.m.step.INFRA_FAILURE
               finally:
                 self._list_core_devices()
@@ -695,14 +695,16 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     # The AppleScript counts how many windows of the app are open.
     # The script will hang if permission has not been given, so timeout after
     # a few seconds.
-    self._apple_script_command(
-        'Trigger dialog',
-        app_name,
-        ['launch', 'count window'],
-        timeout,
-        raise_on_failure,
-    )
-    self._dismiss_automation_permission()
+    try:
+      self._apple_script_command(
+          'Trigger dialog',
+          app_name,
+          ['launch', 'count window'],
+          timeout,
+          raise_on_failure,
+      )
+    finally:
+      self._dismiss_automation_permission()
 
   def _create_tcc_entry(self, db_path, app_name, app_identifer, timeout=2):
     """Trigger automation dialog to appear and then kill the dialog.
@@ -793,41 +795,6 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     )
 
     return query_results.stdout.rstrip()
-
-  def reset_automation_dialogs(self):
-    """Reset Automation permissions."""
-    if self.is_devicelab() and self.m.platform.is_mac:
-      with self.m.step.nest('Reset automation dialogs'):
-        tcc_directory_path, db_path, backup_db_path = self._get_tcc_path()
-
-        self._dismiss_automation_permission()
-
-        # Print contents of db for potential debugging purposes.
-        self._query_automation_db_step_with_retry(db_path)
-
-        files = self.m.step(
-            'Find TCC directory',
-            ['ls', tcc_directory_path],
-            stdout=self.m.raw_io.output_text(),
-            infra_step=True,
-            raise_on_failure=False,
-            ok_ret='any',
-        ).stdout.rstrip()
-
-        if TCC_AUTOMATION_BACKUP_DB not in files:
-          return
-
-        self.m.step(
-            'Restore from backup db',
-            ['cp', backup_db_path, db_path],
-        )
-        self.m.step(
-            'Remove backup',
-            ['rm', backup_db_path],
-        )
-
-        # Print contents of db for potential debugging purposes.
-        self._query_automation_db_step_with_retry(db_path)
 
   def _checkout_cocoon(self):
     """Checkout cocoon at HEAD to the cache and return the path."""

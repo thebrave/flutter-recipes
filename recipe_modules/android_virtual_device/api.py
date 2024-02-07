@@ -245,7 +245,11 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       if not pid_to_kill:
         # Noop if there is not emulator to kill.
         return
-      self.m.step('Kill emulator cleanup', ['kill', '-9', pid_to_kill])
+      # Accepting any return code because when the emulator dies the pid is no longer
+      # available causing an exception.
+      self.m.step(
+          'Kill emulator cleanup', ['kill', '-9', pid_to_kill], ok_ret='any'
+      )
 
       # Kill zombie processes left over by QEMU on the host.
       step_result = self.m.step(

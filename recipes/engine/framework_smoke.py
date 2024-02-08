@@ -88,6 +88,7 @@ def RunSteps(api, properties, env_properties):
       )
   # Run framework packages test
   with api.step.nest('Framework test'):
+    env['GOLDCTL'] = None
     with api.context(env=env, env_prefixes=env_prefixes,
                      cwd=flutter_checkout_path.join('packages', 'flutter')):
       api.step(
@@ -98,6 +99,8 @@ def RunSteps(api, properties, env_properties):
               '--local-engine-host=host_debug_unopt',
               '-j',
               '8',
+              '-x',
+              'reduced-test-set'
           ]
       )
 

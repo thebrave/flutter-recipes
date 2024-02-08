@@ -10,3 +10,4 @@ ForEach ($arg in $args) {
 }
 Write-Host $cmd
 iex $cmd | Set-Content $Env:LOGS_FILE -Passthru
+exit $LASTEXITCODE

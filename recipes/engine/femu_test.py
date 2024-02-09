@@ -220,10 +220,11 @@ def RunTestSuiteOnFfxEmuImpl(api, suite, ffx, arch, pb_path):
   if arch == 'arm64':
     api.step(
         'launch arm64 emulator with QEMU engine', emu_cmd +
-        ['--engine', 'qemu', '--headless', '--startup-timeout', '360']
+        ['--engine', 'qemu', '--startup-timeout', '360']
     )
   else:
-    api.step('launch x64 emulator', emu_cmd)
+    api.step('launch x64 emulator', emu_cmd +
+             ['--startup-timeout', '90'])
 
   # Output information for current emulator
   # Contains version, product information, etc.

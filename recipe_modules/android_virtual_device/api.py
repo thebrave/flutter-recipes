@@ -17,7 +17,6 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
 
   def __init__(self, *args, **kwargs):
     super(AndroidVirtualDeviceApi, self).__init__(*args, **kwargs)
-    self.emulator_pid = -1
     self.avd_root = None
     self.adb_path = None
     self._initialized = False
@@ -49,10 +48,10 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       # Show devices before anything to see if anything is left over from a
       # previous run.
       self.show_devices(env, env_prefixes, "before emulator install/start")
-      self.emulator_pid = self.start(env, env_prefixes, version)
+      self.start(env, env_prefixes, version)
       yield
     finally:
-      self.kill(self.emulator_pid)
+      self.kill()
       self.uninstall(env, env_prefixes, version=version)
       self.show_devices(env, env_prefixes, "after emulator uninstall")
 
@@ -124,7 +123,6 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       version(string): The android API version of the emulator as a string.
     """
-    self.emulator_pid = ''
     with self.m.step.nest('start avd'):
       with self.m.context(env=env, env_prefixes=env_prefixes,
                           cwd=self.avd_root), self.m.depot_tools.on_path():
@@ -146,7 +144,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
           # In case of retries we need to kill the previous emulator to ensure a fresh
           # start.
           self.kill()
-          output = self.m.step(
+          self.m.step(
               'Start Android emulator (%s)' % version,
               [
                   'xvfb-run', 'vpython3', avd_script_path, 'start',
@@ -155,16 +153,10 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
               ],
               stdout=self.m.raw_io.output_text(add_output_log=True),
               infra_step=True,
-          ).stdout
-
-          m = re.search(r'.*pid: (\d+)\)', output)
-          self.emulator_pid = m.group(1)
-          env['EMULATOR_PID'] = self.emulator_pid
+          )
           self._setup(env, env_prefixes)
 
         self.m.retry.wrap(_start, max_attempts=3)
-
-    return self.emulator_pid
 
   def _setup(self, env, env_prefixes):
     """Configures a running emulator and waits for it to reach the home screen.
@@ -230,38 +222,16 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             stdout=self.m.raw_io.output_text(add_output_log=True)
         )
 
-    env['EMULATOR_PID'] = self.emulator_pid
-    return self.emulator_pid
-
-  def kill(self, emulator_pid=None):
+  def kill(self):
     """Kills the emulator and cleans up any zombie QEMU processes.
-
-    Args:
-      emulator_pid(string): The PID of the emulator process.
     """
     assert self.m.platform.is_linux
     with self.m.step.nest('kill and cleanup avd'):
-      pid_to_kill = emulator_pid or self.emulator_pid
-      if not pid_to_kill:
-        # Noop if there is not emulator to kill.
-        return
+      self.m.step('List processes before cleaning up', ['ps', 'aux'])
       # Accepting any return code because when the emulator dies the pid is no longer
       # available causing an exception.
       self.m.step(
-          'Kill emulator cleanup', ['kill', '-9', pid_to_kill], ok_ret='any'
+          'Kill emulator cleanup', ['pkill', '-9', '-e', '-f', 'emulator'],
+          ok_ret='any'
       )
-
-      # Kill zombie processes left over by QEMU on the host.
-      step_result = self.m.step(
-          'list processes', ['ps', '-axww'],
-          stdout=self.m.raw_io.output_text(add_output_log=True),
-          stderr=self.m.raw_io.output_text(add_output_log=True)
-      )
-      zombieList = ['qemu-system']
-      killCommand = ['kill', '-9']
-      for line in step_result.stdout.splitlines():
-        # Check if current process has zombie process substring.
-        if any(zombie in line for zombie in zombieList):
-          killCommand.append(line.split(None, 1)[0])
-      if len(killCommand) > 2:
-        self.m.step('Kill zombie processes', killCommand, ok_ret='any')
+      self.m.step('List processes after cleaning up', ['ps', 'aux'])

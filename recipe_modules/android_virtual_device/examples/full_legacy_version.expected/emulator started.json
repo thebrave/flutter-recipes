@@ -177,6 +177,99 @@
   },
   {
     "cmd": [
+      "ps",
+      "aux"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd.kill and cleanup avd.List processes before cleaning up",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "pkill",
+      "-9",
+      "-e",
+      "-f",
+      "emulator"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd.kill and cleanup avd.Kill emulator cleanup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ps",
+      "aux"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd.kill and cleanup avd.List processes after cleaning up",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
       "xvfb-run",
       "vpython3",
       "[CACHE]/avd/src/tools/android/avd/avd.py",
@@ -235,7 +328,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "17687",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -268,7 +360,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "17687",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -304,9 +395,21 @@
   },
   {
     "cmd": [
-      "kill",
+      "ps",
+      "aux"
+    ],
+    "name": "kill and cleanup avd.List processes before cleaning up",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "pkill",
       "-9",
-      "17687"
+      "-e",
+      "-f",
+      "emulator"
     ],
     "name": "kill and cleanup avd.Kill emulator cleanup",
     "~followup_annotations": [
@@ -316,12 +419,11 @@
   {
     "cmd": [
       "ps",
-      "-axww"
+      "aux"
     ],
-    "name": "kill and cleanup avd.list processes",
+    "name": "kill and cleanup avd.List processes after cleaning up",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -341,7 +443,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "17687",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -378,7 +479,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -404,7 +504,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
       "LOGS_FILE": "[CLEANUP]/tmp_tmp_2",
       "USE_EMULATOR": "true"
     },
@@ -436,7 +535,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
       "LOGS_FILE": "[CLEANUP]/tmp_tmp_2",
       "USE_EMULATOR": "true"
     },
@@ -467,7 +565,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -493,7 +590,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
       "LOGS_FILE": "[CLEANUP]/tmp_tmp_3",
       "USE_EMULATOR": "true"
     },
@@ -525,7 +621,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
       "LOGS_FILE": "[CLEANUP]/tmp_tmp_3",
       "USE_EMULATOR": "true"
     },
@@ -558,7 +653,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -589,6 +683,99 @@
   },
   {
     "cmd": [
+      "ps",
+      "aux"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd (2).kill and cleanup avd.List processes before cleaning up",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "pkill",
+      "-9",
+      "-e",
+      "-f",
+      "emulator"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd (2).kill and cleanup avd.Kill emulator cleanup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ps",
+      "aux"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "AVD_CIPD_VERSION": "TESTVERSIONSTR",
+      "AVD_ROOT": "[CACHE]/avd",
+      "USE_EMULATOR": "true"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "start avd (2).kill and cleanup avd.List processes after cleaning up",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
       "xvfb-run",
       "vpython3",
       "[CACHE]/avd/src/tools/android/avd/avd.py",
@@ -606,7 +793,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -648,7 +834,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "17687",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -681,7 +866,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "17687",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -717,9 +901,21 @@
   },
   {
     "cmd": [
-      "kill",
+      "ps",
+      "aux"
+    ],
+    "name": "kill and cleanup avd (2).List processes before cleaning up",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "pkill",
       "-9",
-      "17687"
+      "-e",
+      "-f",
+      "emulator"
     ],
     "name": "kill and cleanup avd (2).Kill emulator cleanup",
     "~followup_annotations": [
@@ -729,12 +925,11 @@
   {
     "cmd": [
       "ps",
-      "-axww"
+      "aux"
     ],
-    "name": "kill and cleanup avd (2).list processes",
+    "name": "kill and cleanup avd (2).List processes after cleaning up",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -754,7 +949,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "17687",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -791,7 +985,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
       "USE_EMULATOR": "true"
     },
     "env_prefixes": {
@@ -817,7 +1010,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
       "LOGS_FILE": "[CLEANUP]/tmp_tmp_4",
       "USE_EMULATOR": "true"
     },
@@ -849,7 +1041,6 @@
       "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
       "AVD_CIPD_VERSION": "TESTVERSIONSTR",
       "AVD_ROOT": "[CACHE]/avd",
-      "EMULATOR_PID": "",
       "LOGS_FILE": "[CLEANUP]/tmp_tmp_4",
       "USE_EMULATOR": "true"
     },

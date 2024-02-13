@@ -9,8 +9,10 @@ DEPS = [
 
 
 def RunSteps(api):
-  env = {'USE_EMULATOR': api.properties.get('use_emulator', False),
-         'AVD_CIPD_VERSION': 'TESTVERSIONSTR'}
+  env = {
+      'USE_EMULATOR': api.properties.get('use_emulator', False),
+      'AVD_CIPD_VERSION': 'TESTVERSIONSTR'
+  }
   env_prefixes = {}
 
   with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
@@ -20,6 +22,7 @@ def RunSteps(api):
   with api.android_virtual_device(env=env, env_prefixes=env_prefixes,
                                   version='34'):
     api.step('Do something', ['echo', 'hello'])
+
 
 def GenTests(api):
   avd_api_version = '34'
@@ -35,8 +38,7 @@ def GenTests(api):
           )
       ),
       api.step_data(
-          'start avd (2).Start Android emulator (%s)' %
-          avd_api_version,
+          'start avd (2).Start Android emulator (%s)' % avd_api_version,
           stdout=api.raw_io.output_text(
               'android_' + avd_api_version +
               '_google_apis_x86|emulator-5554 started (pid: 17687)'
@@ -55,19 +57,10 @@ def GenTests(api):
           )
       ),
       api.step_data(
-          'kill and cleanup avd.list processes',
-          stdout=api.raw_io.output_text('12345 qemu-system blah')
-      ),
-      api.step_data(
-          'start avd (2).Start Android emulator (%s)' %
-          avd_api_version,
+          'start avd (2).Start Android emulator (%s)' % avd_api_version,
           stdout=api.raw_io.output_text(
               'android_' + avd_api_version +
               '_google_apis_x86|emulator-5554 started (pid: 17687)'
           )
-      ),
-      api.step_data(
-          'kill and cleanup avd (2).list processes',
-          stdout=api.raw_io.output_text('12345 qemu-system blah')
       ),
   )

@@ -57,18 +57,10 @@ def GenTests(api):
           )
       ),
       api.step_data(
-          'kill and cleanup avd.list processes',
-          stdout=api.raw_io.output_text('12345 qemu-system blah')
-      ),
-      api.step_data(
           'start avd (2).Start Android emulator (%s)' % avd_api_version,
           stdout=api.raw_io.output_text(
               'android_' + avd_api_version +
               '_google_apis_x86|emulator-5554 started (pid: 17687)'
           )
-      ),
-      api.step_data(
-          'kill and cleanup avd (2).list processes',
-          stdout=api.raw_io.output_text('12345 qemu-system blah')
       ),
   )

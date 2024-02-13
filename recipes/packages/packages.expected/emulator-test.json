@@ -688,6 +688,147 @@
   },
   {
     "cmd": [
+      "ps",
+      "aux"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "AVD_CIPD_VERSION": "AVDCIPDVERSION",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PR_OVERRIDE_LABELS": "",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "USE_EMULATOR": "True"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Run package tests.start avd.kill and cleanup avd.List processes before cleaning up",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "pkill",
+      "-9",
+      "-e",
+      "-f",
+      "emulator"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "AVD_CIPD_VERSION": "AVDCIPDVERSION",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PR_OVERRIDE_LABELS": "",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "USE_EMULATOR": "True"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Run package tests.start avd.kill and cleanup avd.Kill emulator cleanup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ps",
+      "aux"
+    ],
+    "cwd": "[CACHE]/avd",
+    "env": {
+      "ADB_PATH": "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools/adb",
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "AVD_CIPD_VERSION": "AVDCIPDVERSION",
+      "AVD_ROOT": "[CACHE]/avd",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PR_OVERRIDE_LABELS": "",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "USE_EMULATOR": "True"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[CACHE]/avd/src/third_party/android_sdk/public/platform-tools",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Run package tests.start avd.kill and cleanup avd.List processes after cleaning up",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
       "xvfb-run",
       "vpython3",
       "[CACHE]/avd/src/tools/android/avd/avd.py",
@@ -764,7 +905,6 @@
       "AVD_CIPD_VERSION": "AVDCIPDVERSION",
       "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "EMULATOR_PID": "17687",
       "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
       "GIT_BRANCH": "master",
       "LUCI_BRANCH": "",
@@ -815,7 +955,6 @@
       "AVD_CIPD_VERSION": "AVDCIPDVERSION",
       "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "EMULATOR_PID": "17687",
       "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
       "GIT_BRANCH": "master",
       "LUCI_BRANCH": "",
@@ -956,7 +1095,6 @@
       "AVD_CIPD_VERSION": "AVDCIPDVERSION",
       "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "EMULATOR_PID": "17687",
       "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -1137,9 +1275,44 @@
   },
   {
     "cmd": [
-      "kill",
+      "ps",
+      "aux"
+    ],
+    "cwd": "[START_DIR]/packages",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "AVD_CIPD_VERSION": "AVDCIPDVERSION",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PR_OVERRIDE_LABELS": "",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "USE_EMULATOR": "True"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "name": "Run package tests.kill and cleanup avd.List processes before cleaning up",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "pkill",
       "-9",
-      "17687"
+      "-e",
+      "-f",
+      "emulator"
     ],
     "cwd": "[START_DIR]/packages",
     "env": {
@@ -1172,7 +1345,7 @@
   {
     "cmd": [
       "ps",
-      "-axww"
+      "aux"
     ],
     "cwd": "[START_DIR]/packages",
     "env": {
@@ -1197,10 +1370,9 @@
         "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
       ]
     },
-    "name": "Run package tests.kill and cleanup avd.list processes",
+    "name": "Run package tests.kill and cleanup avd.List processes after cleaning up",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -1225,7 +1397,6 @@
       "AVD_CIPD_VERSION": "AVDCIPDVERSION",
       "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "EMULATOR_PID": "17687",
       "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -1283,7 +1454,6 @@
       "AVD_CIPD_VERSION": "AVDCIPDVERSION",
       "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "EMULATOR_PID": "",
       "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -1327,7 +1497,6 @@
       "AVD_CIPD_VERSION": "AVDCIPDVERSION",
       "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "EMULATOR_PID": "",
       "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
@@ -1377,7 +1546,6 @@
       "AVD_CIPD_VERSION": "AVDCIPDVERSION",
       "AVD_ROOT": "[CACHE]/avd",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "EMULATOR_PID": "",
       "EMULATOR_VERSION": "android_31_google_apis_x64.textpb",
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",

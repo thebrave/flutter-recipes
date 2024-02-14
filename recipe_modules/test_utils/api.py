@@ -159,7 +159,7 @@ class TestUtilsApi(recipe_api.RecipeApi):
         ) if self._test_data.enabled else logs
         if self._is_flaky(step_stdout):
           test_run_status = 'flaky'
-          self.flaky_step(step_name, step_stdout)
+          self.flaky_step(step_name, logs_file)
         else:
           test_run_status = 'success'
       except self.m.step.StepFailure as f:
@@ -185,14 +185,14 @@ class TestUtilsApi(recipe_api.RecipeApi):
     """
     return 'test: %s' % step_name
 
-  def flaky_step(self, step_name, stdout=''):
+  def flaky_step(self, step_name, stdout=None):
     """Add a flaky step when test is flaky.
     Args:
       step_name(str): The name of the step.
     """
     with self.m.step.nest('step is flaky: %s' % step_name) as presentation:
       presentation.links['stdout'] = stdout
-      presentation.status = self.m.step.WARNING
+      presentation.status = self.m.step.FAILURE
 
   def collect_benchmark_tags(self, env, env_prefixes, target_tags):
     """Collect host and device tags for devicelab benchmarks.

@@ -249,3 +249,8 @@ class RbeApi(recipe_api.RecipeApi):
         if self.m.path.exists(p):
           # Read the log so it shows up in Milo for debugging.
           self.m.file.read_text(f"read {self.m.path.basename(p)}", p)
+
+  def prepare_rbe_gn(self, rbe_working_path, gn):
+    """Appends rbe server address to GN config."""
+    rbe_server_address = 'pipe://reproxy.pipe' if self.m.platform.is_win else f'unix://{rbe_working_path}/reproxy.sock'
+    gn.append(f'--rbe-server-address={rbe_server_address}')

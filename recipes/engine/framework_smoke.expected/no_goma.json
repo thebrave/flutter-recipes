@@ -258,61 +258,33 @@
     "name": "Build host_debug_unopt"
   },
   {
-    "cmd": [],
-    "name": "Build host_debug_unopt.ensure goma",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
     "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CACHE]/goma/client",
-      "-ensure-file",
-      "fuchsia/third_party/goma/client/${platform} integration",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
+      "python3",
+      "[CACHE]/builder/src/flutter/tools/gn",
+      "--unoptimized",
+      "--prebuilt-dart-sdk",
+      "--rbe",
+      "--no-goma",
+      "--rbe-server-address=unix://[CLEANUP]/rbe_tmp_1/reproxy.sock"
     ],
-    "infra_step": true,
-    "name": "Build host_debug_unopt.ensure goma.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-integration-----\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"fuchsia/third_party/goma/client/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Build host_debug_unopt.setup goma",
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Build host_debug_unopt.gn --unoptimized --prebuilt-dart-sdk --rbe --no-goma --rbe-server-address=unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Build host_debug_unopt.setup goma.ensure infra/3pp/tools/cpython3/${platform}",
+    "name": "Build host_debug_unopt.collect rbe logs",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Build host_debug_unopt.setup goma.ensure infra/3pp/tools/cpython3/${platform}.get packages",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -323,34 +295,148 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "RECIPE_MODULE[fuchsia::python3]/resources/cipd.ensure",
+      "[CLEANUP]/rbe_tmp_1/bootstrap.WARNING",
       "/path/to/tmp/"
     ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
     "infra_step": true,
-    "name": "Build host_debug_unopt.setup goma.ensure infra/3pp/tools/cpython3/${platform}.get packages.read ensure file",
+    "name": "Build host_debug_unopt.collect rbe logs.read bootstrap.WARNING",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@4@@@",
-      "@@@STEP_LOG_LINE@cipd.ensure@infra/3pp/tools/cpython3/${platform} version:pinned-version@@@",
-      "@@@STEP_LOG_END@cipd.ensure@@@"
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@bootstrap.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/rbe_metrics.txt",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "Build host_debug_unopt.collect rbe logs.read rbe_metrics.txt",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@rbe_metrics.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/reproxy.WARNING",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "Build host_debug_unopt.collect rbe logs.read reproxy.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@reproxy.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/reproxy-gomaip.WARNING",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "Build host_debug_unopt.collect rbe logs.read reproxy-gomaip.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@reproxy-gomaip.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/reproxy_outerr.log",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "Build host_debug_unopt.collect rbe logs.read reproxy_outerr.log",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@reproxy_outerr.log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/rewrapper.WARNING",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "Build host_debug_unopt.collect rbe logs.read rewrapper.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@rewrapper.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "glob",
+      "[CLEANUP]/rbe_tmp_1",
+      "*.rrpl"
+    ],
+    "infra_step": true,
+    "name": "Build host_debug_unopt.collect rbe logs.find rrpl files",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@glob@[CLEANUP]/rbe_tmp_1/reproxy_2021-10-16_22_52_23.rrpl@@@",
+      "@@@STEP_LOG_END@glob@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/reproxy_2021-10-16_22_52_23.rrpl",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "Build host_debug_unopt.collect rbe logs.read reproxy_2021-10-16_22_52_23.rrpl",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@reproxy_2021-10-16_22_52_23.rrpl@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Build host_debug_unopt.setup goma.ensure infra/3pp/tools/cpython3/${platform}.install infra/3pp/tools/cpython3",
+    "name": "Build host_debug_unopt.install infra/rbe/client",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -363,24 +449,12 @@
       "ensure-directory",
       "--mode",
       "0o777",
-      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07"
+      "[START_DIR]/cipd_tool/infra/rbe/client/d6057ebe22e9abfffdb036fed4230c3cba200a807fedd3720bced58c28ebe411"
     ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
     "infra_step": true,
-    "name": "Build host_debug_unopt.setup goma.ensure infra/3pp/tools/cpython3/${platform}.install infra/3pp/tools/cpython3.ensure package directory",
+    "name": "Build host_debug_unopt.install infra/rbe/client.ensure package directory",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@4@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -388,36 +462,24 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07",
+      "[START_DIR]/cipd_tool/infra/rbe/client/d6057ebe22e9abfffdb036fed4230c3cba200a807fedd3720bced58c28ebe411",
       "-ensure-file",
-      "infra/3pp/tools/cpython3/${platform} version:pinned-version",
+      "infra/rbe/client/${platform} re_client_version:0.111.0.1ccaa23-gomaip",
       "-max-threads",
       "0",
       "-json-output",
       "/path/to/tmp/json"
     ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
     "infra_step": true,
-    "name": "Build host_debug_unopt.setup goma.ensure infra/3pp/tools/cpython3/${platform}.install infra/3pp/tools/cpython3.ensure_installed",
+    "name": "Build host_debug_unopt.install infra/rbe/client.ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@4@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/cpython3/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"re_client_version:0.111.0.1ccaa23-gomaip\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/rbe/client/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  }@@@",
@@ -427,208 +489,51 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "restart"
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[CACHE]/rbe/deps"
     ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
     "infra_step": true,
-    "name": "Build host_debug_unopt.setup goma.start goma",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "[CACHE]/builder/src/flutter/tools/gn",
-      "--unoptimized",
-      "--prebuilt-dart-sdk"
-    ],
-    "env": {
-      "GOMA_DIR": "[CACHE]/goma/client",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "name": "Build host_debug_unopt.gn --unoptimized --prebuilt-dart-sdk",
+    "name": "Build host_debug_unopt.create rbe cache dir",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Build host_debug_unopt.teardown goma",
+    "name": "Build host_debug_unopt.setup remote execution",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "jsonstatus",
-      "/path/to/tmp/json"
+      "[START_DIR]/cipd_tool/infra/rbe/client/d6057ebe22e9abfffdb036fed4230c3cba200a807fedd3720bced58c28ebe411/bootstrap",
+      "--re_proxy=[START_DIR]/cipd_tool/infra/rbe/client/d6057ebe22e9abfffdb036fed4230c3cba200a807fedd3720bced58c28ebe411/reproxy"
     ],
     "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
     },
     "infra_step": true,
-    "name": "Build host_debug_unopt.teardown goma.goma jsonstatus",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"foo\": \"bar\"@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "stat"
-    ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "Build host_debug_unopt.teardown goma.goma stats",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "stop"
-    ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "Build host_debug_unopt.teardown goma.stop goma",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CLEANUP]/compiler_proxy.WARNING",
-      "/path/to/tmp/"
-    ],
-    "env": {
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "Build host_debug_unopt.teardown goma.read goma_client warning log",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@compiler_proxy.WARNING@test log@@@",
-      "@@@STEP_LOG_END@compiler_proxy.WARNING@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CACHE]/goma/client/goma_stats.json",
-      "/path/to/tmp/"
-    ],
-    "env": {
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "Build host_debug_unopt.teardown goma.read goma_stats.json",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Build host_debug_unopt.setup goma (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "restart"
-    ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "Build host_debug_unopt.setup goma (2).start goma",
+    "name": "Build host_debug_unopt.setup remote execution.start reproxy",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -637,13 +542,24 @@
     "cmd": [
       "[CACHE]/builder/src/flutter/third_party/ninja/ninja",
       "-j",
-      "100",
+      "5",
       "-C",
       "[CACHE]/builder/src/out/host_debug_unopt"
     ],
     "env": {
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
     },
     "env_suffixes": {
       "DEPOT_TOOLS_UPDATE": [
@@ -660,84 +576,40 @@
   },
   {
     "cmd": [],
-    "name": "Build host_debug_unopt.teardown goma (2)",
+    "name": "Build host_debug_unopt.teardown remote execution",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "jsonstatus",
-      "/path/to/tmp/json"
+      "[START_DIR]/cipd_tool/infra/rbe/client/d6057ebe22e9abfffdb036fed4230c3cba200a807fedd3720bced58c28ebe411/bootstrap",
+      "--shutdown"
     ],
     "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
     },
     "infra_step": true,
-    "name": "Build host_debug_unopt.teardown goma (2).goma jsonstatus",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"foo\": \"bar\"@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "stat"
-    ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "Build host_debug_unopt.teardown goma (2).goma stats",
+    "name": "Build host_debug_unopt.teardown remote execution.stop reproxy",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
-    "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/cpython3/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/bin/python3",
-      "[CACHE]/goma/client/goma_ctl.py",
-      "stop"
-    ],
-    "env": {
-      "GLOG_log_dir": "[CLEANUP]",
-      "GOMA_CACHE_DIR": "[CACHE]/goma",
-      "GOMA_DEPS_CACHE_FILE": "goma_deps_cache",
-      "GOMA_DUMP_STATS_FILE": "[CACHE]/goma/client/goma_stats.json",
-      "GOMA_LOCAL_OUTPUT_CACHE_DIR": "[CACHE]/goma/localoutputcache",
-      "GOMA_MAX_SUM_OUTPUT_SIZE_IN_MB": "256",
-      "GOMA_SERVER_HOST": "rbe-prod1.endpoints.fuchsia-infra-goma-prod.cloud.goog",
-      "GOMA_STORE_LOCAL_RUN_OUTPUT": "True",
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
-    },
-    "infra_step": true,
-    "name": "Build host_debug_unopt.teardown goma (2).stop goma",
+    "cmd": [],
+    "name": "Build host_debug_unopt.teardown remote execution.collect rbe logs",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -750,19 +622,29 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[CLEANUP]/compiler_proxy.WARNING",
+      "[CLEANUP]/rbe_tmp_1/bootstrap.WARNING",
       "/path/to/tmp/"
     ],
     "env": {
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
     },
     "infra_step": true,
-    "name": "Build host_debug_unopt.teardown goma (2).read goma_client warning log",
+    "name": "Build host_debug_unopt.teardown remote execution.collect rbe logs.read bootstrap.WARNING",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@compiler_proxy.WARNING@test log@@@",
-      "@@@STEP_LOG_END@compiler_proxy.WARNING@@@"
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_END@bootstrap.WARNING@@@"
     ]
   },
   {
@@ -773,17 +655,228 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[CACHE]/goma/client/goma_stats.json",
+      "[CLEANUP]/rbe_tmp_1/rbe_metrics.txt",
       "/path/to/tmp/"
     ],
     "env": {
-      "GOMA_TMP_DIR": "[CLEANUP]/goma",
-      "GOMA_USE_LOCAL": "False"
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
     },
     "infra_step": true,
-    "name": "Build host_debug_unopt.teardown goma (2).read goma_stats.json",
+    "name": "Build host_debug_unopt.teardown remote execution.collect rbe logs.read rbe_metrics.txt",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_END@rbe_metrics.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/reproxy.WARNING",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "Build host_debug_unopt.teardown remote execution.collect rbe logs.read reproxy.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_END@reproxy.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/reproxy-gomaip.WARNING",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "Build host_debug_unopt.teardown remote execution.collect rbe logs.read reproxy-gomaip.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_END@reproxy-gomaip.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/reproxy_outerr.log",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "Build host_debug_unopt.teardown remote execution.collect rbe logs.read reproxy_outerr.log",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_END@reproxy_outerr.log@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/rewrapper.WARNING",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "Build host_debug_unopt.teardown remote execution.collect rbe logs.read rewrapper.WARNING",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_END@rewrapper.WARNING@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "glob",
+      "[CLEANUP]/rbe_tmp_1",
+      "*.rrpl"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "Build host_debug_unopt.teardown remote execution.collect rbe logs.find rrpl files",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@glob@[CLEANUP]/rbe_tmp_1/reproxy_2021-10-16_22_52_23.rrpl@@@",
+      "@@@STEP_LOG_END@glob@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/rbe_tmp_1/reproxy_2021-10-16_22_52_23.rrpl",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe_tmp_1",
+      "RBE_server_address": "unix://[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe_tmp_1/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "infra_step": true,
+    "name": "Build host_debug_unopt.teardown remote execution.collect rbe logs.read reproxy_2021-10-16_22_52_23.rrpl",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_END@reproxy_2021-10-16_22_52_23.rrpl@@@"
     ]
   },
   {

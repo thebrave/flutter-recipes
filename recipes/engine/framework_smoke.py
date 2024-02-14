@@ -15,6 +15,7 @@ from google.protobuf import struct_pb2
 DEPS = [
     'flutter/build_util',
     'flutter/logs_util',
+    'flutter/rbe',
     'flutter/repo_util',
     'flutter/test_utils',
     'recipe_engine/context',
@@ -44,9 +45,12 @@ def RunSteps(api, properties, env_properties):
 
   # Build engine host unopt.
   with api.step.nest('Build host_debug_unopt'):
-    api.build_util.run_gn(['--unoptimized', '--prebuilt-dart-sdk'], checkout)
+    gn = ['--unoptimized', '--prebuilt-dart-sdk', '--rbe', '--no-goma']
+    rbe_working_path = api.path.mkdtemp(prefix="rbe")
+    api.rbe.prepare_rbe_gn(rbe_working_path, gn)
+    api.build_util.run_gn(gn, checkout)
     try:
-      api.build_util.build('host_debug_unopt', checkout, [], env)
+      api.build_util.build('host_debug_unopt', checkout, [], env, rbe_working_path)
     finally:
       api.logs_util.upload_logs('builder', type='engine')
 

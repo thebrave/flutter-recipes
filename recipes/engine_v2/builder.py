@@ -42,6 +42,7 @@ DEPS = [
     'flutter/monorepo',
     'flutter/os_utils',
     'flutter/osx_sdk',
+    'flutter/rbe',
     'flutter/repo_util',
     'flutter/retry',
     'flutter/shard_util_v2',
@@ -185,8 +186,7 @@ def Build(api, checkout, env, env_prefixes, outputs, build):
         gn.append(f'--gn-args=engine_version="{version}"')
       rbe_working_path = api.path.mkdtemp(prefix="rbe")
       if '--rbe' in gn:
-        rbe_server_address = 'pipe://reproxy.pipe' if api.platform.is_win else f'unix://{rbe_working_path}/reproxy.sock'
-        gn.append(f'--rbe-server-address={rbe_server_address}')
+        api.rbe.prepare_rbe_gn(rbe_working_path, gn)
       api.build_util.run_gn(gn, checkout)
       ninja = build.get('ninja')
       ninja_tool[ninja.get('tool', 'ninja')](

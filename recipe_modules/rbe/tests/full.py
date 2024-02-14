@@ -35,6 +35,7 @@ def RunSteps(api):
   api.rbe.wait_and_collect_logs(
       working_dir=api.path["cleanup"].join("rbe"), collect_rbe_logs_latency=61
   )
+  api.rbe.prepare_rbe_gn(api.path["cleanup"].join("rbe"), [])
 
 
 def GenTests(api):

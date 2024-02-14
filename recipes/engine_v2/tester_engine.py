@@ -71,6 +71,8 @@ DEPS = [
     'recipe_engine/step',
 ]
 
+DEFAULT_TEST_TIMEOUT_SECS = 30 * 60
+
 
 def run_tests(api, test, checkout, env, env_prefixes):
   """Runs sub-build tests."""
@@ -95,9 +97,10 @@ def run_tests(api, test, checkout, env, env_prefixes):
     command.append(checkout.join(task.get('script')))
     command.extend(task.get('parameters', []))
     step_name = api.test_utils.test_step_name(task.get('name'))
+    test_timeout_secs = task.get('test_timeout_secs', DEFAULT_TEST_TIMEOUT_SECS)
 
     def run_test():
-      return api.step(step_name, command)
+      return api.step(step_name, command, timeout=test_timeout_secs)
 
     api.logs_util.initialize_logs_collection(env)
     try:

@@ -78,6 +78,9 @@ MOCK_POM_PATH = (
 # Used for mock paths
 DIRECTORY = 'DIRECTORY'
 
+# Default timeout for tests running as part of the build.
+DEFAULT_TEST_TIMEOUT_SECS = 30 * 60
+
 
 def run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes):
   """Runs sub-builds generators."""
@@ -130,12 +133,15 @@ def run_tests(api, tests, checkout, env, env_prefixes):
       command.append(checkout.join(test.get('script')))
       command.extend(test.get('parameters', []))
       step_name = api.test_utils.test_step_name(test.get('name'))
+      test_timeout_secs = test.get(
+          'test_timeout_secs', DEFAULT_TEST_TIMEOUT_SECS
+      )
 
       # pylint: disable=cell-var-from-loop
       def run_test():
         # Replace MAGIC_ENVS
         updated_command = api.os_utils.replace_magic_envs(command, tmp_env)
-        return api.step(step_name, updated_command)
+        return api.step(step_name, updated_command, timeout=test_timeout_secs)
 
       # Rerun test step 3 times by default if failing.
       # TODO(keyonghan): notify tree gardener for test failures/flakes:
@@ -256,6 +262,7 @@ def Verify(api, checkout, archive_config):
         file, bucket, gcs_path_without_bucket
     )
 
+
 def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
@@ -287,7 +294,9 @@ def RunSteps(api):
     env, env_prefixes = api.repo_util.engine_environment(
         api.path['cache'].join('builder')
     )
-    api.repo_util.engine_checkout(cache_root, env, env_prefixes, gclient_variables = gclient_variables)
+    api.repo_util.engine_checkout(
+        cache_root, env, env_prefixes, gclient_variables=gclient_variables
+    )
   outputs = {}
   api.logs_util.initialize_logs_collection(env)
   try:

@@ -591,16 +591,63 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     vs_path = self.m.path['cache'].join('vsbuild')
     vs = self.m.cipd.EnsureFile()
     vs.add_package("flutter_internal/windows/vsbuild", version)
-    with self.m.step.nest('Install VSBuild'):
+    with self.m.step.nest('VSBuild') as presentation:
       self.m.cipd.ensure(vs_path, vs)
-    paths = env_prefixes.get('PATH', [])
-    paths.insert(0, vs_path)
-    env_prefixes['PATH'] = paths
-    with self.m.context(env=env, env_prefixes=env_prefixes, cwd=vs_path):
-      self.m.step(
-          'Install VS build',
-          ['powershell.exe', vs_path.join('install.ps1')],
+      paths = env_prefixes.get('PATH', [])
+      paths.insert(0, vs_path)
+      env_prefixes['PATH'] = paths
+      installation_script = r"""
+# Delete previous logs
+Remove-Item "$env:TEMP\dd_installer_elevated_*"
+Remove-Item "$env:TEMP\dd_setup_*"
+Remove-Item "$env:TEMP\dd_vs_setup_*"
+$process = Start-Process -FilePath vs_setup.exe -ArgumentList "--add", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64", "--add", "Microsoft.VisualStudio.Component.Windows10SDK", "--add", "Microsoft.VisualStudio.Component.Windows10SDK.19041", "--add", "Microsoft.VisualStudio.Component.VC.CMake.Project", "--add", "Microsoft.VisualStudio.Workload.NativeDesktop", "--passive", "--noweb", "--wait", "--norestart" -Wait -PassThru
+Write-Output $process.ExitCode
+exit $process.ExitCode
+"""
+      install_script_path = self.m.path['cleanup'].join('install.ps1')
+      self.m.file.write_text(
+          'Write install script', install_script_path, installation_script
       )
+      deferred = []
+      with self.m.context(env=env, env_prefixes=env_prefixes, cwd=vs_path):
+        deferred.append(
+            self.m.defer(
+                self.m.step,
+                'Install', ['powershell.exe', install_script_path],
+                timeout=10 * 60
+            )
+        )
+        copy_script = r"""
+$destination=$args[0]
+Get-ChildItem -Path "$env:TEMP"
+Copy-Item "$env:TEMP\dd_installer_elevated_*" "$destination"
+Copy-Item "$env:TEMP\dd_setup_??????????????.log*" "$destination"
+Copy-Item "$env:TEMP\dd_setup_*_errors.log" "$destination"
+Copy-Item "$env:TEMP\dd_vs_setup_*" "$destination"
+"""
+        copy_script_path = self.m.path['cleanup'].join('copy.ps1')
+        self.m.file.write_text(
+            'Write copy script', copy_script_path, copy_script
+        )
+        logs_path = self.m.path.mkdtemp()
+        self.m.file.ensure_directory('Ensure logs tmp folder', logs_path)
+        deferred.append(
+            self.m.defer(
+                self.m.step,
+                'Copy logs',
+                ['powershell.exe', copy_script_path, logs_path],
+            )
+        )
+
+        def collect_logs():
+          logs = self.m.file.listdir('List logs', logs_path)
+          for log in logs:
+            log_name = self.m.path.basename(log)
+            presentation.logs[log_name] = self.m.file.read_text(log_name, log)
+
+        deferred.append(self.m.defer(collect_logs))
+      self.m.defer.collect(deferred)
 
   def apple_signing(self, env, env_prefixes, version=None):
     """Sets up mac for code signing.

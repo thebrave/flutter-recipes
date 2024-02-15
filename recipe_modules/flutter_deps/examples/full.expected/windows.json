@@ -834,7 +834,13 @@
   },
   {
     "cmd": [],
-    "name": "Install VSBuild"
+    "name": "VSBuild",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@log1.txt@@@@",
+      "@@@STEP_LOG_END@log1.txt@@@",
+      "@@@STEP_LOG_LINE@log2.txt@@@@",
+      "@@@STEP_LOG_END@log2.txt@@@"
+    ]
   },
   {
     "cmd": [
@@ -849,7 +855,7 @@
       "-json-output",
       "/path/to/tmp/json"
     ],
-    "name": "Install VSBuild.ensure_installed",
+    "name": "VSBuild.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -867,8 +873,34 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "\n# Delete previous logs\nRemove-Item \"$env:TEMP\\dd_installer_elevated_*\"\nRemove-Item \"$env:TEMP\\dd_setup_*\"\nRemove-Item \"$env:TEMP\\dd_vs_setup_*\"\n$process = Start-Process -FilePath vs_setup.exe -ArgumentList \"--add\", \"Microsoft.VisualStudio.Component.VC.Tools.x86.x64\", \"--add\", \"Microsoft.VisualStudio.Component.Windows10SDK\", \"--add\", \"Microsoft.VisualStudio.Component.Windows10SDK.19041\", \"--add\", \"Microsoft.VisualStudio.Component.VC.CMake.Project\", \"--add\", \"Microsoft.VisualStudio.Workload.NativeDesktop\", \"--passive\", \"--noweb\", \"--wait\", \"--norestart\" -Wait -PassThru\nWrite-Output $process.ExitCode\nexit $process.ExitCode\n",
+      "[CLEANUP]\\install.ps1"
+    ],
+    "infra_step": true,
+    "name": "VSBuild.Write install script",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@install.ps1@@@@",
+      "@@@STEP_LOG_LINE@install.ps1@# Delete previous logs@@@",
+      "@@@STEP_LOG_LINE@install.ps1@Remove-Item \"$env:TEMP\\dd_installer_elevated_*\"@@@",
+      "@@@STEP_LOG_LINE@install.ps1@Remove-Item \"$env:TEMP\\dd_setup_*\"@@@",
+      "@@@STEP_LOG_LINE@install.ps1@Remove-Item \"$env:TEMP\\dd_vs_setup_*\"@@@",
+      "@@@STEP_LOG_LINE@install.ps1@$process = Start-Process -FilePath vs_setup.exe -ArgumentList \"--add\", \"Microsoft.VisualStudio.Component.VC.Tools.x86.x64\", \"--add\", \"Microsoft.VisualStudio.Component.Windows10SDK\", \"--add\", \"Microsoft.VisualStudio.Component.Windows10SDK.19041\", \"--add\", \"Microsoft.VisualStudio.Component.VC.CMake.Project\", \"--add\", \"Microsoft.VisualStudio.Workload.NativeDesktop\", \"--passive\", \"--noweb\", \"--wait\", \"--norestart\" -Wait -PassThru@@@",
+      "@@@STEP_LOG_LINE@install.ps1@Write-Output $process.ExitCode@@@",
+      "@@@STEP_LOG_LINE@install.ps1@exit $process.ExitCode@@@",
+      "@@@STEP_LOG_END@install.ps1@@@"
+    ]
+  },
+  {
+    "cmd": [
       "powershell.exe",
-      "[CACHE]\\vsbuild\\install.ps1"
+      "[CLEANUP]\\install.ps1"
     ],
     "cwd": "[CACHE]\\vsbuild",
     "env": {
@@ -909,7 +941,354 @@
         "[CLEANUP]\\tmp_tmp_6\\doxygen\\bin"
       ]
     },
-    "name": "Install VS build"
+    "name": "VSBuild.Install",
+    "timeout": 600,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "\n$destination=$args[0]\nGet-ChildItem -Path \"$env:TEMP\"\nCopy-Item \"$env:TEMP\\dd_installer_elevated_*\" \"$destination\"\nCopy-Item \"$env:TEMP\\dd_setup_??????????????.log*\" \"$destination\"\nCopy-Item \"$env:TEMP\\dd_setup_*_errors.log\" \"$destination\"\nCopy-Item \"$env:TEMP\\dd_vs_setup_*\" \"$destination\"\n",
+      "[CLEANUP]\\copy.ps1"
+    ],
+    "cwd": "[CACHE]\\vsbuild",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\android",
+      "ANDROID_NDK_PATH": "[CACHE]\\android\\ndk-bundle",
+      "ANDROID_SDK_HOME": "[CLEANUP]\\tmp_tmp_2",
+      "ANDROID_SDK_ROOT": "[CACHE]\\android",
+      "ANDROID_USER_HOME": "[CLEANUP]\\tmp_tmp_2\\.android",
+      "CHROME_EXECUTABLE": "[CACHE]\\chrome\\chrome\\chrome.exe",
+      "CHROME_NO_SANDBOX": "true",
+      "FIREFOX_EXECUTABLE": "[CACHE]\\firefox\\firefox",
+      "FLUTTER_XCODE_CODE_SIGN_STYLE": "Manual",
+      "FLUTTER_XCODE_DEVELOPMENT_TEAM": "S8QB4VV633",
+      "FLUTTER_XCODE_PROVISIONING_PROFILE_SPECIFIER": "match Development *",
+      "GOPATH": "[CLEANUP]\\go_path",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]\\gradle"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\vsbuild",
+        "[CACHE]\\certs",
+        "[CACHE]\\dart_sdk",
+        "[CACHE]\\chrome\\chrome",
+        "[CACHE]\\chrome\\drivers",
+        "[CACHE]\\firefox",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[START_DIR]\\firebase",
+        "[CACHE]\\cmake\\bin",
+        "[CLEANUP]\\tmp_tmp_3",
+        "[CACHE]\\cosign\\bin",
+        "[CACHE]\\ninja",
+        "[CACHE]\\clang\\bin",
+        "[CLEANUP]\\tmp_tmp_5\\curl",
+        "[CLEANUP]\\tmp_tmp_6\\doxygen\\bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "VSBuild.Write copy script",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@copy.ps1@@@@",
+      "@@@STEP_LOG_LINE@copy.ps1@$destination=$args[0]@@@",
+      "@@@STEP_LOG_LINE@copy.ps1@Get-ChildItem -Path \"$env:TEMP\"@@@",
+      "@@@STEP_LOG_LINE@copy.ps1@Copy-Item \"$env:TEMP\\dd_installer_elevated_*\" \"$destination\"@@@",
+      "@@@STEP_LOG_LINE@copy.ps1@Copy-Item \"$env:TEMP\\dd_setup_??????????????.log*\" \"$destination\"@@@",
+      "@@@STEP_LOG_LINE@copy.ps1@Copy-Item \"$env:TEMP\\dd_setup_*_errors.log\" \"$destination\"@@@",
+      "@@@STEP_LOG_LINE@copy.ps1@Copy-Item \"$env:TEMP\\dd_vs_setup_*\" \"$destination\"@@@",
+      "@@@STEP_LOG_END@copy.ps1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[CLEANUP]\\tmp_tmp_7"
+    ],
+    "cwd": "[CACHE]\\vsbuild",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\android",
+      "ANDROID_NDK_PATH": "[CACHE]\\android\\ndk-bundle",
+      "ANDROID_SDK_HOME": "[CLEANUP]\\tmp_tmp_2",
+      "ANDROID_SDK_ROOT": "[CACHE]\\android",
+      "ANDROID_USER_HOME": "[CLEANUP]\\tmp_tmp_2\\.android",
+      "CHROME_EXECUTABLE": "[CACHE]\\chrome\\chrome\\chrome.exe",
+      "CHROME_NO_SANDBOX": "true",
+      "FIREFOX_EXECUTABLE": "[CACHE]\\firefox\\firefox",
+      "FLUTTER_XCODE_CODE_SIGN_STYLE": "Manual",
+      "FLUTTER_XCODE_DEVELOPMENT_TEAM": "S8QB4VV633",
+      "FLUTTER_XCODE_PROVISIONING_PROFILE_SPECIFIER": "match Development *",
+      "GOPATH": "[CLEANUP]\\go_path",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]\\gradle"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\vsbuild",
+        "[CACHE]\\certs",
+        "[CACHE]\\dart_sdk",
+        "[CACHE]\\chrome\\chrome",
+        "[CACHE]\\chrome\\drivers",
+        "[CACHE]\\firefox",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[START_DIR]\\firebase",
+        "[CACHE]\\cmake\\bin",
+        "[CLEANUP]\\tmp_tmp_3",
+        "[CACHE]\\cosign\\bin",
+        "[CACHE]\\ninja",
+        "[CACHE]\\clang\\bin",
+        "[CLEANUP]\\tmp_tmp_5\\curl",
+        "[CLEANUP]\\tmp_tmp_6\\doxygen\\bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "VSBuild.Ensure logs tmp folder",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "powershell.exe",
+      "[CLEANUP]\\copy.ps1",
+      "[CLEANUP]\\tmp_tmp_7"
+    ],
+    "cwd": "[CACHE]\\vsbuild",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\android",
+      "ANDROID_NDK_PATH": "[CACHE]\\android\\ndk-bundle",
+      "ANDROID_SDK_HOME": "[CLEANUP]\\tmp_tmp_2",
+      "ANDROID_SDK_ROOT": "[CACHE]\\android",
+      "ANDROID_USER_HOME": "[CLEANUP]\\tmp_tmp_2\\.android",
+      "CHROME_EXECUTABLE": "[CACHE]\\chrome\\chrome\\chrome.exe",
+      "CHROME_NO_SANDBOX": "true",
+      "FIREFOX_EXECUTABLE": "[CACHE]\\firefox\\firefox",
+      "FLUTTER_XCODE_CODE_SIGN_STYLE": "Manual",
+      "FLUTTER_XCODE_DEVELOPMENT_TEAM": "S8QB4VV633",
+      "FLUTTER_XCODE_PROVISIONING_PROFILE_SPECIFIER": "match Development *",
+      "GOPATH": "[CLEANUP]\\go_path",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]\\gradle"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\vsbuild",
+        "[CACHE]\\certs",
+        "[CACHE]\\dart_sdk",
+        "[CACHE]\\chrome\\chrome",
+        "[CACHE]\\chrome\\drivers",
+        "[CACHE]\\firefox",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[START_DIR]\\firebase",
+        "[CACHE]\\cmake\\bin",
+        "[CLEANUP]\\tmp_tmp_3",
+        "[CACHE]\\cosign\\bin",
+        "[CACHE]\\ninja",
+        "[CACHE]\\clang\\bin",
+        "[CLEANUP]\\tmp_tmp_5\\curl",
+        "[CLEANUP]\\tmp_tmp_6\\doxygen\\bin"
+      ]
+    },
+    "name": "VSBuild.Copy logs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CLEANUP]\\tmp_tmp_7"
+    ],
+    "cwd": "[CACHE]\\vsbuild",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\android",
+      "ANDROID_NDK_PATH": "[CACHE]\\android\\ndk-bundle",
+      "ANDROID_SDK_HOME": "[CLEANUP]\\tmp_tmp_2",
+      "ANDROID_SDK_ROOT": "[CACHE]\\android",
+      "ANDROID_USER_HOME": "[CLEANUP]\\tmp_tmp_2\\.android",
+      "CHROME_EXECUTABLE": "[CACHE]\\chrome\\chrome\\chrome.exe",
+      "CHROME_NO_SANDBOX": "true",
+      "FIREFOX_EXECUTABLE": "[CACHE]\\firefox\\firefox",
+      "FLUTTER_XCODE_CODE_SIGN_STYLE": "Manual",
+      "FLUTTER_XCODE_DEVELOPMENT_TEAM": "S8QB4VV633",
+      "FLUTTER_XCODE_PROVISIONING_PROFILE_SPECIFIER": "match Development *",
+      "GOPATH": "[CLEANUP]\\go_path",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]\\gradle"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\vsbuild",
+        "[CACHE]\\certs",
+        "[CACHE]\\dart_sdk",
+        "[CACHE]\\chrome\\chrome",
+        "[CACHE]\\chrome\\drivers",
+        "[CACHE]\\firefox",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[START_DIR]\\firebase",
+        "[CACHE]\\cmake\\bin",
+        "[CLEANUP]\\tmp_tmp_3",
+        "[CACHE]\\cosign\\bin",
+        "[CACHE]\\ninja",
+        "[CACHE]\\clang\\bin",
+        "[CLEANUP]\\tmp_tmp_5\\curl",
+        "[CLEANUP]\\tmp_tmp_6\\doxygen\\bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "VSBuild.List logs",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@listdir@[CLEANUP]\\tmp_tmp_7\\log1.txt@@@",
+      "@@@STEP_LOG_LINE@listdir@[CLEANUP]\\tmp_tmp_7\\log2.txt@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]\\tmp_tmp_7\\log1.txt",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]\\vsbuild",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\android",
+      "ANDROID_NDK_PATH": "[CACHE]\\android\\ndk-bundle",
+      "ANDROID_SDK_HOME": "[CLEANUP]\\tmp_tmp_2",
+      "ANDROID_SDK_ROOT": "[CACHE]\\android",
+      "ANDROID_USER_HOME": "[CLEANUP]\\tmp_tmp_2\\.android",
+      "CHROME_EXECUTABLE": "[CACHE]\\chrome\\chrome\\chrome.exe",
+      "CHROME_NO_SANDBOX": "true",
+      "FIREFOX_EXECUTABLE": "[CACHE]\\firefox\\firefox",
+      "FLUTTER_XCODE_CODE_SIGN_STYLE": "Manual",
+      "FLUTTER_XCODE_DEVELOPMENT_TEAM": "S8QB4VV633",
+      "FLUTTER_XCODE_PROVISIONING_PROFILE_SPECIFIER": "match Development *",
+      "GOPATH": "[CLEANUP]\\go_path",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]\\gradle"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\vsbuild",
+        "[CACHE]\\certs",
+        "[CACHE]\\dart_sdk",
+        "[CACHE]\\chrome\\chrome",
+        "[CACHE]\\chrome\\drivers",
+        "[CACHE]\\firefox",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[START_DIR]\\firebase",
+        "[CACHE]\\cmake\\bin",
+        "[CLEANUP]\\tmp_tmp_3",
+        "[CACHE]\\cosign\\bin",
+        "[CACHE]\\ninja",
+        "[CACHE]\\clang\\bin",
+        "[CLEANUP]\\tmp_tmp_5\\curl",
+        "[CLEANUP]\\tmp_tmp_6\\doxygen\\bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "VSBuild.log1.txt",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@log1.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]\\tmp_tmp_7\\log2.txt",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]\\vsbuild",
+    "env": {
+      "ANDROID_HOME": "[CACHE]\\android",
+      "ANDROID_NDK_PATH": "[CACHE]\\android\\ndk-bundle",
+      "ANDROID_SDK_HOME": "[CLEANUP]\\tmp_tmp_2",
+      "ANDROID_SDK_ROOT": "[CACHE]\\android",
+      "ANDROID_USER_HOME": "[CLEANUP]\\tmp_tmp_2\\.android",
+      "CHROME_EXECUTABLE": "[CACHE]\\chrome\\chrome\\chrome.exe",
+      "CHROME_NO_SANDBOX": "true",
+      "FIREFOX_EXECUTABLE": "[CACHE]\\firefox\\firefox",
+      "FLUTTER_XCODE_CODE_SIGN_STYLE": "Manual",
+      "FLUTTER_XCODE_DEVELOPMENT_TEAM": "S8QB4VV633",
+      "FLUTTER_XCODE_PROVISIONING_PROFILE_SPECIFIER": "match Development *",
+      "GOPATH": "[CLEANUP]\\go_path",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]\\gradle"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]\\vsbuild",
+        "[CACHE]\\certs",
+        "[CACHE]\\dart_sdk",
+        "[CACHE]\\chrome\\chrome",
+        "[CACHE]\\chrome\\drivers",
+        "[CACHE]\\firefox",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[CACHE]\\go\\bin",
+        "[CLEANUP]\\go_path\\bin",
+        "[START_DIR]\\firebase",
+        "[CACHE]\\cmake\\bin",
+        "[CLEANUP]\\tmp_tmp_3",
+        "[CACHE]\\cosign\\bin",
+        "[CACHE]\\ninja",
+        "[CACHE]\\clang\\bin",
+        "[CLEANUP]\\tmp_tmp_5\\curl",
+        "[CLEANUP]\\tmp_tmp_6\\doxygen\\bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "VSBuild.log2.txt",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@log2.txt@@@"
+    ]
   },
   {
     "cmd": [],

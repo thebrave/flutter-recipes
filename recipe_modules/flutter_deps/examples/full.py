@@ -11,6 +11,7 @@ DEPS = [
     'flutter/repo_util',
     'recipe_engine/assertions',
     'recipe_engine/context',
+    'recipe_engine/file',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
@@ -27,7 +28,9 @@ def RunSteps(api):
   api.assertions.assertTrue(env.get('ARM_TOOLS'))
   api.flutter_deps.goldctl(env, env_prefixes, 'v2')
   api.assertions.assertTrue(env.get('GOLDCTL'))
-  api.flutter_deps.android_virtual_device(env, env_prefixes, "android_31_google_apis_x64.textpb")
+  api.flutter_deps.android_virtual_device(
+      env, env_prefixes, "android_31_google_apis_x64.textpb"
+  )
   api.assertions.assertTrue(env.get('EMULATOR_VERSION'))
   api.assertions.assertTrue(env.get('USE_EMULATOR'))
   api.flutter_deps.avd_cipd_version(env, env_prefixes, "AVDCIPDVERSION")
@@ -166,8 +169,10 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
-      'windows',
-      api.properties(gold_tryjob=True, git_ref='refs/pull/1/head'),
+      'windows', api.properties(gold_tryjob=True, git_ref='refs/pull/1/head'),
       api.repo_util.flutter_environment_data(checkout_path),
       api.platform.name('win'),
+      api.step_data(
+          'VSBuild.List logs', api.file.listdir(['log1.txt', 'log2.txt'])
+      )
   )

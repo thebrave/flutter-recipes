@@ -168,9 +168,6 @@ def RunSteps(api):
       finally:
         debug_after_failure(api, task_name)
 
-      if test_status == 'flaky':
-        api.test_utils.flaky_step('run %s' % task_name)
-
   with api.context(env=env, env_prefixes=env_prefixes, cwd=devicelab_path):
 
     def _retryUpload():

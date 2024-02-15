@@ -155,8 +155,6 @@ def run_test(api, task_name, runner_params):
     )
   finally:
     debug_after_failure(api, task_name)
-    if test_status == 'flaky':
-      api.test_utils.flaky_step('run %s' % task_name)
 
 
 def download_artifact(api, artifact, artifact_destination_dir):

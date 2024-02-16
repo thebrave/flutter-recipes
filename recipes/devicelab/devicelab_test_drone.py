@@ -44,7 +44,6 @@ def RunSteps(api):
   # If on macOS, reset Xcode in case a previous build failed to do so.
   api.osx_sdk.reset_xcode()
 
-  api.os_utils.print_pub_certs()
   task_name = api.properties.get("task_name")
   if not task_name:
     raise ValueError('A task_name property is required')

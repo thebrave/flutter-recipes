@@ -63,8 +63,6 @@ def RunSteps(api):
   if not task_name:
     raise ValueError('A task_name property is required')
 
-  api.os_utils.print_pub_certs()
-
   api.flutter_bcid.report_stage(BcidStage.FETCH.value)
   flutter_path = api.path.mkdtemp().join('flutter sdk')
   api.repo_util.checkout(

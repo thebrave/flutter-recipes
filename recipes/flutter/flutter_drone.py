@@ -69,8 +69,6 @@ def RunSteps(api):
   # If on macOS, reset Xcode in case a previous build failed to do so.
   api.osx_sdk.reset_xcode()
 
-  api.os_utils.print_pub_certs()
-
   checkout_path = api.path['start_dir'].join('flutter')
   api.flutter_bcid.report_stage(BcidStage.FETCH.value)
   api.repo_util.checkout(

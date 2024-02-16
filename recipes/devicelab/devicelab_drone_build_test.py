@@ -57,7 +57,6 @@ def RunSteps(api):
   # If on macOS, reset Xcode in case a previous build failed to do so.
   api.osx_sdk.reset_xcode()
 
-  api.os_utils.print_pub_certs()
   task_name = api.properties.get("task_name")
   if not task_name:
     raise ValueError('A task_name property is required')
@@ -115,8 +114,8 @@ def test(api, task_name, deps, artifact):
   }
   drone_dimensions = api.properties.get('drone_dimensions', [])
   for d in drone_dimensions:
-        k, v = d.split('=')
-        test_props[k] = v
+    k, v = d.split('=')
+    test_props[k] = v
   reqs.append({
       'name': task_name, 'properties': test_props,
       'drone_dimensions': drone_dimensions,

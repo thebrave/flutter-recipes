@@ -50,20 +50,6 @@ class OsUtilsApi(recipe_api.RecipeApi):
         result.append(part)
     return result
 
-  def print_pub_certs(self):
-    """Prints pub.dev certificates."""
-    cmd = (
-        'gci -Recurse cert: |Where-Object {$_.Subject -like "*GTS CA 1D4*"'
-        ' -or $_.FriendlyName -like "GlobalSign Root CA - R1" -or $_.Subject'
-        ' -like "*GTS Root R1*"}'
-    )
-    if self.m.platform.is_win:
-      self.m.step(
-          'Print pub.dev certs',
-          ['powershell.exe', cmd],
-          infra_step=True,
-      )
-
   def is_symlink(self, path):
     """Returns if a path points to a symlink or not."""
     is_symlink = os.path.islink(self.m.path.abspath(path))

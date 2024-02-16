@@ -25,7 +25,6 @@ def RunSteps(api):
   api.os_utils.shutdown_simulators()
   api.os_utils.enable_long_paths()
   api.os_utils.prepare_ios_device()
-  api.os_utils.print_pub_certs()
   api.os_utils.is_symlink('/a/b/c/simlink')
   api.os_utils.symlink('/a/file', '/a/b/c/simlink')
   api.os_utils.kill_simulators()

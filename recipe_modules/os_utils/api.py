@@ -120,8 +120,10 @@ class OsUtilsApi(recipe_api.RecipeApi):
     """
     if self.m.platform.is_mac:
       self.m.step(
-          'kill dart',
-          ['killall', '-9', 'com.apple.CoreSimulator.CoreSimulatorDevice'],
+          'kill dart', [
+              'killall', '-9', '-v',
+              'com.apple.CoreSimulator.CoreSimulatorDevice'
+          ],
           ok_ret='any',
           infra_step=True
       )
@@ -149,57 +151,65 @@ class OsUtilsApi(recipe_api.RecipeApi):
         self._kill_win('stop flutter_tester', 'flutter_tester.exe')
       elif self.m.platform.is_mac:
         self.m.step(
-            'kill dart', ['killall', '-9', 'dart'],
+            'kill dart', ['killall', '-9', '-v', 'dart'],
             ok_ret='any',
             infra_step=True
         )
         self.m.step(
-            'kill flutter', ['killall', '-9', 'flutter'],
+            'kill flutter', ['killall', '-9', '-v', 'flutter'],
             ok_ret='any',
             infra_step=True
         )
         self.m.step(
-            'kill Chrome', ['killall', '-9', 'Chrome'],
+            'kill Chrome', ['killall', '-9', '-v', 'Chrome'],
             ok_ret='any',
             infra_step=True
         )
         self.m.step(
-            'kill Safari', ['killall', '-9', 'Safari'],
+            'kill Safari', ['killall', '-9', '-v', 'Safari'],
             ok_ret='any',
             infra_step=True
         )
         self.m.step(
-            'kill java', ['killall', '-9', 'java'],
+            'kill java', ['killall', '-9', '-v', 'java'],
             ok_ret='any',
             infra_step=True
         )
         self.m.step(
-            'kill adb', ['killall', '-9', 'adb'], ok_ret='any', infra_step=True
-        )
-        self.m.step(
-            'kill Xcode', ['killall', '-9', 'Xcode'],
+            'kill adb', ['killall', '-9', '-v', 'adb'],
             ok_ret='any',
             infra_step=True
         )
         self.m.step(
-            'kill QuickTime', ['killall', '-9', 'QuickTime Player'],
+            'kill Xcode', ['killall', '-9', '-v', 'Xcode'],
+            ok_ret='any',
+            infra_step=True
+        )
+        self.m.step(
+            'kill QuickTime', ['killall', '-9', '-v', 'QuickTime Player'],
             ok_ret='any',
             infra_step=True
         )
       else:
         self.m.step(
-            'kill chrome', ['pkill', 'chrome'], ok_ret='any', infra_step=True
+            'kill chrome', ['pkill', '-e', 'chrome'],
+            ok_ret='any',
+            infra_step=True
         )
         self.m.step(
-            'kill dart', ['pkill', 'dart'], ok_ret='any', infra_step=True
+            'kill dart', ['pkill', '-e', 'dart'], ok_ret='any', infra_step=True
         )
         self.m.step(
-            'kill flutter', ['pkill', 'flutter'], ok_ret='any', infra_step=True
+            'kill flutter', ['pkill', '-e', 'flutter'],
+            ok_ret='any',
+            infra_step=True
         )
         self.m.step(
-            'kill java', ['pkill', 'java'], ok_ret='any', infra_step=True
+            'kill java', ['pkill', '-e', 'java'], ok_ret='any', infra_step=True
         )
-        self.m.step('kill adb', ['pkill', 'adb'], ok_ret='any', infra_step=True)
+        self.m.step(
+            'kill adb', ['pkill', '-e', 'adb'], ok_ret='any', infra_step=True
+        )
       # Ensure we always pass this step as killing non existing processes
       # may create errors.
       presentation.status = 'SUCCESS'
@@ -370,7 +380,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
                 self._list_core_devices()
                 self.m.step(
                     'Kill Xcode',
-                    ['killall', '-9', 'Xcode'],
+                    ['killall', '-9', '-v', 'Xcode'],
                     ok_ret='any',
                 )
 
@@ -392,7 +402,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
               self._list_core_devices()
               self.m.step(
                   'Kill QuickTime',
-                  ['killall', '-9', 'QuickTime Player'],
+                  ['killall', '-9', '-v', 'QuickTime Player'],
                   ok_ret='any',
               )
         with self.m.step.nest('Dismiss Xcode automation dialogs'):
@@ -650,7 +660,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     # The app was opened by Applescript, so kill it.
     self.m.step(
         'Kill %s' % app_name,
-        ['killall', '-9', app_name],
+        ['killall', '-9', '-v', app_name],
         ok_ret='any',
     )
 
@@ -661,7 +671,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
 
     self.m.step(
         'Dismiss dialog',
-        ['killall', '-9', 'UserNotificationCenter'],
+        ['killall', '-9', '-v', 'UserNotificationCenter'],
         ok_ret='any',
     )
 

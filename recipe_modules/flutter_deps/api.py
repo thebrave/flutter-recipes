@@ -395,6 +395,9 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     # leaving the bot in a bad state.
     # For more, see CI section on https://docs.gradle.org/current/userguide/gradle_daemon.html#sec:disabling_the_daemon
     env['GRADLE_OPTS'] = '-Dorg.gradle.daemon=false'
+    self.m.file.listdir(
+        'gradle cache', self.m.path['cache'].join('gradle'), recursive=True
+    )
 
   def firebase(self, env, env_prefixes, version='latest'):
     """Installs firebase binary.

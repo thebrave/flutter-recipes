@@ -369,6 +369,23 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]\\gradle",
+      "--recursive"
+    ],
+    "infra_step": true,
+    "name": "gradle cache",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
       "cipd.bat",
       "ensure",
       "-root",
@@ -393,6 +410,40 @@
       "@@@STEP_LOG_LINE@json.output@  }@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]\\gradle",
+      "--recursive"
+    ],
+    "infra_step": true,
+    "name": "gradle cache (2)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]\\gradle",
+      "--recursive"
+    ],
+    "infra_step": true,
+    "name": "gradle cache (3)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@listdir@@@"
     ]
   },
   {

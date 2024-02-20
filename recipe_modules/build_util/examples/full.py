@@ -37,7 +37,7 @@ def RunSteps(api):
     api.build_util.build(
         'release',
         checkout,
-        ['mytarget'],
+        ['rbe_target'],
         {
             'CLANG_CRASH_DIAGNOSTICS_DIR': api.path['start_dir'],
             'FLUTTER_LOGS_DIR': api.path['start_dir']
@@ -68,4 +68,13 @@ def GenTests(api):
       ),
       status='FAILURE',
   )
-  yield api.test('mac', api.properties(no_lto=True), api.platform('mac', 64))
+  yield api.test(
+      'mac',
+      api.properties(no_lto=True),
+      api.platform('mac', 64),
+      api.step_data(
+          'build release rbe_target',
+          retcode=1,
+      ),
+      status='FAILURE',
+  )

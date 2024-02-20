@@ -814,7 +814,7 @@
       "5",
       "-C",
       "[START_DIR]/out/release",
-      "mytarget"
+      "rbe_target"
     ],
     "env": {
       "RBE_cache_dir": "[CACHE]/rbe/deps",
@@ -839,7 +839,138 @@
         "RECIPE_REPO[depot_tools]"
       ]
     },
-    "name": "build release mytarget (2)"
+    "name": "build release rbe_target",
+    "~followup_annotations": [
+      "@@@STEP_FAILURE@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "upload crash reproducer"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "glob",
+      "[START_DIR]",
+      "*.sh"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "upload crash reproducer.find reproducers",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@glob@[START_DIR]/[START_DIR]/foo.sh@@@",
+      "@@@STEP_LOG_END@glob@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "glob",
+      "[START_DIR]",
+      "foo.*"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "upload crash reproducer.find foo files",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@glob@[START_DIR]/[START_DIR]/foo.sh@@@",
+      "@@@STEP_LOG_END@glob@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[START_DIR]/[START_DIR]/foo.sh",
+      "[START_DIR]"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "upload crash reproducer.Copy crash reproduce file [START_DIR]/[START_DIR]/foo.sh",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [],
@@ -1144,6 +1275,10 @@
     ]
   },
   {
+    "failure": {
+      "failure": {},
+      "humanReason": "Step('build release rbe_target') (retcode: 1)"
+    },
     "name": "$result"
   }
 ]

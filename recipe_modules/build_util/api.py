@@ -65,7 +65,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
       j_value = min(j_value, 800)
     return 200 if self._test_data.enabled else j_value
 
-  def _build_rbe(self, config, checkout_path, targets, tool, rbe_working_path):
+  def _build_rbe(self, config, checkout_path, targets, tool, rbe_working_path, env):
     """Builds using ninja and rbe.
 
     Args:
@@ -85,8 +85,12 @@ class BuildUtilApi(recipe_api.RecipeApi):
         collect_rbe_logs_latency=self.m.properties.get(
             'collect_rbe_logs_latency',
             COLLECT_RBE_LOGS_LATENCY_SECS)), self.m.depot_tools.on_path():
-      name = 'build %s' % ' '.join([config] + list(targets))
-      self.m.step(name, ninja_args)
+      try:
+        name = 'build %s' % ' '.join([config] + list(targets))
+        self.m.step(name, ninja_args)
+      except self.m.step.StepFailure:
+        self._upload_crash_reproducer(env)
+        raise
 
   def _build_goma(self, config, checkout_path, targets, tool, env):
     """Builds using ninja and goma.
@@ -166,7 +170,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
     ninja_path = checkout_path.join('flutter', 'third_party', 'ninja', 'ninja')
     if self.use_rbe:
       self._build_rbe(
-          config, checkout_path, targets, ninja_path, rbe_working_path
+          config, checkout_path, targets, ninja_path, rbe_working_path, env
       )
     else:
       if self.use_goma:

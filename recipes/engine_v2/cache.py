@@ -19,20 +19,19 @@ def RunSteps(api):
   # Engine path is used inconsistently across the engine repo. We'll start
   # with [cache]/builder and will adjust it to start using it consistently.
   env['ENGINE_PATH'] = api.path['cache'].join('builder')
-  cache_root = api.properties.get('cache_root', 'CACHE')
   cache_ttl = api.properties.get('cache_ttl', 3600 * 4)
   cache_name = api.properties.get('cache_name')
 
   if api.cache.requires_refresh(cache_name):
     api.repo_util.engine_checkout(builder_root, env, env_prefixes)
     paths = [
-        api.path[cache_root].join(p)
+        api.path['cache'].join(p)
         for p in api.properties.get('cache_paths', [])
     ]
 
     api.path.mock_add_directory(api.path['cache'].join('builder', 'fake'))
     ignore_paths = [
-        api.path[cache_root].join(p)
+        api.path['cache'].join(p)
         for p in api.properties.get('ignore_cache_paths', [])
     ]
 

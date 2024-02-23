@@ -11,3 +11,8 @@ class OsUtilsTestApi(recipe_test_api.RecipeTestApi):
   @staticmethod
   def is_symlink(value):
     return value
+
+  @recipe_test_api.mod_test_data
+  @staticmethod
+  def vswhereexists(value):
+    return value

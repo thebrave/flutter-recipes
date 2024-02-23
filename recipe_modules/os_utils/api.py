@@ -838,3 +838,40 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
   def is_ios(self):
     device_os = self.m.properties.get('device_os', '')
     return device_os.lower().startswith('ios-')
+
+  def is_vs_installed(self, version=None):
+    if not self.m.platform.is_win:
+      return False
+
+    vswhere_path = self.m.path.join(
+        os.environ.get('PROGRAMFILES(X86)'),
+        'Microsoft Visual Studio',
+        'Installer',
+        'vswhere.exe',
+    )
+
+    # Return mocked result for testing.
+    vswhereexists = self._test_data.get(
+        'vswhereexists', True
+    ) if self._test_data.enabled else self.m.path.exists(vswhere_path)
+
+    # Return False if vswhere does not exist.
+    if not vswhereexists:
+      return False
+
+    result = self.m.step(
+        'Detect installation',
+        [vswhere_path, '-legacy', '-prerelease', '-format', 'json'],
+        stdout=self.m.json.output()
+    )
+
+    # If no version is provided any vs_build installed version is ok.
+    if not version:
+      return len(result.stdout) > 0
+
+    # If version is provided we look for that specific version in the installations.
+    for installation in result.stdout:
+      if installation.get('catalog', {}).get('productLineVersion') == version:
+        return True
+
+    return False

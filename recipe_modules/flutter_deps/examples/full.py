@@ -12,6 +12,7 @@ DEPS = [
     'recipe_engine/assertions',
     'recipe_engine/context',
     'recipe_engine/file',
+    'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
@@ -78,7 +79,7 @@ def RunSteps(api):
   api.flutter_deps.doxygen(env, env_prefixes, '')
   api.flutter_deps.dart_sdk(env, env_prefixes, '')
   api.flutter_deps.certs(env, env_prefixes, '')
-  api.flutter_deps.vs_build(env, env_prefixes, '')
+  api.flutter_deps.vs_build(env, env_prefixes, 'version:vs2019')
   api.flutter_deps.ruby(env, env_prefixes, '')
   api.flutter_deps.android_virtual_device(env, env_prefixes, '34')
   api.flutter_deps.swift_format(env, env_prefixes, '')
@@ -169,10 +170,22 @@ def GenTests(api):
       api.repo_util.flutter_environment_data(checkout_path),
   )
   yield api.test(
-      'windows', api.properties(gold_tryjob=True, git_ref='refs/pull/1/head'),
+      'windows_vs_not_installed',
+      api.properties(gold_tryjob=True, git_ref='refs/pull/1/head'),
       api.repo_util.flutter_environment_data(checkout_path),
       api.platform.name('win'),
       api.step_data(
           'VSBuild.List logs', api.file.listdir(['log1.txt', 'log2.txt'])
-      )
+      ),
+      api.step_data('VSBuild.Detect installation', stdout=api.json.output([])),
+  )
+  yield api.test(
+      'windows_vs_installed',
+      api.properties(gold_tryjob=True, git_ref='refs/pull/1/head'),
+      api.repo_util.flutter_environment_data(checkout_path),
+      api.platform.name('win'),
+      api.step_data(
+          'VSBuild.Detect installation',
+          stdout=api.json.output([{'catalog': {'productLineVersion': '2019'}}])
+      ),
   )

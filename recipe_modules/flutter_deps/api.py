@@ -590,11 +590,15 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     if not self.m.platform.is_win:
       # noop for non windows platforms.
       return
+
     version = version or 'latest'
     vs_path = self.m.path['cache'].join('vsbuild')
     vs = self.m.cipd.EnsureFile()
     vs.add_package("flutter_internal/windows/vsbuild", version)
     with self.m.step.nest('VSBuild') as presentation:
+      # The vs expected version is already installed.
+      if self.m.os_utils.is_vs_installed(version.replace('version:vs', '')):
+        return
       self.m.cipd.ensure(vs_path, vs)
       paths = env_prefixes.get('PATH', [])
       paths.insert(0, vs_path)

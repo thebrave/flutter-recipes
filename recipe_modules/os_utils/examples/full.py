@@ -8,6 +8,7 @@ from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 DEPS = [
     'flutter/os_utils',
     'recipe_engine/assertions',
+    'recipe_engine/json',
     'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
@@ -28,6 +29,8 @@ def RunSteps(api):
   api.os_utils.is_symlink('/a/b/c/simlink')
   api.os_utils.symlink('/a/file', '/a/b/c/simlink')
   api.os_utils.kill_simulators()
+  api.os_utils.is_vs_installed('2019')
+  api.os_utils.is_vs_installed()
 
   command = ['cat', '${FLUTTER_LOGS_DIR}']
   env = {'FLUTTER_LOGS_DIR': '/a/b/c'}
@@ -50,8 +53,26 @@ def GenTests(api):
       ),
   )
   yield api.test(
-      'basic',
+      'win_no_vs_version',
       api.platform('win', 64),
+      api.step_data('Detect installation', stdout=api.json.output([])),
+      api.step_data('Detect installation (2)', stdout=api.json.output([])),
+  )
+  yield api.test(
+      'win_vswherenoexits', api.platform('win', 64),
+      api.os_utils.vswhereexists(False)
+  )
+  yield api.test(
+      'win_with_vs_version',
+      api.platform('win', 64),
+      api.step_data(
+          'Detect installation',
+          stdout=api.json.output([{'catalog': {'productLineVersion': '2019'}}])
+      ),
+      api.step_data(
+          'Detect installation (2)',
+          stdout=api.json.output([{'catalog': {'productLineVersion': '2019'}}])
+      ),
   )
   yield api.test(
       'mac',
@@ -87,8 +108,11 @@ def GenTests(api):
       api.platform('linux', 64),
   )
   yield api.test(
-      'with_failures', api.platform('win', 64),
-      api.step_data("Killing Processes.stop dart", retcode=1)
+      'with_failures',
+      api.platform('win', 64),
+      api.step_data("Killing Processes.stop dart", retcode=1),
+      api.step_data('Detect installation', stdout=api.json.output([])),
+      api.step_data('Detect installation (2)', stdout=api.json.output([])),
   )
   yield api.test(
       'clean_derived_data',

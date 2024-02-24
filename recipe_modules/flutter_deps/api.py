@@ -652,6 +652,7 @@ Copy-Item "$env:TEMP\dd_vs_setup_*" "$destination"
           for log in logs:
             log_name = self.m.path.basename(log)
             presentation.logs[log_name] = self.m.file.read_text(log_name, log)
+          self.m.file.rmtree('Remove logs tmp folder', logs_path)
 
         deferred.append(self.m.defer(collect_logs))
       self.m.defer.collect(deferred)

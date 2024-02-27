@@ -45,8 +45,8 @@ def Archive(api, target):
   cas_dir = api.path.mkdtemp('cas-directory')
   cas_out = cas_dir.join('out', target)
   api.file.copytree('Copy wasm_release', build_dir, cas_out)
-  source_dir = checkout.join('flutter')
-  cas_source = cas_dir.join('flutter')
+  source_dir = checkout.join('flutter', 'prebuilts')
+  cas_source = cas_dir.join('flutter', 'prebuilts')
   api.file.copytree('Copy source', source_dir, cas_source)
   return api.cas_util.upload(cas_dir, step_name='Archive Flutter Web SDK CAS')
 

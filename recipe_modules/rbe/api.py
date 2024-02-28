@@ -13,7 +13,7 @@ RECLIENT_CXX_WRAPPER = "reclient-cxx-wrapper.sh"
 # be large enough.
 _DEPS_CACHE_MAX_MB = "512"
 
-RBE_VERSION = 're_client_version:0.111.0.1ccaa23-gomaip'
+RBE_VERSION = 're_client_version:0.131.1.784ddbb-gomaip'
 
 
 class RbeApi(recipe_api.RecipeApi):

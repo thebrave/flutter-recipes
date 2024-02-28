@@ -38,14 +38,17 @@ MOCK_POM_PATH = (
 
 # Bucket + initial prefix for artifact destination.
 LUCI_TO_GCS_PREFIX = {
-    'flutter': 'flutter_infra_release',
-    MONOREPO: 'flutter_archives_v2/monorepo/flutter_infra_release',
-    MONOREPO_TRY_BUCKET: 'flutter_archives_v2/monorepo_try/flutter_infra_release',
-    'prod': 'flutter_infra_release',
-    'staging': 'flutter_archives_v2/flutter_infra_release',
-    'try': 'flutter_archives_v2/flutter_infra_release',
-    'try.shadow': 'flutter_archives_v2/flutter_infra_release',
-    'prod.shadow': 'flutter_archives_v2/flutter_infra_release'
+    'flutter':
+        'flutter_infra_release', MONOREPO:
+            'flutter_archives_v2/monorepo/flutter_infra_release',
+    MONOREPO_TRY_BUCKET:
+        'flutter_archives_v2/monorepo_try/flutter_infra_release', 'prod':
+            'flutter_infra_release', 'staging':
+                'flutter_archives_v2/flutter_infra_release', 'try':
+                    'flutter_archives_v2/flutter_infra_release', 'try.shadow':
+                        'flutter_archives_v2/flutter_infra_release',
+    'prod.shadow':
+        'flutter_archives_v2/flutter_infra_release'
 }
 
 # Bucket + initial prefix for artifact destination.
@@ -78,9 +81,9 @@ class ArchivesApi(recipe_api.RecipeApi):
       by the archive configuration.
     """
     results = []
-    self.m.path.mock_add_paths(
+    self.m.path.mock_add_directory(
         self.m.path['start_dir']
-        .join('out/android_profile/zip_archives/download.flutter.io'), DIRECTORY
+        .join('out/android_profile/zip_archives/download.flutter.io')
     )
     for include_path in archive_config.get('include_paths', []):
       full_include_path = self.m.path.abspath(checkout.join(include_path))

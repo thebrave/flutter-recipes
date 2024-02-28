@@ -165,10 +165,10 @@ def Build(api, checkout, env, env_prefixes, outputs, build):
 
   # Mock data for tests. This is required for the archive api to expand the directory to full path
   # of files.
-  api.path.mock_add_paths(
+  api.path.mock_add_directory(
       api.path['cache'].join(
           'builder/src/out/android_jit_release_x86/zip_archives/download.flutter.io'
-      ), DIRECTORY
+      )
   )
 
   ninja_tool = {

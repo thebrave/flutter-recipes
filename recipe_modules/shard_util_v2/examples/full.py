@@ -5,6 +5,7 @@
 import copy
 
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
+from PB.go.chromium.org.luci.led.job import job as job_pb2
 
 from recipe_engine.post_process import (
     MustRun,
@@ -16,6 +17,7 @@ DEPS = [
     'flutter/shard_util_v2',
     'fuchsia/buildbucket_util',
     'recipe_engine/buildbucket',
+    'recipe_engine/led',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
@@ -141,6 +143,9 @@ def GenTests(api):
   presubmit_props['git_url'] = 'http://abc'
   presubmit_props['git_ref'] = 'refs/123/main'
 
+  job = job_pb2.Definition()
+  build = api.buildbucket.ci_build_message(build_id=87654321, on_backend=True)
+  job.buildbucket.bbagent_args.build.CopyFrom(build)
   yield api.test(
       'presubmit_led', api.properties(**presubmit_props),
       api.platform.name('linux'),
@@ -150,6 +155,10 @@ def GenTests(api):
           git_repo='https://github.com/repo/a',
           revision='a' * 40,
           build_number=123
+      ), api.led.mock_get_builder(
+          job,
+          project='proj',
+          bucket='ci',
       ),
       api.shard_util_v2.child_led_steps(
           subbuilds=[led_try_subbuild1],
@@ -174,6 +183,26 @@ def GenTests(api):
 
   yield api.test(
       'presubmit_led_subbuilds', api.properties(**props),
+      api.platform.name('linux'),
+      api.buildbucket.ci_build(
+          project='proj',
+          builder='try-builder',
+          git_repo='https://github.com/repo/a',
+          revision='a' * 40,
+          build_number=123
+      ), api.led.mock_get_builder(
+          job,
+          project='proj',
+          bucket='ci',
+      ),
+      api.shard_util_v2.child_led_steps(
+          subbuilds=[led_try_subbuild1],
+          collect_step='collect builds',
+      )
+  )
+
+  yield api.test(
+      'presubmit_led_subbuilds_no_backend', api.properties(**props),
       api.platform.name('linux'),
       api.buildbucket.ci_build(
           project='proj',
@@ -209,12 +238,15 @@ def GenTests(api):
   )
 
   yield api.test(
-      'monorepo_led_subbuilds', api.properties(**props),
-      api.platform.name('linux'), api.monorepo.ci_build(),
+      'monorepo_led_subbuilds',
+      api.properties(**props),
+      api.platform.name('linux'),
+      api.monorepo.ci_build(),
       api.shard_util_v2.child_led_steps(
           subbuilds=[led_try_subbuild1],
           collect_step='collect builds',
-      )
+      ),
+      api.led.mock_get_builder(job, project='dart', bucket='ci.sandbox'),
   )
 
   yield api.test(
@@ -226,6 +258,7 @@ def GenTests(api):
           subbuilds=[led_try_subbuild1],
           collect_step='collect builds',
       ),
+      api.led.mock_get_builder(job, project='dart', bucket='try.monorepo'),
       api.post_process(MustRun, 'launch builds.led edit-cr-cl'),
       api.post_process(
           StepCommandContains, 'launch builds.led get-builder', [

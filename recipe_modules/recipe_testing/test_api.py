@@ -88,7 +88,11 @@ class FlutterRecipeTestingTestApi(recipe_test_api.RecipeTestApi):
 
     job = job_pb2.Definition()
     build = self.m.buildbucket.ci_build_message(
-        priority=34500, project=project, bucket=bucket, builder=name
+        priority=34500,
+        project=project,
+        bucket=bucket,
+        builder=name,
+        on_backend=True
     )
     build.input.properties["recipe"] = recipe
 
@@ -101,7 +105,7 @@ class FlutterRecipeTestingTestApi(recipe_test_api.RecipeTestApi):
     # but the only way of mocking the task ID returned by `led launch` is
     # to set the task ID on the input to `led launch`, which, for recipe
     # testing, is the `led get-build` response.
-    build.infra.swarming.task_id = str(fake_id)
+    build.infra.backend.task.id.id = str(fake_id)
     job.buildbucket.bbagent_args.build.CopyFrom(build)
     result += self.m.led.mock_get_build(
         job,

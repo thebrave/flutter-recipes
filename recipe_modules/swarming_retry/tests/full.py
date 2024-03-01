@@ -51,6 +51,12 @@ PROPERTIES = {
             default=False,
             help="Whether to run a task that will fail and abort early",
         ),
+    "on_backend":
+        Property(
+            kind=bool,
+            help="whether the build infra backend is supported",
+            default=True,
+        ),
 }
 
 
@@ -71,6 +77,7 @@ class Task(swarming_retry_api.Task):
         """
 
     abort_early = kwargs.pop("abort_early", False)
+    kwargs.pop("on_backend", True)
     super().__init__(*args, **kwargs)
     self._next_task_id = int(initial_task_id)
     self.abort_early_if_failed = abort_early
@@ -118,18 +125,26 @@ class LedTask(swarming_retry_api.LedTask):
     ir = api.led("get-builder", "project/bucket:builder")
     build_proto = ir.result.buildbucket.bbagent_args.build
     build_proto.id = int(initial_task_id)
-    build_proto.infra.swarming.task_id = str(initial_task_id)
+    self.on_backend = kwargs.pop("on_backend", True)
+    if self.on_backend:
+      build_proto.infra.backend.task.id.id = str(initial_task_id)
+      build_proto.infra.backend.config['priority'] = 30
+    else:
+      build_proto.infra.swarming.priority = 30
+      build_proto.infra.swarming.task_id = str(initial_task_id)
     super().__init__(ir, api=api, **kwargs)
 
   def launch(self, priority_boost_amount):
     ret = super().launch(priority_boost_amount)
 
     build_proto = self._led_data.result.buildbucket.bbagent_args.build
-    cur_id = int(build_proto.infra.swarming.task_id)
-    build_proto.infra.swarming.task_id = str(cur_id + 1)
+    if self.on_backend:
+      cur_id = int(build_proto.infra.backend.task.id.id)
+    else:
+      cur_id = int(build_proto.infra.swarming.task_id)
+    build_proto.infra.backend.task.id.id = str(cur_id + 1)
     build_proto.id = cur_id + 1
     return ret
-
 
 # pylint: disable=invalid-name
 def RunSteps(
@@ -140,6 +155,7 @@ def RunSteps(
     last_task_max_attempts,
     run_count,
     abort_early,
+    on_backend,
 ):
   task_types = {
       "test": Task,
@@ -163,7 +179,7 @@ def RunSteps(
     ]
 
   else:
-    tasks = [_create_task(api=api, name="task", initial_task_id=100)]
+    tasks = [_create_task(api=api, name="task", initial_task_id=100, on_backend=on_backend)]
 
   if abort_early:
     tasks.append(
@@ -187,7 +203,7 @@ def GenTests(api):  # pylint: disable=invalid-name
   test_api = api.swarming_retry
 
   def led_build_data(priority=100):
-    build = api.buildbucket.ci_build_message(priority=priority)
+    build = api.buildbucket.ci_build_message(priority=priority, on_backend=True)
 
     job_def = job_pb2.Definition()
     job_def.buildbucket.bbagent_args.build.CopyFrom(build)
@@ -250,6 +266,13 @@ def GenTests(api):  # pylint: disable=invalid-name
   yield (
       api.test("led_task") + api.properties(full=False, task_type="led") +
       led_build_data() +
+      test_api.collect_data([test_api.failed_task("task", 100)], iteration=0) +
+      test_api.collect_data([test_api.passed_task("task", 101)], iteration=1)
+  )
+
+  yield (
+      api.test("led_task_backend_false") + api.properties(full=False, task_type="led") +
+      api.properties(on_backend=False) +
       test_api.collect_data([test_api.failed_task("task", 100)], iteration=0) +
       test_api.collect_data([test_api.passed_task("task", 101)], iteration=1)
   )

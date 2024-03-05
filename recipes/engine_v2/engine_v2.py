@@ -90,6 +90,13 @@ def RunSteps(api):
   if archives is None:
     archives = []
 
+  gclient_variables = api.properties.get('gclient_variables')
+  if gclient_variables:
+    for build in builds:
+      build['gclient_variables'] = {
+          **gclient_variables, **build.get('gclient_variables', {})
+      }
+
   current_branch = 'main'
   if checkout_path and api.repo_util.is_release_candidate_branch(checkout_path):
     current_branch = api.repo_util.release_candidate_branch(checkout_path)
@@ -521,5 +528,59 @@ def GenTests(api):
           stdout=api.raw_io.output_text(
               'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
           )
+      ),
+  )
+
+  yield api.test(
+      'respect_gclient_variables',
+      api.platform.name('linux'),
+      api.properties(
+          config_name='config_name',
+          gclient_variables={'download_fuchsia_sdk': True}
+      ),
+      api.monorepo.ci_build(),
+      api.shard_util_v2.child_build_steps(
+          subbuilds=[try_subbuild1],
+          launch_step="launch builds.schedule",
+          collect_step="collect builds",
+      ),
+      api.step_data(
+          'Read build config file',
+          api.file.read_json({
+              'builds': [{
+                  'name': 'a builder with gclient_variables',
+                  'drone_dimensions': ['os=Linux'], 'gclient_variables': {
+                      'fuchsia_sdk_path': 'gcs://fuchsia/sdk/123'
+                  }
+              }]
+          })
+      ),
+  )
+
+  yield api.test(
+      'build_gclient_variables_override_input',
+      api.platform.name('linux'),
+      api.properties(
+          config_name='config_name',
+          gclient_variables={
+              'fuchsia_sdk_path': 'gcs://fuchsia/sdk/not-being-used'
+          }
+      ),
+      api.monorepo.ci_build(),
+      api.shard_util_v2.child_build_steps(
+          subbuilds=[try_subbuild1],
+          launch_step="launch builds.schedule",
+          collect_step="collect builds",
+      ),
+      api.step_data(
+          'Read build config file',
+          api.file.read_json({
+              'builds': [{
+                  'name': 'a builder with gclient_variables',
+                  'drone_dimensions': ['os=Linux'], 'gclient_variables': {
+                      'fuchsia_sdk_path': 'gcs://fuchsia/sdk/being-used'
+                  }
+              }]
+          })
       ),
   )

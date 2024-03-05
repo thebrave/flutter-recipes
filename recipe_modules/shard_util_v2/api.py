@@ -245,8 +245,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       # buildbucket which we do not want.
       # TODO(crbug.com/1138533) Add an option to led to handle this.
       if led_data.result.buildbucket.bbagent_args.build.infra.backend.config:
-        led_data.result.buildbucket.bbagent_args.build.infra.backend.config[
-            'priority'] -= 20
+        led_data.result.buildbucket.bbagent_args.build.infra.backend.config['priority'] -= 20
       else:
         led_data.result.buildbucket.bbagent_args.build.infra.swarming.priority -= 20
       led_data = led_data.then('edit', *edit_args)
@@ -424,7 +423,9 @@ class ShardUtilApi(recipe_api.RecipeApi):
         int(build.build_id): build.build_name for build in tasks.values()
     }
     bb_fields = self.m.buildbucket.DEFAULT_FIELDS.union({
+        "infra.swarming.task_id",
         "summary_markdown",
+        "input",
     })
     # As of 2019-11-18, timeout defaults to something too short.
     # We never want this step to time out. We'd rather the whole build time out.
@@ -442,11 +443,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
         b for b in builds.values() if b.status != common_pb2.SUCCESS
     ]
     if failed_builds:
-      task_ids = [
-          b.infra.backend.task.id.id
-          if b.infra.backend.task else b.infra.swarming.task_id
-          for b in failed_builds
-      ]
+      task_ids = [b.infra.swarming.task_id for b in failed_builds]
       # Make sure task IDs are non-empty.
       assert all(task_ids), task_ids
 

@@ -265,9 +265,8 @@ class SubbuildApi(recipe_api.RecipeApi):
       )
 
   def _collect_from_buildbucket(self, build_ids, extra_fields):
-    bb_fields = self.m.buildbucket.DEFAULT_FIELDS.union({
-        "infra.swarming.task_id", "summary_markdown"
-    }).union(extra_fields)
+    bb_fields = self.m.buildbucket.DEFAULT_FIELDS.union({"summary_markdown"}
+                                                       ).union(extra_fields)
 
     builds = self.m.buildbucket.collect_builds(
         [int(build_id) for build_id in build_ids],
@@ -281,7 +280,11 @@ class SubbuildApi(recipe_api.RecipeApi):
         b for b in builds.values() if b.status != common_pb2.SUCCESS
     ]
     if failed_builds:
-      task_ids = [b.infra.swarming.task_id for b in failed_builds]
+      task_ids = [
+          b.infra.backend.task.id.id
+          if b.infra.backend.task else b.infra.swarming.task_id
+          for b in failed_builds
+      ]
       # Make sure task IDs are non-empty.
       assert all(task_ids), task_ids
 
@@ -313,7 +316,10 @@ class SubbuildApi(recipe_api.RecipeApi):
           f"wait for {pluralize('task', task_ids)} to complete", task_ids
       )
     return {
-        str(build.id): SubbuildResult(
-            builder=build.builder.builder, build_id=build.id, build_proto=build
-        ) for build in builds.values()
+        str(build.id):
+            SubbuildResult(
+                builder=build.builder.builder,
+                build_id=build.id,
+                build_proto=build
+            ) for build in builds.values()
     }

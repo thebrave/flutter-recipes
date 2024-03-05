@@ -83,6 +83,7 @@ def GenTests(api):
           'cas_output_hash': {'web_tests': 'abc', 'ios_debug': 'bcd'}
       },
       status='FAILURE',
+      on_backend=True,
   )
 
   led_try_subbuild1 = api.shard_util_v2.try_build_message(

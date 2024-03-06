@@ -182,8 +182,9 @@ def Build(api, checkout, env, env_prefixes, outputs, build):
     with api.context(env=env, env_prefixes=env_prefixes):
       gn = list(gn)
       if api.flutter_bcid.is_official_build():
-        # Goma is not supported for official builds.
+        # Goma/RBE is not supported for official builds.
         gn.append('--no-goma')
+        gn.append('--no-rbe')
       if api.monorepo.is_monorepo_ci_build:
         version = env['REVISION']
         gn.append(f'--gn-args=engine_version="{version}"')

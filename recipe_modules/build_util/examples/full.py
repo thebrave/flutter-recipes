@@ -22,10 +22,11 @@ def RunSteps(api):
         'profile', checkout, ['mytarget'], {
             'CLANG_CRASH_DIAGNOSTICS_DIR': api.path['start_dir'],
             'FLUTTER_LOGS_DIR': api.path['start_dir']
-        }
+        },
+        rbe_working_path=api.path["cleanup"].join("rbe"),
     )
   with api.context(env_prefixes=env_prefixes):
-    api.build_util.run_gn(['--no-goma'], checkout)
+    api.build_util.run_gn(['--no-goma', '--no-rbe'], checkout)
     api.build_util.build(
         'release', checkout, ['mytarget'], {
             'CLANG_CRASH_DIAGNOSTICS_DIR': api.path['start_dir'],

@@ -28,7 +28,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
     """
     gn_cmd = ['python3', checkout_path.join('flutter/tools/gn')]
     self.use_goma = '--no-goma' not in gn_args
-    self.use_rbe = '--rbe' in gn_args
+    self.use_rbe = '--no-rbe' not in gn_args
     if self.m.properties.get('no_lto', False) and '--no-lto' not in gn_args:
       gn_args += ('--no-lto',)
     gn_cmd.extend(gn_args)
@@ -65,7 +65,9 @@ class BuildUtilApi(recipe_api.RecipeApi):
       j_value = min(j_value, 800)
     return 200 if self._test_data.enabled else j_value
 
-  def _build_rbe(self, config, checkout_path, targets, tool, rbe_working_path, env):
+  def _build_rbe(
+      self, config, checkout_path, targets, tool, rbe_working_path, env
+  ):
     """Builds using ninja and rbe.
 
     Args:
@@ -112,8 +114,8 @@ class BuildUtilApi(recipe_api.RecipeApi):
         self._upload_crash_reproducer(env)
         raise
 
-  def _build_no_goma(self, config, checkout_path, targets, tool, env):
-    """Builds using ninja without goma.
+  def _build_no_goma_rbe(self, config, checkout_path, targets, tool, env):
+    """Builds using ninja without goma/rbe.
 
     Args:
       config(str): A string with the configuration to build.
@@ -168,12 +170,13 @@ class BuildUtilApi(recipe_api.RecipeApi):
       rbe_working_path(path): Path to rbe working directory.
     """
     ninja_path = checkout_path.join('flutter', 'third_party', 'ninja', 'ninja')
-    if self.use_rbe:
-      self._build_rbe(
-          config, checkout_path, targets, ninja_path, rbe_working_path, env
-      )
+
+    if self.use_goma:
+      self._build_goma(config, checkout_path, targets, ninja_path, env)
     else:
-      if self.use_goma:
-        self._build_goma(config, checkout_path, targets, ninja_path, env)
+      if self.use_rbe:
+        self._build_rbe(
+            config, checkout_path, targets, ninja_path, rbe_working_path, env
+        )
       else:
-        self._build_no_goma(config, checkout_path, targets, ninja_path, env)
+        self._build_no_goma_rbe(config, checkout_path, targets, ninja_path, env)

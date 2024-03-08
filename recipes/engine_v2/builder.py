@@ -99,9 +99,28 @@ def run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes):
     api.step(generator_task.get('name'), cmd)
 
 
-def _should_run_test(test, branch):
-  """Whether the current test should on this branch."""
-  # Default to wildcard to run tests everywhere.
+def _should_run_test(api, test):
+  """Whether the current test should on this branch.
+
+  The current test should run when the `test_if` matches the test branch, for both presubmit
+  and postsubmit.
+  """
+  # Presubmit builds have git_ref property, whereas `api.buildbucket.gitiles_commit.ref` is None:
+  #  1) Main branch
+  #    * git_ref: "refs/pull/51183/head"
+  #    * git_branch: "main"
+  #  2) Release branch
+  #    * git_ref: "refs/pull/144592/head"
+  #    * git_branch: "flutter-3.20-candidate.17"
+  if api.properties.get('git_ref', None):
+    branch = api.properties.get('git_branch')
+  else:
+    # Postsubmit builds do not have git_ref property, but have `api.buildbucket.gitiles_commit.ref` defined:
+    #  1) Main branch
+    #    * api.buildbucket.gitiles_commit.ref: "refs/heads/main"
+    #  2) Release branch
+    #    * api.buildbucket.gitiles_commit.ref: "refs/heads/flutter-3.20-candidate.17"
+    branch = api.buildbucket.gitiles_commit.ref
   test_if = test.get('test_if', '')
   regex = re.compile(f'.*{test_if}')
   return regex.match(branch)
@@ -111,7 +130,7 @@ def run_tests(api, tests, checkout, env, env_prefixes):
   """Runs sub-build tests."""
   # Run local tests in the builder to optimize resource usage.
   for test in tests:
-    if not _should_run_test(test, api.buildbucket.gitiles_commit.ref):
+    if not _should_run_test(api, test):
       continue
     # Copy and expand env, env_prefixes. This is required to
     # add configuration env variables.
@@ -446,6 +465,19 @@ def GenTests(api):
   yield api.test(
       'test_if_skip',
       api.properties(build=test_if_build, no_goma=True),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='linux-host',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/flutter-3.17-candidate.0',
+          revision='abcd' * 10,
+          build_number=123,
+      ),
+  )
+  yield api.test(
+      'test_if_skip_presubmit',
+      api.properties(build=test_if_build, no_goma=True, git_ref="refs/pull/51183/head", git_branch="main"),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='prod',

@@ -10,6 +10,7 @@ DEPS = [
     'flutter/flutter_deps',
     'flutter/repo_util',
     'recipe_engine/assertions',
+    'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/json',
@@ -27,8 +28,12 @@ def RunSteps(api):
   api.assertions.assertTrue(env.get('JAVA_HOME'))
   api.flutter_deps.arm_tools(env, env_prefixes, 'v1')
   api.assertions.assertTrue(env.get('ARM_TOOLS'))
+
   api.flutter_deps.goldctl(env, env_prefixes, 'v2')
-  api.assertions.assertTrue(env.get('GOLDCTL'))
+  # Skip the following lines when goldctl is purposedly skipped.
+  if not api.properties.get('gold_noop'):
+    api.assertions.assertTrue(env.get('GOLDCTL'))
+
   api.flutter_deps.android_virtual_device(
       env, env_prefixes, "android_31_google_apis_x64.textpb"
   )
@@ -168,6 +173,17 @@ def GenTests(api):
       'goldTryjob',
       api.properties(gold_tryjob=True, git_ref='refs/pull/1/head'),
       api.repo_util.flutter_environment_data(checkout_path),
+  )
+  yield api.test(
+      'noop_golds_official_builds',
+      api.buildbucket.ci_build(
+          project='dart-internal',
+          bucket='flutter',
+          git_repo='https://dart.googlesource.com/monorepo',
+          git_ref='refs/heads/main'
+      ),
+      api.repo_util.flutter_environment_data(checkout_path),
+      api.properties(gold_noop=True),
   )
   yield api.test(
       'windows_vs_not_installed',

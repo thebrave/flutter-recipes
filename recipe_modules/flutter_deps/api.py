@@ -222,6 +222,11 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       version(str): The goldctl version to install.
     """
+    # Noop for official builds. Skia gold service supports only main/master
+    # branch.
+    if self.m.flutter_bcid.is_official_build():
+      return
+
     version = version or 'git_revision:720a542f6fe4f92922c3b8f0fdcc4d2ac6bb83cd'
     with self.m.step.nest('Download goldctl'):
       goldctl_cache_dir = self.m.path['cache'].join('gold')

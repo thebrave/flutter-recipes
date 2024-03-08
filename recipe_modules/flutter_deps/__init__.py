@@ -1,6 +1,7 @@
 DEPS = [
     'depot_tools/depot_tools',
     'flutter/android_virtual_device',
+    'flutter/flutter_bcid',
     'flutter/os_utils',
     'flutter/osx_sdk',
     'flutter/repo_util',

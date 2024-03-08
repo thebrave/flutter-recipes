@@ -474,8 +474,13 @@ class RepoUtilApi(recipe_api.RecipeApi):
   def engine_environment(self, checkout_path):
     """Returns env and env_prefixes of an flutter/dart command environment."""
     dart_bin = checkout_path.join(
-        'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
+        'src', 'flutter', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
+        'bin'
     )
+    if not self.m.path.exists(dart_bin):
+      dart_bin = checkout_path.join(
+          'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
+      )
     git_ref = self.m.properties.get('git_ref', '')
     android_home = checkout_path.join(
         'src', 'third_party', 'android_tools', 'sdk'
@@ -523,9 +528,14 @@ class RepoUtilApi(recipe_api.RecipeApi):
   def monorepo_environment(self, checkout_path):
     """Returns env and env_prefixes of a monorepo command environment."""
     dart_bin = checkout_path.join(
-        'engine', 'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
-        'bin'
+        'engine', 'src', 'flutter', 'third_party', 'dart', 'tools', 'sdks',
+        'dart-sdk', 'bin'
     )
+    if not self.m.path.exists(dart_bin):
+      dart_bin = checkout_path.join(
+          'engine', 'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
+          'bin'
+       )
     git_ref = self.m.properties.get('git_ref', '')
     android_home = checkout_path.join(
         'engine', 'src', 'third_party', 'android_tools', 'sdk'

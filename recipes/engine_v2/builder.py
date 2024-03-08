@@ -100,7 +100,7 @@ def run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes):
 
 
 def _should_run_test(api, test):
-  """Whether the current test should on this branch.
+  """Whether the current test should run on this branch.
 
   The current test should run when the `test_if` matches the test branch, for both presubmit
   and postsubmit.
@@ -463,7 +463,7 @@ def GenTests(api):
       }]
   }
   yield api.test(
-      'test_if_skip',
+      'test_if_skip_postsubmit',
       api.properties(build=test_if_build, no_goma=True),
       api.buildbucket.ci_build(
           project='flutter',
@@ -476,14 +476,38 @@ def GenTests(api):
       ),
   )
   yield api.test(
-      'test_if_skip_presubmit',
+      'test_if_not_skip_postsubmit',
+      api.properties(build=test_if_build, no_goma=True),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='linux-host',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          revision='abcd' * 10,
+          build_number=123,
+      ),
+  )
+  yield api.test(
+      'test_if_not_skip_presubmit',
       api.properties(build=test_if_build, no_goma=True, git_ref="refs/pull/51183/head", git_branch="main"),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='prod',
           builder='linux-host',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
-          git_ref='refs/heads/flutter-3.17-candidate.0',
+          revision='abcd' * 10,
+          build_number=123,
+      ),
+  )
+  yield api.test(
+      'test_if_skip_presubmit',
+      api.properties(build=test_if_build, no_goma=True, git_ref="refs/pull/51183/head", git_branch="flutter-3.17-candidate.0"),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='linux-host',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
           revision='abcd' * 10,
           build_number=123,
       ),

@@ -473,14 +473,15 @@ class RepoUtilApi(recipe_api.RecipeApi):
 
   def engine_environment(self, checkout_path):
     """Returns env and env_prefixes of an flutter/dart command environment."""
+    # Original path to the Dart SDK
     dart_bin = checkout_path.join(
+        'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
+    )
+    # Path to the Dart SDK after the buildroot migration.
+    new_dart_bin = checkout_path.join(
         'src', 'flutter', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
         'bin'
     )
-    if not self.m.path.exists(dart_bin):
-      dart_bin = checkout_path.join(
-          'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
-      )
     git_ref = self.m.properties.get('git_ref', '')
     android_home = checkout_path.join(
         'src', 'third_party', 'android_tools', 'sdk'
@@ -522,20 +523,21 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'CLANG_MODULE_CACHE_PATH':
             '',
     }
-    env_prefixes = {'PATH': ['%s' % str(dart_bin)]}
+    env_prefixes = {'PATH': ['%s' % str(dart_bin), '%s' % str(new_dart_bin)]}
     return env, env_prefixes
 
   def monorepo_environment(self, checkout_path):
     """Returns env and env_prefixes of a monorepo command environment."""
+    # Original path to the Dart SDK
     dart_bin = checkout_path.join(
+        'engine', 'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
+        'bin'
+    )
+    # Path to the Dart SDK after the buildroot migration.
+    new_dart_bin = checkout_path.join(
         'engine', 'src', 'flutter', 'third_party', 'dart', 'tools', 'sdks',
         'dart-sdk', 'bin'
     )
-    if not self.m.path.exists(dart_bin):
-      dart_bin = checkout_path.join(
-          'engine', 'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
-          'bin'
-       )
     git_ref = self.m.properties.get('git_ref', '')
     android_home = checkout_path.join(
         'engine', 'src', 'third_party', 'android_tools', 'sdk'
@@ -571,7 +573,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'REVISION':
             self.m.buildbucket.gitiles_commit.id or ''
     }
-    env_prefixes = {'PATH': ['%s' % str(dart_bin)]}
+    env_prefixes = {'PATH': ['%s' % str(dart_bin), '%s' % str(new_dart_bin)]}
     return env, env_prefixes
 
   def sdk_checkout_path(self):

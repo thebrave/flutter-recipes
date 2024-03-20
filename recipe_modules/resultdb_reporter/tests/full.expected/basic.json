@@ -1,0 +1,29 @@
+[
+  {
+    "cmd": [
+      "rdb",
+      "stream",
+      "--",
+      "vpython3",
+      "RECIPE_MODULE[flutter::resultdb_reporter]/resources/resultdb.py",
+      "{\"testId\": \"//test_suite/test_class/test_method\", \"expected\": false, \"summaryHtml\": \"summary\", \"status\": 2}"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "proj:realm"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/inv",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "upload to resultdb"
+  },
+  {
+    "name": "$result"
+  }
+]

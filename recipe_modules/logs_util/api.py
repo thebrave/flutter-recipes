@@ -28,8 +28,8 @@ class LogUtilsApi(recipe_api.RecipeApi):
       # Ensure that any test outputs, e.g. timelines/timeline summaries are
       # included as logs.
       env['FLUTTER_TEST_OUTPUTS_DIR'] = logs_path
-      # Write a noop file to for the creation of the remote folder estructure
-      # when there logs folder is empty.
+      # Write a noop file to force the creation of the remote folder structure
+      # when the logs folder is empty.
       self.m.file.write_text(
           'Write noop file', logs_path.join('noop.txt'), '', include_log=False
       )

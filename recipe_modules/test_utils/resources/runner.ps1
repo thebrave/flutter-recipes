@@ -1,3 +1,4 @@
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 Write-Host "$args"
 $cmd=""
 ForEach ($arg in $args) {
@@ -9,5 +10,5 @@ ForEach ($arg in $args) {
   }
 }
 Write-Host $cmd
-iex $cmd | Set-Content $Env:LOGS_FILE -Passthru
+iex $cmd | Set-Content $Env:LOGS_FILE -Encoding UTF8 -Passthru
 exit $LASTEXITCODE

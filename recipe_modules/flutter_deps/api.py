@@ -98,6 +98,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'ios_signing':
             self.
             apple_signing,  # TODO(drewroen): Remove this line once ios_signing is not being referenced
+        'ktlint': self.ktlint,
         'ninja': self.ninja,
         'open_jdk': self.open_jdk,
         'ruby': self.ruby,
@@ -721,6 +722,24 @@ Copy-Item "$env:TEMP\dd_vs_setup_*" "$destination"
       self.m.cipd.ensure(ruby_path, ruby)
       paths = env_prefixes.get('PATH', [])
       paths.insert(0, ruby_path.join('bin'))
+      env_prefixes['PATH'] = paths
+
+  # pylint: disable=unused-argument
+  def ktlint(self, env, env_prefixes, version=None):
+    """Installs a dependency on ktlint
+
+    Args:
+      env(dict): Current environment variables.
+      env_prefixes(dict): Current environment prefixes variables.
+    """
+    version = version or 'latest'
+    with self.m.step.nest('Install ktlint'):
+      ktlint_path = self.m.path['cache'].join('ktlint')
+      ktlint = self.m.cipd.EnsureFile()
+      ktlint.add_package('flutter/ktlint/${platform}', version)
+      self.m.cipd.ensure(ktlint_path, ktlint)
+      paths = env_prefixes.get('PATH', [])
+      paths.insert(0, ktlint_path)
       env_prefixes['PATH'] = paths
 
   def contexts(self):

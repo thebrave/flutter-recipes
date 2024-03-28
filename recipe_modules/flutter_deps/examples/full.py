@@ -86,6 +86,7 @@ def RunSteps(api):
   api.flutter_deps.certs(env, env_prefixes, '')
   api.flutter_deps.vs_build(env, env_prefixes, 'version:vs2019')
   api.flutter_deps.ruby(env, env_prefixes, '')
+  api.flutter_deps.ktlint(env, env_prefixes)
   api.flutter_deps.android_virtual_device(env, env_prefixes, '34')
   api.flutter_deps.swift_format(env, env_prefixes, '')
 

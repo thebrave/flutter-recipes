@@ -47,18 +47,27 @@ def RunShard(api, env, env_prefixes, checkout_path):
         'test_timeout_secs'
     ) or default_timeout_secs
     env['GCP_PROJECT'] = 'flutter-infra'
+    api.logs_util.initialize_logs_collection(env)
     with api.context(env=env, env_prefixes=env_prefixes):
-      api.test_utils.run_test(
-          'run test.dart for %s shard and subshard %s' %
-          (api.properties.get('shard'), api.properties.get('subshard')),
-          cmd_list,
-          timeout_secs=deps_timeout_secs
-      )
-      api.logs_util.show_logs_stdout(checkout_path.join('error.log'))
-      api.logs_util.upload_test_metrics(
-          checkout_path.join('test_results.json'), '%s_%s' %
-          (api.properties.get('shard'), api.properties.get('subshard'))
-      )
+      try:
+        api.test_utils.run_test(
+            'run test.dart for %s shard and subshard %s' %
+            (api.properties.get('shard'), api.properties.get('subshard')),
+            cmd_list,
+            timeout_secs=deps_timeout_secs
+        )
+        # TODO(godofredoc): Remove the following lines once the runner process logs consistently.
+        # https://github.com/flutter/flutter/issues/145947
+        api.logs_util.show_logs_stdout(checkout_path.join('error.log'))
+        api.logs_util.upload_test_metrics(
+            checkout_path.join('test_results.json'), '%s_%s' %
+            (api.properties.get('shard'), api.properties.get('subshard'))
+        )
+      finally:
+        task_name = '%s-%s' % (
+            api.properties.get('shard'), api.properties.get('subshard')
+        )
+        api.logs_util.upload_logs(task_name)
 
 
 def RunSteps(api):

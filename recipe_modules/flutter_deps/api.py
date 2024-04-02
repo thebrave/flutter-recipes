@@ -726,7 +726,9 @@ Copy-Item "$env:TEMP\dd_vs_setup_*" "$destination"
 
   # pylint: disable=unused-argument
   def ktlint(self, env, env_prefixes, version=None):
-    """Installs a dependency on ktlint
+    """Installs a dependency on ktlint.
+
+    This dependency is only supported in linux.
 
     Args:
       env(dict): Current environment variables.
@@ -738,6 +740,11 @@ Copy-Item "$env:TEMP\dd_vs_setup_*" "$destination"
       ktlint = self.m.cipd.EnsureFile()
       ktlint.add_package('flutter/ktlint/${platform}', version)
       self.m.cipd.ensure(ktlint_path, ktlint)
+      self.m.step(
+        'Set execute permission',
+        ['chmod', '755', ktlint_path.join('ktlint')],
+        infra_step=True,
+      )
       paths = env_prefixes.get('PATH', [])
       paths.insert(0, ktlint_path)
       env_prefixes['PATH'] = paths

@@ -197,6 +197,11 @@ def Build(api, checkout, env, env_prefixes, outputs, build):
   api.flutter_deps.required_deps(env, env_prefixes, deps)
   api.flutter_bcid.report_stage('compile')
   gn = build.get('gn')
+
+  # If prod apply prod gn overrides.
+  if api.flutter_bcid.is_prod_build():
+    gn = build.get('postsubmit_overrides', {}).get('gn', gn)
+
   if gn:
     with api.context(env=env, env_prefixes=env_prefixes):
       gn = list(gn)
@@ -490,7 +495,12 @@ def GenTests(api):
   )
   yield api.test(
       'test_if_not_skip_presubmit',
-      api.properties(build=test_if_build, no_goma=True, git_ref="refs/pull/51183/head", git_branch="main"),
+      api.properties(
+          build=test_if_build,
+          no_goma=True,
+          git_ref="refs/pull/51183/head",
+          git_branch="main"
+      ),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='prod',
@@ -502,7 +512,12 @@ def GenTests(api):
   )
   yield api.test(
       'test_if_skip_presubmit',
-      api.properties(build=test_if_build, no_goma=True, git_ref="refs/pull/51183/head", git_branch="flutter-3.17-candidate.0"),
+      api.properties(
+          build=test_if_build,
+          no_goma=True,
+          git_ref="refs/pull/51183/head",
+          git_branch="flutter-3.17-candidate.0"
+      ),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='prod',

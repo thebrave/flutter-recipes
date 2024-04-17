@@ -244,11 +244,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
       # led reduces the priority of tasks by 10 from their values in
       # buildbucket which we do not want.
       # TODO(crbug.com/1138533) Add an option to led to handle this.
-      if led_data.result.buildbucket.bbagent_args.build.infra.backend.config:
-        led_data.result.buildbucket.bbagent_args.build.infra.backend.config[
-            'priority'] -= 20
-      else:
-        led_data.result.buildbucket.bbagent_args.build.infra.swarming.priority -= 20
+      led_data.result.buildbucket.bbagent_args.build.infra.backend.config[
+          'priority'] -= 20
       led_data = led_data.then('edit', *edit_args)
       led_data = led_data.then('edit', '-name', task_name)
       led_data = led_data.then('edit', '-r', build['recipe'])

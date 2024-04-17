@@ -83,7 +83,6 @@ def GenTests(api):
           'cas_output_hash': {'web_tests': 'abc', 'ios_debug': 'bcd'}
       },
       status='FAILURE',
-      on_backend=True,
   )
 
   led_try_subbuild1 = api.shard_util_v2.try_build_message(
@@ -195,22 +194,6 @@ def GenTests(api):
           job,
           project='proj',
           bucket='ci',
-      ),
-      api.shard_util_v2.child_led_steps(
-          subbuilds=[led_try_subbuild1],
-          collect_step='collect builds',
-      )
-  )
-
-  yield api.test(
-      'presubmit_led_subbuilds_no_backend', api.properties(**props),
-      api.platform.name('linux'),
-      api.buildbucket.ci_build(
-          project='proj',
-          builder='try-builder',
-          git_repo='https://github.com/repo/a',
-          revision='a' * 40,
-          build_number=123
       ),
       api.shard_util_v2.child_led_steps(
           subbuilds=[led_try_subbuild1],

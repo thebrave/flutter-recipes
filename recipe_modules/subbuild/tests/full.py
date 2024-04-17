@@ -49,7 +49,6 @@ def GenTests(api):
       builder="builder-subbuild1",
       output_props={"test_orchestration_inputs_hash": "abc"},
       status="SUCCESS",
-      on_backend=True,
   )
   ci_subbuild2 = api.subbuild.ci_build_message(
       build_id=8945511751514863185,

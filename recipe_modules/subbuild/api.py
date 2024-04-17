@@ -280,11 +280,7 @@ class SubbuildApi(recipe_api.RecipeApi):
         b for b in builds.values() if b.status != common_pb2.SUCCESS
     ]
     if failed_builds:
-      task_ids = [
-          b.infra.swarming.task_id
-          if b.infra.swarming.task_id else b.infra.backend.task.id.id
-          for b in failed_builds
-      ]
+      task_ids = [b.infra.backend.task.id.id for b in failed_builds]
       # Make sure task IDs are non-empty.
       assert all(task_ids), task_ids
 

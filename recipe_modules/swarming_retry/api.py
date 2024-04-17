@@ -319,15 +319,8 @@ class LedTask(Task):
 
     build = led_data.result.buildbucket.bbagent_args.build
 
-    self._original_priority = None
-    self._backend_config = None
-    self._swarming_pb = None
-    if build.infra.backend.config:
-      self._backend_config = build.infra.backend.config
-      self._original_priority = self._backend_config['priority']
-    elif build.infra.swarming.priority:
-      self._swarming_pb = build.infra.swarming
-      self._original_priority = self._swarming_pb.priority
+    self._backend_config = build.infra.backend.config
+    self._original_priority = self._backend_config['priority']
 
   def launch(self, priority_boost_amount):
     assert self._led_data
@@ -338,10 +331,7 @@ class LedTask(Task):
     # Although we modify this data structure in place, one launch()
     # invocation should not affect later launch() invocations because this
     # 'priority' field is always overwritten.
-    if self._backend_config:
-      self._backend_config['priority'] = new_priority
-    elif self._swarming_pb:
-      self._swarming_pb.priority = new_priority
+    self._backend_config['priority'] = new_priority
     if priority_boost_amount != 0:
       with self._api.step.nest("increase priority") as pres:
         pres.step_summary_text = (

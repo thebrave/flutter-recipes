@@ -25,14 +25,10 @@ class SubbuildTestApi(recipe_test_api.RecipeTestApi):
         See BuildBucketTestApi.ci_build_message for full parameter documentation.
         """
     project = kwargs.pop("project", "fuchsia")
-    on_backend = kwargs.pop("on_backend", False)
     msg = self.m.buildbucket.ci_build_message(
         builder=builder, project=project, **kwargs
     )
-    if on_backend:
-      msg.infra.backend.task.id.id = "abc123"
-    else:
-      msg.infra.swarming.task_id = "abc123"
+    msg.infra.backend.task.id.id = "abc123"
     msg.input.properties.update(input_props if input_props else {})
     msg.output.properties.update(output_props if output_props else {})
     return msg
@@ -54,7 +50,7 @@ class SubbuildTestApi(recipe_test_api.RecipeTestApi):
     msg = self.m.buildbucket.try_build_message(
         builder=builder, project=project, **kwargs
     )
-    msg.infra.swarming.task_id = "abc123"
+    msg.infra.backend.task.id.id = "abc123"
     msg.input.properties.update(input_props if input_props else {})
     msg.output.properties.update(output_props if output_props else {})
     return msg

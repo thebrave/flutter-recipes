@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright 2024 The Flutter Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 # Helper script to import a flutter p12 identity.
 # Note: do not enable -x to display expanded values of the variables, as this will leak the passwords.

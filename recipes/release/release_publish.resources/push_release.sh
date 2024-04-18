@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright 2024 The Flutter Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 # Helper script to run auth and git authenticated commands from the same
 # terminal context. Used to tag and push both flutter/flutter & flutter/engine

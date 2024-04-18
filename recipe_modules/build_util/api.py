@@ -159,6 +159,10 @@ class BuildUtilApi(recipe_api.RecipeApi):
           self.m.file.copy(
               'Copy crash reproduce file %s' % f, f, flutter_logs_dir
           )
+    # Copy the llvm_<YYYY-MM-DD-HHMMSS>_<hostname>.crash file to log dir.
+    copy_script = self.resource('copy_crash.sh')
+    self.m.step('Set execute permission', ['chmod', '755', copy_script])
+    self.m.step('copy crash file', [copy_script, flutter_logs_dir])
 
   def build(self, config, checkout_path, targets, env, rbe_working_path=None):
     """Builds using ninja.

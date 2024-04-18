@@ -481,6 +481,45 @@
     ]
   },
   {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::build_util]/resources/copy_crash.sh"
+    ],
+    "env": {
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Set execute permission"
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::build_util]/resources/copy_crash.sh",
+      "[START_DIR]"
+    ],
+    "env": {
+      "GOMA_TMP_DIR": "[CLEANUP]/goma",
+      "GOMA_USE_LOCAL": "False"
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "copy crash file"
+  },
+  {
     "cmd": [],
     "name": "teardown goma (2)"
   },

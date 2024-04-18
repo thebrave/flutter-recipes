@@ -974,6 +974,67 @@
     ]
   },
   {
+    "cmd": [
+      "chmod",
+      "755",
+      "RECIPE_MODULE[flutter::build_util]/resources/copy_crash.sh"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "Set execute permission"
+  },
+  {
+    "cmd": [
+      "RECIPE_MODULE[flutter::build_util]/resources/copy_crash.sh",
+      "[START_DIR]"
+    ],
+    "env": {
+      "RBE_cache_dir": "[CACHE]/rbe/deps",
+      "RBE_deps_cache_max_mb": "512",
+      "RBE_enable_deps_cache": "true",
+      "RBE_instance": "fake_rbe_instance",
+      "RBE_log_dir": "[CLEANUP]/rbe",
+      "RBE_log_format": "reducedtext",
+      "RBE_output_dir": "[CLEANUP]/rbe",
+      "RBE_proxy_log_dir": "[CLEANUP]/rbe",
+      "RBE_server_address": "unix://[CLEANUP]/rbe/reproxy.sock",
+      "RBE_service": "remotebuildexecution.googleapis.com:443",
+      "RBE_socket_path": "[CLEANUP]/rbe/reproxy.sock",
+      "RBE_use_application_default_credentials": "false",
+      "RBE_use_gce_credentials": "true"
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "copy crash file"
+  },
+  {
     "cmd": [],
     "name": "teardown remote execution"
   },

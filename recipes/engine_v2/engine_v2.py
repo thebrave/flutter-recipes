@@ -32,7 +32,7 @@ DEPS = [
     'flutter/repo_util',
     'flutter/os_utils',
     'flutter/osx_sdk',
-    'flutter/shard_util_v2',
+    'flutter/shard_util',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -103,11 +103,11 @@ def RunSteps(api):
 
   # Execute subbuilds
   with api.step.nest('launch builds') as presentation:
-    tasks = api.shard_util_v2.schedule_builds(
+    tasks = api.shard_util.schedule_builds(
         builds, presentation, branch=current_branch
     )
   with api.step.nest('collect builds') as presentation:
-    build_results = api.shard_util_v2.collect(tasks)
+    build_results = api.shard_util.collect(tasks)
 
   api.display_util.display_subbuilds(
       step_name='display builds',
@@ -147,7 +147,7 @@ def RunSteps(api):
     # Download sub-builds
     out_builds_path = full_engine_checkout.join('src', 'out')
     api.file.rmtree('Clobber build download folder', out_builds_path)
-    api.shard_util_v2.download_full_builds(build_results, out_builds_path)
+    api.shard_util.download_full_builds(build_results, out_builds_path)
     with api.step.nest('Global generators') as presentation:
       if 'tasks' in generators:
         api.flutter_bcid.report_stage(BcidStage.COMPILE.value)
@@ -166,12 +166,10 @@ def RunSteps(api):
   # Run tests
   if not api.flutter_bcid.is_official_build():
     with api.step.nest('launch tests') as presentation:
-      tasks = api.shard_util_v2.schedule_tests(
-          tests, build_results, presentation
-      )
+      tasks = api.shard_util.schedule_tests(tests, build_results, presentation)
 
     with api.step.nest('collect tests') as presentation:
-      test_results = api.shard_util_v2.collect(tasks)
+      test_results = api.shard_util.collect(tasks)
 
     api.display_util.display_subbuilds(
         step_name='display tests',
@@ -261,7 +259,7 @@ def _run_global_generators(
 
 
 def GenTests(api):
-  try_subbuild1 = api.shard_util_v2.try_build_message(
+  try_subbuild1 = api.shard_util.try_build_message(
       build_id=8945511751514863186,
       builder="builder-subbuild1",
       output_props={"test_orchestration_inputs_hash": "abc"},
@@ -312,7 +310,7 @@ def GenTests(api):
           revision='a' * 40,
           build_number=123,
       ),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step="launch builds.schedule",
           collect_step="collect builds",
@@ -341,7 +339,7 @@ def GenTests(api):
           revision='a' * 40,
           build_number=123,
       ),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step="launch builds.schedule",
           collect_step="collect builds",
@@ -366,7 +364,7 @@ def GenTests(api):
           revision='a' * 40,
           build_number=123,
       ),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step="launch builds.schedule",
           collect_step="collect builds",
@@ -383,7 +381,7 @@ def GenTests(api):
           revision='a' * 40,
           build_number=123,
       ),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step="launch builds.schedule",
           collect_step="collect builds",
@@ -416,7 +414,7 @@ def GenTests(api):
       api.platform.name('linux'),
       api.properties(builds=builds, builder_name_suffix='-try'),
       api.monorepo.try_build(),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step="launch builds.schedule",
           collect_step="collect builds",
@@ -428,7 +426,7 @@ def GenTests(api):
       api.platform.name('linux'),
       api.properties(config_name='config_name'),
       api.monorepo.ci_build(),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step="launch builds.schedule",
           collect_step="collect builds",
@@ -455,7 +453,7 @@ def GenTests(api):
           revision='a' * 40,
           build_number=123,
       ),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step="launch builds.schedule",
           collect_step="collect builds",
@@ -494,7 +492,7 @@ def GenTests(api):
                   }]
   }]
 
-  subtest1 = api.shard_util_v2.try_build_message(
+  subtest1 = api.shard_util.try_build_message(
       build_id=8945511751514863187,
       builder="subtest1",
       output_props={"test_orchestration_inputs_hash": "abc"},
@@ -506,12 +504,12 @@ def GenTests(api):
       api.platform.name('linux'),
       api.properties(config_name='config_name'),
       api.monorepo.ci_build(),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step="launch builds.schedule",
           collect_step="collect builds",
       ),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[subtest1],
           launch_step="launch tests.schedule",
           collect_step="collect tests",
@@ -539,7 +537,7 @@ def GenTests(api):
           gclient_variables={'download_fuchsia_sdk': True}
       ),
       api.monorepo.ci_build(),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step="launch builds.schedule",
           collect_step="collect builds",
@@ -567,7 +565,7 @@ def GenTests(api):
           }
       ),
       api.monorepo.ci_build(),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step="launch builds.schedule",
           collect_step="collect builds",

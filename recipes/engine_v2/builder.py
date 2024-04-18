@@ -45,7 +45,7 @@ DEPS = [
     'flutter/rbe',
     'flutter/repo_util',
     'flutter/retry',
-    'flutter/shard_util_v2',
+    'flutter/shard_util',
     'flutter/signing',
     'flutter/test_utils',
     'fuchsia/cas_util',
@@ -247,7 +247,7 @@ def Build(api, checkout, env, env_prefixes, outputs, build):
         Verify(api, checkout, archive_config)
   # Archive full build. This is inefficient but necessary for global generators.
   if build.get('cas_archive', True):
-    full_build_hash = api.shard_util_v2.archive_full_build(
+    full_build_hash = api.shard_util.archive_full_build(
         checkout.join('out', build.get('name')), build.get('name')
     )
     outputs['full_build'] = full_build_hash

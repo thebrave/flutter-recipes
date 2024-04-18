@@ -14,7 +14,7 @@ DEPS = [
     'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/retry',
-    'flutter/shard_util_v2',
+    'flutter/shard_util',
     'flutter/test_utils',
     'flutter/token_util',
     'fuchsia/git',
@@ -160,7 +160,7 @@ def download_artifact(api, artifact, artifact_destination_dir):
   '''Download pre-build artifact.'''
   commit_sha = api.repo_util.get_env_ref()
   artifact_gcs_dir = 'flutter/%s/%s' % (
-      api.shard_util_v2.get_base_bucket_name(), commit_sha
+      api.shard_util.get_base_bucket_name(), commit_sha
   )
   artifact_gcs_path = '%s/%s' % (artifact_gcs_dir, artifact)
   api.gsutil.download(
@@ -235,7 +235,7 @@ def uploadResults(
   """
   if shouldNotUpdate(api, git_branch):
     return
-  bucket = api.shard_util_v2.get_base_bucket_name()
+  bucket = api.shard_util.get_base_bucket_name()
   runner_params = ['--test-flaky', is_test_flaky, '--builder-bucket', bucket]
   if api.properties.get('upload_metrics'):
     runner_params.extend([

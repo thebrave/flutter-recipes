@@ -42,7 +42,7 @@ resolved_deps - is a list of dictionaries with CAS hashes pointing to full sub-b
 tasks - is a list of dictionaries with the scripts to run in this test sub-build.
 
 
-This recipe will be called from the engine_v2/engine_v2 recipe using the shard_util_v2 module. The
+This recipe will be called from the engine_v2/engine_v2 recipe using the shard_util module. The
 test configuration is defined in the engine build configurations files as global tests.
 """
 import contextlib

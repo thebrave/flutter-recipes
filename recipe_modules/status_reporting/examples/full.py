@@ -6,7 +6,7 @@ from recipe_engine.post_process import DoesNotRun, Filter, StatusFailure
 
 from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from PB.go.chromium.org.luci.buildbucket.proto import builder_common as builder_pb2
-from RECIPE_MODULES.flutter.shard_util_v2.api import SubbuildResult
+from RECIPE_MODULES.flutter.shard_util.api import SubbuildResult
 
 DEPS = ['flutter/status_reporting']
 

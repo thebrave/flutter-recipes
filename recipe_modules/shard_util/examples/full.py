@@ -14,7 +14,7 @@ from recipe_engine.post_process import (
 
 DEPS = [
     'flutter/monorepo',
-    'flutter/shard_util_v2',
+    'flutter/shard_util',
     'fuchsia/buildbucket_util',
     'recipe_engine/buildbucket',
     'recipe_engine/led',
@@ -28,7 +28,7 @@ DEPS = [
 def RunSteps(api):
   build_configs = api.properties.get('builds', [])
   test_configs = api.properties.get('tests', [])
-  props = api.shard_util_v2.pre_process_properties({
+  props = api.shard_util.pre_process_properties({
       'properties': {
           '$flutter/osx_sdk':
               '{"cleanup_cache": true, "sdk_version": "14a5294e"}',
@@ -39,25 +39,23 @@ def RunSteps(api):
   assert isinstance(props['properties']['$flutter/osx_sdk'], dict)
   assert props['properties']['validation'] == 'docs'
   with api.step.nest("launch builds") as presentation:
-    reqs = api.shard_util_v2.schedule_builds(build_configs, presentation)
+    reqs = api.shard_util.schedule_builds(build_configs, presentation)
   with api.step.nest("collect builds") as presentation:
-    builds = api.shard_util_v2.collect(reqs)
+    builds = api.shard_util.collect(reqs)
     for build in builds.values():
       if build.build_proto.status != common_pb2.SUCCESS:
         raise api.step.StepFailure("build %s failed" % build.build_id)
-    api.shard_util_v2.archive_full_build(
+    api.shard_util.archive_full_build(
         api.path['start_dir'].join('out', 'host_debug'), 'host_debug'
     )
-    api.shard_util_v2.download_full_builds(
-        builds, api.path['cleanup'].join('out')
-    )
+    api.shard_util.download_full_builds(builds, api.path['cleanup'].join('out'))
   with api.step.nest("launch builds") as presentation:
-    reqs = api.shard_util_v2.schedule_tests(test_configs, builds, presentation)
-  api.shard_util_v2.get_base_bucket_name()
+    reqs = api.shard_util.schedule_tests(test_configs, builds, presentation)
+  api.shard_util.get_base_bucket_name()
 
 
 def GenTests(api):
-  try_subbuild1 = api.shard_util_v2.try_build_message(
+  try_subbuild1 = api.shard_util.try_build_message(
       build_id=8945511751514863186,
       builder='ios_debug',
       input_props={'task_name': 'mytask'},
@@ -68,7 +66,7 @@ def GenTests(api):
       },
       status='SUCCESS',
   )
-  try_subbuild2 = api.shard_util_v2.try_build_message(
+  try_subbuild2 = api.shard_util.try_build_message(
       build_id=8945511751514863187,
       builder='builder-subbuild2',
       output_props={
@@ -76,7 +74,7 @@ def GenTests(api):
       },
       status='SUCCESS',
   )
-  try_failure = api.shard_util_v2.try_build_message(
+  try_failure = api.shard_util.try_build_message(
       build_id=8945511751514863187,
       builder='builder-subbuild2',
       output_props={
@@ -85,7 +83,7 @@ def GenTests(api):
       status='FAILURE',
   )
 
-  led_try_subbuild1 = api.shard_util_v2.try_build_message(
+  led_try_subbuild1 = api.shard_util.try_build_message(
       build_id=87654321,
       builder='ios_debug',
       input_props={'task_name': 'mytask'},
@@ -160,7 +158,7 @@ def GenTests(api):
           project='proj',
           bucket='ci',
       ),
-      api.shard_util_v2.child_led_steps(
+      api.shard_util.child_led_steps(
           subbuilds=[led_try_subbuild1],
           collect_step='collect builds',
       )
@@ -174,7 +172,7 @@ def GenTests(api):
   yield (
       api.buildbucket_util.test('presubmit_bb', tryjob=False, status='FAILURE')
       + api.properties(**presubmit_props_bb) + api.platform.name('linux') +
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_failure],
           launch_step='launch builds.schedule',
           collect_step='collect builds',
@@ -195,7 +193,7 @@ def GenTests(api):
           project='proj',
           bucket='ci',
       ),
-      api.shard_util_v2.child_led_steps(
+      api.shard_util.child_led_steps(
           subbuilds=[led_try_subbuild1],
           collect_step='collect builds',
       )
@@ -204,7 +202,7 @@ def GenTests(api):
   yield api.test(
       'monorepo_bb_subbuilds', api.properties(**props_bb),
       api.platform.name('linux'), api.monorepo.ci_build(),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step='launch builds.schedule',
           collect_step='collect builds',
@@ -214,7 +212,7 @@ def GenTests(api):
   yield api.test(
       'monorepo_try_bb_subbuilds', api.properties(**props_bb),
       api.platform.name('linux'), api.monorepo.try_build(),
-      api.shard_util_v2.child_build_steps(
+      api.shard_util.child_build_steps(
           subbuilds=[try_subbuild1],
           launch_step='launch builds.schedule',
           collect_step='collect builds',
@@ -226,7 +224,7 @@ def GenTests(api):
       api.properties(**props),
       api.platform.name('linux'),
       api.monorepo.ci_build(),
-      api.shard_util_v2.child_led_steps(
+      api.shard_util.child_led_steps(
           subbuilds=[led_try_subbuild1],
           collect_step='collect builds',
       ),
@@ -238,7 +236,7 @@ def GenTests(api):
       api.properties(**props),
       api.platform.name('linux'),
       api.monorepo.try_build(),
-      api.shard_util_v2.child_led_steps(
+      api.shard_util.child_led_steps(
           subbuilds=[led_try_subbuild1],
           collect_step='collect builds',
       ),

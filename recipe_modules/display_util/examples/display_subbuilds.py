@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 from recipe_engine.recipe_api import Property
-from RECIPE_MODULES.flutter.shard_util_v2.api import SubbuildResult
+from RECIPE_MODULES.flutter.shard_util.api import SubbuildResult
 
 DEPS = [
     "flutter/display_util",

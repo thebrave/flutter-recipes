@@ -21,7 +21,7 @@ DEPS = [
     'flutter/logs_util',
     'flutter/os_utils',
     'flutter/repo_util',
-    'flutter/shard_util_v2',
+    'flutter/shard_util',
     'fuchsia/cas_util',
     'flutter/goma',
     'recipe_engine/buildbucket',
@@ -128,9 +128,9 @@ def RunSteps(api, properties, env_properties):
     # side is kept in `ref`.
     targets = generate_targets(api, cas_hash, ref.strip(), url, deps)
     with api.step.nest('launch builds') as presentation:
-      tasks = api.shard_util_v2.schedule(targets, presentation)
+      tasks = api.shard_util.schedule(targets, presentation)
     with api.step.nest('collect builds') as presentation:
-      build_results = api.shard_util_v2.collect(tasks)
+      build_results = api.shard_util.collect(tasks)
     api.display_util.display_subbuilds(
         step_name='display builds',
         subbuilds=build_results,
@@ -148,7 +148,7 @@ def generate_targets(api, cas_hash, ref, url, deps):
     drone_props = {
         'subshard': subshard,
         'shard': shard,
-        'dependencies': [api.shard_util_v2.unfreeze_dict(dep) for dep in deps],
+        'dependencies': [api.shard_util.unfreeze_dict(dep) for dep in deps],
         'task_name': task_name,
         'local_web_sdk_cas_hash': cas_hash,
     }

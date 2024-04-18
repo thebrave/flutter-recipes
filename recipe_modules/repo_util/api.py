@@ -63,7 +63,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
         )
         env['GYP_MSVS_VERSION'] = metadata['version']
 
-  def engine_checkout(self, checkout_path, env, env_prefixes, gclient_variables = None):
+  def engine_checkout(
+      self, checkout_path, env, env_prefixes, gclient_variables=None
+  ):
     """Checkout code using gclient.
 
     Args:
@@ -98,9 +100,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     # Grab any gclient custom variables passed as properties.
     if not gclient_variables:
       gclient_variables = self.m.properties.get('gclient_variables', {})
-    local_custom_vars = self.m.shard_util_v2.unfreeze_dict(
-        gclient_variables
-    )
+    local_custom_vars = self.m.shard_util.unfreeze_dict(gclient_variables)
     # Pass a special gclient variable to identify release candidate branch checkouts. This
     # is required to prevent trying to download experimental dependencies on release candidate
     # branches.
@@ -198,7 +198,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     # Pass a special gclient variable to identify release candidate branch checkouts. This
     # is required to prevent trying to download experimental dependencies on release candidate
     # branches.
-    local_custom_vars = self.m.shard_util_v2.unfreeze_dict(
+    local_custom_vars = self.m.shard_util.unfreeze_dict(
         self.m.properties.get('gclient_variables', {})
     )
     if (self.m.properties.get('git_branch', '').startswith('flutter-') or
@@ -457,8 +457,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
     flutter_exe = 'flutter.bat' if self.m.platform.is_win else 'flutter'
     if (not self.m.monorepo.is_monorepo_ci_build and
         not self.m.monorepo.is_monorepo_try_build):
-      self.m.step('flutter config --clear-features',
-                  [flutter_bin.join(flutter_exe), 'config', '--clear-features'],
+      self.m.step(
+          'flutter config --clear-features',
+          [flutter_bin.join(flutter_exe), 'config', '--clear-features'],
       )
     return env, env_prefixes
 

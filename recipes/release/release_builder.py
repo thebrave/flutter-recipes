@@ -24,7 +24,7 @@ DEPS = [
     'flutter/flutter_bcid',
     'flutter/os_utils',
     'flutter/repo_util',
-    'flutter/shard_util_v2',
+    'flutter/shard_util',
     'flutter/yaml',
     'recipe_engine/buildbucket',
     'recipe_engine/json',
@@ -111,16 +111,16 @@ def RunSteps(api, properties, env_properties):
   with api.step.nest('launch builds') as presentation:
     for target in ci_yaml.json.output['targets']:
       if ShouldRun(api, git_ref, target, release_branch, retry_override_list):
-        target = api.shard_util_v2.pre_process_properties(target)
+        target = api.shard_util.pre_process_properties(target)
         tasks.update(
-            api.shard_util_v2.schedule([
+            api.shard_util.schedule([
                 target,
             ],
-                                       presentation,
-                                       branch=release_branch)
+                                    presentation,
+                                    branch=release_branch)
         )
   with api.step.nest('collect builds') as presentation:
-    build_results = api.shard_util_v2.collect(tasks)
+    build_results = api.shard_util.collect(tasks)
 
   api.display_util.display_subbuilds(
       step_name='display builds',
@@ -130,7 +130,7 @@ def RunSteps(api, properties, env_properties):
 
 
 def GenTests(api):
-  try_subbuild1 = api.shard_util_v2.try_build_message(
+  try_subbuild1 = api.shard_util.try_build_message(
       build_id=8945511751514863186,
       builder="builder-subbuild1",
       output_props={"test_orchestration_inputs_hash": "abc"},
@@ -163,7 +163,7 @@ def GenTests(api):
             build_number=123,
             git_ref='refs/heads/%s' % git_ref,
         ),
-        api.shard_util_v2.child_build_steps(
+        api.shard_util.child_build_steps(
             subbuilds=[try_subbuild1],
             launch_step="launch builds.schedule",
             collect_step="collect builds",

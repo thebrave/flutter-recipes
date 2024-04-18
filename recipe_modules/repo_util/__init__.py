@@ -6,7 +6,7 @@ DEPS = [
     'flutter/cache',
     'flutter/monorepo',
     'flutter/retry',
-    'flutter/shard_util_v2',
+    'flutter/shard_util',
     'fuchsia/utils',
     'recipe_engine/buildbucket',
     'recipe_engine/context',

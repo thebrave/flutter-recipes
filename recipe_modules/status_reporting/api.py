@@ -12,7 +12,7 @@ from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 class StatusReportingApi(recipe_api.RecipeApi):
 
   def build_to_json(self, build):
-    """Encodes a shard_util_v2.SubbuildResult to a json string.
+    """Encodes a shard_util.SubbuildResult to a json string.
 
     Args:
       build(build.Build): The build to encode.
@@ -32,10 +32,10 @@ class StatusReportingApi(recipe_api.RecipeApi):
 
     Args:
       subbuilds(dict): A dictionary with the build name as key and a value
-        of shard_util_v2.SubbuildResult as a value.
+        of shard_util.SubbuildResult as a value.
       topic(str): (optional) gcloud topic to publish message to.
       only_publish_build_id(bool): (optional) If True, only publish the build_id
-        of the shard_util_v2.SubbuildResult instead of the entire build json.
+        of the shard_util.SubbuildResult instead of the entire build json.
     """
     with self.m.step.nest('Publish results') as presentation:
       for id_name, build in subbuilds.items():

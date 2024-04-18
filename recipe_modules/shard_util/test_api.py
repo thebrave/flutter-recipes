@@ -8,7 +8,7 @@ from PB.go.chromium.org.luci.buildbucket.proto import (
     builds_service as builds_service_pb2,
 )
 from PB.go.chromium.org.luci.led.job import job as job_pb2
-from RECIPE_MODULES.flutter.shard_util_v2.api import SubbuildResult
+from RECIPE_MODULES.flutter.shard_util.api import SubbuildResult
 
 
 class ShardUtilTestApi(recipe_test_api.RecipeTestApi):

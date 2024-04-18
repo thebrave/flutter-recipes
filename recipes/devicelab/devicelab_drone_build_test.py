@@ -13,7 +13,7 @@ DEPS = [
     'flutter/osx_sdk',
     'flutter/repo_util',
     'flutter/retry',
-    'flutter/shard_util_v2',
+    'flutter/shard_util',
     'flutter/test_utils',
     'flutter/token_util',
     'fuchsia/git',
@@ -78,9 +78,9 @@ def RunSteps(api):
       api, task_name, api.properties.get('dependencies', []), artifact
   )
   with api.step.nest('launch builds') as presentation:
-    tasks = api.shard_util_v2.schedule(targets, presentation)
+    tasks = api.shard_util.schedule(targets, presentation)
   with api.step.nest('collect builds') as presentation:
-    build_results = api.shard_util_v2.collect(tasks)
+    build_results = api.shard_util.collect(tasks)
     api.display_util.display_subbuilds(
         step_name='display builds',
         subbuilds=build_results,
@@ -96,7 +96,7 @@ def test(api, task_name, deps, artifact):
   # These are dependencies specified in the yaml file. We want to pass them down
   # to test so they also install these dependencies.
   test_props = {
-      'dependencies': [api.shard_util_v2.unfreeze_dict(dep) for dep in deps],
+      'dependencies': [api.shard_util.unfreeze_dict(dep) for dep in deps],
       'task_name':
           task_name,
       'parent_builder':
@@ -108,7 +108,7 @@ def test(api, task_name, deps, artifact):
       'tags':
           tags,
       '$flutter/osx_sdk':
-          api.shard_util_v2.unfreeze_dict(
+          api.shard_util.unfreeze_dict(
               api.properties.get('$flutter/osx_sdk', {})
           ),
   }

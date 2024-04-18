@@ -72,7 +72,15 @@ class OSXSDKApi(recipe_api.RecipeApi):
       runtime_versions.sort(reverse=True)
       self._runtime_versions = runtime_versions
 
-    current_os = self.m.platform.mac_release
+    find_os = self.m.step(
+        "find macOS version",
+        ["sw_vers", "-productVersion"],
+        stdout=self.m.raw_io.output_text(),
+        step_test_data=(
+            lambda: self.m.raw_io.test_api.stream_output_text("14.4")
+        ),
+    )
+    current_os = self.m.version.parse(find_os.stdout.strip())
     if 'sdk_version' in self._sdk_properties:
       self._sdk_version = self._sdk_properties['sdk_version'].lower()
     else:

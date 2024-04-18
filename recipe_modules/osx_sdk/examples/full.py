@@ -49,6 +49,10 @@ def GenTests(api):
   yield api.test(
       'explicit_runtime_version',
       api.platform.name('mac'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("10.15.6"),
+      ),
       api.properties(
           **{
               '$flutter/osx_sdk': {
@@ -86,13 +90,19 @@ def GenTests(api):
   yield api.test(
       'automatic_version',
       api.platform.name('mac'),
-      api.platform.mac_release('10.15.6'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("10.15.6"),
+      ),
   )
 
   yield api.test(
       'ancient_version',
       api.platform.name('mac'),
-      api.platform.mac_release('10.1.0'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("10.1.0"),
+      ),
   )
 
   yield api.test(
@@ -112,7 +122,10 @@ def GenTests(api):
   yield api.test(
       'explicit_invalid_runtime_version_with_mac_13',
       api.platform.name('mac'),
-      api.platform.mac_release('13.5.1'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
       api.properties(
           **{
               '$flutter/osx_sdk': {
@@ -127,7 +140,10 @@ def GenTests(api):
   yield api.test(
       'mac_13_explicit_runtime_version_already_mounted',
       api.platform.name('mac'),
-      api.platform.mac_release('13.5.1'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
       api.properties(
           **{
               '$flutter/osx_sdk': {
@@ -188,7 +204,10 @@ def GenTests(api):
   yield api.test(
       'mac_13_explicit_runtime_version_not_mounted',
       api.platform.name('mac'),
-      api.platform.mac_release('13.5.1'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
       api.properties(
           **{
               '$flutter/osx_sdk': {
@@ -246,7 +265,10 @@ def GenTests(api):
   yield api.test(
       'mac_13_explicit_runtime_version_build_verion_failure',
       api.platform.name('mac'),
-      api.platform.mac_release('13.5.1'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
       api.properties(
           **{
               '$flutter/osx_sdk': {
@@ -292,7 +314,10 @@ def GenTests(api):
   yield api.test(
       'mac_13_explicit_runtime_version_fails_to_find_dmg',
       api.platform.name('mac'),
-      api.platform.mac_release('13.5.1'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
       api.properties(
           **{
               '$flutter/osx_sdk': {
@@ -317,7 +342,10 @@ def GenTests(api):
   yield api.test(
       'mac_13_explicit_runtime_version_clean',
       api.platform.name('mac'),
-      api.platform.mac_release('13.5.1'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
       api.properties(
           **{
               '$flutter/osx_sdk': {
@@ -335,10 +363,8 @@ def GenTests(api):
       ),
       api.step_data(
           'Cleaning up runtimes cache.check xcode version',
-          stdout=api.raw_io.output_text(
-              'Xcode 15.0\n' +
-              'Build version 15C500b'
-          )
+          stdout=api.raw_io
+          .output_text('Xcode 15.0\n' + 'Build version 15C500b')
       ),
       api.step_data(
           'Cleaning up runtimes cache.list runtimes',
@@ -397,7 +423,10 @@ def GenTests(api):
   yield api.test(
       'failed_to_delete_runtimes_err_in_stdout',
       api.platform.name('mac'),
-      api.platform.mac_release('13.5.1'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
       api.properties(
           **{
               '$flutter/osx_sdk': {
@@ -417,7 +446,11 @@ def GenTests(api):
   yield api.test(
       'failed_to_delete_runtimes_err_in_stderr',
       api.platform.name('mac'),
-      api.platform.mac_release('13.5.1'),
+      #api.platform.mac_release('13.5.1'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
       api.properties(
           **{
               '$flutter/osx_sdk': {
@@ -437,7 +470,10 @@ def GenTests(api):
   yield api.test(
       'mac_13_cleanup_no_runtimes',
       api.platform.name('mac'),
-      api.platform.mac_release('13.5.1'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
       api.properties(
           **{
               '$flutter/osx_sdk': {
@@ -452,7 +488,10 @@ def GenTests(api):
   yield api.test(
       'mac_13_arm_host',
       api.platform.name('mac'),
-      api.platform.mac_release('13.5.1'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
       api.platform.arch('arm'),
       api.properties(
           **{
@@ -467,7 +506,10 @@ def GenTests(api):
   yield api.test(
       'mac_13_x86_host',
       api.platform.name('mac'),
-      api.platform.mac_release('13.5.1'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
       api.platform.arch('intel'),
       api.properties(
           **{
@@ -482,7 +524,10 @@ def GenTests(api):
   yield api.test(
       'xcode_install_fails_passes_on_retry',
       api.platform.name('mac'),
-      api.platform.mac_release('13.5.1'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
       api.properties(**{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}),
       api.path.exists(sdk_app_path),
       api.step_data(

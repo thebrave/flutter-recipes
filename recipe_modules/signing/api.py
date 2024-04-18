@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-#import zipfile
 from recipe_engine import recipe_api
 
 # File name inside artifacts that require signing with entitlements.

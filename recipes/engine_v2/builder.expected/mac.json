@@ -1,6 +1,25 @@
 [
   {
     "cmd": [
+      "sw_vers",
+      "-productVersion"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "find macOS version"
+  },
+  {
+    "cmd": [
       "top",
       "-l",
       "3",
@@ -474,7 +493,7 @@
   {
     "cmd": [
       "echo",
-      "[CACHE]/osx_sdk/xcode_9f2000"
+      "[CACHE]/osx_sdk/xcode_12a7209"
     ],
     "infra_step": true,
     "luci_context": {
@@ -554,7 +573,7 @@
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/osx_sdk/xcode_9f2000",
+      "[CACHE]/osx_sdk/xcode_12a7209",
       "-ensure-file",
       "infra/tools/mac_toolchain/${platform} latest",
       "-max-threads",
@@ -593,16 +612,40 @@
   },
   {
     "cmd": [
-      "[CACHE]/osx_sdk/xcode_9f2000/mac_toolchain",
+      "ls",
+      "-al",
+      "[CACHE]/osx_sdk/xcode_12a7209"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "install xcode.Show tool_dir cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/osx_sdk/xcode_12a7209/mac_toolchain",
       "install",
       "-kind",
       "ios",
       "-xcode-version",
-      "9f2000",
+      "12a7209",
       "-output-dir",
-      "[CACHE]/osx_sdk/xcode_9f2000/XCode.app",
+      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app",
       "-cipd-package-prefix",
-      "flutter_internal/ios/xcode",
+      "infra_internal/ios/xcode",
       "-with-runtime=True",
       "-verbose"
     ],
@@ -652,7 +695,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "[CACHE]/osx_sdk/xcode_9f2000/XCode.app"
+      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app"
     ],
     "infra_step": true,
     "luci_context": {
@@ -714,13 +757,9 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CACHE]/osx_sdk/xcode_9f2000"
+      "rm",
+      "-rf",
+      "[CACHE]/osx_sdk/xcode_12a7209"
     ],
     "infra_step": true,
     "luci_context": {
@@ -740,7 +779,7 @@
   {
     "cmd": [
       "echo",
-      "[CACHE]/osx_sdk/xcode_9f2000"
+      "[CACHE]/osx_sdk/xcode_12a7209"
     ],
     "infra_step": true,
     "luci_context": {
@@ -820,7 +859,7 @@
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/osx_sdk/xcode_9f2000",
+      "[CACHE]/osx_sdk/xcode_12a7209",
       "-ensure-file",
       "infra/tools/mac_toolchain/${platform} latest",
       "-max-threads",
@@ -859,16 +898,40 @@
   },
   {
     "cmd": [
-      "[CACHE]/osx_sdk/xcode_9f2000/mac_toolchain",
+      "ls",
+      "-al",
+      "[CACHE]/osx_sdk/xcode_12a7209"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "install xcode (2).Show tool_dir cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/osx_sdk/xcode_12a7209/mac_toolchain",
       "install",
       "-kind",
       "ios",
       "-xcode-version",
-      "9f2000",
+      "12a7209",
       "-output-dir",
-      "[CACHE]/osx_sdk/xcode_9f2000/XCode.app",
+      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app",
       "-cipd-package-prefix",
-      "flutter_internal/ios/xcode",
+      "infra_internal/ios/xcode",
       "-with-runtime=True",
       "-verbose"
     ],
@@ -889,6 +952,224 @@
     "timeout": 1800,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Cleaning up runtimes cache"
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--switch",
+      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Cleaning up runtimes cache.select xcode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "simctl",
+      "runtime",
+      "delete",
+      "all"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Cleaning up runtimes cache.Cleaning up mounted simulator runtimes",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "xcodebuild",
+      "-version"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Cleaning up runtimes cache.check xcode version",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "simctl",
+      "list",
+      "runtimes"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Cleaning up runtimes cache.list runtimes",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "install runtimes"
+  },
+  {
+    "cmd": [],
+    "name": "install runtimes.install xcode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/osx_sdk/xcode_12a7209",
+      "-ensure-file",
+      "infra/tools/mac_toolchain/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "install runtimes.install xcode.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ls",
+      "-al",
+      "[CACHE]/osx_sdk/xcode_12a7209"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "install runtimes.install xcode.Show tool_dir cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/osx_sdk/xcode_12a7209/mac_toolchain",
+      "install",
+      "-kind",
+      "ios",
+      "-xcode-version",
+      "12a7209",
+      "-output-dir",
+      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app",
+      "-cipd-package-prefix",
+      "infra_internal/ios/xcode",
+      "-with-runtime=True",
+      "-verbose"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "install runtimes.install xcode.install xcode from cipd",
+    "timeout": 1800,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -918,7 +1199,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "[CACHE]/osx_sdk/xcode_9f2000/XCode.app"
+      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app"
     ],
     "infra_step": true,
     "luci_context": {

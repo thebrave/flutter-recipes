@@ -32,9 +32,20 @@ PROPERTIES_TO_REMOVE = [
 
 # Environments map to calculate the environment from the bucket.
 ENVIRONMENTS_MAP = {
-    'try': '', 'staging': 'Staging ', 'flutter': 'Production ',
+    'try': '',
+    'staging': 'Staging ',
+    'flutter': 'Production ',
     'prod': 'Production '
 }
+
+# Name of the build property to store the orchestrator parent commit.
+# This is used to keep the engine commit even when running framework
+# global tests.
+PARENT_COMMIT = 'parent_commit'
+
+# Name of the property to store the buildbucket identifier.
+# used to namespace the engine artifacts gcs upload location.
+BUILD_IDENTIFIER = 'build_identifier'
 
 
 @attr.s
@@ -211,6 +222,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
           self.m.platform.name
       )
 
+      drone_properties[PARENT_COMMIT] = build.get(PARENT_COMMIT, '')
       # Buildbucket properties are not propagated to sub-builds when running with
       # led. Copy the properties bb gitiles_commit to git_ref and git_url if not
       # set already. Try jobs from a Gerrit CL have an empty gitiles_commit, they
@@ -225,10 +237,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
 
       # Override recipe.
       drone_properties['recipe'] = build['recipe']
-      # Pass try build identifier to subbuilds
-      if self.m.monorepo.is_monorepo_try_build:
-        drone_properties['try_build_identifier'
-                        ] = self.m.monorepo.try_build_identifier
+      # Always pass build identifier to subbuilds
+      drone_properties[BUILD_IDENTIFIER] = self.m.monorepo.build_identifier
       builder_name, bucket = self._drone_name(build)
       parent = self.m.buildbucket.build
       led_data = self.m.led(
@@ -358,10 +368,9 @@ class ShardUtilApi(recipe_api.RecipeApi):
         task_dimensions.append(common_pb2.RequestedDimension(key=k, value=v))
       # Override recipe.
       drone_properties['recipe'] = build['recipe']
-      # Pass try build identifier to subbuilds
-      if self.m.monorepo.is_monorepo_try_build:
-        drone_properties['try_build_identifier'
-                        ] = self.m.monorepo.try_build_identifier
+      drone_properties[PARENT_COMMIT] = build.get(PARENT_COMMIT, '')
+      # Always pass build identifier to subbuilds
+      drone_properties[BUILD_IDENTIFIER] = self.m.monorepo.build_identifier
       properties = collections.OrderedDict(
           (key, val)
           for key, val in sorted(drone_properties.items())

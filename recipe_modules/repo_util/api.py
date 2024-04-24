@@ -404,7 +404,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
       )
     return self.m.properties.get('git_branch', '')
 
-  def flutter_environment(self, checkout_path):
+  def flutter_environment(self, checkout_path, clear_features=True):
     """Returns env and env_prefixes of an flutter/dart command environment."""
     dart_bin = checkout_path.join('bin', 'cache', 'dart-sdk', 'bin')
     flutter_bin = checkout_path.join('bin')
@@ -455,8 +455,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
          ] = 'https://storage.googleapis.com/flutter_archives_v2'
     env_prefixes = {'PATH': ['%s' % str(flutter_bin), '%s' % str(dart_bin)]}
     flutter_exe = 'flutter.bat' if self.m.platform.is_win else 'flutter'
-    if (not self.m.monorepo.is_monorepo_ci_build and
-        not self.m.monorepo.is_monorepo_try_build):
+    # If setting environment from engine_v2 do not clear features.
+    if clear_features and not self.m.monorepo.is_monorepo:
       self.m.step(
           'flutter config --clear-features',
           [flutter_bin.join(flutter_exe), 'config', '--clear-features'],

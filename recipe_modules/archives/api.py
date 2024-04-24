@@ -38,25 +38,45 @@ MOCK_POM_PATH = (
 
 # Bucket + initial prefix for artifact destination.
 LUCI_TO_GCS_PREFIX = {
-    'flutter':
-        'flutter_infra_release', MONOREPO:
-            'flutter_archives_v2/monorepo/flutter_infra_release',
-    MONOREPO_TRY_BUCKET:
-        'flutter_archives_v2/monorepo_try/flutter_infra_release', 'prod':
-            'flutter_infra_release', 'staging':
-                'flutter_archives_v2/flutter_infra_release', 'try':
-                    'flutter_archives_v2/flutter_infra_release', 'try.shadow':
-                        'flutter_archives_v2/flutter_infra_release',
-    'prod.shadow':
-        'flutter_archives_v2/flutter_infra_release'
+    'flutter_EXPERIMENTAL': ('flutter_infra_release', ''),
+    'flutter_PRODUCTION': ('flutter_infra_release', ''),
+    '%s_EXPERIMENTAL' % MONOREPO:
+        ('flutter_archives_v2/monorepo', 'flutter_infra_release'),
+    '%s_PRODUCTION' % MONOREPO:
+        ('flutter_archives_v2/monorepo', 'flutter_infra_release'),
+    '%s_EXPERIMENTAL' % MONOREPO_TRY_BUCKET:
+        ('flutter_archives_v2/monorepo_try', 'flutter_infra_release'),
+    '%s_PRODUCTION' % MONOREPO_TRY_BUCKET:
+        ('flutter_archives_v2/monorepo_try', 'flutter_infra_release'),
+    'prod_PRODUCTION': ('flutter_infra_release', ''),
+    'prod_EXPERIMENTAL': ('flutter_archives_v2', 'flutter_infra_release'),
+    'staging_PRODUCTION': ('flutter_archives_v2', 'flutter_infra_release'),
+    'staging_EXPERIMENTAL': ('flutter_archives_v2', 'flutter_infra_release'),
+    'try_PRODUCTION': ('flutter_archives_v2', 'flutter_infra_release'),
+    'try_EXPERIMENTAL': ('flutter_archives_v2', 'flutter_infra_release'),
+    'try.shadow_PRODUCTION': ('flutter_archives_v2', 'flutter_infra_release'),
+    'try.shadow_EXPERIMENTAL': ('flutter_archives_v2', 'flutter_infra_release'),
+    'prod.shadow_PRODUCTION': ('flutter_archives_v2', 'flutter_infra_release'),
+    'prod.shadow_EXPERIMENTAL':
+        ('flutter_archives_v2', 'flutter_infra_release')
 }
 
 # Bucket + initial prefix for artifact destination.
 LUCI_TO_ANDROID_GCS_PREFIX = {
-    'flutter': '', MONOREPO: 'flutter_archives_v2/monorepo',
-    MONOREPO_TRY_BUCKET: 'flutter_archives_v2/monorepo_try', 'prod': '',
-    'staging': 'flutter_archives_v2', 'try': 'flutter_archives_v2',
-    'try.shadow': 'flutter_archives_v2'
+    'flutter_EXPERIMENTAL': '',
+    'flutter_PRODUCTION': '',
+    '%s_EXPERIMENTAL' % MONOREPO: 'flutter_archives_v2/monorepo',
+    '%s_PRODUCTION' % MONOREPO: 'flutter_archives_v2/monorepo',
+    '%s_EXPERIMENTAL' % MONOREPO_TRY_BUCKET: 'flutter_archives_v2/monorepo_try',
+    '%s_PRODUCTION' % MONOREPO_TRY_BUCKET: 'flutter_archives_v2/monorepo_try',
+    'prod_EXPERIMENTAL': 'flutter_archives_v2',
+    'prod_PRODUCTION': '',
+    'staging_EXPERIMENTAL': 'flutter_archives_v2',
+    'staging_PRODUCTION': 'flutter_archives_v2',
+    'try_EXPERIMENTAL': 'flutter_archives_v2',
+    'try_PRODUCTION': 'flutter_archives_v2',
+    'try.shadow_EXPERIMENTAL': 'flutter_archives_v2',
+    'try.shadow_PRODUCTION': 'flutter_archives_v2'
 }
 
 # Subpath for realms. A realm is used to separate file destinations
@@ -163,16 +183,13 @@ class ArchivesApi(recipe_api.RecipeApi):
       generated artifacts.
     """
     results = []
-    # Artifacts bucket is calculated using the LUCI bucket but we also use the realm to upload
-    # artifacts to the same bucket but different path when the build configurations use an experimental
-    # realm. Defaults to experimental.
-    artifact_realm = REALM_TO_PATH.get(
-        archive_config.get('realm', ''), 'experimental'
-    )
-    # Calculate prefix and commit.
+    build_id = ''
+    realm = archive_config.get('realm', 'experimental').upper()
+    # Weather to include build_id as part of the namespace or not.
+    include_build_id = True
     file_list = self._full_path_list(checkout, archive_config)
     if self.m.monorepo.is_monorepo_try_build:
-      commit = self.m.monorepo.try_build_identifier
+      commit = self.m.monorepo.build_identifier
       bucket = MONOREPO_TRY_BUCKET
     elif self.m.monorepo.is_monorepo_ci_build:
       commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))
@@ -180,7 +197,12 @@ class ArchivesApi(recipe_api.RecipeApi):
     else:
       commit = self.m.repo_util.get_commit(checkout.join('flutter'))
       bucket = self.m.buildbucket.build.builder.bucket
-
+      if self.m.flutter_bcid.is_official_build():
+        include_build_id = False
+      elif self.m.flutter_bcid.is_prod_build() and realm == 'PRODUCTION':
+        include_build_id = False
+    build_id = self.m.monorepo.build_identifier if include_build_id else ''
+    bucket_plus_realm = '_'.join(filter(None, (bucket, realm)))
     for include_path in file_list:
       is_android_artifact = ANDROID_ARTIFACTS_BUCKET in include_path
       dir_part = self.m.path.dirname(include_path)
@@ -198,22 +220,19 @@ class ArchivesApi(recipe_api.RecipeApi):
         # Replace ANDROID_ARTIFACTS_BUCKET to include the realm.
         old_location = '/'.join([ANDROID_ARTIFACTS_BUCKET, 'io', 'flutter'])
         new_location = '/'.join(
-            filter(
-                bool,
-                [ANDROID_ARTIFACTS_BUCKET, 'io', 'flutter', artifact_realm]
-            )
+            filter(bool, [ANDROID_ARTIFACTS_BUCKET, 'io', 'flutter'])
         )
         artifact_path = artifact_path.replace(old_location, new_location)
-        bucket_and_prefix = LUCI_TO_ANDROID_GCS_PREFIX.get(bucket)
+        bucket_and_prefix = LUCI_TO_ANDROID_GCS_PREFIX.get(bucket_plus_realm)
         artifact_path = '/'.join(
-            filter(bool, [bucket_and_prefix, artifact_path])
+            filter(bool, [bucket_and_prefix, build_id, artifact_path])
         )
       else:
-        bucket_and_prefix = LUCI_TO_GCS_PREFIX.get(bucket)
+        gcs_bucket, bucket_postfix = LUCI_TO_GCS_PREFIX.get(bucket_plus_realm)
         artifact_path = '/'.join(
             filter(
                 bool, [
-                    bucket_and_prefix, 'flutter', artifact_realm, commit,
+                    gcs_bucket, build_id, bucket_postfix, 'flutter', commit,
                     rel_path, base_name
                 ]
             )
@@ -235,10 +254,11 @@ class ArchivesApi(recipe_api.RecipeApi):
       generated artifacts.
     """
     results = []
+    build_id = ''
 
     # Calculate prefix and commit.
     if self.m.monorepo.is_monorepo_try_build:
-      commit = self.m.monorepo.try_build_identifier
+      commit = self.m.monorepo.build_identifier
       bucket = MONOREPO_TRY_BUCKET
     elif self.m.monorepo.is_monorepo_ci_build:
       commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))
@@ -246,20 +266,22 @@ class ArchivesApi(recipe_api.RecipeApi):
     else:
       commit = self.m.repo_util.get_commit(checkout.join('flutter'))
       bucket = self.m.buildbucket.build.builder.bucket
-    bucket_and_prefix = LUCI_TO_GCS_PREFIX.get(bucket)
 
     for archive in archives:
-      # Artifacts bucket is calculated using the LUCI bucket but we also use the realm to upload
-      # artifacts to the same bucket but different path when the build configurations use an
-      # experimental realm. Defaults to experimental.
-      artifact_realm = REALM_TO_PATH.get(
-          archive.get('realm', ''), 'experimental'
-      )
+      realm = archive.get('realm', 'experimental').upper()
+      bucket_plus_realm = '_'.join(filter(None, (bucket, realm)))
+      include_build_id = True
+      if self.m.flutter_bcid.is_official_build():
+        include_build_id = False
+      if self.m.flutter_bcid.is_prod_build() and realm == 'PRODUCTION':
+        include_build_id = False
+      build_id = self.m.monorepo.build_identifier if include_build_id else ''
+      gcs_bucket, bucket_postfix = LUCI_TO_GCS_PREFIX.get(bucket_plus_realm)
       source = checkout.join(archive.get('source'))
       artifact_path = '/'.join(
           filter(
               bool, [
-                  bucket_and_prefix, 'flutter', artifact_realm, commit,
+                  gcs_bucket, build_id, bucket_postfix, 'flutter', commit,
                   archive.get('destination')
               ]
           )

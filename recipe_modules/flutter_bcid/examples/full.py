@@ -17,6 +17,7 @@ def RunSteps(api):
   )
   api.flutter_bcid.is_official_build()
   api.flutter_bcid.is_prod_build()
+  api.flutter_bcid.is_try_build()
   api.flutter_bcid.download_and_verify_provenance(
       "artifact.zip", "flutter_infra", "release_artifacts/artifacts.zip"
   )

@@ -877,6 +877,14 @@
     "name": "launch builds"
   },
   {
+    "cmd": [],
+    "name": "launch builds.get buildbucket id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@8945511751514863184@@@"
+    ]
+  },
+  {
     "cmd": [
       "bb",
       "batch",
@@ -897,7 +905,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"ci\", \"builder\": \"Linux Engine Drone\", \"project\": \"test\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"git.example.com\", \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", \"project\": \"test/repo\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"$flutter/osx_sdk\": {}, \"artifact\": \"def\", \"build\": {\"drone_dimensions\": [\"os=Linux\"], \"name\": \"abc\", \"properties\": {\"$flutter/osx_sdk\": {}, \"artifact\": \"def\", \"dependencies\": [], \"git_branch\": \"master\", \"os\": \"Linux\", \"parent_builder\": \"Linux abc\", \"tags\": [], \"task_name\": \"abc\"}, \"recipe\": \"devicelab/devicelab_test_drone\"}, \"dependencies\": [], \"drone_dimensions\": [\"os=Linux\"], \"fake_data\": \"fake data\", \"gclient_variables\": {}, \"git_branch\": \"master\", \"git_ref\": \"refs/pull/1/head\", \"os\": \"Linux\", \"parent_builder\": \"Linux abc\", \"recipe\": \"devicelab/devicelab_test_drone\", \"tags\": [], \"task_name\": \"abc\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"ci\", \"builder\": \"Linux Engine Drone\", \"project\": \"test\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"git.example.com\", \"id\": \"2d72510e447ab60a9728aeea2362d8be2cbd7789\", \"project\": \"test/repo\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"$flutter/osx_sdk\": {}, \"artifact\": \"def\", \"build\": {\"drone_dimensions\": [\"os=Linux\"], \"name\": \"abc\", \"properties\": {\"$flutter/osx_sdk\": {}, \"artifact\": \"def\", \"dependencies\": [], \"git_branch\": \"master\", \"os\": \"Linux\", \"parent_builder\": \"Linux abc\", \"tags\": [], \"task_name\": \"abc\"}, \"recipe\": \"devicelab/devicelab_test_drone\"}, \"build_identifier\": \"8945511751514863184\", \"dependencies\": [], \"drone_dimensions\": [\"os=Linux\"], \"fake_data\": \"fake data\", \"gclient_variables\": {}, \"git_branch\": \"master\", \"git_ref\": \"refs/pull/1/head\", \"os\": \"Linux\", \"parent_builder\": \"Linux abc\", \"parent_commit\": \"\", \"recipe\": \"devicelab/devicelab_test_drone\", \"tags\": [], \"task_name\": \"abc\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -965,6 +973,7 @@
       "@@@STEP_LOG_LINE@request@            },@@@",
       "@@@STEP_LOG_LINE@request@            \"recipe\": \"devicelab/devicelab_test_drone\"@@@",
       "@@@STEP_LOG_LINE@request@          },@@@",
+      "@@@STEP_LOG_LINE@request@          \"build_identifier\": \"8945511751514863184\",@@@",
       "@@@STEP_LOG_LINE@request@          \"dependencies\": [],@@@",
       "@@@STEP_LOG_LINE@request@          \"drone_dimensions\": [@@@",
       "@@@STEP_LOG_LINE@request@            \"os=Linux\"@@@",
@@ -975,6 +984,7 @@
       "@@@STEP_LOG_LINE@request@          \"git_ref\": \"refs/pull/1/head\",@@@",
       "@@@STEP_LOG_LINE@request@          \"os\": \"Linux\",@@@",
       "@@@STEP_LOG_LINE@request@          \"parent_builder\": \"Linux abc\",@@@",
+      "@@@STEP_LOG_LINE@request@          \"parent_commit\": \"\",@@@",
       "@@@STEP_LOG_LINE@request@          \"recipe\": \"devicelab/devicelab_test_drone\",@@@",
       "@@@STEP_LOG_LINE@request@          \"tags\": [],@@@",
       "@@@STEP_LOG_LINE@request@          \"task_name\": \"abc\"@@@",

@@ -4,6 +4,7 @@
 
 DEPS = [
     'depot_tools/gsutil',
+    'flutter/flutter_bcid',
     'flutter/monorepo',
     'flutter/repo_util',
     'recipe_engine/buildbucket',

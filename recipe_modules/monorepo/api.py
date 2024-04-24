@@ -12,6 +12,10 @@ class MonorepoApi(recipe_api.RecipeApi):
   """Provides utilities to work with monorepo checkouts."""
 
   @property
+  def is_monorepo(self):
+    return self.is_monorepo_ci_build or self.is_monorepo_try_build
+
+  @property
   def is_monorepo_ci_build(self):
     commit = self.m.buildbucket.build.input.gitiles_commit
     return commit.project == 'monorepo'
@@ -26,7 +30,7 @@ class MonorepoApi(recipe_api.RecipeApi):
     )
 
   @property
-  def try_build_identifier(self):
+  def build_identifier(self):
     """Creates a unique identifier to use as an upload path for artifacts.
 
     If this is a subbuild spawned by an engine_v2 coordinator, use
@@ -43,9 +47,9 @@ class MonorepoApi(recipe_api.RecipeApi):
 
     Returns:
       The buildbucket id of the engine_v2/engine_v2 coordinator build or
-      the try_build_identifer input property passed to this build.
-"""
-    parent_identifier = self.m.properties.get('try_build_identifier')
+      the build_identifer input property passed to this build.
+    """
+    parent_identifier = self.m.properties.get('build_identifier')
     if (parent_identifier):
       return str(parent_identifier)
     buildbucket_id = self.m.buildbucket.build.id

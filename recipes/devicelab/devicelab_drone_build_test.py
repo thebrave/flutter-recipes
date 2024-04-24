@@ -117,7 +117,8 @@ def test(api, task_name, deps, artifact):
     k, v = d.split('=')
     test_props[k] = v
   reqs.append({
-      'name': task_name, 'properties': test_props,
+      'name': task_name,
+      'properties': test_props,
       'drone_dimensions': drone_dimensions,
       'recipe': 'devicelab/devicelab_test_drone'
   })
@@ -233,7 +234,8 @@ def GenTests(api):
           fake_data='fake data',
           artifact='def',
           git_ref='refs/pull/1/head',
-          git_url='test/repo'
+          git_url='test/repo',
+          build_identifier='8112381',
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.step_data(
@@ -287,7 +289,9 @@ def GenTests(api):
           tags=['ios'],
           git_branch='master',
           fake_data='fake data',
-          **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}
+          **{'$flutter/osx_sdk': {
+              'sdk_version': 'deadbeef',
+          }}
       ), api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
       api.platform.name('mac'),
       api.buildbucket.ci_build(git_ref='refs/heads/master',)

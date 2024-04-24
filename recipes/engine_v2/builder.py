@@ -181,7 +181,6 @@ def run_tests(api, tests, checkout, env, env_prefixes):
 
 def Build(api, checkout, env, env_prefixes, outputs, build):
   """Builds a flavor identified as a set of gn and ninja configs."""
-
   # Mock data for tests. This is required for the archive api to expand the directory to full path
   # of files.
   api.path.mock_add_directory(
@@ -213,7 +212,7 @@ def Build(api, checkout, env, env_prefixes, outputs, build):
         version = env['REVISION']
         gn.append(f'--gn-args=engine_version="{version}"')
       if api.monorepo.is_monorepo_try_build:
-        version = api.monorepo.try_build_identifier
+        version = api.monorepo.build_identifier
         gn.append(f'--gn-args=engine_version="{version}"')
       rbe_working_path = api.path.mkdtemp(prefix="rbe")
       if '--rbe' in gn:
@@ -345,24 +344,37 @@ def GenTests(api):
   build = {
       "archives": [{
           "name":
-              "android_jit_release_x86", "type":
-                  "gcs", "realm":
-                      "production", "base_path":
-                          "out/android_jit_release_x86/zip_archives/",
+              "android_jit_release_x86",
+          "type":
+              "gcs",
+          "realm":
+              "production",
+          "base_path":
+              "out/android_jit_release_x86/zip_archives/",
           "include_paths": [
               "out/android_jit_release_x86/zip_archives/android-x86-jit-release/artifacts.zip",
               "out/android_jit_release_x86/zip_archives/download.flutter.io"
           ]
-      }], "gn": ["--ios", "--rbe"],
-      "ninja": {"config": "ios_debug", "targets": []}, "generators": {
-          "pub_dirs": ["dev"], "tasks": [{
-              "name": "generator1", "scripts": ["script1.sh", "dev/felt.dart"],
+      }],
+      "gn": ["--ios", "--rbe"],
+      "ninja": {
+          "config": "ios_debug",
+          "targets": []
+      },
+      "generators": {
+          "pub_dirs": ["dev"],
+          "tasks": [{
+              "name": "generator1",
+              "scripts": ["script1.sh", "dev/felt.dart"],
               "parameters": ["--argument1"]
           }]
-      }, "tests": [{
-          "name": "mytest", "script": "myscript.sh",
+      },
+      "tests": [{
+          "name": "mytest",
+          "script": "myscript.sh",
           "parameters": ["param1", "param2", '${FLUTTER_LOGS_DIR}'],
-          "type": "local", "contexts": ["metric_center_token"]
+          "type": "local",
+          "contexts": ["metric_center_token"]
       }]
   }
   yield api.test(
@@ -461,10 +473,12 @@ def GenTests(api):
   )
   test_if_build = {
       "tests": [{
-          "name": "mytest", "script": "myscript.sh",
-          "parameters": ["param1", "param2",
-                         '${FLUTTER_LOGS_DIR}'], "type": "local",
-          "contexts": ["metric_center_token"], "test_if": "main"
+          "name": "mytest",
+          "script": "myscript.sh",
+          "parameters": ["param1", "param2", '${FLUTTER_LOGS_DIR}'],
+          "type": "local",
+          "contexts": ["metric_center_token"],
+          "test_if": "main"
       }]
   }
   yield api.test(

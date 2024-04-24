@@ -418,6 +418,14 @@
     "name": "launch builds"
   },
   {
+    "cmd": [],
+    "name": "launch builds.get buildbucket id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@8945511751514863184@@@"
+    ]
+  },
+  {
     "cmd": [
       "bb",
       "batch",
@@ -438,7 +446,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Engine Drone\", \"project\": \"proj\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/None\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/engine\"}], \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"build\": {\"archives\": [{\"base_path\": \"out/host_debug/zip_archives/\", \"include_paths\": [\"out/host_debug/zip_archives/darwin-x64/artifacts.zip\", \"out/host_debug/zip_archives/darwin-x64/FlutterEmbedder.framework.zip\", \"out/host_debug/zip_archives/dart-sdk-darwin-x64.zip\", \"out/host_debug/zip_archives/flutter-web-sdk-darwin-x64.zip\"], \"name\": \"host_debug\", \"type\": \"gcs\"}], \"drone_dimensions\": [\"os=Linux\"], \"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}, \"recipe\": \"engine_v2/builder\"}, \"config_name\": \"config_name\", \"environment\": \"Staging\", \"gclient_variables\": {}, \"recipe\": \"engine_v2/builder\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Engine Drone\", \"project\": \"proj\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/None\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/engine\"}], \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"build\": {\"archives\": [{\"base_path\": \"out/host_debug/zip_archives/\", \"include_paths\": [\"out/host_debug/zip_archives/darwin-x64/artifacts.zip\", \"out/host_debug/zip_archives/darwin-x64/FlutterEmbedder.framework.zip\", \"out/host_debug/zip_archives/dart-sdk-darwin-x64.zip\", \"out/host_debug/zip_archives/flutter-web-sdk-darwin-x64.zip\"], \"name\": \"host_debug\", \"type\": \"gcs\"}], \"drone_dimensions\": [\"os=Linux\"], \"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}, \"recipe\": \"engine_v2/builder\"}, \"build_identifier\": \"8945511751514863184\", \"config_name\": \"config_name\", \"environment\": \"Staging\", \"gclient_variables\": {}, \"parent_commit\": \"\", \"recipe\": \"engine_v2/builder\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -528,9 +536,11 @@
       "@@@STEP_LOG_LINE@request@            },@@@",
       "@@@STEP_LOG_LINE@request@            \"recipe\": \"engine_v2/builder\"@@@",
       "@@@STEP_LOG_LINE@request@          },@@@",
+      "@@@STEP_LOG_LINE@request@          \"build_identifier\": \"8945511751514863184\",@@@",
       "@@@STEP_LOG_LINE@request@          \"config_name\": \"config_name\",@@@",
       "@@@STEP_LOG_LINE@request@          \"environment\": \"Staging\",@@@",
       "@@@STEP_LOG_LINE@request@          \"gclient_variables\": {},@@@",
+      "@@@STEP_LOG_LINE@request@          \"parent_commit\": \"\",@@@",
       "@@@STEP_LOG_LINE@request@          \"recipe\": \"engine_v2/builder\"@@@",
       "@@@STEP_LOG_LINE@request@        },@@@",
       "@@@STEP_LOG_LINE@request@        \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\",@@@",
@@ -2105,6 +2115,14 @@
   },
   {
     "cmd": [],
+    "name": "Global generators.get buildbucket id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@8945511751514863184@@@"
+    ]
+  },
+  {
+    "cmd": [],
     "name": "Global generators.Identify branches",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -2891,7 +2909,7 @@
       "ensure-directory",
       "--mode",
       "0o777",
-      "[CLEANUP]/tmp_tmp_4/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket"
+      "[CLEANUP]/tmp_tmp_4/8945511751514863184/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/bucket"
     ],
     "infra_step": true,
     "luci_context": {
@@ -2906,7 +2924,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Global generators.Ensure flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket",
+    "name": "Global generators.Ensure 8945511751514863184/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/bucket",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -2920,7 +2938,7 @@
       "/path/to/tmp/json",
       "copy",
       "/a/b/c.txt",
-      "[CLEANUP]/tmp_tmp_4/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket"
+      "[CLEANUP]/tmp_tmp_4/8945511751514863184/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/bucket"
     ],
     "infra_step": true,
     "luci_context": {
@@ -2966,7 +2984,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Global generators.gsutil Upload /a/b/c.txt to gs://flutter_archives_v2/flutter_infra_release/flutter/experimental/12345abcde12345abcde12345abcde12345abcde/bucket/c.txt",
+    "name": "Global generators.gsutil Upload /a/b/c.txt to gs://flutter_archives_v2/8945511751514863184/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/bucket/c.txt",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_archives_v2/@@@"

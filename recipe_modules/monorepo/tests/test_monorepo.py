@@ -13,13 +13,13 @@ DEPS = [
 def RunSteps(api):
   is_ci_build = api.monorepo.is_monorepo_ci_build
   is_try_build = api.monorepo.is_monorepo_try_build
-  if is_try_build:
-    try_build_identifier = api.monorepo.try_build_identifier
+  is_monorepo = api.monorepo.is_monorepo
+  build_identifier = api.monorepo.build_identifier
   presentation = api.step.empty('test').presentation
   presentation.properties['is_ci_build'] = is_ci_build
   presentation.properties['is_try_build'] = is_try_build
-  if is_try_build:
-    presentation.properties['try_build_identifier'] = try_build_identifier
+  presentation.properties['is_monorepo'] = is_monorepo
+  presentation.properties['build_identifier'] = build_identifier
 
 
 def GenTests(api):
@@ -30,7 +30,7 @@ def GenTests(api):
   yield api.test(
       'monorepo_try_subbuild',
       api.monorepo.try_build(),
-      api.properties(try_build_identifier='81123491'),
+      api.properties(build_identifier='81123491'),
   )
 
   yield api.test(

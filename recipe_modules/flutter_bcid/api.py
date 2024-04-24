@@ -32,6 +32,10 @@ class FlutterBcidApi(recipe_api.RecipeApi):
     bucket = self.m.buildbucket.build.builder.bucket
     return bucket in ('prod', 'prod.shadow')
 
+  def is_try_build(self):
+    bucket = self.m.buildbucket.build.builder.bucket
+    return bucket in ('try', 'try.shadow')
+
   def report_stage(self, stage):
     if self.is_official_build():
       self.m.bcid_reporter.report_stage(stage)

@@ -63,7 +63,7 @@ def RunSteps(api):
     # Only check out the repository, not dependencies.
     api.flutter_bcid.report_stage(BcidStage.FETCH.value)
     checkout_path = api.path['start_dir'].join(project)
-    api.repo_util.checkout(
+    parent_commit = api.repo_util.checkout(
         project,
         checkout_path=checkout_path,
         url=api.properties.get('git_url'),
@@ -94,7 +94,8 @@ def RunSteps(api):
   if gclient_variables:
     for build in builds:
       build['gclient_variables'] = {
-          **gclient_variables, **build.get('gclient_variables', {})
+          **gclient_variables,
+          **build.get('gclient_variables', {})
       }
 
   current_branch = 'main'
@@ -166,6 +167,8 @@ def RunSteps(api):
   # Run tests
   if not api.flutter_bcid.is_official_build():
     with api.step.nest('launch tests') as presentation:
+      for d in tests:
+        d['parent_commit'] = parent_commit
       tasks = api.shard_util.schedule_tests(tests, build_results, presentation)
 
     with api.step.nest('collect tests') as presentation:
@@ -267,30 +270,44 @@ def GenTests(api):
   )
   builds = [{
       "archives": [{
-          "base_path": "out/host_debug/zip_archives/", "type": "gcs",
+          "base_path": "out/host_debug/zip_archives/",
+          "type": "gcs",
           "include_paths": [
               "out/host_debug/zip_archives/darwin-x64/artifacts.zip",
               "out/host_debug/zip_archives/darwin-x64/FlutterEmbedder.framework.zip",
               "out/host_debug/zip_archives/dart-sdk-darwin-x64.zip",
               "out/host_debug/zip_archives/flutter-web-sdk-darwin-x64.zip"
-          ], "name": "host_debug"
-      }], "name": "ios_debug", "gn": ["--ios"],
-      "ninja": {"config": "ios_debug", "targets": []},
-      "generators": [{"name": "generator1", "script": "script1.sh"}],
+          ],
+          "name": "host_debug"
+      }],
+      "name": "ios_debug",
+      "gn": ["--ios"],
+      "ninja": {
+          "config": "ios_debug",
+          "targets": []
+      },
+      "generators": [{
+          "name": "generator1",
+          "script": "script1.sh"
+      }],
       "drone_dimensions": ['os=Linux']
   }]
   generators = {
       "tasks": [{
-          "language": "python3", "name": "Debug-FlutterMacOS.framework",
+          "language": "python3",
+          "name": "Debug-FlutterMacOS.framework",
           "parameters": [
               "--variant", "host_profile", "--type", "engine",
               "--engine-capture-core-dump"
-          ], "script": "flutter/sky/tools/create_macos_framework.py",
+          ],
+          "script": "flutter/sky/tools/create_macos_framework.py",
           "type": "local"
       }]
   }
   archives = [{
-      'source': '/a/b/c.txt', 'destination': 'bucket/c.txt', 'name': 'c.txt'
+      'source': '/a/b/c.txt',
+      'destination': 'bucket/c.txt',
+      'name': 'c.txt'
   }]
 
   yield api.test(
@@ -388,7 +405,10 @@ def GenTests(api):
       ),
       api.step_data(
           'Read build config file',
-          api.file.read_json({'builds': builds, 'archives': archives})
+          api.file.read_json({
+              'builds': builds,
+              'archives': archives
+          })
       ),
   )
 
@@ -461,7 +481,9 @@ def GenTests(api):
       api.step_data(
           'Read build config file',
           api.file.read_json({
-              'builds': builds, 'archives': archives, 'generators': generators
+              'builds': builds,
+              'archives': archives,
+              'generators': generators
           })
       ),
       api.step_data(
@@ -485,11 +507,15 @@ def GenTests(api):
 
   tests = [{
       "name":
-          "framework_tests libraries", "shard":
-              "framework_tests", "subshard":
-                  "libraries", "test_dependencies": [{
-                      "dependency": "android_sdk", "version": "version:33v6"
-                  }]
+          "framework_tests libraries",
+      "shard":
+          "framework_tests",
+      "subshard":
+          "libraries",
+      "test_dependencies": [{
+          "dependency": "android_sdk",
+          "version": "version:33v6"
+      }]
   }]
 
   subtest1 = api.shard_util.try_build_message(
@@ -517,7 +543,9 @@ def GenTests(api):
       api.step_data(
           'Read build config file',
           api.file.read_json({
-              'builds': builds, 'tests': tests, 'generators': generators,
+              'builds': builds,
+              'tests': tests,
+              'generators': generators,
               'archives': archives
           })
       ),
@@ -547,7 +575,8 @@ def GenTests(api):
           api.file.read_json({
               'builds': [{
                   'name': 'a builder with gclient_variables',
-                  'drone_dimensions': ['os=Linux'], 'gclient_variables': {
+                  'drone_dimensions': ['os=Linux'],
+                  'gclient_variables': {
                       'fuchsia_sdk_path': 'gcs://fuchsia/sdk/123'
                   }
               }]
@@ -575,7 +604,8 @@ def GenTests(api):
           api.file.read_json({
               'builds': [{
                   'name': 'a builder with gclient_variables',
-                  'drone_dimensions': ['os=Linux'], 'gclient_variables': {
+                  'drone_dimensions': ['os=Linux'],
+                  'gclient_variables': {
                       'fuchsia_sdk_path': 'gcs://fuchsia/sdk/being-used'
                   }
               }]

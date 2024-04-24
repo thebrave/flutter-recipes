@@ -16,7 +16,7 @@ class MonorepoTestApi(recipe_test_api.RecipeTestApi):
         git_repo='https://dart.googlesource.com/monorepo',
         git_ref=git_ref,
         revision='a' * 40,
-        build_number=123,
+        build_id=123,
     )
 
   def try_build(self, **kwargs):

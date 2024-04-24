@@ -375,6 +375,14 @@
     "name": "launch builds"
   },
   {
+    "cmd": [],
+    "name": "launch builds.get buildbucket id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@8945511751514863184@@@"
+    ]
+  },
+  {
     "cmd": [
       "bb",
       "batch",
@@ -395,7 +403,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Engine Drone\", \"project\": \"prod\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/engine\"}], \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"$flutter/osx_sdk\": {\"sdk_version\": \"14a5294e\"}, \"build\": {\"drone_dimensions\": [\"os=Linux\"], \"name\": \"linux one\", \"properties\": {\"$flutter/osx_sdk\": {\"sdk_version\": \"14a5294e\"}, \"release_build\": true}, \"recipe\": \"engine/something\"}, \"environment\": \"Staging\", \"gclient_variables\": {}, \"recipe\": \"engine/something\", \"release_build\": true, \"repository\": \"engine\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Engine Drone\", \"project\": \"prod\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/engine\"}], \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"$flutter/osx_sdk\": {\"sdk_version\": \"14a5294e\"}, \"build\": {\"drone_dimensions\": [\"os=Linux\"], \"name\": \"linux one\", \"properties\": {\"$flutter/osx_sdk\": {\"sdk_version\": \"14a5294e\"}, \"release_build\": true}, \"recipe\": \"engine/something\"}, \"build_identifier\": \"8945511751514863184\", \"environment\": \"Staging\", \"gclient_variables\": {}, \"parent_commit\": \"\", \"recipe\": \"engine/something\", \"release_build\": true, \"repository\": \"engine\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -468,8 +476,10 @@
       "@@@STEP_LOG_LINE@request@            },@@@",
       "@@@STEP_LOG_LINE@request@            \"recipe\": \"engine/something\"@@@",
       "@@@STEP_LOG_LINE@request@          },@@@",
+      "@@@STEP_LOG_LINE@request@          \"build_identifier\": \"8945511751514863184\",@@@",
       "@@@STEP_LOG_LINE@request@          \"environment\": \"Staging\",@@@",
       "@@@STEP_LOG_LINE@request@          \"gclient_variables\": {},@@@",
+      "@@@STEP_LOG_LINE@request@          \"parent_commit\": \"\",@@@",
       "@@@STEP_LOG_LINE@request@          \"recipe\": \"engine/something\",@@@",
       "@@@STEP_LOG_LINE@request@          \"release_build\": true,@@@",
       "@@@STEP_LOG_LINE@request@          \"repository\": \"engine\"@@@",

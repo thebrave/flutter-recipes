@@ -8,6 +8,7 @@ This recipe is used to run tests using prebuilt artifacts.
 """
 
 DEPS = [
+    'depot_tools/gsutil',
     'flutter/flutter_deps',
     'flutter/monorepo',
     'flutter/os_utils',
@@ -41,6 +42,47 @@ def get_monorepo_framework(api):
   return commits['flutter']
 
 
+def _upload_artifact(api, name, src, artifact_url):
+  # The artifact_url is a gsutil url, e.g.
+  # gs://flutter_archive_v2/523b61/flutter_infra_release/flutter/fonts/bec8d8/fonts.zip
+  dst = artifact_url.replace('https://storage.googleapis.com/', '')
+  bucket = dst.split('/')[0]
+  path = '/'.join(dst.split('/')[1:])
+  api.gsutil.upload(
+      name='copy %s' % name,
+      source='gs://%s' % src,
+      bucket=bucket,
+      dest='%s/%s' % (path, src)
+  )
+
+
+def copy_offband_artifacts(api, checkout, artifact_url):
+  # Noop for monorepo.
+  if '/monorepo' in artifact_url:
+    return
+  # fonts.zip
+  src = api.file.read_text(
+      'read material fonts version',
+      checkout.join('bin', 'internal', 'material_fonts.version'),
+      test_data='flutter_infra_release/flutter/fonts/12345/fonts.version',
+      include_log=True
+  )
+  _upload_artifact(api, 'Material fonts', src, artifact_url)
+  # Gradle wrapper
+  src = api.file.read_text(
+      'read graddle wrapper version',
+      checkout.join('bin', 'internal', 'gradle_wrapper.version'),
+      test_data='flutter_infra_release/gradle-wrapper/12345/gradle-wrapper.tgz',
+      include_log=True
+  )
+  _upload_artifact(api, 'Gradle wrapper', src, artifact_url)
+  # lcov.info
+  _upload_artifact(
+      api, 'lcov.info', 'flutter_infra_release/flutter/coverage/lcov.info',
+      artifact_url
+  )
+
+
 def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
@@ -49,25 +91,30 @@ def RunSteps(api):
   if api.monorepo.is_monorepo_try_build:
     framework_ref = 'refs/heads/main'
     artifact_url = 'https://storage.googleapis.com/flutter_archives_v2/monorepo_try'
-    engine_version = api.monorepo.try_build_identifier
+    engine_version = api.monorepo.build_identifier
   elif api.monorepo.is_monorepo_ci_build:
     framework_ref = get_monorepo_framework(api)
     artifact_url = 'https://storage.googleapis.com/flutter_archives_v2/monorepo'
     engine_version = api.buildbucket.gitiles_commit.id
   else:
     framework_ref = 'refs/heads/master'
-    artifact_url = 'https://storage.googleapis.com/flutter_archives_v2'
-    engine_version = api.buildbucket.gitiles_commit.id
+    artifact_url = 'https://storage.googleapis.com/flutter_archives_v2/%s' % api.monorepo.build_identifier
+    engine_version = api.properties.get('parent_commit')
   api.repo_util.checkout('flutter', flutter, ref=framework_ref)
   api.file.write_text(
       'update engine version',
       flutter.join('bin', 'internal', 'engine.version'), engine_version + '\n'
   )
 
+  # Copy offband artifacts. This is a noop for monorepo.
+  copy_offband_artifacts(api, flutter, artifact_url)
+
   # TODO(https://github.com/flutter/flutter/issues/116906): Combine this
   # recipe with the flutter/flutter_drone recipe if possible, to avoid
   # duplication.
-  env, env_prefixes = api.repo_util.flutter_environment(flutter)
+  env, env_prefixes = api.repo_util.flutter_environment(
+      flutter, clear_features=False
+  )
   test_config = api.properties.get('build')
   deps = test_config.get('test_dependencies', [])
   api.flutter_deps.required_deps(env, env_prefixes, deps)
@@ -111,15 +158,18 @@ def GenTests(api):
 
   yield api.test(
       'monorepo_tryjob',
-      api.properties(
-          build=build, no_goma=True, try_build_identifier='81123491'
-      ),
+      api.properties(build=build, no_goma=True, build_identifier='81123491'),
       api.monorepo.try_build(),
   )
 
   yield api.test(
       'engine',
-      api.properties(build=build, no_goma=True),
+      api.properties(
+          build=build,
+          no_goma=True,
+          parent_commit='12345',
+          build_identifier='81123491'
+      ),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='prod',
@@ -137,7 +187,8 @@ def GenTests(api):
       'subshard':
           '3',
       'test_dependencies': [{
-          "dependency": "chrome_and_driver", "version": "version:96.2"
+          "dependency": "chrome_and_driver",
+          "version": "version:96.2"
       }],
   }
 
@@ -157,7 +208,8 @@ def GenTests(api):
       'subshard':
           'slow',
       'test_dependencies': [{
-          "dependency": "android_sdk", "version": "version:33v6"
+          "dependency": "android_sdk",
+          "version": "version:33v6"
       }],
   }
 

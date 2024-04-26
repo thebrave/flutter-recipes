@@ -57,14 +57,14 @@ def _upload_artifact(api, name, src, artifact_url):
 
 
 def copy_offband_artifacts(api, checkout, artifact_url):
-  # Noop for monorepo.
-  if '/monorepo' in artifact_url:
-    return
+  # Need to place artifacts into [artifact_url]-based location where
+  # flutter tools can find them at runtime.
+
   # fonts.zip
   src = api.file.read_text(
       'read material fonts version',
       checkout.join('bin', 'internal', 'material_fonts.version'),
-      test_data='flutter_infra_release/flutter/fonts/12345/fonts.version',
+      test_data='flutter_infra_release/flutter/fonts/12345/fonts.zip',
       include_log=True
   )
   _upload_artifact(api, 'Material fonts', src, artifact_url)
@@ -106,7 +106,8 @@ def RunSteps(api):
       flutter.join('bin', 'internal', 'engine.version'), engine_version + '\n'
   )
 
-  # Copy offband artifacts. This is a noop for monorepo.
+  # Not all artifacts were just built and put into [artifact_url]-relative url, so
+  # copy those which were not built there now, so flutter tools can find them there.
   copy_offband_artifacts(api, flutter, artifact_url)
 
   # TODO(https://github.com/flutter/flutter/issues/116906): Combine this

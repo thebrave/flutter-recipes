@@ -250,6 +250,156 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/builder/flutter/bin/internal/material_fonts.version",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "read material fonts version",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@material_fonts.version@flutter_infra_release/flutter/fonts/12345/fonts.zip@@@",
+      "@@@STEP_LOG_END@material_fonts.version@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/flutter/fonts/12345/fonts.zip",
+      "gs://flutter_archives_v2/monorepo_try/81123491/flutter_infra_release/flutter/fonts/12345/fonts.zip"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil copy Material fonts",
+    "~followup_annotations": [
+      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_archives_v2/monorepo_try/81123491/flutter_infra_release/flutter/fonts/12345/fonts.zip@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/builder/flutter/bin/internal/gradle_wrapper.version",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "read graddle wrapper version",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@gradle_wrapper.version@flutter_infra_release/gradle-wrapper/12345/gradle-wrapper.tgz@@@",
+      "@@@STEP_LOG_END@gradle_wrapper.version@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/gradle-wrapper/12345/gradle-wrapper.tgz",
+      "gs://flutter_archives_v2/monorepo_try/81123491/flutter_infra_release/gradle-wrapper/12345/gradle-wrapper.tgz"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil copy Gradle wrapper",
+    "~followup_annotations": [
+      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_archives_v2/monorepo_try/81123491/flutter_infra_release/gradle-wrapper/12345/gradle-wrapper.tgz@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/flutter/coverage/lcov.info",
+      "gs://flutter_archives_v2/monorepo_try/81123491/flutter_infra_release/flutter/coverage/lcov.info"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil copy lcov.info",
+    "~followup_annotations": [
+      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/flutter_archives_v2/monorepo_try/81123491/flutter_infra_release/flutter/coverage/lcov.info@@@"
+    ]
+  },
+  {
+    "cmd": [
       "git",
       "rev-parse",
       "HEAD"

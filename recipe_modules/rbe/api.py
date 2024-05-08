@@ -6,14 +6,15 @@ from contextlib import contextmanager
 
 from recipe_engine import recipe_api
 
-RECLIENT_CXX_WRAPPER = "reclient-cxx-wrapper.sh"
-
 # For builds using the goma input processor, sometimes the deps cache file is
 # too big for the default setting.  So just set the max file size permitted to
 # be large enough.
 _DEPS_CACHE_MAX_MB = "512"
 
-RBE_VERSION = 're_client_version:0.131.1.784ddbb-gomaip'
+# Updated from https://chrome-infra-packages.appspot.com/p/infra/rbe/client
+# and should be kept in sync with the version in the engine DEPS file at
+# https://github.com/flutter/engine/blob/9cb60de37b6d582d886f46b86b90ccb9d6323fea/DEPS#L47
+RBE_VERSION = 're_client_version:0.141.1.29a9d3c-gomaip'
 
 
 class RbeApi(recipe_api.RecipeApi):

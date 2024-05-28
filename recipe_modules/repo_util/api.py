@@ -339,14 +339,14 @@ class RepoUtilApi(recipe_api.RecipeApi):
     # We assume the commit is not duplicated if it is not comming from beta or stable.
     return False
 
-  def get_commit(self, checkout_path, git_ref='HEAD'):
+  def get_commit(self, checkout_path):
     with self.m.context(cwd=checkout_path):
       step_test_data = lambda: self.m.raw_io.test_api.stream_output_text(
           '12345abcde12345abcde12345abcde12345abcde\n'
       )
       commit = self.m.git(
           'rev-parse',
-          git_ref,
+          'HEAD',
           stdout=self.m.raw_io.output_text(),
           step_test_data=step_test_data
       ).stdout.strip()
@@ -587,25 +587,18 @@ class RepoUtilApi(recipe_api.RecipeApi):
 
   def is_release_candidate_branch(self, checkout_path):
     """Returns true if the branch starts with "flutter-"."""
-    git_ref = self.m.buildbucket.gitiles_commit.ref
-    if 'git_ref' in self.m.properties:
-      git_ref = self.m.properties['git_ref']
-    candidate_branch = git_ref.replace('refs/heads/', '')
-    return candidate_branch.startswith('flutter-')
+    commit_branches = self.current_commit_branches(checkout_path)
+    for branch in commit_branches:
+      if branch.startswith('flutter-'):
+        return True
+    return False
 
   def release_candidate_branch(self, checkout_path):
-    """Returns the release branch for the checked-out commit."""
-    if not self.is_release_candidate_branch(checkout_path):
-      return None
-
-    # Verify HEAD matches git_ref HEAD.
-    git_ref = self.m.buildbucket.gitiles_commit.ref
-    branch_head_commit = self.get_commit(checkout_path, git_ref)
-    head_commit = self.get_commit(checkout_path)
-    if not head_commit == branch_head_commit:
-      return None
-    candidate_branch = git_ref.replace('refs/heads/', '')
-    return candidate_branch
+    """Returns the first branch that starts with "flutter-"."""
+    commit_branches = self.current_commit_branches(checkout_path)
+    for branch in commit_branches:
+      if branch.startswith('flutter-'):
+        return branch
 
   def get_build(self, checkout):
     """Returns build config of the target.

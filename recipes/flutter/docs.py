@@ -149,8 +149,14 @@ def GenTests(api):
   )
   fake_bcid_response_success = '{"allowed": true, "verificationSummary": "This artifact is definitely legitimate!"}'
   yield api.test(
-      'docs_upload_on_stable_branch', api.repo_util.flutter_environment_data(),
+      'docs_upload', api.repo_util.flutter_environment_data(),
       api.properties(validation='docs', firebase_project='myproject'),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io.output_text(
+              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
+      ),
       api.buildbucket.ci_build(
           project='flutter',
           bucket='flutter',
@@ -163,20 +169,6 @@ def GenTests(api):
           'Verify api_docs.zip provenance.verify api_docs.zip provenance',
           stdout=api.raw_io.output_text(fake_bcid_response_success)
       )
-  )
-  # Test release candidate branch.
-  yield api.test(
-      'docs_generated_but_not_uploaded_on_release_candidate_branch',
-      api.repo_util.flutter_environment_data(),
-      api.properties(validation='docs', firebase_project='myproject'),
-      api.buildbucket.ci_build(
-          project='flutter',
-          bucket='flutter',
-          git_repo='https://flutter.googlesource.com/mirrors/flutter',
-          git_ref='refs/heads/flutter-3.2-candidate.5',
-          revision='abcd' * 10,
-          build_number=123,
-      ),
   )
   yield api.test(
       'docs_deploy_main',

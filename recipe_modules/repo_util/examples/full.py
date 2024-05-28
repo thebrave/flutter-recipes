@@ -70,78 +70,8 @@ def GenTests(api):
               env_variables={"key1": "value1"}
           ), api.repo_util.flutter_environment_data(),
           api.step_data(
-              'Identify branches.git branch',
-              stdout=api.raw_io.output_text(
-                  'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-              )
-          ),
-          api.step_data(
-              'Identify branches (2).git branch',
-              stdout=api.raw_io.output_text(
-                  'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-              )
-          ),
-          api.step_data(
-              'Identify branches (3).git branch',
-              stdout=api.raw_io.output_text(
-                  'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-              )
-          ), api.platform('mac', 64)
-      )
-  )
-  yield (
-      api.test(
-          'mac_release_candidate',
-          api.properties(
-              git_branch='beta',
-              gn_artifacts='true',
-              git_url='https://github.com/flutter/engine',
-              git_ref='refs/heads/flutter-3.2-candidate.5',
-              clobber=True,
-              package_sharding='shard1',
-              channel='stable',
-              env_variables={"key1": "value1"}
-          ), api.repo_util.flutter_environment_data(),
-          api.step_data(
-              'Identify branches.git branch',
-              stdout=api.raw_io.output_text(
-                  'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-              )
-          ),
-          api.step_data(
-              'Identify branches (2).git branch',
-              stdout=api.raw_io.output_text(
-                  'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-              )
-          ),
-          api.step_data(
-              'Identify branches (3).git branch',
-              stdout=api.raw_io.output_text(
-                  'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-              )
-          ), api.platform('mac', 64)
-      )
-  )
-  yield (
-      api.test(
-          'mac_release_candidate_sha_mismatch',
-          api.properties(
-              git_branch='beta',
-              gn_artifacts='true',
-              git_url='https://github.com/flutter/engine',
-              git_ref='refs/heads/flutter-3.2-candidate.5',
-              clobber=True,
-              package_sharding='shard1',
-              channel='stable',
-              env_variables={"key1": "value1"}
-          ), api.repo_util.flutter_environment_data(),
-          api.step_data(
-              'git rev-parse',
+              'Identify branches.git rev-parse',
               stdout=api.raw_io.output_text('abchash')
-          ),
-          api.step_data(
-              'git rev-parse (2)',
-              stdout=api.raw_io.output_text('defhash')
           ),
           api.step_data(
               'Identify branches.git branch',

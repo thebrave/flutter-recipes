@@ -454,6 +454,12 @@ def GenTests(api):
       api.step_data(
           'Read build config file', api.file.read_json({'builds': builds})
       ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io.output_text(
+              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
+      ),
   )
 
   yield api.test(
@@ -464,7 +470,6 @@ def GenTests(api):
           project='proj',
           builder='try-builder',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
-          git_ref='refs/heads/flutter-3.2-candidate.5',
           revision='a' * 40,
           build_number=123,
       ),
@@ -480,6 +485,23 @@ def GenTests(api):
               'archives': archives,
               'generators': generators
           })
+      ),
+      api.step_data(
+          'Identify branches.git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io.output_text(
+              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
+      ),
+      api.step_data(
+          'Global generators.Identify branches.git branch',
+          stdout=api.raw_io.output_text(
+              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
       ),
   )
 
@@ -526,6 +548,12 @@ def GenTests(api):
               'generators': generators,
               'archives': archives
           })
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io.output_text(
+              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
       ),
   )
 

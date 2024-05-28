@@ -404,7 +404,7 @@ def GenTests(api):
       ),
   )
   yield api.test(
-      'mac',
+      'mac_main',
       api.properties(build=build, no_goma=True),
       api.platform('mac', 64),
       api.buildbucket.ci_build(
@@ -416,11 +416,19 @@ def GenTests(api):
           revision='abcd' * 10,
           build_number=123,
       ),
-      api.step_data(
-          'Identify branches.git branch',
-          stdout=api.raw_io.output_text(
-              'branch1\nbranch2\nremotes/origin/flutter-3.2-candidate.5'
-          )
+  )
+  yield api.test(
+      'mac_release_candidate',
+      api.properties(build=build, no_goma=True),
+      api.platform('mac', 64),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='mac-host',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/flutter-3.17-candidate.0',
+          revision='abcd' * 10,
+          build_number=123,
       ),
   )
   yield api.test(

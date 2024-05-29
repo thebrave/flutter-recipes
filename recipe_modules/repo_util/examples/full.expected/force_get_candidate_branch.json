@@ -1,0 +1,67 @@
+[
+  {
+    "cmd": [],
+    "name": "Identify branches"
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "name": "Identify branches.git rev-parse",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "branch",
+      "-a",
+      "--contains",
+      "12345abcde12345abcde12345abcde12345abcde"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "name": "Identify branches.git branch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "RECIPE CRASH (Uncaught exception)",
+    "~followup_annotations": [
+      "@@@STEP_EXCEPTION@@@",
+      "The recipe has crashed at point 'Uncaught exception'!",
+      "",
+      "Traceback (most recent call last):",
+      "  File \"RECIPE_REPO[recipe_engine]/recipe_engine/internal/engine.py\", in run_steps",
+      "    raw_result = recipe_obj.run_steps(api, engine)",
+      "                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"RECIPE_REPO[recipe_engine]/recipe_engine/internal/recipe_deps.py\", in run_steps",
+      "    recipe_result = invoke_with_properties(",
+      "                    ^^^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"RECIPE_REPO[recipe_engine]/recipe_engine/internal/property_invoker.py\", in invoke_with_properties",
+      "    return _invoke_with_properties(callable_obj, all_props, environ, prop_defs,",
+      "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"RECIPE_REPO[recipe_engine]/recipe_engine/internal/property_invoker.py\", in _invoke_with_properties",
+      "    return callable_obj(*props, **additional_args)",
+      "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"RECIPE_REPO[flutter]/recipe_modules/repo_util/examples/full.py\", line 26, in RunSteps",
+      "    api.repo_util.release_candidate_branch(flutter_checkout_path)",
+      "  File \"RECIPE_REPO[flutter]/recipe_modules/repo_util/api.py\", line 620, in release_candidate_branch",
+      "    raise ValueError('Not a release candidate branch: %s' % candidate_branch)",
+      "ValueError: Not a release candidate branch: refs/pull/1/head"
+    ]
+  },
+  {
+    "failure": {
+      "humanReason": "Uncaught Exception: ValueError('Not a release candidate branch: refs/pull/1/head')"
+    },
+    "name": "$result"
+  }
+]

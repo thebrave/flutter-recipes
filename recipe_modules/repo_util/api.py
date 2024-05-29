@@ -339,14 +339,14 @@ class RepoUtilApi(recipe_api.RecipeApi):
     # We assume the commit is not duplicated if it is not comming from beta or stable.
     return False
 
-  def get_commit(self, checkout_path):
+  def get_commit(self, checkout_path, git_ref='HEAD'):
     with self.m.context(cwd=checkout_path):
       step_test_data = lambda: self.m.raw_io.test_api.stream_output_text(
           '12345abcde12345abcde12345abcde12345abcde\n'
       )
       commit = self.m.git(
           'rev-parse',
-          'HEAD',
+          git_ref,
           stdout=self.m.raw_io.output_text(),
           step_test_data=step_test_data
       ).stdout.strip()
@@ -585,20 +585,40 @@ class RepoUtilApi(recipe_api.RecipeApi):
     assert checkout_path, 'Outside of a flutter_environment?'
     return self.m.path.abs_to_path(checkout_path)
 
+  def branch_ref_to_branch_name(self, branch_ref):
+    """Converts a ref to a local branch to a branch name."""
+    return branch_ref.replace('refs/heads/', '')
+
+  def get_git_ref(self):
+    """Returns the input git_ref property, if it exists; otherwise the
+    input.gitilesCommit.ref property."""
+    git_ref = self.m.buildbucket.gitiles_commit.ref
+    if 'git_ref' in self.m.properties:
+      git_ref = self.m.properties['git_ref']
+    return git_ref
+
   def is_release_candidate_branch(self, checkout_path):
-    """Returns true if the branch starts with "flutter-"."""
-    commit_branches = self.current_commit_branches(checkout_path)
-    for branch in commit_branches:
-      if branch.startswith('flutter-'):
-        return True
-    return False
+    """Returns true if the gitiles ref (or git_ref property) is a branch that
+    starts with "flutter-" and the git HEAD is the HEAD of that branch."""
+    git_ref = self.get_git_ref()
+    candidate_branch = self.branch_ref_to_branch_name(git_ref)
+    if not candidate_branch.startswith('flutter-'):
+      return False
+
+    # Verify HEAD matches git_ref HEAD. We don't yet have a local checkout of
+    # the candidate branch in question, so check against the remote (origin).
+    candidate_branch = self.branch_ref_to_branch_name(git_ref)
+    candidate_branch_origin = 'remotes/origin/' + candidate_branch
+    branch_head_commit = self.get_commit(checkout_path, candidate_branch_origin)
+    head_commit = self.get_commit(checkout_path, 'HEAD')
+    return head_commit == branch_head_commit
 
   def release_candidate_branch(self, checkout_path):
-    """Returns the first branch that starts with "flutter-"."""
-    commit_branches = self.current_commit_branches(checkout_path)
-    for branch in commit_branches:
-      if branch.startswith('flutter-'):
-        return branch
+    """Returns the release branch for the checked-out commit."""
+    candidate_branch = self.branch_ref_to_branch_name(self.get_git_ref())
+    if not self.is_release_candidate_branch(checkout_path):
+      raise ValueError('Not a release candidate branch: %s' % candidate_branch)
+    return candidate_branch
 
   def get_build(self, checkout):
     """Returns build config of the target.

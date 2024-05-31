@@ -56,6 +56,10 @@ LUCI_TO_GCS_PREFIX = {
     'try_EXPERIMENTAL': ('flutter_archives_v2', 'flutter_infra_release'),
     'try.shadow_PRODUCTION': ('flutter_archives_v2', 'flutter_infra_release'),
     'try.shadow_EXPERIMENTAL': ('flutter_archives_v2', 'flutter_infra_release'),
+    'staging.shadow_PRODUCTION':
+        ('flutter_archives_v2', 'flutter_infra_release'),
+    'staging.shadow_EXPERIMENTAL':
+        ('flutter_archives_v2', 'flutter_infra_release'),
     'prod.shadow_PRODUCTION': ('flutter_archives_v2', 'flutter_infra_release'),
     'prod.shadow_EXPERIMENTAL':
         ('flutter_archives_v2', 'flutter_infra_release')
@@ -76,7 +80,11 @@ LUCI_TO_ANDROID_GCS_PREFIX = {
     'try_EXPERIMENTAL': 'flutter_archives_v2',
     'try_PRODUCTION': 'flutter_archives_v2',
     'try.shadow_EXPERIMENTAL': 'flutter_archives_v2',
-    'try.shadow_PRODUCTION': 'flutter_archives_v2'
+    'try.shadow_PRODUCTION': 'flutter_archives_v2',
+    'staging.shadow_EXPERIMENTAL': 'flutter_archives_v2',
+    'staging.shadow_PRODUCTION': 'flutter_archives_v2',
+    'prod.shadow_EXPERIMENTAL': 'flutter_archives_v2',
+    'prod.shadow_PRODUCTION': 'flutter_archives_v2'
 }
 
 # Subpath for realms. A realm is used to separate file destinations

@@ -98,6 +98,54 @@ def GenTests(api):
       )
   )
 
+  # Try shadow LUCI pool with "production" realm in build configuration file.
+  try_pool_shadow_bucket_production_realm = try_pool_production_realm
+  yield api.test(
+      'try_pool_shadow_bucket_production_realm',
+      api.properties(
+          config=archive_config,
+          expected_destinations=try_pool_shadow_bucket_production_realm
+      ),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='try.shadow',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          build_id=98765
+      ),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
+  )
+
+  # Try shadow LUCI pool with "experimental" realm in build configuration file.
+  try_pool_shadow_bucket_experimental_realm = try_pool_production_realm
+  try_pool_shadow_bucket_experimental_realm_config = copy.deepcopy(
+      archive_config
+  )
+  try_pool_shadow_bucket_experimental_realm_config['realm'] = 'experimental'
+  yield api.test(
+      'try_pool_shadow_bucket_experimental_realm',
+      api.properties(
+          config=try_pool_shadow_bucket_experimental_realm_config,
+          expected_destinations=try_pool_shadow_bucket_experimental_realm
+      ),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='try.shadow',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          build_id=98765
+      ),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
+  )
+
   # Prod LUCI pool with "production" realm in build configuration file.
   prod_pool_production_realm = [
       'gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile/artifacts.zip',
@@ -139,6 +187,54 @@ def GenTests(api):
       api.buildbucket.ci_build(
           project='flutter',
           bucket='prod',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          build_id=98765
+      ),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
+  )
+
+  # Prod shadow LUCI pool with "production" realm in build configuration file.
+  prod_pool_shadow_bucket_production_realm = try_pool_production_realm
+  yield api.test(
+      'prod_pool_shadow_bucket_production_realm',
+      api.properties(
+          config=archive_config,
+          expected_destinations=prod_pool_shadow_bucket_production_realm
+      ),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='try.shadow',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          build_id=98765
+      ),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
+  )
+
+  # Prod shadow LUCI pool with "experimental" realm in build configuration file.
+  prod_pool_shadow_bucket_experimental_realm = try_pool_production_realm
+  prod_pool_shadow_bucket_experimental_realm_config = copy.deepcopy(
+      archive_config
+  )
+  prod_pool_shadow_bucket_experimental_realm_config['realm'] = 'experimental'
+  yield api.test(
+      'prod_pool_shadow_bucket_experimental_realm',
+      api.properties(
+          config=prod_pool_shadow_bucket_experimental_realm_config,
+          expected_destinations=prod_pool_shadow_bucket_experimental_realm
+      ),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='try.shadow',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           git_ref='refs/heads/main',
           build_id=98765
@@ -229,6 +325,54 @@ def GenTests(api):
       api.buildbucket.ci_build(
           project='flutter',
           bucket='staging',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          build_id=98765
+      ),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
+  )
+
+  # Staging shadow LUCI pool with "production" realm in build configuration file.
+  staging_pool_shadow_bucket_production_realm = try_pool_production_realm
+  yield api.test(
+      'staging_pool_shadow_bucket_production_realm',
+      api.properties(
+          config=archive_config,
+          expected_destinations=staging_pool_shadow_bucket_production_realm
+      ),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='staging.shadow',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          build_id=98765
+      ),
+      api.step_data(
+          'git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
+  )
+
+  # Staging shadow LUCI pool with "experimental" realm in build configuration file.
+  staging_pool_shadow_bucket_experimental_realm = try_pool_production_realm
+  staging_pool_shadow_bucket_experimental_realm_config = copy.deepcopy(
+      archive_config
+  )
+  staging_pool_shadow_bucket_experimental_realm_config['realm'] = 'experimental'
+  yield api.test(
+      'staging_pool_shadow_bucket_experimental_realm',
+      api.properties(
+          config=staging_pool_shadow_bucket_experimental_realm_config,
+          expected_destinations=staging_pool_shadow_bucket_experimental_realm
+      ),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='staging.shadow',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           git_ref='refs/heads/main',
           build_id=98765

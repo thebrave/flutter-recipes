@@ -179,6 +179,19 @@ def GenTests(api):
       )
   )
 
+  presubmit_props_bb_with_custom_timeout = copy.deepcopy(props_bb)
+  presubmit_props_bb_with_custom_timeout['builds'][0]['timeout'] = 10
+  yield (
+      api.buildbucket_util.
+      test('presubmit_bb_with_custom_timeout', tryjob=False, status='FAILURE') +
+      api.properties(**presubmit_props_bb_with_custom_timeout) +
+      api.platform.name('linux') + api.shard_util.child_build_steps(
+          subbuilds=[try_failure],
+          launch_step='launch builds.schedule',
+          collect_step='collect builds',
+      )
+  )
+
   yield api.test(
       'presubmit_led_subbuilds', api.properties(**props),
       api.platform.name('linux'),

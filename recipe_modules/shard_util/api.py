@@ -399,10 +399,15 @@ class ShardUtilApi(recipe_api.RecipeApi):
               'exe_cipd_version', 'refs/heads/%s' % branch
           )
       )
-      # Increase timeout if no_goma, since the runtime is going to
-      # be much longer.
-      if drone_properties.get("no_goma", False):
+
+      timeout_in_minutes = build.get('timeout', None)
+      if timeout_in_minutes is not None:
+        req.execution_timeout.FromSeconds(timeout_in_minutes * 60)
+      elif drone_properties.get("no_goma", False):
+        # Increase timeout if no_goma, since the runtime is going to
+        # be much longer.
         req.execution_timeout.FromSeconds(60 * 60 * 4)
+
       reqs.append(req)
     scheduled_builds = self.m.buildbucket.schedule(reqs, step_name="schedule")
     results = {}

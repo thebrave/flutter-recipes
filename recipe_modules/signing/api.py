@@ -71,9 +71,11 @@ class CodeSignApi(recipe_api.RecipeApi):
     with self.m.step.nest('Setup codesign environment'):
       secrets_dict = {
           'FLUTTER_P12':
-              'flutter_p12.encrypted', 'FLUTTER_P12_PASSWORD':
-                  'p12_password.encrypted', 'CODESIGN_TEAM_ID':
-                      'codesign_team_id.encrypted',
+              'exported_p12.encrypted',
+          'FLUTTER_P12_PASSWORD':
+              '0325_p12_password.encrypted',
+          'CODESIGN_TEAM_ID':
+              'codesign_team_id.encrypted',
           'CODESIGN_APP_SPECIFIC_PASSWORD':
               'codesign_app_specific_password.encrypted',
           'CODESIGN_APP_STORE_ID':
@@ -84,9 +86,9 @@ class CodeSignApi(recipe_api.RecipeApi):
 
   def _keychain_setup(self, env, env_prefixes):
     """KeychainSetup sets up keychain for codesign.
-    
+
     This function triggers a shell script that creates a keychain named
-    build.keychain. It unlocks the keychain, 
+    build.keychain. It unlocks the keychain,
     adds keychain to codesign search list, and adds flutter .p12
     to this keychain. This script also supplies p12 password,
     and grants codesign cipd and system codesign the correct access controls.
@@ -97,7 +99,7 @@ class CodeSignApi(recipe_api.RecipeApi):
       env_prefixes (dict) : environment paths.
     """
     with self.m.step.nest('Setup keychain'):
-      resource_name = self.resource('setup_keychain.sh')
+      resource_name = self.resource('setup_keychain.dart')
       self.m.step(
           'Set execute permission',
           ['chmod', '755', resource_name],
@@ -106,11 +108,25 @@ class CodeSignApi(recipe_api.RecipeApi):
     # Only filepath with a .p12 suffix will be recognized.
     p12_suffix_filepath = self.m.path['cleanup'].join('flutter.p12')
     env['P12_SUFFIX_FILEPATH'] = p12_suffix_filepath
+    setup_keychain_log_file = self.m.path['cleanup'].join('setup_keychain_logs.txt')
+
+    env['SETUP_KEYCHAIN_LOGS_PATH'] = setup_keychain_log_file
     with self.m.context(env=env, env_prefixes=env_prefixes):
-      self.m.step(
-          'run keychain setup script', [resource_name],
-          stdout=self.m.raw_io.output_text()
-      )
+      try:
+          self.m.step(
+              'run keychain setup script', [resource_name],
+          )
+      finally:
+          # This will namespace the remote GCS path by the buildbucket build ID
+          buildbucket_id = self.m.buildbucket_util.id
+          remote_path = '%s/setup_keychain_logs.txt' % buildbucket_id
+          self.m.gsutil.upload(
+              bucket='flutter_tmp_logs',
+              source=setup_keychain_log_file,
+              dest=remote_path,
+              args=['-r'],
+              name='upload debug logs to %s' % remote_path
+          )
 
   def _signer_tasks(self, env, env_prefixes, files_to_sign):
     """Concurrently creates jobs to codesign each binary.

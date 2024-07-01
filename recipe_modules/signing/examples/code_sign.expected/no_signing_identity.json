@@ -88,8 +88,8 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
-      "gs://flutter_configs/flutter_p12.encrypted",
-      "[CLEANUP]/flutter_p12.encrypted"
+      "gs://flutter_configs/exported_p12.encrypted",
+      "[CLEANUP]/exported_p12.encrypted"
     ],
     "infra_step": true,
     "name": "Setup codesign environment.gsutil download",
@@ -102,7 +102,7 @@
       "[START_DIR]/cloudkms/cloudkms",
       "decrypt",
       "-input",
-      "[CLEANUP]/flutter_p12.encrypted",
+      "[CLEANUP]/exported_p12.encrypted",
       "-output",
       "[CLEANUP]/FLUTTER_P12",
       "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
@@ -150,8 +150,8 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
-      "gs://flutter_configs/p12_password.encrypted",
-      "[CLEANUP]/p12_password.encrypted"
+      "gs://flutter_configs/0325_p12_password.encrypted",
+      "[CLEANUP]/0325_p12_password.encrypted"
     ],
     "infra_step": true,
     "name": "Setup codesign environment.gsutil download (2)",
@@ -164,7 +164,7 @@
       "[START_DIR]/cloudkms/cloudkms",
       "decrypt",
       "-input",
-      "[CLEANUP]/p12_password.encrypted",
+      "[CLEANUP]/0325_p12_password.encrypted",
       "-output",
       "[CLEANUP]/FLUTTER_P12_PASSWORD",
       "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
@@ -368,7 +368,7 @@
     "cmd": [
       "chmod",
       "755",
-      "RECIPE_MODULE[flutter::signing]/resources/setup_keychain.sh"
+      "RECIPE_MODULE[flutter::signing]/resources/setup_keychain.dart"
     ],
     "infra_step": true,
     "name": "Setup keychain.Set execute permission",
@@ -378,7 +378,7 @@
   },
   {
     "cmd": [
-      "RECIPE_MODULE[flutter::signing]/resources/setup_keychain.sh"
+      "RECIPE_MODULE[flutter::signing]/resources/setup_keychain.dart"
     ],
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
@@ -387,9 +387,39 @@
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
-      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12"
+      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12",
+      "SETUP_KEYCHAIN_LOGS_PATH": "[CLEANUP]/setup_keychain_logs.txt"
     },
     "name": "run keychain setup script"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "-r",
+      "[CLEANUP]/setup_keychain_logs.txt",
+      "gs://flutter_tmp_logs/0/setup_keychain_logs.txt"
+    ],
+    "env": {
+      "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
+      "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_1/codesign",
+      "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
+      "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
+      "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
+      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12",
+      "SETUP_KEYCHAIN_LOGS_PATH": "[CLEANUP]/setup_keychain_logs.txt"
+    },
+    "infra_step": true,
+    "name": "gsutil upload debug logs to 0/setup_keychain_logs.txt",
+    "~followup_annotations": [
+      "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_tmp_logs/0/setup_keychain_logs.txt@@@"
+    ]
   },
   {
     "cmd": [
@@ -446,7 +476,8 @@
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
-      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12"
+      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12",
+      "SETUP_KEYCHAIN_LOGS_PATH": "[CLEANUP]/setup_keychain_logs.txt"
     },
     "name": "Codesign unsigned_file1.zip.codesign Apple engine binaries",
     "~followup_annotations": [

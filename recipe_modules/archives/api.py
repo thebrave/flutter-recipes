@@ -193,22 +193,21 @@ class ArchivesApi(recipe_api.RecipeApi):
     results = []
     build_id = ''
     realm = archive_config.get('realm', 'experimental').upper()
-    # Weather to include build_id as part of the namespace or not.
-    include_build_id = True
+    # Whether to include build_id as part of the namespace or not.
+    include_build_id = False
     file_list = self._full_path_list(checkout, archive_config)
     if self.m.monorepo.is_monorepo_try_build:
       commit = self.m.monorepo.build_identifier
       bucket = MONOREPO_TRY_BUCKET
+      include_build_id = True
     elif self.m.monorepo.is_monorepo_ci_build:
       commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))
       bucket = MONOREPO
+      include_build_id = True
     else:
       commit = self.m.repo_util.get_commit(checkout.join('flutter'))
       bucket = self.m.buildbucket.build.builder.bucket
-      if self.m.flutter_bcid.is_official_build():
-        include_build_id = False
-      elif self.m.flutter_bcid.is_prod_build() and realm == 'PRODUCTION':
-        include_build_id = False
+      include_build_id = False
     build_id = self.m.monorepo.build_identifier if include_build_id else ''
     bucket_plus_realm = '_'.join(filter(None, (bucket, realm)))
     for include_path in file_list:
@@ -263,26 +262,25 @@ class ArchivesApi(recipe_api.RecipeApi):
     """
     results = []
     build_id = ''
+    include_build_id = False
 
     # Calculate prefix and commit.
     if self.m.monorepo.is_monorepo_try_build:
       commit = self.m.monorepo.build_identifier
       bucket = MONOREPO_TRY_BUCKET
+      include_build_id = True
     elif self.m.monorepo.is_monorepo_ci_build:
       commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))
       bucket = MONOREPO
+      include_build_id = True
     else:
       commit = self.m.repo_util.get_commit(checkout.join('flutter'))
       bucket = self.m.buildbucket.build.builder.bucket
+      include_build_id = False
 
     for archive in archives:
       realm = archive.get('realm', 'experimental').upper()
       bucket_plus_realm = '_'.join(filter(None, (bucket, realm)))
-      include_build_id = True
-      if self.m.flutter_bcid.is_official_build():
-        include_build_id = False
-      if self.m.flutter_bcid.is_prod_build() and realm == 'PRODUCTION':
-        include_build_id = False
       build_id = self.m.monorepo.build_identifier if include_build_id else ''
       gcs_bucket, bucket_postfix = LUCI_TO_GCS_PREFIX.get(bucket_plus_realm)
       source = checkout.join(archive.get('source'))

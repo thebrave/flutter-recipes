@@ -6,6 +6,7 @@ DEPS = [
     'dart/dart',
     'depot_tools/gsutil',
     'flutter/repo_util',
+    'flutter/retry',
     'recipe_engine/bcid_reporter',
     'recipe_engine/buildbucket',
     'recipe_engine/file',

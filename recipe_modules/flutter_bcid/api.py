@@ -76,9 +76,20 @@ class FlutterBcidApi(recipe_api.RecipeApi):
       with self.m.step.nest("Verify %s provenance" % filename):
         verify_temp_path = self.m.path.mkdtemp("verify")
         download_path = download_path = verify_temp_path.join(filename)
-        bcid_response = self.m.dart.download_and_verify(
-            filename, bucket, gcs_path_without_bucket, download_path,
-            'misc_software://flutter/engine'
+
+        def download_and_verify():
+            return self.m.dart.download_and_verify(
+                filename, bucket, gcs_path_without_bucket, download_path,
+                'misc_software://flutter/engine'
+            )
+
+        # The provenance file may not have been uploaded yet:
+        # https://github.com/flutter/flutter/issues/151791
+        bcid_response = self.m.retry.wrap(
+            download_and_verify,
+            sleep=60,
+            backoff_factor=2,
+            max_attempts=4,
         )
 
         artifact_vsa = bcid_response['verificationSummary']

@@ -46,13 +46,10 @@ class BuildUtilApi(recipe_api.RecipeApi):
     """Calculates concurrent jobs value for the current machine."""
     cores = multiprocessing.cpu_count()
 
-    # For non goma builds, set -j to the number of cores.
-    if not self.use_goma:
+    # For non goma/rbe builds, set -j to the number of cores.
+    if not self.use_goma and not self.use_rbe:
       return 5 if self._test_data.enabled else cores
 
-    # Assume simultaneous multithreading and therefore half as many cores as
-    # logical processors.
-    cores //= 2
     default_core_multiplier = 80
     j_value = cores * default_core_multiplier
     if self.m.platform.is_win:
@@ -79,7 +76,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
     """
     assert rbe_working_path
     build_dir = checkout_path.join('out/%s' % config)
-    rbe_jobs = self.m.properties.get('rbe_jobs') or self._calculate_j_value()
+    rbe_jobs = self._calculate_j_value()
     ninja_args = [tool, '-j', rbe_jobs, '-C', build_dir]
     ninja_args.extend(targets)
     with self.m.rbe(

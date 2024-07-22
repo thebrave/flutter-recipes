@@ -73,7 +73,7 @@ class CodeSignApi(recipe_api.RecipeApi):
           'FLUTTER_P12':
               'exported_p12.encrypted',
           'FLUTTER_P12_PASSWORD':
-              '0325_p12_password.encrypted',
+              '0325_p12password.encrypted',
           'CODESIGN_TEAM_ID':
               'codesign_team_id.encrypted',
           'CODESIGN_APP_SPECIFIC_PASSWORD':

@@ -434,9 +434,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
     build_id_to_name = {
         int(build.build_id): build.build_name for build in tasks.values()
     }
-    bb_fields = self.m.buildbucket.DEFAULT_FIELDS.union({
-        "summary_markdown",
-    })
+    bb_fields = self.m.buildbucket.DEFAULT_FIELDS
+
     # As of 2019-11-18, timeout defaults to something too short.
     # We never want this step to time out. We'd rather the whole build time out.
     builds = self.m.buildbucket.collect_builds(

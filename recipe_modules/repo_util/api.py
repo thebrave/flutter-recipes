@@ -109,6 +109,11 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'beta', 'stable'
     ] or bucket == OFFICIAL_BUILD_BUCKET:
       local_custom_vars['release_candidate'] = True
+      # Release candidate branches should clobber the cache to avoid stale files
+      # and directories from the future polluting the tree, which are not
+      # automatically deleted for example when try bots checkout an old hash.
+      clobber = True
+
     git_url = REPOS['engine']
     git_id = self.m.buildbucket.gitiles_commit.id
     git_ref = self.m.buildbucket.gitiles_commit.ref

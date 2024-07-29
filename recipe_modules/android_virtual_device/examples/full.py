@@ -9,9 +9,10 @@ DEPS = [
 
 
 def RunSteps(api):
+  should_set_avd_cipd_version = api.properties.get('should_set_avd_cipd_version', True)
   env = {
       'USE_EMULATOR': api.properties.get('use_emulator', False),
-      'AVD_CIPD_VERSION': 'TESTVERSIONSTR'
+      'AVD_CIPD_VERSION': 'TESTVERSIONSTR' if should_set_avd_cipd_version else None
   }
   env_prefixes = {}
 
@@ -31,6 +32,7 @@ def GenTests(api):
       'emulator started',
       api.properties(use_emulator="true"),
       api.properties(fake_data='fake data'),
+      api.properties(should_set_avd_cipd_version=True),
       api.step_data(
           'start avd.Start Android emulator (%s)' % avd_api_version,
           stdout=api.raw_io.output_text(
@@ -51,6 +53,7 @@ def GenTests(api):
       'emulator started and stopped, processes killed',
       api.properties(use_emulator="true"),
       api.properties(fake_data='fake data'),
+      api.properties(should_set_avd_cipd_version=True),
       api.step_data(
           'start avd.Start Android emulator (%s)' % avd_api_version,
           stdout=api.raw_io.output_text(
@@ -65,4 +68,12 @@ def GenTests(api):
               '_google_apis_x86|emulator-5554 started (pid: 17687)'
           )
       ),
+  )
+
+  yield api.test(
+    'emulator is not started if AVD_CIPD_VERSION not defined',
+    api.properties(use_emulator="true"),
+    api.properties(fake_data='fake data'),
+    api.properties(should_set_avd_cipd_version=False),
+    api.expect_status('INFRA_FAILURE'),
   )

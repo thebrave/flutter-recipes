@@ -5,9 +5,6 @@ import re
 from contextlib import contextmanager
 from recipe_engine import recipe_api
 
-# Supports 19 though API 34.
-AVD_CIPD_IDENTIFIER = 'nNnmIzfGCF3wVB1sB14hKaU77TdoTFbq6uq_wXHM-WQC'
-
 RERUN_ATTEMPTS = 3
 
 
@@ -63,7 +60,12 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       env_prefixes(dict):  Current environment prefixes variables.
       avd_root(Path): The root path to install the AVD package.
     """
-    cipd_version = env.get('AVD_CIPD_VERSION', AVD_CIPD_IDENTIFIER)
+    cipd_version = env.get('AVD_CIPD_VERSION', None)
+    if cipd_version is None:
+      raise self.m.step.InfraFailure(
+        'avd_cipd_version must be set in .ci.yaml target if depending on'
+        'android_virtual_device'
+      )
     with self.m.step.nest('download avd package'):
       with self.m.context(
           env=env, env_prefixes=env_prefixes), self.m.depot_tools.on_path():

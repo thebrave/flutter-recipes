@@ -63,6 +63,19 @@ class RepoUtilApi(recipe_api.RecipeApi):
         )
         env['GYP_MSVS_VERSION'] = metadata['version']
 
+  def _clobber_cache(self, checkout_path):
+    """Deletes bot caches to provide a clean build environment."""
+    # Ensure depot tools is in the path to prevent problems with vpython not
+    # being found after a failure.
+    with self.m.depot_tools.on_path():
+      if self.m.path.exists(checkout_path):
+        self.m.file.rmcontents('Clobber cache', checkout_path)
+      git_cache_path = self.m.path['cache'].join('git')
+      self.m.path.mock_add_directory(git_cache_path)
+      if self.m.path.exists(git_cache_path):
+        self.m.file.rmtree('Clobber git cache', git_cache_path)
+      self.m.file.ensure_directory('Ensure checkout cache', checkout_path)
+
   def engine_checkout(
       self, checkout_path, env, env_prefixes, gclient_variables=None
   ):
@@ -121,25 +134,13 @@ class RepoUtilApi(recipe_api.RecipeApi):
       git_url = self.m.properties['git_url']
       git_id = self.m.properties['git_ref']
       git_ref = self.m.properties['git_ref']
-    # Inner function to clobber the cache
-    def _ClobberCache():
-      # Ensure depot tools is in the path to prevent problems with vpython not
-      # being found after a failure.
-      with self.m.depot_tools.on_path():
-        if self.m.path.exists(checkout_path):
-          self.m.file.rmcontents('Clobber cache', checkout_path)
-        git_cache_path = self.m.path['cache'].join('git')
-        self.m.path.mock_add_directory(git_cache_path)
-        if self.m.path.exists(git_cache_path):
-          self.m.file.rmtree('Clobber git cache', git_cache_path)
-        self.m.file.ensure_directory('Ensure checkout cache', checkout_path)
 
     # Inner function to execute code a second time in case of failure.
     # pylint: disable=unused-argument
     def _InnerCheckout(timeout=None):
       with self.m.step.nest('Checkout source code'):
         if clobber:
-          _ClobberCache()
+          self._clobber_cache(checkout_path)
         with self.m.context(env=env, env_prefixes=env_prefixes,
                             cwd=checkout_path), self.m.depot_tools.on_path():
           try:
@@ -174,7 +175,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             self._setup_win_toolchain(env)
           except:
             # On any exception, clean up the cache and raise
-            _ClobberCache()
+            self._clobber_cache(checkout_path)
             raise
 
     # Some outlier GoB mirror jobs can take >250secs.
@@ -218,25 +219,13 @@ class RepoUtilApi(recipe_api.RecipeApi):
       raise ValueError(
           'Input reference is not on dart.googlesource.com/monorepo'
       )
-    # Inner function to clobber the cache
-    def _ClobberCache():
-      # Ensure depot tools is in the path to prevent problems with vpython not
-      # being found after a failure.
-      with self.m.depot_tools.on_path():
-        if self.m.path.exists(checkout_path):
-          self.m.file.rmcontents('Clobber cache', checkout_path)
-        git_cache_path = self.m.path['cache'].join('git')
-        self.m.path.mock_add_directory(git_cache_path)
-        if self.m.path.exists(git_cache_path):
-          self.m.file.rmtree('Clobber git cache', git_cache_path)
-        self.m.file.ensure_directory('Ensure checkout cache', checkout_path)
 
     # Inner function to execute code a second time in case of failure.
     # pylint: disable=unused-argument
     def _InnerCheckout(timeout=None):
       with self.m.step.nest('Checkout source code'):
         if clobber:
-          _ClobberCache()
+          self._clobber_cache(checkout_path)
         with self.m.context(env=env, env_prefixes=env_prefixes,
                             cwd=checkout_path), self.m.depot_tools.on_path():
           try:
@@ -265,7 +254,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
             self.m.gclient.runhooks()
           except:
             # On any exception, clean up the cache and raise
-            _ClobberCache()
+            self._clobber_cache(checkout_path)
             raise
 
     # Some outlier GoB mirror jobs can take >250secs.

@@ -100,12 +100,12 @@ def RunSteps(api):
     api.flutter_deps.gh_cli(env, env_prefixes, 'latest')
 
   # Gems dependency requires to run from a flutter_environment.
-  checkout_path = api.path['start_dir'].join(r'flutter\ sdk')
+  checkout_path = api.path['start_dir'].join('flutter sdk')
   env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
 
 
 def GenTests(api):
-  checkout_path = api.path['start_dir'].join(r'flutter\ sdk')
+  checkout_path = api.path['start_dir'].join('flutter sdk')
   yield api.test(
       'basic',
       api.repo_util.flutter_environment_data(checkout_path),

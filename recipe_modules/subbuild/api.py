@@ -153,7 +153,7 @@ class SubbuildApi(recipe_api.RecipeApi):
     for k, v in sorted(properties.items()):
       edit_args.extend(["-p", f"{k}={self.m.json.dumps(v)}"])
     edit_cr_cl_arg = None
-    bb_input = self.m.buildbucket.build_input
+    bb_input = self.m.buildbucket.build.input
     if bb_input.gerrit_changes:
       gerrit_change = bb_input.gerrit_changes[0]
       edit_cr_cl_arg = f"https://{gerrit_change.host}/c/{gerrit_change.project}/+/{int(gerrit_change.change)}"

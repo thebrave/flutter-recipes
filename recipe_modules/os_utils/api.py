@@ -375,7 +375,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
               except self.m.step.InfraFailure:
                 # If step fails, continue to "Run app to dismiss dialogs" step.
                 # That step should also fail.
-                wait_connect_step.presentation.status = self.m.step.INFRA_FAILURE
+                wait_connect_step.status = self.m.step.INFRA_FAILURE
               finally:
                 self._list_core_devices()
                 self.m.step(

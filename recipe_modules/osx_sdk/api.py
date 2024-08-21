@@ -766,7 +766,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
         self.m.step.empty(
             'runtime build version', step_text=ios_runtime_build_version
         )
-        display_step.presentation.status = self.m.step.SUCCESS
+        display_step.status = self.m.step.SUCCESS
 
     # Check if runtime is already mounted
     for runtime in runtime_simulators:

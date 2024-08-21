@@ -40,19 +40,19 @@ class DisplayUtilApi(recipe_api.RecipeApi):
     with self.m.step.nest(step_name) as presentation:
       for id_name, build in subbuilds.items():
         with self.m.step.nest(build.build_name) as display_step:
-          step_links = display_step.presentation.links
+          step_links = display_step.links
           step_links[str(build.build_id)] = build.url
           if build.build_proto.status == common_pb2.Status.Value('SUCCESS'):
-            display_step.presentation.status = self.m.step.SUCCESS
+            display_step.status = self.m.step.SUCCESS
           elif build.build_proto.status in infra_failure_states:
-            display_step.presentation.status = self.m.step.EXCEPTION
+            display_step.status = self.m.step.EXCEPTION
             infra_failures.append(build)
           elif build.build_proto.status == common_pb2.Status.Value('FAILURE'):
-            display_step.presentation.status = self.m.step.FAILURE
+            display_step.status = self.m.step.FAILURE
             failures.append(build)
           # For any other status, use warning color.
           else:
-            display_step.presentation.status = self.m.step.WARNING
+            display_step.status = self.m.step.WARNING
 
       def summary_section(build):
         url = self.m.buildbucket.build_url(build_id=build.build_id)
@@ -117,20 +117,20 @@ class DisplayUtilApi(recipe_api.RecipeApi):
       for k in builds:
         build = builds[k] if isinstance(k, long) or isinstance(k, int) else k
         with self.m.step.nest(build.builder.builder) as display_step:
-          step_links = display_step.presentation.links
+          step_links = display_step.links
           step_links[str(build.id)
                     ] = self.m.buildbucket.build_url(build_id=build.id)
           if build.status == common_pb2.Status.Value('SUCCESS'):
-            display_step.presentation.status = self.m.step.SUCCESS
+            display_step.status = self.m.step.SUCCESS
           elif build.status in infra_failure_states:
-            display_step.presentation.status = self.m.step.EXCEPTION
+            display_step.status = self.m.step.EXCEPTION
             infra_failures.append(build)
           elif build.status == common_pb2.Status.Value('FAILURE'):
-            display_step.presentation.status = self.m.step.FAILURE
+            display_step.status = self.m.step.FAILURE
             failures.append(build)
           # For any other status, use warning color.
           else:
-            display_step.presentation.status = self.m.step.WARNING
+            display_step.status = self.m.step.WARNING
 
       def summary_section(build):
         url = self.m.buildbucket.build_url(build_id=build.id)
@@ -205,7 +205,7 @@ class DisplayUtilApi(recipe_api.RecipeApi):
           links (Dict): A dictionary with the task links as values and the task id as keys.
         """
     with self.m.step.nest(result.name) as display_step:
-      step_links = display_step.presentation.links
+      step_links = display_step.links
       step_links[str(result.id)] = links[result.id]
       if (result.state is None or
           result.state != self.m.swarming.TaskState.COMPLETED):
@@ -215,7 +215,7 @@ class DisplayUtilApi(recipe_api.RecipeApi):
         display_step.status = self.m.step.FAILURE
         failed_builders.append(result.name)
       else:
-        display_step.presentation.status = self.m.step.WARNING
+        display_step.status = self.m.step.WARNING
 
   def _display(
       self,

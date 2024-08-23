@@ -374,6 +374,97 @@
     "name": "flutter doctor"
   },
   {
+    "cmd": [],
+    "name": "Initialize logs"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[CLEANUP]/flutter_logs_dir"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LOCAL_WEB_SDK": "[CLEANUP]/builder/src/out",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REDUCED_TEST_SET": "False",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "SHARD": null,
+      "SUBSHARD": null
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/builder/src/flutter/prebuilts/${platform}/dart-sdk/bin",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "Initialize logs.Ensure [CLEANUP]/flutter_logs_dir",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "",
+      "[CLEANUP]/flutter_logs_dir/noop.txt"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "",
+      "LOCAL_WEB_SDK": "[CLEANUP]/builder/src/out",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REDUCED_TEST_SET": "False",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
+      "SHARD": null,
+      "SUBSHARD": null
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/builder/src/flutter/prebuilts/${platform}/dart-sdk/bin",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin",
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "name": "Initialize logs.Write noop file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
     "cmd": [
       "bash",
       "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
@@ -387,6 +478,8 @@
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GCP_PROJECT": "flutter-infra",
       "GIT_BRANCH": "",
       "LOCAL_WEB_SDK": "[CLEANUP]/builder/src/out",
@@ -432,6 +525,8 @@
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GCP_PROJECT": "flutter-infra",
       "GIT_BRANCH": "",
       "LOCAL_WEB_SDK": "[CLEANUP]/builder/src/out",

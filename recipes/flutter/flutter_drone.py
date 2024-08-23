@@ -46,6 +46,8 @@ def RunShard(api, env, env_prefixes, checkout_path):
         'test_timeout_secs'
     ) or default_timeout_secs
     env['GCP_PROJECT'] = 'flutter-infra'
+    api.logs_util.initialize_logs_collection(env)
+
     with api.context(env=env, env_prefixes=env_prefixes):
       api.test_utils.run_test(
           'run test.dart for %s shard and subshard %s' %

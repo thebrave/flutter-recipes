@@ -19,10 +19,10 @@ def GenTests(api):
   yield api.test(
       'ssh_paths',
       api.path.exists(
-          api.path.cache_dir.join('builder/ssh/id_ed25519.pub'),
-          api.path.cache_dir.join('builder/ssh/id_ed25519'),
-          api.path.cache_dir.join('builder/ssh/ssh_host_key.pub'),
-          api.path.cache_dir.join('builder/ssh/ssh_host_key'),
+          api.path.cache_dir / 'builder/ssh/id_ed25519.pub',
+          api.path.cache_dir / 'builder/ssh/id_ed25519',
+          api.path.cache_dir / 'builder/ssh/ssh_host_key.pub',
+          api.path.cache_dir / 'builder/ssh/ssh_host_key',
       )
   )
 

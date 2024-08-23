@@ -82,7 +82,7 @@ def run_tests(api, test, checkout, env, env_prefixes):
   deps = test.get('test_dependencies', [])
   api.flutter_deps.required_deps(env, env_prefixes, deps)
 
-  out_path = checkout.join('out')
+  out_path = checkout / 'out'
   # Download build dependencies.
   for dep in test.get('resolved_deps', []):
     out_hash = dep.get('full_build')
@@ -94,7 +94,7 @@ def run_tests(api, test, checkout, env, env_prefixes):
     # configuration with more than one local test but once we find it we
     # should run the list of tests using parallelism.
     # TODO(godofredoc): Optimize to run multiple local tests in parallel.
-    command.append(checkout.join(task.get('script')))
+    command.append(checkout / task.get('script'))
     command.extend(task.get('parameters', []))
     step_name = api.test_utils.test_step_name(task.get('name'))
     test_timeout_secs = task.get('test_timeout_secs', DEFAULT_TEST_TIMEOUT_SECS)
@@ -128,22 +128,22 @@ def Test(api, checkout, env, env_prefixes):
   """Runs a global test using prebuilts."""
   test = api.properties.get('build')
   with api.context(env=env, env_prefixes=env_prefixes,
-                   cwd=checkout.join('flutter')), api.depot_tools.on_path():
+                   cwd=checkout / 'flutter'), api.depot_tools.on_path():
     run_tests(api, test, checkout, env, env_prefixes)
 
 
 def RunSteps(api):
   # Sets the engine environment and checkouts the source code.
-  checkout = api.path.cache_dir.join('builder', 'src')
-  api.file.rmtree('Clobber build output', checkout.join('out'))
-  cache_root = api.path.cache_dir.join('builder')
+  checkout = api.path.cache_dir / 'builder/src'
+  api.file.rmtree('Clobber build output', checkout / 'out')
+  cache_root = api.path.cache_dir / 'builder'
   api.file.ensure_directory('Ensure checkout cache', cache_root)
   env, env_prefixes = api.repo_util.engine_environment(
-      api.path.cache_dir.join('builder')
+      api.path.cache_dir / 'builder'
   )
   # Engine path is used inconsistently across the engine repo. We'll start
   # with [cache]/builder and will adjust it to start using it consistently.
-  env['ENGINE_PATH'] = api.path.cache_dir.join('builder')
+  env['ENGINE_PATH'] = api.path.cache_dir / 'builder'
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
   Test(api, checkout, env, env_prefixes)
 

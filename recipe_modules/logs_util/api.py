@@ -22,7 +22,7 @@ class LogUtilsApi(recipe_api.RecipeApi):
     # Create a temp folder to keep logs until we can upload them to gcs
     # at the end of the execution of the test.
     with self.m.step.nest('Initialize logs'):
-      logs_path = self.m.path.cleanup_dir.join('flutter_logs_dir')
+      logs_path = self.m.path.cleanup_dir / 'flutter_logs_dir'
       self.m.file.ensure_directory('Ensure %s' % logs_path, logs_path)
       env['FLUTTER_LOGS_DIR'] = logs_path
       # Ensure that any test outputs, e.g. timelines/timeline summaries are
@@ -31,7 +31,7 @@ class LogUtilsApi(recipe_api.RecipeApi):
       # Write a noop file to force the creation of the remote folder structure
       # when the logs folder is empty.
       self.m.file.write_text(
-          'Write noop file', logs_path.join('noop.txt'), '', include_log=False
+          'Write noop file', logs_path / 'noop.txt', '', include_log=False
       )
 
   def upload_logs(self, task, type='flutter'):
@@ -45,7 +45,7 @@ class LogUtilsApi(recipe_api.RecipeApi):
     # UUID is used in LED and try jobs.
     uuid = self.m.uuid.random()
     invocation_id = git_hash if git_hash else uuid
-    logs_path = self.m.path.cleanup_dir.join('flutter_logs_dir')
+    logs_path = self.m.path.cleanup_dir / 'flutter_logs_dir'
     with self.m.step.nest('process logs'):
       self.m.gsutil.upload(
           bucket='flutter_logs',

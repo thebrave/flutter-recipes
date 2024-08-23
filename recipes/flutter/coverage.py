@@ -16,7 +16,7 @@ DEPS = [
 
 def RunSteps(api):
   """Recipe to collect coverage used by the flutter tool."""
-  checkout_path = api.path.start_dir.join('flutter sdk')
+  checkout_path = api.path.start_dir / 'flutter sdk'
   with api.step.nest('checkout source code'):
     api.repo_util.checkout(
         'flutter',
@@ -30,7 +30,7 @@ def RunSteps(api):
       env, env_prefixes, api.properties.get('dependencies', [])
   )
 
-  packages_path = checkout_path.join('packages', 'flutter')
+  packages_path = checkout_path / 'packages/flutter'
   with api.context(env=env, env_prefixes=env_prefixes, cwd=packages_path):
     with api.step.nest('prepare environment'):
       deferred = []
@@ -51,7 +51,7 @@ def RunSteps(api):
         'flutter coverage',
         ['flutter', 'test', '--coverage', '-j', '1'],
     )
-    lcov_path = packages_path.join('coverage', 'lcov.info')
+    lcov_path = packages_path / 'coverage/lcov.info'
     api.gsutil.upload(
         bucket='flutter_infra_release',
         source=lcov_path,

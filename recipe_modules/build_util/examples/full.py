@@ -19,11 +19,14 @@ def RunSteps(api):
   with api.context(env_prefixes=env_prefixes):
     api.build_util.run_gn([], checkout)
     api.build_util.build(
-        'profile', checkout, ['mytarget'], {
+        'profile',
+        checkout,
+        ['mytarget'],
+        {
             'CLANG_CRASH_DIAGNOSTICS_DIR': api.path.start_dir,
             'FLUTTER_LOGS_DIR': api.path.start_dir
         },
-        rbe_working_path=api.path.cleanup_dir.join("rbe"),
+        rbe_working_path=api.path.cleanup_dir / "rbe",
     )
   with api.context(env_prefixes=env_prefixes):
     api.build_util.run_gn(['--no-goma', '--no-rbe'], checkout)
@@ -43,7 +46,7 @@ def RunSteps(api):
             'CLANG_CRASH_DIAGNOSTICS_DIR': api.path.start_dir,
             'FLUTTER_LOGS_DIR': api.path.start_dir
         },
-        rbe_working_path=api.path.cleanup_dir.join("rbe"),
+        rbe_working_path=api.path.cleanup_dir / "rbe",
     )
 
 
@@ -56,7 +59,7 @@ def GenTests(api):
           'build profile mytarget',
           retcode=1,
       ),
-      api.path.exists(api.path.start_dir.join('foo.sh')),
+      api.path.exists(api.path.start_dir / 'foo.sh'),
       status='FAILURE',
   )
   yield api.test(

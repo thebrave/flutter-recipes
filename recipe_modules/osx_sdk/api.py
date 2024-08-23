@@ -20,10 +20,11 @@ _DEFAULT_VERSION_MAP = [('10.12.6', '9c40b'), ('10.13.2', '9f2000'),
                         ('10.13.6', '10b61'), ('10.14.3', '10g8'),
                         ('10.14.4', '11b52'), ('10.15.4', '12a7209')]
 
-_RUNTIMESPATH = [
-    'Contents', 'Developer', 'Platforms', 'iPhoneOS.platform', 'Library',
-    'Developer', 'CoreSimulator', 'Profiles', 'Runtimes'
-]
+_RUNTIMESPATH = (
+    'Contents/Developer/Platforms/iPhoneOS.platform/Library/'
+    'Developer/CoreSimulator/Profiles/Runtimes'
+)
+
 
 # This CIPD source contains Xcode and iOS runtimes create and maintained by the
 # Flutter team.
@@ -211,8 +212,8 @@ class OSXSDKApi(recipe_api.RecipeApi):
         machine.
     """
     if devicelab:
-      return '/opt/flutter/xcode'
-    return self.m.path.cache_dir.join('osx_sdk')
+      return self.m.path.cast_to_path('/opt/flutter/xcode')
+    return self.m.path.cache_dir / 'osx_sdk'
 
   def _setup_osx_sdk(self, kind, devicelab):
     app = None
@@ -353,7 +354,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
     # version to also be considered damaged.
     if retry:
       uuid = self.m.uuid.random()
-      install_path = self.m.path.join(app_dir, 'temp_%s_xcode.app' % uuid)
+      install_path = app_dir / f'temp_{uuid}_xcode.app'
 
     try:
       # Verify that existing Xcode is not damaged. If it's damaged, the
@@ -372,7 +373,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
       self.m.step(
           'install xcode from cipd',
           [
-              tool_dir.join('mac_toolchain'),
+              tool_dir / 'mac_toolchain',
               'install',
               '-kind',
               kind,
@@ -427,8 +428,8 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     Returns Path to the installed sdk app bundle."""
     app_dir = self._xcode_dir(devicelab)
-    tool_dir = self.m.path.mkdtemp().join('osx_sdk') if devicelab else app_dir
-    sdk_app = self.m.path.join(app_dir, 'XCode.app')
+    tool_dir = self.m.path.mkdtemp() / 'osx_sdk' if devicelab else app_dir
+    sdk_app = app_dir / 'XCode.app'
     self._try_install_xcode(tool_dir, kind, app_dir, sdk_app, devicelab)
 
     self._cleanup_runtimes_cache(sdk_app)
@@ -517,7 +518,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
           self.m.step(
               'install xcode runtime %s' % version.lower(),
               [
-                  app_dir.join('mac_toolchain'),
+                  app_dir / '/mac_toolchain',
                   'install-runtime-dmg',
                   '-cipd-package-prefix',
                   self._xcode_cipd_package_source,
@@ -566,22 +567,21 @@ class OSXSDKApi(recipe_api.RecipeApi):
         # and then copies over to the destination.
 
         self.m.file.ensure_directory(
-            'Ensuring runtimes directory',
-            self.m.path.join(sdk_app, *_RUNTIMESPATH)
+            'Ensuring runtimes directory', sdk_app / _RUNTIMESPATH
         )
         for version in self._runtime_versions:
           runtime_name = 'iOS %s.simruntime' % version.lower(
           ).replace('ios-', '').replace('-', '.')
-          dest = self.m.path.join(sdk_app, *_RUNTIMESPATH, runtime_name)
+          dest = sdk_app / _RUNTIMESPATH / runtime_name
           if not self.m.path.exists(dest):
             cache_base_path = self._get_xcode_base_cache_path(False)
-            runtime_cache_dir = cache_base_path.join(
-                'xcode_runtime_%s' % version.lower()
+            runtime_cache_dir = (
+                cache_base_path / ('xcode_runtime_%s' % version.lower())
             )
             self.m.step(
                 'install xcode runtime %s' % version.lower(),
                 [
-                    app_dir.join('mac_toolchain'),
+                    app_dir / 'mac_toolchain',
                     'install-runtime',
                     '-cipd-package-prefix',
                     _FLUTTER_XCODE_CIPD,
@@ -592,12 +592,12 @@ class OSXSDKApi(recipe_api.RecipeApi):
                 ],
             )
             # Move the runtimes
-            path_with_version = runtime_cache_dir.join(runtime_name)
+            path_with_version = runtime_cache_dir / runtime_name
             # If the runtime was the default for xcode the cipd bundle contains a directory called iOS.simruntime otherwise
             # it contains a folder called "iOS <version>.simruntime".
             source = path_with_version if self.m.path.exists(
                 path_with_version
-            ) else runtime_cache_dir.join('iOS.simruntime')
+            ) else runtime_cache_dir / 'iOS.simruntime'
             self.m.file.copytree(
                 'Copy runtime to %s' % dest, source, dest, symlinks=True
             )
@@ -616,18 +616,18 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     xcode_cache_base_path = self._get_xcode_base_cache_path(devicelab)
     if devicelab:
-      return f"{xcode_cache_base_path}/{self._sdk_version}"
+      return xcode_cache_base_path / self._sdk_version
     runtime_version = None
     sdk_version = f"xcode_{self._sdk_version}"
     if not self.macos_13_or_later and self._runtime_versions:
       runtime_version = "_".join(self._runtime_versions)
       sdk_version = f"{sdk_version}_runtime_{runtime_version}"
-    return xcode_cache_base_path.join(sdk_version)
+    return xcode_cache_base_path / sdk_version
 
   def _runtime_dmg_dir_cache_path(self, version):
     cache_base_path = self._get_xcode_base_cache_path(False)
     # this method seems to be only used for non-devicelab cache path.
-    return cache_base_path.join('xcode_runtime_dmg_%s' % version.lower())
+    return cache_base_path / ('xcode_runtime_dmg_%s' % version.lower())
 
   def _cleanup_runtimes_cache(self, sdk_app):
     """Deletes all mounted runtimes and deletes corresponding cached runtime dmgs.

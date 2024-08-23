@@ -33,9 +33,9 @@ def _is_default_branch(branch):
 def RunSteps(api):
   """Steps to checkout infra, dependencies, and generate new config."""
   start_path = api.path.start_dir
-  cocoon_path = start_path.join('cocoon')
-  flutter_path = start_path.join('flutter')
-  infra_path = start_path.join('infra')
+  cocoon_path = start_path / 'cocoon'
+  flutter_path = start_path / 'flutter'
+  infra_path = start_path / 'infra'
 
   # Checkout the stable version of Flutter.
   flutter_git_ref = 'refs/heads/master'
@@ -48,7 +48,7 @@ def RunSteps(api):
   api.repo_util.checkout('infra', infra_path, ref='refs/heads/main')
 
   # Install protoc to compile latest scheduler.proto
-  protoc_path = start_path.join('protoc')
+  protoc_path = start_path / 'protoc'
   api.cipd.ensure(
       protoc_path,
       api.cipd.EnsureFile().add_package(
@@ -71,18 +71,15 @@ def RunSteps(api):
   # The context adds dart-sdk tools to PATH and sets PUB_CACHE.
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
   with api.context(env=env, env_prefixes=env_prefixes,
-                   cwd=cocoon_path.join('app_dart')):
+                   cwd=cocoon_path / 'app_dart'):
     api.step('flutter doctor', cmd=['flutter', 'doctor'])
     api.step('dart pub get', cmd=['dart', 'pub', 'get'])
-    generate_jspb_path = cocoon_path.join(
-        'app_dart', 'bin', 'generate_jspb.dart'
-    )
+    generate_jspb_path = cocoon_path / 'app_dart/bin/generate_jspb.dart'
     config_name = '%s_config.json' % repo
     if git_branch and not _is_default_branch(git_branch):
       config_name = '%s_%s_config.json' % (repo, git_branch)
-    infra_config_path = infra_path.join(
-        'config', 'generated', 'ci_yaml', config_name
-    )
+    infra_config_path = infra_path / f'config/generated/ci_yaml/{config_name}'
+
     # Generate_jspb
     jspb_step = api.step(
         'generate jspb',
@@ -93,19 +90,18 @@ def RunSteps(api):
     api.file.write_raw('write jspb', infra_config_path, jspb_step.stdout)
 
   # Roll scheduler.proto
-  with api.context(env_prefixes={'PATH': [protoc_path.join('bin')]}):
-    scheduler_proto_src = cocoon_path.join(
-        'app_dart', 'lib', 'src', 'model', 'proto', 'internal',
-        'scheduler.proto'
+  with api.context(env_prefixes={'PATH': [protoc_path / 'bin']}):
+    scheduler_proto_src = (
+        cocoon_path / 'app_dart/lib/src/model/proto/internal/scheduler.proto'
     )
-    scheduler_proto_dst = infra_path.join('config', 'lib', 'ci_yaml')
+    scheduler_proto_dst = infra_path / 'config/lib/ci_yaml'
     api.step(
         'Roll scheduler.proto',
         ['cp', scheduler_proto_src, scheduler_proto_dst]
     )
     api.step(
         'Compile scheduler.proto',
-        ['bash', scheduler_proto_dst.join('compile_proto.sh')]
+        ['bash', scheduler_proto_dst / 'compile_proto.sh']
     )
 
   with api.context(cwd=infra_path):
@@ -136,9 +132,7 @@ def GenTests(api):
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           revision='abc123'
       ), api.properties(git_branch='main', git_repo='engine'),
-      api.repo_util.flutter_environment_data(
-          api.path.start_dir.join('flutter')
-      ),
+      api.repo_util.flutter_environment_data(api.path.start_dir / 'flutter'),
       api.step_data(
           'generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}')
       ), api.auto_roller.success()
@@ -150,9 +144,7 @@ def GenTests(api):
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           revision='abc123'
       ), api.properties(git_branch='dev', git_repo='engine'),
-      api.repo_util.flutter_environment_data(
-          api.path.start_dir.join('flutter')
-      ),
+      api.repo_util.flutter_environment_data(api.path.start_dir / 'flutter'),
       api.step_data(
           'generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}')
       ), api.auto_roller.success()
@@ -164,9 +156,7 @@ def GenTests(api):
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           revision='abc123'
       ), api.properties(git_branch='main', git_repo='engine'),
-      api.repo_util.flutter_environment_data(
-          api.path.start_dir.join('flutter')
-      ),
+      api.repo_util.flutter_environment_data(api.path.start_dir / 'flutter'),
       api.step_data(
           'generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}')
       ), api.auto_roller.success()
@@ -178,7 +168,5 @@ def GenTests(api):
           tags=api.buildbucket.tags(buildset=['sha/git/def123', 'sha/pr/1'])
       ),
       api.properties(git_repo='engine'),
-      api.repo_util.flutter_environment_data(
-          api.path.start_dir.join('flutter')
-      ),
+      api.repo_util.flutter_environment_data(api.path.start_dir / 'flutter'),
   )

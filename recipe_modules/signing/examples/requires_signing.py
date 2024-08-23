@@ -22,21 +22,20 @@ def _create_zip(api, include_entitlements=False):
   with api.step.nest('Create test file'):
     directory = api.path.mkdtemp()
     api.file.write_text(
-        'write file', directory.join('content', 'myfile.txt'), 'myfile'
+        'write file', directory / 'content/myfile.txt', 'myfile'
     )
     if include_entitlements:
       api.file.write_text(
-          'write entitlements.txt',
-          directory.join('content', 'entitlements.txt'), ''
+          'write entitlements.txt', directory / 'content/entitlements.txt', ''
       )
       api.file.write_text(
           'write without_entitlements.txt',
-          directory.join('content', 'without_entitlements.txt'), ''
+          directory / 'content/without_entitlements.txt', ''
       )
     api.zip.directory(
-        'create zip', directory.join('content'), directory.join('myzip.zip')
+        'create zip', directory / 'content', directory / 'myzip.zip'
     )
-    yield directory.join('myzip.zip')
+    yield directory / 'myzip.zip'
     api.file.rmtree('Delete tmp folder', directory)
 
 

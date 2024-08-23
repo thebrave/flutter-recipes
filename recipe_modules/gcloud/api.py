@@ -15,14 +15,14 @@ class GCloudApi(recipe_api.RecipeApi):
   @property
   def _gcloud_executable(self):
     with self.m.step.nest('ensure gcloud'):
-      gcloud_dir = self.m.path.start_dir.join('gcloud')
+      gcloud_dir = self.m.path.start_dir / 'gcloud'
       gcloud_package = 'infra/3pp/tools/gcloud/${platform}'
       gcloud = self.m.cipd.EnsureFile().add_package(
           gcloud_package, "version:2@428.0.0.chromium.3"
       )
       self.m.cipd.ensure(gcloud_dir, gcloud)
       tool_name = 'gcloud.cmd' if self.m.platform.is_win else 'gcloud'
-      return gcloud_dir.join('bin', tool_name)
+      return gcloud_dir / 'bin' / tool_name
 
   def __call__(self, *args, **kwargs):
     """Executes specified gcloud command."""

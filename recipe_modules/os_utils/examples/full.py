@@ -21,7 +21,7 @@ def RunSteps(api):
   api.os_utils.collect_os_info()
 
   with api.os_utils.make_temp_directory('Create temp directory') as temp_dir:
-    file = temp_dir.join('artifacts.zip')
+    file = temp_dir / 'artifacts.zip'
   api.os_utils.clean_derived_data()
   api.os_utils.shutdown_simulators()
   api.os_utils.enable_long_paths()

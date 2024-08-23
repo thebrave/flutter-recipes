@@ -86,14 +86,14 @@ def run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes):
   """Runs sub-builds generators."""
   # Run pub on all of the pub_dirs.
   for pub in pub_dirs:
-    pub_dir = api.path.abs_to_path(api.path.dirname(checkout.join(pub)))
+    pub_dir = api.path.abs_to_path(api.path.dirname(checkout / pub))
     with api.context(env=env, env_prefixes=env_prefixes, cwd=pub_dir):
       api.step('dart pub get', ['dart', 'pub', 'get'])
   for generator_task in generator_tasks:
     # Generators must run from inside flutter folder.
     cmd = []
     for script in generator_task.get('scripts'):
-      full_path_script = checkout.join(script)
+      full_path_script = checkout / script
       cmd.append(full_path_script)
     cmd.extend(generator_task.get('parameters', []))
     api.step(generator_task.get('name'), cmd)
@@ -149,7 +149,7 @@ def run_tests(api, tests, checkout, env, env_prefixes):
       # configuration with more than one local test but once we find it we
       # should run the list of tests using parallelism.
       # TODO(godofredoc): Optimize to run multiple local tests in parallel.
-      command.append(checkout.join(test.get('script')))
+      command.append(checkout / test.get('script'))
       command.extend(test.get('parameters', []))
       step_name = api.test_utils.test_step_name(test.get('name'))
       test_timeout_secs = test.get(
@@ -184,9 +184,8 @@ def Build(api, checkout, env, env_prefixes, outputs, build):
   # Mock data for tests. This is required for the archive api to expand the directory to full path
   # of files.
   api.path.mock_add_directory(
-      api.path.cache_dir.join(
-          'builder/src/out/android_jit_release_x86/zip_archives/download.flutter.io'
-      )
+      api.path.cache_dir /
+      'builder/src/out/android_jit_release_x86/zip_archives/download.flutter.io'
   )
 
   ninja_tool = {
@@ -232,7 +231,7 @@ def Build(api, checkout, env, env_prefixes, outputs, build):
   # Get only local tests.
   tests = build.get('tests', [])
   with api.context(env=env, env_prefixes=env_prefixes,
-                   cwd=checkout.join('flutter')), api.depot_tools.on_path():
+                   cwd=checkout / 'flutter'), api.depot_tools.on_path():
     run_generators(api, pub_dirs, generator_tasks, checkout, env, env_prefixes)
     run_tests(api, tests, checkout, env, env_prefixes)
     api.flutter_bcid.report_stage('upload')
@@ -247,7 +246,7 @@ def Build(api, checkout, env, env_prefixes, outputs, build):
   # Archive full build. This is inefficient but necessary for global generators.
   if build.get('cas_archive', True):
     full_build_hash = api.shard_util.archive_full_build(
-        checkout.join('out', build.get('name')), build.get('name')
+        checkout / 'out' / build.get('name'), build.get('name')
     )
     outputs['full_build'] = full_build_hash
 
@@ -256,7 +255,7 @@ def Archive(api, checkout, archive_config):
   paths = api.archives.engine_v2_gcs_paths(checkout, archive_config)
   # Sign artifacts if running on mac and a release candidate branch.
   is_release_branch = api.repo_util.is_release_candidate_branch(
-      checkout.join('flutter')
+      checkout / 'flutter'
   )
   if api.platform.is_mac and is_release_branch:
     signing_paths = [
@@ -295,9 +294,9 @@ def RunSteps(api):
   api.osx_sdk.reset_xcode()
 
   api.flutter_bcid.report_stage('start')
-  checkout = api.path.cache_dir.join('builder', 'src')
-  api.file.rmtree('Clobber build output', checkout.join('out'))
-  cache_root = api.path.cache_dir.join('builder')
+  checkout = api.path.cache_dir / 'builder/src'
+  api.file.rmtree('Clobber build output', checkout / 'out')
+  cache_root = api.path.cache_dir / 'builder'
   api.file.ensure_directory('Ensure checkout cache', cache_root)
 
   with api.os_utils.make_temp_directory('standalone_repo') as temp_checkout:
@@ -310,13 +309,13 @@ def RunSteps(api):
   api.flutter_bcid.report_stage('fetch')
   if api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
     env, env_prefixes = api.repo_util.monorepo_environment(
-        api.path.cache_dir.join('builder')
+        api.path.cache_dir / 'builder'
     )
     api.repo_util.monorepo_checkout(cache_root, env, env_prefixes)
-    checkout = api.path.cache_dir.join('builder', 'engine', 'src')
+    checkout = api.path.cache_dir / 'builder/engine/src'
   else:
     env, env_prefixes = api.repo_util.engine_environment(
-        api.path.cache_dir.join('builder')
+        api.path.cache_dir / 'builder'
     )
     api.repo_util.engine_checkout(
         cache_root, env, env_prefixes, gclient_variables=gclient_variables

@@ -127,7 +127,7 @@ def test(api, task_name, deps, artifact):
 
 def build(api, task_name, artifact, artifact_gcs_dir):
   '''Run devicelab build to collect the artifact.'''
-  flutter_path = api.path.mkdtemp().join('flutter sdk')
+  flutter_path = api.path.mkdtemp() / 'flutter sdk'
   api.repo_util.checkout(
       'flutter',
       flutter_path,
@@ -143,7 +143,7 @@ def build(api, task_name, artifact, artifact_gcs_dir):
     # we don't want to fetch it with cipd, so don't fetch it with required_deps
     api.flutter_deps.required_deps(env, env_prefixes, deps)
 
-  devicelab_path = flutter_path.join('dev', 'devicelab')
+  devicelab_path = flutter_path / 'dev/devicelab'
   git_branch = api.properties.get('git_branch')
 
   # Run test
@@ -154,8 +154,8 @@ def build(api, task_name, artifact, artifact_gcs_dir):
   # Build taskArgs
 
   artifact_dir = api.path.mkdtemp()
-  api.file.ensure_directory('mkdir %s' % artifact, artifact_dir.join(artifact))
-  artifact_path = artifact_dir.join(artifact)
+  api.file.ensure_directory('mkdir %s' % artifact, artifact_dir / artifact)
+  artifact_path = artifact_dir / artifact
   runner_params.extend([
       '--task-args', 'build', '--task-args',
       'application-binary-path=%s' % artifact_path
@@ -219,7 +219,7 @@ def debug_after_failure(api, task_name):
 
 
 def GenTests(api):
-  checkout_path = api.path.cleanup_dir.join('tmp_tmp_1', 'flutter sdk')
+  checkout_path = api.path.cleanup_dir / 'tmp_tmp_1/flutter sdk'
   yield api.test(
       "no-task-name",
       api.expect_exception('ValueError'),

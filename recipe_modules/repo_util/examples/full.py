@@ -17,7 +17,7 @@ DEPS = [
 
 
 def RunSteps(api):
-  flutter_checkout_path = api.path.start_dir.join('flutter')
+  flutter_checkout_path = api.path.start_dir / 'flutter'
   api.repo_util.get_branch(flutter_checkout_path)
   is_release_candidate = api.repo_util.is_release_candidate_branch(
       flutter_checkout_path
@@ -30,13 +30,13 @@ def RunSteps(api):
       'flutter', flutter_checkout_path, ref='refs/heads/master'
   )
   api.repo_util.checkout(
-      'engine', api.path.start_dir.join('engine'), ref='refs/heads/main'
+      'engine', api.path.start_dir / 'engine', ref='refs/heads/main'
   )
   api.repo_util.checkout(
-      'cocoon', api.path.start_dir.join('cocoon'), ref='refs/heads/main'
+      'cocoon', api.path.start_dir / 'cocoon', ref='refs/heads/main'
   )
   api.repo_util.checkout(
-      'packages', api.path.start_dir.join('packages'), ref='refs/heads/main'
+      'packages', api.path.start_dir / 'packages', ref='refs/heads/main'
   )
   # we need an override because all of the previous step calls on checkout directly overrides the ref variable
   api.repo_util.checkout(
@@ -53,8 +53,8 @@ def RunSteps(api):
     api.file.ensure_directory('ensure directory', checkout_path)
     api.repo_util.monorepo_checkout(checkout_path, {}, {})
   else:
-    api.file.ensure_directory('ensure directory', checkout_path.join('engine'))
-    api.repo_util.engine_checkout(checkout_path.join('engine'), {}, {})
+    api.file.ensure_directory('ensure directory', checkout_path / 'engine')
+    api.repo_util.engine_checkout(checkout_path / 'engine', {}, {})
   with api.context(env=env, env_prefixes=env_paths):
     api.repo_util.sdk_checkout_path()
   api.repo_util.get_build(api.path.start_dir)
@@ -293,7 +293,7 @@ def GenTests(api):
       # Next line force a fail condition for the bot update
       # first execution.
       api.path.exists(
-          api.path.cache_dir.join('git'), api.path.start_dir.join('engine')
+          api.path.cache_dir / 'git', api.path.start_dir / 'engine'
       ),
       api.step_data(
           "Checkout source code.bot_update",

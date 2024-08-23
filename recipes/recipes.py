@@ -102,7 +102,7 @@ COMMIT_QUEUE_CFG = """
 
 
 def RunSteps(api, remote, unittest_only):
-  checkout_path = api.path.start_dir.join('recipes')
+  checkout_path = api.path.start_dir / 'recipes'
   api.git_checkout(remote, path=checkout_path)
   with api.context(cwd=checkout_path):
     api.git('log', 'log', '--oneline', '-n', '10')

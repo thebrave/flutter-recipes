@@ -76,9 +76,7 @@ class CacheApi(recipe_api.RecipeApi):
       hash_value = self.m.cas.archive('Archive %s' % name, path, log_level='debug')
       cache_metadata['hashes'][name] = hash_value
     platform = self.m.platform.name
-    local_cache_path = self.m.path.cleanup_dir.join(
-        '%s-%s.json' % (cache_name, platform)
-    )
+    local_cache_path = self.m.path.cleanup_dir / f'{cache_name}-{platform}.json'
     self.m.file.write_json(
         'Write cache metadata', local_cache_path, cache_metadata
     )
@@ -115,11 +113,11 @@ class CacheApi(recipe_api.RecipeApi):
         metadata = metadata or collections.defaultdict(dict)
       for k, v in metadata['hashes'].items():
         if force:
-          self.m.file.rmtree('Clobber local cache: %s' % k, cache_root.join(k))
+          self.m.file.rmtree('Clobber local cache: %s' % k, cache_root / k)
         # Mount the cache only if it doesn't exist locally.
-        if not self.m.path.exists(cache_root.join(k)):
+        if not self.m.path.exists(cache_root / k):
           self.m.cas.download(
-              'Mounting %s with hash %s' % (k, v), v, cache_root.join(k)
+              'Mounting %s with hash %s' % (k, v), v, cache_root / k
           )
 
   def should_force_mount(self, mount_path):

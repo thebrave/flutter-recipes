@@ -71,11 +71,11 @@ class CacheMicroManagerApi(recipe_api.RecipeApi):
     self.cache_metadata_file_path = None
 
   def _initialize(self, target_dir):
-    self.cache_target_directory = target_dir
+    self.cache_target_directory = self.m.path.cast_to_path(target_dir)
     self.cache_name = self.m.path.basename(self.cache_target_directory)
     self.metadata_file_name = '.{}_cache_metadata.json'.format(self.cache_name)
-    self.cache_metadata_file_path = self.cache_target_directory.join(
-        self.metadata_file_name
+    self.cache_metadata_file_path = (
+        self.cache_target_directory / self.metadata_file_name
     )
 
   def today(self):

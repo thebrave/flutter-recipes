@@ -13,8 +13,8 @@ class ZipApi(recipe_api.RecipeApi):
 
     Usage:
       pkg = api.zip.make_package(root, output)
-      pkg.add_file(root.join('file'))
-      pkg.add_directory(root.join('directory'))
+      pkg.add_file(root / 'file')
+      pkg.add_directory(root / 'directory')
       yield pkg.zip('zipping step')
 
     Args:

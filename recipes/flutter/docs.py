@@ -41,7 +41,7 @@ def PrepareDocs(api, env, env_prefixes, checkout_path):
       api.step('Build documentation', cmd_docs)
     if validation == 'docs_deploy':
       api.step('Post process documentation', cmd_deploy_docs)
-    api.logs_util.show_logs_stdout(checkout_path.join('error.log'))
+    api.logs_util.show_logs_stdout(checkout_path / 'error.log')
 
 
 def SetEnv(api, env, checkout_path):
@@ -68,11 +68,11 @@ def UploadOrDeploy(api, env, env_prefixes, checkout_path):
   ) or api.buildbucket.gitiles_commit.ref
   with api.context(env=env, env_prefixes=env_prefixes):
     if (validation in ('docs', 'docs_deploy') and api.properties.get('firebase_project')):
-      docs_path = checkout_path.join('dev', 'docs')
+      docs_path = checkout_path / 'dev/docs'
       # Do not upload on docs_deploy.
       if not validation == 'docs_deploy':
         api.flutter_bcid.report_stage(BcidStage.UPLOAD.value)
-        src = docs_path.join('api_docs.zip')
+        src = docs_path / 'api_docs.zip'
         commit = api.repo_util.get_commit(checkout_path)
         dst = 'gs://flutter_infra_release/flutter/%s/api_docs.zip' % commit
         api.archives.upload_artifact(src, dst)
@@ -100,7 +100,7 @@ def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
 
-  checkout_path = api.path.start_dir.join('flutter')
+  checkout_path = api.path.start_dir / 'flutter'
   api.flutter_bcid.report_stage(BcidStage.FETCH.value)
   api.repo_util.checkout(
       'flutter',

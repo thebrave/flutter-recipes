@@ -31,8 +31,8 @@ def RunSteps(api):
   # If on macOS, reset Xcode in case a previous build failed to do so.
   api.osx_sdk.reset_xcode()
 
-  packages_checkout_path = api.path.start_dir.join('packages')
-  flutter_checkout_path = api.path.start_dir.join('flutter')
+  packages_checkout_path = api.path.start_dir / 'packages'
+  flutter_checkout_path = api.path.start_dir / 'flutter'
   channel = api.properties.get('channel')
   version_file_name = api.properties.get('version_file', '')
   with api.step.nest('checkout source code'):
@@ -46,7 +46,7 @@ def RunSteps(api):
     flutter_ref = 'refs/heads/%s' % channel
     # When specified, use a pinned version instead of latest.
     if version_file_name:
-      version_file = packages_checkout_path.join('.ci', version_file_name)
+      version_file = packages_checkout_path / '.ci' / version_file_name
       flutter_ref = api.file.read_text(
           'read pinned version', version_file, flutter_ref
       ).strip()
@@ -85,8 +85,9 @@ def RunSteps(api):
           infra_step=True,
           timeout=timeout_secs
       )
-  tests_yaml_path = packages_checkout_path.join(
-      '.ci', 'targets', api.properties.get('target_file', 'tests.yaml')
+  tests_yaml_path = (
+      packages_checkout_path / '.ci/targets' /
+      api.properties.get('target_file', 'tests.yaml')
   )
   result = api.yaml.read('read yaml', tests_yaml_path, api.json.output())
   with api.context(env=env, env_prefixes=env_prefixes,
@@ -118,7 +119,7 @@ def run_test(api, result, packages_checkout_path, env, env_prefixes):
   """Run tests sequentially following the script"""
   failed_tasks = []
   for task in result.json.output['tasks']:
-    script_path = packages_checkout_path.join(task['script'])
+    script_path = packages_checkout_path / task['script']
     cmd = ['bash', script_path]
     if 'args' in task:
       args = task['args']
@@ -149,9 +150,13 @@ def run_test(api, result, packages_checkout_path, env, env_prefixes):
 
 
 def GenTests(api):
-  flutter_path = api.path.start_dir.join('flutter')
+  flutter_path = api.path.start_dir / 'flutter'
   tasks_dict = {
-      'tasks': [{'name': 'one', 'script': 'myscript', 'args': ['arg1', 'arg2']}]
+      'tasks': [{
+          'name': 'one',
+          'script': 'myscript',
+          'args': ['arg1', 'arg2']
+      }]
   }
   yield api.test(
       'master_channel', api.repo_util.flutter_environment_data(flutter_path),
@@ -173,17 +178,20 @@ def GenTests(api):
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
       ), api.step_data('read yaml.parse', api.json.output(tasks_dict))
   )
-  checkout_path = api.path.cleanup_dir.join('tmp_tmp_1', 'flutter sdk')
+  checkout_path = api.path.cleanup_dir / 'tmp_tmp_1/flutter sdk'
   yield api.test(
       "emulator-test", api.repo_util.flutter_environment_data(flutter_path),
       api.properties(
           channel='master',
           version_file='flutter_master.version',
           git_branch='master',
-          dependencies=[
-              {"dependency": "android_virtual_device", "version": "android_31_google_apis_x64.textpb"},
-              {"dependency": "avd_cipd_version", "version": "AVDCIPDVERSION"}
-          ],
+          dependencies=[{
+              "dependency": "android_virtual_device",
+              "version": "android_31_google_apis_x64.textpb"
+          }, {
+              "dependency": "avd_cipd_version",
+              "version": "AVDCIPDVERSION"
+          }],
       ), api.step_data('read yaml.parse', api.json.output(tasks_dict)),
       api.properties(fake_data='fake data'),
       api.step_data(

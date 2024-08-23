@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import multiprocessing
-import sys
 
 from recipe_engine import recipe_api
 
@@ -26,7 +25,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
       gn_args(list): A list of strings to be passed to the gn command.
       checkout_path(Path): A path object with the checkout location.
     """
-    gn_cmd = ['python3', checkout_path.join('flutter/tools/gn')]
+    gn_cmd = ['python3', checkout_path / 'flutter/tools/gn']
     self.use_goma = '--no-goma' not in gn_args
     self.use_rbe = '--no-rbe' not in gn_args
     if self.m.properties.get('no_lto', False) and '--no-lto' not in gn_args:
@@ -75,7 +74,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
       rbe_working_path(path): Path to the rbe working directory.
     """
     assert rbe_working_path
-    build_dir = checkout_path.join('out/%s' % config)
+    build_dir = checkout_path / f'out/{config}'
     rbe_jobs = self._calculate_j_value()
     ninja_args = [tool, '-j', rbe_jobs, '-C', build_dir]
     ninja_args.extend(targets)
@@ -99,7 +98,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
       checkout_path(Path): A path object with the checkout location.
       targets(list): A list of strings with the ninja targets to build.
     """
-    build_dir = checkout_path.join('out/%s' % config)
+    build_dir = checkout_path / f'out/{config}'
     goma_jobs = self.m.properties.get('goma_jobs') or self._calculate_j_value()
     ninja_args = [tool, '-j', goma_jobs, '-C', build_dir]
     ninja_args.extend(targets)
@@ -119,7 +118,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
       checkout_path(Path): A path object with the checkout location.
       targets(list): A list of string with the ninja targets to build.
     """
-    build_dir = checkout_path.join('out/%s' % config)
+    build_dir = checkout_path / f'out/{config}'
     concurrent_jobs = self.m.properties.get('concurrent_jobs'
                                            ) or self._calculate_j_value()
     ninja_args = [tool, '-C', build_dir, '-j', concurrent_jobs]
@@ -142,7 +141,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
           "find reproducers",
           clang_crash_diagnostics_dir,
           "*.sh",
-          test_data=(clang_crash_diagnostics_dir.join("foo.sh"),),
+          test_data=(clang_crash_diagnostics_dir / "foo.sh",),
       )
       for reproducer in reproducers:
         base = self.m.path.splitext(self.m.path.basename(reproducer))[0]
@@ -150,7 +149,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
             f"find {base} files",
             clang_crash_diagnostics_dir,
             base + ".*",
-            test_data=(clang_crash_diagnostics_dir.join("foo.sh"),),
+            test_data=(clang_crash_diagnostics_dir / "foo.sh",),
         )
         for f in files:
           self.m.file.copy(
@@ -170,7 +169,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
       targets(list): A list of string with the ninja targets to build.
       rbe_working_path(path): Path to rbe working directory.
     """
-    ninja_path = checkout_path.join('flutter', 'third_party', 'ninja', 'ninja')
+    ninja_path = checkout_path / 'flutter/third_party/ninja/ninja'
 
     if self.use_goma:
       self._build_goma(config, checkout_path, targets, ninja_path, env)

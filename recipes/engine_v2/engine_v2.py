@@ -62,14 +62,14 @@ def RunSteps(api):
 
     # Only check out the repository, not dependencies.
     api.flutter_bcid.report_stage(BcidStage.FETCH.value)
-    checkout_path = api.path.start_dir.join(project)
+    checkout_path = api.path.start_dir / project
     parent_commit = api.repo_util.checkout(
         project,
         checkout_path=checkout_path,
         url=api.properties.get('git_url'),
         ref=api.properties.get('git_ref')
     )
-    config_path = checkout_path.join('ci', 'builders', '%s.json' % config_name)
+    config_path = checkout_path / f'ci/builders/{config_name}.json'
     config = api.file.read_json(
         'Read build config file', config_path, test_data={}
     )
@@ -121,7 +121,7 @@ def RunSteps(api):
       checkout_path and
       api.repo_util.is_release_candidate_branch(checkout_path)):
     # Generators, archives and codesign require a full engine checkout.
-    full_engine_checkout = api.path.cache_dir.join('builder')
+    full_engine_checkout = api.path.cache_dir / 'builder'
     api.file.ensure_directory(
         'Ensure full engine checkout folder', full_engine_checkout
     )
@@ -130,23 +130,21 @@ def RunSteps(api):
           full_engine_checkout
       )
       api.repo_util.monorepo_checkout(full_engine_checkout, env, env_prefixes)
-      full_engine_checkout = full_engine_checkout.join('engine')
+      full_engine_checkout = full_engine_checkout / 'engine'
     else:
       env, env_prefixes = api.repo_util.engine_environment(full_engine_checkout)
       api.repo_util.engine_checkout(full_engine_checkout, env, env_prefixes)
       # The checkouts are using cache which may have some old artifacts in the out
       # directory. We are cleaning out the folder to ensure we start from an empty
       # out folder.
-      api.file.rmtree(
-          'Clobber build output', full_engine_checkout.join('src', 'out')
-      )
+      api.file.rmtree('Clobber build output', full_engine_checkout / 'src/out')
 
   if generators:
     # If on macOS, reset Xcode in case a previous build failed to do so.
     api.osx_sdk.reset_xcode()
 
     # Download sub-builds
-    out_builds_path = full_engine_checkout.join('src', 'out')
+    out_builds_path = full_engine_checkout / 'src/out'
     api.file.rmtree('Clobber build download folder', out_builds_path)
     api.shard_util.download_full_builds(build_results, out_builds_path)
     with api.step.nest('Global generators') as presentation:
@@ -197,12 +195,12 @@ def _archive(api, archives, full_engine_checkout, env, env_prefixes):
   # release, debug or profile depending on the runtime mode.
   # So far we are uploading files only.
   files_to_archive = api.archives.global_generator_paths(
-      full_engine_checkout.join('src'), archives
+      full_engine_checkout / 'src', archives
   )
 
   # Sign artifacts if running in mac.
   is_release_candidate = api.repo_util.is_release_candidate_branch(
-      full_engine_checkout.join('src', 'flutter')
+      full_engine_checkout / 'src/flutter'
   )
   signing_paths = [
       path.local
@@ -248,12 +246,10 @@ def _run_global_generators(
       cmd = [generator_task.get('language')
             ] if generator_task.get('language') else []
       api.file.listdir(
-          'List checkout',
-          full_engine_checkout.join('src', 'out'),
-          recursive=True
+          'List checkout', full_engine_checkout / 'src/out', recursive=True
       )
       script = generator_task.get('script')
-      full_path_script = full_engine_checkout.join('src', script)
+      full_path_script = full_engine_checkout / 'src' / script
       cmd.append(full_path_script)
       cmd.extend(generator_task.get('parameters', []))
       # Run within an engine context to make dart available.

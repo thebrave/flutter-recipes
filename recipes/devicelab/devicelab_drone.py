@@ -298,7 +298,7 @@ def uploadMetricsToCas(api, results_path):
 
 
 def GenTests(api):
-  checkout_path = api.path['cleanup'].join('tmp_tmp_1', 'flutter sdk')
+  checkout_path = api.path.cleanup_dir.join('tmp_tmp_1', 'flutter sdk')
   avd_version = "android_31_google_apis_x64.textpb"
   avd_cipd_version = "AVDCIPDVERSION"
   yield api.test(

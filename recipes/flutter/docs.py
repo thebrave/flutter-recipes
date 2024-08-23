@@ -100,7 +100,7 @@ def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
 
-  checkout_path = api.path['start_dir'].join('flutter')
+  checkout_path = api.path.start_dir.join('flutter')
   api.flutter_bcid.report_stage(BcidStage.FETCH.value)
   api.repo_util.checkout(
       'flutter',

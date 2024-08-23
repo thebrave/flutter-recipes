@@ -13,7 +13,7 @@ from datetime import datetime
 from unittest.mock import Mock
 
 def RunSteps(api):
-  cache_target_dir = api.path['cache'].join('osx_sdk')
+  cache_target_dir = api.path.cache_dir.join('osx_sdk')
 
   fake_dirdep_1_path = cache_target_dir.join('fake_dep_package_1')
   fake_filedep_1_path = cache_target_dir.join('fake_dep_file_1')

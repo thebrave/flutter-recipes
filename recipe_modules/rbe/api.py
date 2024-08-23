@@ -122,7 +122,7 @@ class RbeApi(recipe_api.RecipeApi):
     return self._reclient_path.join("bootstrap")
 
   def _environment(self, working_dir):
-    cache_dir = self.m.path["cache"].join("rbe")
+    cache_dir = self.m.path.cache_dir.join("rbe")
     deps_cache_dir = cache_dir.join("deps")
     self.m.file.ensure_directory("create rbe cache dir", deps_cache_dir)
     rbe_server_address = 'pipe://reproxy.pipe' if self.m.platform.is_win else f"unix://{working_dir.join('reproxy.sock')}"

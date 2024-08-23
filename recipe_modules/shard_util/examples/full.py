@@ -46,9 +46,9 @@ def RunSteps(api):
       if build.build_proto.status != common_pb2.SUCCESS:
         raise api.step.StepFailure("build %s failed" % build.build_id)
     api.shard_util.archive_full_build(
-        api.path['start_dir'].join('out', 'host_debug'), 'host_debug'
+        api.path.start_dir.join('out', 'host_debug'), 'host_debug'
     )
-    api.shard_util.download_full_builds(builds, api.path['cleanup'].join('out'))
+    api.shard_util.download_full_builds(builds, api.path.cleanup_dir.join('out'))
   with api.step.nest("launch builds") as presentation:
     reqs = api.shard_util.schedule_tests(test_configs, builds, presentation)
   api.shard_util.get_base_bucket_name()

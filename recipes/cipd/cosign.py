@@ -26,7 +26,7 @@ def RunSteps(api):
       env, env_prefixes, api.properties.get('dependencies', [])
   )
 
-  cosign_default_dir = api.path['start_dir'].join('cosign')
+  cosign_default_dir = api.path.start_dir.join('cosign')
 
   cosign_download_uris = GetLatestCosignDownloadUris(api)
 

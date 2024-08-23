@@ -31,7 +31,7 @@ SAMPLE_MONOREPO_COMMITS = {
 
 
 def get_monorepo_framework(api):
-  monorepo = api.path['cache'].join('builder', 'monorepo')
+  monorepo = api.path.cache_dir.join('builder', 'monorepo')
   api.repo_util.checkout('monorepo', monorepo)
   commits = api.file.read_json(
       'get commits from monorepo',
@@ -86,7 +86,7 @@ def copy_offband_artifacts(api, checkout, artifact_url):
 def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
-  builder = api.path['cache'].join('builder')
+  builder = api.path.cache_dir.join('builder')
   flutter = builder.join('flutter')
   if api.monorepo.is_monorepo_try_build:
     framework_ref = 'refs/heads/main'

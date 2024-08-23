@@ -106,9 +106,9 @@ class CodeSignApi(recipe_api.RecipeApi):
           infra_step=True,
       )
     # Only filepath with a .p12 suffix will be recognized.
-    p12_suffix_filepath = self.m.path['cleanup'].join('flutter.p12')
+    p12_suffix_filepath = self.m.path.cleanup_dir.join('flutter.p12')
     env['P12_SUFFIX_FILEPATH'] = p12_suffix_filepath
-    setup_keychain_log_file = self.m.path['cleanup'].join('setup_keychain_logs.txt')
+    setup_keychain_log_file = self.m.path.cleanup_dir.join('setup_keychain_logs.txt')
 
     env['SETUP_KEYCHAIN_LOGS_PATH'] = setup_keychain_log_file
     with self.m.context(env=env, env_prefixes=env_prefixes):

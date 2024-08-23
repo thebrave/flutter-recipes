@@ -18,7 +18,7 @@ DEPS = [
 
 
 def RunSteps(api):
-  checkout = api.path['start_dir']
+  checkout = api.path.start_dir
   config = api.properties.get('config')
   config_prod_realm = {
       "name":
@@ -63,14 +63,14 @@ def RunSteps(api):
   expected_prod_results = [
       ArchivePaths(
           local=str(
-              api.path['start_dir']
+              api.path.start_dir
               .join('out/android_profile/zip_archives/artifact1.zip')
           ),
           remote='gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/artifact1.zip'
       ),
       ArchivePaths(
           local=str(
-              api.path['start_dir'].join(
+              api.path.start_dir.join(
                   'out/android_profile/zip_archives/android-arm-profile/artifacts.zip'
               )
           ),
@@ -78,7 +78,7 @@ def RunSteps(api):
       ),
       ArchivePaths(
           local=str(
-              api.path['start_dir'].join(
+              api.path.start_dir.join(
                   'out/android_profile/zip_archives/android-arm-profile/linux-x64.zip'
               )
           ),
@@ -86,7 +86,7 @@ def RunSteps(api):
       ),
       ArchivePaths(
           local=str(
-              api.path['start_dir'].join(
+              api.path.start_dir.join(
                   'out/android_profile/zip_archives/android-arm-profile/symbols.zip'
               )
           ),
@@ -94,7 +94,7 @@ def RunSteps(api):
       ),
       ArchivePaths(
           local=str(
-              api.path['start_dir'].join(
+              api.path.start_dir.join(
                   'out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar'
               )
           ),
@@ -102,7 +102,7 @@ def RunSteps(api):
       ),
       ArchivePaths(
           local=str(
-              api.path['start_dir'].join(
+              api.path.start_dir.join(
                   'out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
               )
           ),
@@ -110,7 +110,7 @@ def RunSteps(api):
       ),
       ArchivePaths(
           local=str(
-              api.path['start_dir']
+              api.path.start_dir
               .join('out/android_profile/zip_archives/sky_engine.zip')
           ),
           remote='gs://flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/sky_engine.zip'
@@ -119,14 +119,14 @@ def RunSteps(api):
   expected_try_results = [
       ArchivePaths(
           local=str(
-              api.path['start_dir']
+              api.path.start_dir
               .join('out/android_profile/zip_archives/artifact1.zip')
           ),
           remote='gs://flutter_archives_v2/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/artifact1.zip'
       ),
       ArchivePaths(
           local=str(
-              api.path['start_dir'].join(
+              api.path.start_dir.join(
                   'out/android_profile/zip_archives/android-arm-profile/artifacts.zip'
               )
           ),
@@ -134,7 +134,7 @@ def RunSteps(api):
       ),
       ArchivePaths(
           local=str(
-              api.path['start_dir'].join(
+              api.path.start_dir.join(
                   'out/android_profile/zip_archives/android-arm-profile/linux-x64.zip'
               )
           ),
@@ -142,7 +142,7 @@ def RunSteps(api):
       ),
       ArchivePaths(
           local=str(
-              api.path['start_dir'].join(
+              api.path.start_dir.join(
                   'out/android_profile/zip_archives/android-arm-profile/symbols.zip'
               )
           ),
@@ -150,7 +150,7 @@ def RunSteps(api):
       ),
       ArchivePaths(
           local=str(
-              api.path['start_dir'].join(
+              api.path.start_dir.join(
                   'out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar'
               )
           ),
@@ -158,7 +158,7 @@ def RunSteps(api):
       ),
       ArchivePaths(
           local=str(
-              api.path['start_dir'].join(
+              api.path.start_dir.join(
                   'out/android_profile/zip_archives/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
               )
           ),
@@ -166,7 +166,7 @@ def RunSteps(api):
       ),
       ArchivePaths(
           local=str(
-              api.path['start_dir']
+              api.path.start_dir
               .join('out/android_profile/zip_archives/sky_engine.zip')
           ),
           remote='gs://flutter_archives_v2/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/sky_engine.zip'

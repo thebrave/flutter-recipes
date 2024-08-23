@@ -219,7 +219,7 @@ def debug_after_failure(api, task_name):
 
 
 def GenTests(api):
-  checkout_path = api.path['cleanup'].join('tmp_tmp_1', 'flutter sdk')
+  checkout_path = api.path.cleanup_dir.join('tmp_tmp_1', 'flutter sdk')
   yield api.test(
       "no-task-name",
       api.expect_exception('ValueError'),

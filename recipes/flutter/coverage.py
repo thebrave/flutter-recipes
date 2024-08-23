@@ -16,7 +16,7 @@ DEPS = [
 
 def RunSteps(api):
   """Recipe to collect coverage used by the flutter tool."""
-  checkout_path = api.path['start_dir'].join('flutter sdk')
+  checkout_path = api.path.start_dir.join('flutter sdk')
   with api.step.nest('checkout source code'):
     api.repo_util.checkout(
         'flutter',

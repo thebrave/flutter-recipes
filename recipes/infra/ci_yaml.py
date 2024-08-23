@@ -32,7 +32,7 @@ def _is_default_branch(branch):
 
 def RunSteps(api):
   """Steps to checkout infra, dependencies, and generate new config."""
-  start_path = api.path['start_dir']
+  start_path = api.path.start_dir
   cocoon_path = start_path.join('cocoon')
   flutter_path = start_path.join('flutter')
   infra_path = start_path.join('infra')
@@ -137,7 +137,7 @@ def GenTests(api):
           revision='abc123'
       ), api.properties(git_branch='main', git_repo='engine'),
       api.repo_util.flutter_environment_data(
-          api.path['start_dir'].join('flutter')
+          api.path.start_dir.join('flutter')
       ),
       api.step_data(
           'generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}')
@@ -151,7 +151,7 @@ def GenTests(api):
           revision='abc123'
       ), api.properties(git_branch='dev', git_repo='engine'),
       api.repo_util.flutter_environment_data(
-          api.path['start_dir'].join('flutter')
+          api.path.start_dir.join('flutter')
       ),
       api.step_data(
           'generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}')
@@ -165,7 +165,7 @@ def GenTests(api):
           revision='abc123'
       ), api.properties(git_branch='main', git_repo='engine'),
       api.repo_util.flutter_environment_data(
-          api.path['start_dir'].join('flutter')
+          api.path.start_dir.join('flutter')
       ),
       api.step_data(
           'generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}')
@@ -179,6 +179,6 @@ def GenTests(api):
       ),
       api.properties(git_repo='engine'),
       api.repo_util.flutter_environment_data(
-          api.path['start_dir'].join('flutter')
+          api.path.start_dir.join('flutter')
       ),
   )

@@ -110,7 +110,7 @@ class ArchivesApi(recipe_api.RecipeApi):
     """
     results = []
     self.m.path.mock_add_directory(
-        self.m.path['start_dir']
+        self.m.path.start_dir
         .join('out/android_profile/zip_archives/download.flutter.io')
     )
     for include_path in archive_config.get('include_paths', []):

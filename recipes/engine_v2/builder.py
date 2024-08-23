@@ -184,7 +184,7 @@ def Build(api, checkout, env, env_prefixes, outputs, build):
   # Mock data for tests. This is required for the archive api to expand the directory to full path
   # of files.
   api.path.mock_add_directory(
-      api.path['cache'].join(
+      api.path.cache_dir.join(
           'builder/src/out/android_jit_release_x86/zip_archives/download.flutter.io'
       )
   )
@@ -295,9 +295,9 @@ def RunSteps(api):
   api.osx_sdk.reset_xcode()
 
   api.flutter_bcid.report_stage('start')
-  checkout = api.path['cache'].join('builder', 'src')
+  checkout = api.path.cache_dir.join('builder', 'src')
   api.file.rmtree('Clobber build output', checkout.join('out'))
-  cache_root = api.path['cache'].join('builder')
+  cache_root = api.path.cache_dir.join('builder')
   api.file.ensure_directory('Ensure checkout cache', cache_root)
 
   with api.os_utils.make_temp_directory('standalone_repo') as temp_checkout:
@@ -310,13 +310,13 @@ def RunSteps(api):
   api.flutter_bcid.report_stage('fetch')
   if api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
     env, env_prefixes = api.repo_util.monorepo_environment(
-        api.path['cache'].join('builder')
+        api.path.cache_dir.join('builder')
     )
     api.repo_util.monorepo_checkout(cache_root, env, env_prefixes)
-    checkout = api.path['cache'].join('builder', 'engine', 'src')
+    checkout = api.path.cache_dir.join('builder', 'engine', 'src')
   else:
     env, env_prefixes = api.repo_util.engine_environment(
-        api.path['cache'].join('builder')
+        api.path.cache_dir.join('builder')
     )
     api.repo_util.engine_checkout(
         cache_root, env, env_prefixes, gclient_variables=gclient_variables

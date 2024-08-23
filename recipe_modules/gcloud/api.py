@@ -15,7 +15,7 @@ class GCloudApi(recipe_api.RecipeApi):
   @property
   def _gcloud_executable(self):
     with self.m.step.nest('ensure gcloud'):
-      gcloud_dir = self.m.path['start_dir'].join('gcloud')
+      gcloud_dir = self.m.path.start_dir.join('gcloud')
       gcloud_package = 'infra/3pp/tools/gcloud/${platform}'
       gcloud = self.m.cipd.EnsureFile().add_package(
           gcloud_package, "version:2@428.0.0.chromium.3"

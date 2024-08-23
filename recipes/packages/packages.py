@@ -31,8 +31,8 @@ def RunSteps(api):
   # If on macOS, reset Xcode in case a previous build failed to do so.
   api.osx_sdk.reset_xcode()
 
-  packages_checkout_path = api.path['start_dir'].join('packages')
-  flutter_checkout_path = api.path['start_dir'].join('flutter')
+  packages_checkout_path = api.path.start_dir.join('packages')
+  flutter_checkout_path = api.path.start_dir.join('flutter')
   channel = api.properties.get('channel')
   version_file_name = api.properties.get('version_file', '')
   with api.step.nest('checkout source code'):
@@ -149,7 +149,7 @@ def run_test(api, result, packages_checkout_path, env, env_prefixes):
 
 
 def GenTests(api):
-  flutter_path = api.path['start_dir'].join('flutter')
+  flutter_path = api.path.start_dir.join('flutter')
   tasks_dict = {
       'tasks': [{'name': 'one', 'script': 'myscript', 'args': ['arg1', 'arg2']}]
   }
@@ -173,7 +173,7 @@ def GenTests(api):
           **{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}},
       ), api.step_data('read yaml.parse', api.json.output(tasks_dict))
   )
-  checkout_path = api.path['cleanup'].join('tmp_tmp_1', 'flutter sdk')
+  checkout_path = api.path.cleanup_dir.join('tmp_tmp_1', 'flutter sdk')
   yield api.test(
       "emulator-test", api.repo_util.flutter_environment_data(flutter_path),
       api.properties(

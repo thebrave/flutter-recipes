@@ -74,7 +74,7 @@ class OsUtilsApi(recipe_api.RecipeApi):
     sdks are used in the same bot. To prevent those failures we will start
     deleting the folder before every task.
     """
-    derived_data_path = self.m.path['home'].join(
+    derived_data_path = self.m.path.home_dir.join(
         'Library', 'Developer', 'Xcode', 'DerivedData'
     )
     if self.m.platform.is_mac:
@@ -794,7 +794,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
 
   def _checkout_cocoon(self):
     """Checkout cocoon at HEAD to the cache and return the path."""
-    cocoon_path = self.m.path['cache'].join('cocoon')
+    cocoon_path = self.m.path.cache_dir.join('cocoon')
     self.m.repo_util.checkout('cocoon', cocoon_path, ref='refs/heads/main')
     return cocoon_path
 

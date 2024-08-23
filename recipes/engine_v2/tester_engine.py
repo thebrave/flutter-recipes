@@ -134,16 +134,16 @@ def Test(api, checkout, env, env_prefixes):
 
 def RunSteps(api):
   # Sets the engine environment and checkouts the source code.
-  checkout = api.path['cache'].join('builder', 'src')
+  checkout = api.path.cache_dir.join('builder', 'src')
   api.file.rmtree('Clobber build output', checkout.join('out'))
-  cache_root = api.path['cache'].join('builder')
+  cache_root = api.path.cache_dir.join('builder')
   api.file.ensure_directory('Ensure checkout cache', cache_root)
   env, env_prefixes = api.repo_util.engine_environment(
-      api.path['cache'].join('builder')
+      api.path.cache_dir.join('builder')
   )
   # Engine path is used inconsistently across the engine repo. We'll start
   # with [cache]/builder and will adjust it to start using it consistently.
-  env['ENGINE_PATH'] = api.path['cache'].join('builder')
+  env['ENGINE_PATH'] = api.path.cache_dir.join('builder')
   api.repo_util.engine_checkout(cache_root, env, env_prefixes)
   Test(api, checkout, env, env_prefixes)
 

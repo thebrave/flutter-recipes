@@ -34,7 +34,7 @@ PLATFORMS_MAP = {'win': 'windows', 'mac': 'macos', 'linux': 'linux'}
 @contextmanager
 def Install7za(api):
   if api.platform.is_win:
-    sevenzip_cache_dir = api.path['cache'].join('builder', '7za')
+    sevenzip_cache_dir = api.path.cache_dir.join('builder', '7za')
     api.cipd.ensure(
         sevenzip_cache_dir,
         api.cipd.EnsureFile().add_package(
@@ -57,7 +57,7 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
   """
   flutter_executable = 'flutter' if not api.platform.is_win else 'flutter.bat'
   dart_executable = 'dart' if not api.platform.is_win else 'dart.exe'
-  work_dir = api.path['start_dir'].join('archive')
+  work_dir = api.path.start_dir.join('archive')
   api.step('flutter doctor', [flutter_executable, 'doctor'])
   api.step(
       'download dependencies', [flutter_executable, 'update-packages', '-v']
@@ -66,7 +66,7 @@ def CreateAndUploadFlutterPackage(api, git_hash, branch, packaging_script):
   api.file.rmtree('clean archive work directory', work_dir)
   api.file.ensure_directory('(re)create archive work directory', work_dir)
   with Install7za(api):
-    with api.context(cwd=api.path['start_dir']):
+    with api.context(cwd=api.path.start_dir):
       step_args = [
           dart_executable, packaging_script,
           '--temp_dir=%s' % work_dir,
@@ -193,7 +193,7 @@ def RunSteps(api):
   assert git_ref
 
   api.flutter_bcid.report_stage(BcidStage.FETCH.value)
-  checkout_path = api.path['start_dir'].join('flutter')
+  checkout_path = api.path.start_dir.join('flutter')
   git_url = api.properties.get(
       'git_url'
   ) or 'https://flutter.googlesource.com/mirrors/flutter'

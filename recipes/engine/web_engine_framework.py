@@ -52,14 +52,14 @@ def Archive(api, target):
 
 
 def GetCheckoutPath(api):
-  return api.path['cache'].join('builder', 'src')
+  return api.path.cache_dir.join('builder', 'src')
 
 
 def RunSteps(api, properties, env_properties):
   """Steps to checkout flutter engine and execute web tests."""
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
-  cache_root = api.path['cache'].join('builder')
+  cache_root = api.path.cache_dir.join('builder')
   checkout = GetCheckoutPath(api)
 
   if properties.clobber:
@@ -93,7 +93,7 @@ def RunSteps(api, properties, env_properties):
     url = 'https://github.com/flutter/flutter'
 
     # Checkout flutter to run the web integration tests with the local engine.
-    flutter_checkout_path = api.path['cache'].join('flutter')
+    flutter_checkout_path = api.path.cache_dir.join('flutter')
     api.repo_util.checkout(
         'flutter', checkout_path=flutter_checkout_path, url=url, ref=ref
     )
@@ -166,7 +166,7 @@ def generate_targets(api, cas_hash, ref, url, deps):
 def GenTests(api):
   yield api.test(
       'linux-pre-submit',
-      api.repo_util.flutter_environment_data(api.path['cache'].join('flutter')),
+      api.repo_util.flutter_environment_data(api.path.cache_dir.join('flutter')),
       api.properties(
           dependencies=[{
               'dependency': 'chrome_and_driver', 'version': 'version:96.2'

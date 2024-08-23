@@ -260,7 +260,7 @@ def BuildPackage(
       update_library_path(bool): a flag indicating whether there are LIBRARY_PATH updates.
       update_pkg_config_path(bool): a flag indicating whether there are PKG_CONFIG_PATH updates.
   """
-  work_dir = api.path['start_dir']
+  work_dir = api.path.start_dir
   src_dir = work_dir.join('src')
   package_src_dir = work_dir.join('src').join(package_name)
   package_install_dir = work_dir.join('src').join('%s_install' % package_name)
@@ -343,7 +343,7 @@ def GenTests(api):
   yield api.test(
       'basic',
       api.path.exists(
-          api.path['start_dir'].join('src').join('ios-deploy'
+          api.path.start_dir.join('src').join('ios-deploy'
                                                 ).join('commit_sha.txt'),
       ),
       api.step_data(

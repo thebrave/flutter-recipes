@@ -15,13 +15,13 @@ class KMSApi(recipe_api.RecipeApi):
       input_file (str): path on GCS to encrypted file of the secret relative to 'flutter_configs'.
       secret_path (Path): path of decrypted secret.
     """
-    cloudkms_dir = self.m.path['start_dir'].join('cloudkms')
+    cloudkms_dir = self.m.path.start_dir.join('cloudkms')
     cloudkms_package = 'infra/tools/luci/cloudkms/${platform}'
     self.m.cipd.ensure(
         cloudkms_dir,
         self.m.cipd.EnsureFile().add_package(cloudkms_package, 'latest')
     )
-    encrypt_file = self.m.path['cleanup'].join(input_file)
+    encrypt_file = self.m.path.cleanup_dir.join(input_file)
     self.m.gsutil.download('flutter_configs', input_file, encrypt_file)
     cloudkms = cloudkms_dir.join(
         'cloudkms.exe' if self.m.platform.name == 'win' else 'cloudkms'
@@ -49,6 +49,6 @@ class KMSApi(recipe_api.RecipeApi):
         decrypted file and the value is the path to the encrypted file in gcs.
     """
     for k, v in secrets.items():
-      secret_path = self.m.path['cleanup'].join(k)
+      secret_path = self.m.path.cleanup_dir.join(k)
       self.m.kms.get_secret(v, secret_path)
       env[k] = secret_path

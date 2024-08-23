@@ -26,7 +26,7 @@ DEPS = [
 
 # This recipe builds the codesign CIPD package.
 def RunSteps(api):
-  start_path = api.path['start_dir']
+  start_path = api.path.start_dir
   cocoon_dir = start_path.join('cocoon')
   cocoon_git_rev = api.repo_util.checkout(
       'cocoon',

@@ -40,19 +40,19 @@ class RepoUtilApi(recipe_api.RecipeApi):
   def _setup_win_toolchain(self, env):
     """Setups local win toolchain if available."""
     if self.m.platform.is_win:
-      toolchain_metadata_src = self.m.path['cache'].join(
+      toolchain_metadata_src = self.m.path.cache_dir.join(
           'builder', 'vs_toolchain_root', 'data.json'
       )
       self.m.path.mock_add_paths(toolchain_metadata_src)
       if self.m.path.exists(toolchain_metadata_src):
-        toolchain_metadata_dst = self.m.path['cache'].join(
+        toolchain_metadata_dst = self.m.path.cache_dir.join(
             'builder', 'src', 'build', 'win_toolchain.json'
         )
         self.m.file.copy(
             'copy win_toolchain_metadata', toolchain_metadata_src,
             toolchain_metadata_dst
         )
-        data_file = self.m.path['cache'].join(
+        data_file = self.m.path.cache_dir.join(
             'builder', 'vs_toolchain_root', 'data.json'
         )
         metadata = self.m.file.read_json(
@@ -69,7 +69,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     with self.m.depot_tools.on_path():
       if self.m.path.exists(checkout_path):
         self.m.file.rmcontents('Clobber cache', checkout_path)
-      git_cache_path = self.m.path['cache'].join('git')
+      git_cache_path = self.m.path.cache_dir.join('git')
       self.m.path.mock_add_directory(git_cache_path)
       if self.m.path.exists(git_cache_path):
         self.m.file.rmtree('Clobber git cache', git_cache_path)
@@ -89,7 +89,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     # Set vs_toolchain env to cache it.
     if self.m.platform.is_win:
       # Set win toolchain root to a directory inside cache/builder to cache it.
-      env['DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT'] = self.m.path['cache'].join(
+      env['DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT'] = self.m.path.cache_dir.join(
           'builder', 'vs_toolchain_root'
       )
       env['DEPOT_TOOLS_WIN_TOOLCHAIN'] = 1
@@ -100,10 +100,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
 
     # Calculate if we need to mount the cache and mount it if required.
     mount_git = self.m.cache.should_force_mount(
-        self.m.path['cache'].join('git')
+        self.m.path.cache_dir.join('git')
     )
     mount_builder = self.m.cache.should_force_mount(
-        self.m.path['cache'].join('builder')
+        self.m.path.cache_dir.join('builder')
     )
     if (not clobber) and (bucket != OFFICIAL_BUILD_BUCKET):
       self.m.cache.mount_cache('builder', force=True)
@@ -412,7 +412,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
           'Flutter Environment', status=self.m.step.FAILURE, step_text=msg
       )
     git_ref = self.m.properties.get('git_ref', '')
-    pub_cache_path = self.m.path['start_dir'].join('.pub-cache')
+    pub_cache_path = self.m.path.start_dir.join('.pub-cache')
     env = {
         # Setup our own pub_cache to not affect other slaves on this machine,
         # and so that the pre-populated pub cache is contained in the package.
@@ -506,9 +506,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'ANDROID_USER_HOME':
             str(android_tmp.join('.android')),
         'LUCI_WORKDIR':
-            str(self.m.path['start_dir']),
+            str(self.m.path.start_dir),
         'LUCI_CLEANUP':
-            str(self.m.path['cleanup']),
+            str(self.m.path.cleanup_dir),
         'REVISION':
             self.m.buildbucket.gitiles_commit.id or '',
         'CLANG_CRASH_DIAGNOSTICS_DIR':
@@ -562,7 +562,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'ANDROID_USER_HOME':
             str(android_tmp.join('.android')),
         'LUCI_WORKDIR':
-            str(self.m.path['start_dir']),
+            str(self.m.path.start_dir),
         'REVISION':
             self.m.buildbucket.gitiles_commit.id or ''
     }

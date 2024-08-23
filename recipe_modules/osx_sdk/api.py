@@ -212,7 +212,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
     """
     if devicelab:
       return '/opt/flutter/xcode'
-    return self.m.path['cache'].join('osx_sdk')
+    return self.m.path.cache_dir.join('osx_sdk')
 
   def _setup_osx_sdk(self, kind, devicelab):
     app = None

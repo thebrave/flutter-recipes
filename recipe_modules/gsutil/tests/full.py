@@ -15,7 +15,7 @@ BUCKET = "example"
 def RunSteps(api):
   api.gsutil.upload_namespaced_file(
       BUCKET,
-      api.path["cleanup"].join("file"),
+      api.path.cleanup_dir.join("file"),
       api.gsutil.join("path", "to", "file"),
       metadata={
           "Test-Field": "value",
@@ -28,20 +28,20 @@ def RunSteps(api):
   )
 
   api.gsutil.upload_namespaced_directory(
-      api.path["cleanup"].join("dir"),
+      api.path.cleanup_dir.join("dir"),
       BUCKET,
       "rsync_subpath",
       gzip_exts=["html"],
   )
   api.gsutil.upload_namespaced_directory(
-      api.path["cleanup"].join("dir"),
+      api.path.cleanup_dir.join("dir"),
       BUCKET,
       "cp_subpath",
       rsync=False,
       gzip_exts=["html"],
   )
   api.gsutil.upload(
-      BUCKET, api.path["cleanup"].join("dir"), "dir", recursive=True
+      BUCKET, api.path.cleanup_dir.join("dir"), "dir", recursive=True
   )
 
   api.gsutil.copy(BUCKET, "foo", BUCKET, "bar", recursive=True)

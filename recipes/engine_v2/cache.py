@@ -11,27 +11,27 @@ DEPS = [
 
 def RunSteps(api):
   # Sets the engine environment and checkouts the source code.
-  checkout = api.path['cache'].join('builder', 'src')
+  checkout = api.path.cache_dir.join('builder', 'src')
   api.file.rmtree('Clobber build output', checkout.join('out'))
-  builder_root = api.path['cache'].join('builder')
+  builder_root = api.path.cache_dir.join('builder')
   api.file.ensure_directory('Ensure checkout cache', builder_root)
   env, env_prefixes = api.repo_util.engine_environment(builder_root)
   # Engine path is used inconsistently across the engine repo. We'll start
   # with [cache]/builder and will adjust it to start using it consistently.
-  env['ENGINE_PATH'] = api.path['cache'].join('builder')
+  env['ENGINE_PATH'] = api.path.cache_dir.join('builder')
   cache_ttl = api.properties.get('cache_ttl', 3600 * 4)
   cache_name = api.properties.get('cache_name')
 
   if api.cache.requires_refresh(cache_name):
     api.repo_util.engine_checkout(builder_root, env, env_prefixes)
     paths = [
-        api.path['cache'].join(p)
+        api.path.cache_dir.join(p)
         for p in api.properties.get('cache_paths', [])
     ]
 
-    api.path.mock_add_directory(api.path['cache'].join('builder', 'fake'))
+    api.path.mock_add_directory(api.path.cache_dir.join('builder', 'fake'))
     ignore_paths = [
-        api.path['cache'].join(p)
+        api.path.cache_dir.join(p)
         for p in api.properties.get('ignore_cache_paths', [])
     ]
 

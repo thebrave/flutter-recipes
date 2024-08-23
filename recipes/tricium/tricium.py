@@ -41,7 +41,7 @@ REMOTE = 'https://flutter.googlesource.com/recipes'
 
 def RunSteps(api, props):
   with api.context(infra_steps=True):
-    checkout_path = api.path['start_dir'].join('recipes')
+    checkout_path = api.path.start_dir.join('recipes')
     api.git_checkout(REMOTE, path=checkout_path)
     # tricium is expecting a dictionary as a checkout.
     checkout = _CheckoutResult(checkout_path, '')
@@ -50,7 +50,7 @@ def RunSteps(api, props):
   if props.cipd_packages:
     with api.step.nest("ensure_packages"):
       with api.context(infra_steps=True):
-        cipd_dir = api.path['start_dir'].join("cipd")
+        cipd_dir = api.path.start_dir.join("cipd")
         pkgs = api.cipd.EnsureFile()
         for package in props.cipd_packages:
           pkgs.add_package(package.name, package.version, subdir=package.subdir)

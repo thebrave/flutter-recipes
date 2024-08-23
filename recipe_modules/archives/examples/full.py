@@ -16,7 +16,7 @@ DEPS = [
 
 
 def RunSteps(api):
-  checkout = api.path['start_dir']
+  checkout = api.path.start_dir
   config = api.properties.get('config')
   expected_destinations = api.properties.get('expected_destinations')
   results = api.archives.engine_v2_gcs_paths(checkout, config)

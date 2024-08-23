@@ -62,7 +62,7 @@ def RunSteps(api):
 
     # Only check out the repository, not dependencies.
     api.flutter_bcid.report_stage(BcidStage.FETCH.value)
-    checkout_path = api.path['start_dir'].join(project)
+    checkout_path = api.path.start_dir.join(project)
     parent_commit = api.repo_util.checkout(
         project,
         checkout_path=checkout_path,
@@ -121,7 +121,7 @@ def RunSteps(api):
       checkout_path and
       api.repo_util.is_release_candidate_branch(checkout_path)):
     # Generators, archives and codesign require a full engine checkout.
-    full_engine_checkout = api.path['cache'].join('builder')
+    full_engine_checkout = api.path.cache_dir.join('builder')
     api.file.ensure_directory(
         'Ensure full engine checkout folder', full_engine_checkout
     )

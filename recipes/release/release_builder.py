@@ -85,7 +85,7 @@ def RunSteps(api, properties, env_properties):
       'git_repo'
   ) or api.buildbucket.gitiles_commit.project
   repository_parts = repository.split('/')
-  checkout_path = api.path['start_dir'].join(*repository_parts)
+  checkout_path = api.path.start_dir.join(*repository_parts)
   git_ref = api.properties.get('git_ref') or api.buildbucket.gitiles_commit.ref
   git_url = api.properties.get('git_url') or REPOS[repository]
   api.repo_util.checkout(

@@ -9,7 +9,7 @@ DEPS = [
 
 
 def RunSteps(api):
-  docs_path = api.path['start_dir'].join('flutter', 'dev', 'docs')
+  docs_path = api.path.start_dir.join('flutter', 'dev', 'docs')
   api.firebase.deploy_docs({}, {}, docs_path, 'myproject')
 
 

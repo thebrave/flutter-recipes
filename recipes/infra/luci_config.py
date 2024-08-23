@@ -15,7 +15,7 @@ DEPS = [
 
 
 def RunSteps(api):
-  start_path = api.path['start_dir']
+  start_path = api.path.start_dir
   infra_path = start_path.join('infra')
   # Checkout flutter/infra
   api.git_checkout('https://flutter.googlesource.com/infra', path=infra_path)

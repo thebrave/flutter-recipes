@@ -28,7 +28,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       env['AVD_ROOT'] = self.avd_root
       env['ADB_PATH'] = self.adb_path
       return
-    self.avd_root = self.m.path['cache'].join('avd')
+    self.avd_root = self.m.path.cache_dir.join('avd')
     self.download(
         env=env,
         env_prefixes=env_prefixes,
@@ -89,7 +89,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
 
   def _get_config_version(self, version):
     """Get the config if given an integer version
-    
+
     Args:
     """
     avd_config = None

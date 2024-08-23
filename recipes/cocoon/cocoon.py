@@ -21,7 +21,7 @@ def RunSteps(api):
   """Steps to checkout cocoon, dependencies and execute tests."""
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
-  start_path = api.path['start_dir']
+  start_path = api.path.start_dir
   cocoon_path = start_path.join('cocoon')
   flutter_path = start_path.join('flutter')
 
@@ -75,6 +75,6 @@ def GenTests(api):
           git_ref='refs/pull/1/head'
       ),
       api.repo_util.flutter_environment_data(
-          api.path['start_dir'].join('flutter')
+          api.path.start_dir.join('flutter')
       ), api.step_data('read yaml.parse', api.json.output(tasks_dict))
   )

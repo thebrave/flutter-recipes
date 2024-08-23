@@ -31,7 +31,7 @@ class GomaApi(recipe_api.RecipeApi):
     with self.m.context(env={
         # Allow user to override from the command line.
         "GOMA_TMP_DIR": self.m.context.env.get(
-            "GOMA_TMP_DIR", self.m.path["cleanup"].join("goma")),
+            "GOMA_TMP_DIR", self.m.path.cleanup_dir.join("goma")),
         "GOMA_USE_LOCAL": False,
     }):
       with self.m.step.nest("setup goma"):
@@ -63,7 +63,7 @@ class GomaApi(recipe_api.RecipeApi):
     return self.m.path.join(self.goma_dir, "goma_stats.json")
 
   def initialize(self):
-    self._goma_log_dir = self.m.path["cleanup"]
+    self._goma_log_dir = self.m.path.cleanup_dir
     if self.m.platform.is_win:
       self._enable_arbitrary_toolchains = True
 
@@ -75,7 +75,7 @@ class GomaApi(recipe_api.RecipeApi):
       return
 
     with self.m.step.nest("ensure goma"), self.m.context(infra_steps=True):
-      self._goma_dir = self.m.path["cache"].join("goma", "client")
+      self._goma_dir = self.m.path.cache_dir.join("goma", "client")
       if self.m.platform.is_mac:
         # On mac always use x64 package.
         # TODO(godofredoc): Remove this workaround and unfork once fuchsia has an arm package.
@@ -94,11 +94,11 @@ class GomaApi(recipe_api.RecipeApi):
         "GLOG_log_dir":
             self._goma_log_dir,
         "GOMA_CACHE_DIR":
-            self.m.path["cache"].join("goma"),
+            self.m.path.cache_dir.join("goma"),
         "GOMA_DEPS_CACHE_FILE":
             "goma_deps_cache",
         "GOMA_LOCAL_OUTPUT_CACHE_DIR":
-            self.m.path["cache"].join("goma", "localoutputcache"),
+            self.m.path.cache_dir.join("goma", "localoutputcache"),
         "GOMA_STORE_LOCAL_RUN_OUTPUT":
             True,
         "GOMA_SERVER_HOST":

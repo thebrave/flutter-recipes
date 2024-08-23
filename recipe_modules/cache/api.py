@@ -76,7 +76,7 @@ class CacheApi(recipe_api.RecipeApi):
       hash_value = self.m.cas.archive('Archive %s' % name, path, log_level='debug')
       cache_metadata['hashes'][name] = hash_value
     platform = self.m.platform.name
-    local_cache_path = self.m.path['cleanup'].join(
+    local_cache_path = self.m.path.cleanup_dir.join(
         '%s-%s.json' % (cache_name, platform)
     )
     self.m.file.write_json(
@@ -106,7 +106,7 @@ class CacheApi(recipe_api.RecipeApi):
       force (bool): Whether to recreate the caches or skip them if they already exist..
     """
     with self.m.step.nest('Mount caches'):
-      cache_root = cache_root or self.m.path['cache']
+      cache_root = cache_root or self.m.path.cache_dir
       cloud_path = self._cache_path(cache_name)
       metadata = self.m.gsutil.cat(
           cloud_path, stdout=self.m.json.output()

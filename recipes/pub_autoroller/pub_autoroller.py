@@ -16,7 +16,7 @@ DEPS = [
 
 def RunSteps(api):
   assert api.platform.is_linux, 'This recipe should only be run once per commit, on Linux'
-  checkout_path = api.path['start_dir'].join('flutter')
+  checkout_path = api.path.start_dir.join('flutter')
   api.repo_util.checkout(
       'flutter',
       checkout_path=checkout_path,

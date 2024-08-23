@@ -22,7 +22,7 @@ DEPS = [
 
 def RunSteps(api):
   """Steps to checkout cocoon, dependencies and execute tests."""
-  start_path = api.path['start_dir']
+  start_path = api.path.start_dir
   cocoon_path = start_path.join('cocoon')
   flutter_path = start_path.join('flutter')
 
@@ -63,7 +63,7 @@ def GenTests(api):
   yield api.test(
       'basic',
       api.repo_util.flutter_environment_data(
-          api.path['start_dir'].join('flutter')
+          api.path.start_dir.join('flutter')
       ),
       api.properties(
           git_ref='refs/pull/123/head',

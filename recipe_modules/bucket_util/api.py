@@ -79,7 +79,7 @@ class BucketUtilApi(recipe_api.RecipeApi):
       local_zip = temp_dir.join(zip_name)
       remote_zip = self.get_cloud_path(remote_name)
       if isinstance(parent_directory, str):
-        parent_directory = self.m.path['cache'].join(
+        parent_directory = self.m.path.cache_dir.join(
             'builder', parent_directory
         )
       pkg = self.m.zip.make_package(parent_directory, local_zip)

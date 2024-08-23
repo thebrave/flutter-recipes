@@ -42,7 +42,7 @@ def GenTests(api):
       )
   )
 
-  sdk_app_path = api.path['cache'].join(
+  sdk_app_path = api.path.cache_dir.join(
       'osx_sdk', 'xcode_deadbeef', 'XCode.app'
   )
 

@@ -19,7 +19,9 @@ DEPS = [
 def RunSteps(api):
   flutter_checkout_path = api.path['start_dir'].join('flutter')
   api.repo_util.get_branch(flutter_checkout_path)
-  is_release_candidate = api.repo_util.is_release_candidate_branch(flutter_checkout_path) 
+  is_release_candidate = api.repo_util.is_release_candidate_branch(
+      flutter_checkout_path
+  )
   if 'force_get_release_candidate_branch' in api.properties.keys():
     is_release_candidate = True
   if is_release_candidate:
@@ -293,12 +295,17 @@ def GenTests(api):
       api.path.exists(
           api.path['cache'].join('git'), api.path['start_dir'].join('engine')
       ),
-      api.override_step_data(
+      api.step_data(
           "Checkout source code.bot_update",
           api.json.output({
-              'properties': {'got_revision': 'BOT_UPDATE_NO_REV_FOUND'}
-          }),
-          retcode=0
+              'properties': {
+                  'got_revision': 'BOT_UPDATE_NO_REV_FOUND'
+              },
+              # Mandatory properties required to make bot_update work.
+              'did_run': True,
+              'root': 'src/flutter',
+              'patch_root': None,
+          })
       ),
       api.repo_util.flutter_environment_data()
   )

@@ -27,7 +27,6 @@ REPO_BRANCHES = {
     'packages': 'main',
 }
 
-import copy
 import re
 from recipe_engine import recipe_api
 
@@ -166,8 +165,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
             step_result = self.m.bot_update.ensure_checkout(
                 timeout=TIMEOUT_SECS
             )
-            if ('got_revision' in step_result.presentation.properties and
-                step_result.presentation.properties['got_revision']
+            if ('got_revision' in step_result.properties and
+                step_result.properties['got_revision']
                 == 'BOT_UPDATE_NO_REV_FOUND'):
               raise self.m.step.StepFailure('BOT_UPDATE_NO_REV_FOUND')
             self.m.gclient.runhooks()

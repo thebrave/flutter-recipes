@@ -93,14 +93,14 @@ class TarArchive:
         """
     if not directory:
       directory = self._api.context.cwd
-    assert directory.is_parent_of(
-        path
-    ), "directory must be a parent of path. directory: %s.%s, path: %s.%s" % (
-        directory.base,
-        directory.pieces,
-        path.base,
-        path.pieces,
-    )
+    assert directory in path.parents, \
+        "directory must be a parent of path. directory: %s.%s, path: %s.%s" % (
+            directory.base,
+            directory.pieces,
+            path.base,
+            path.pieces,
+        )
+
     self._entries.setdefault(str(directory), []).append(str(path))
 
   def tar(self, step_name):

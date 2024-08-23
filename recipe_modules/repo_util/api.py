@@ -578,10 +578,6 @@ class RepoUtilApi(recipe_api.RecipeApi):
     assert checkout_path, 'Outside of a flutter_environment?'
     return self.m.path.abs_to_path(checkout_path)
 
-  def branch_ref_to_branch_name(self, branch_ref):
-    """Converts a ref to a local branch to a branch name."""
-    return branch_ref.replace('refs/heads/', '')
-
   def get_git_ref(self):
     """Returns the input git_ref property, if it exists; otherwise the
     input.gitilesCommit.ref property."""
@@ -594,13 +590,13 @@ class RepoUtilApi(recipe_api.RecipeApi):
     """Returns true if the gitiles ref (or git_ref property) is a branch that
     starts with "flutter-" and the git HEAD is the HEAD of that branch."""
     git_ref = self.get_git_ref()
-    candidate_branch = self.branch_ref_to_branch_name(git_ref)
-    if not candidate_branch.startswith('flutter-'):
+    candidate_branch = self.m.common.branch_ref_to_branch_name(git_ref)
+    if not self.m.common.is_release_candidate_branch(candidate_branch):
       return False
 
     # Verify HEAD matches git_ref HEAD. We don't yet have a local checkout of
     # the candidate branch in question, so check against the remote (origin).
-    candidate_branch = self.branch_ref_to_branch_name(git_ref)
+    candidate_branch = self.m.common.branch_ref_to_branch_name(git_ref)
     candidate_branch_origin = 'remotes/origin/' + candidate_branch
     branch_head_commit = self.get_commit(checkout_path, candidate_branch_origin)
     head_commit = self.get_commit(checkout_path, 'HEAD')
@@ -608,7 +604,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
 
   def release_candidate_branch(self, checkout_path):
     """Returns the release branch for the checked-out commit."""
-    candidate_branch = self.branch_ref_to_branch_name(self.get_git_ref())
+    candidate_branch = self.m.common.branch_ref_to_branch_name(
+        self.get_git_ref()
+    )
     if not self.is_release_candidate_branch(checkout_path):
       raise ValueError('Not a release candidate branch: %s' % candidate_branch)
     return candidate_branch

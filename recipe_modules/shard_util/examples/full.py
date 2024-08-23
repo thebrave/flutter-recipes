@@ -39,7 +39,11 @@ def RunSteps(api):
   assert isinstance(props['properties']['$flutter/osx_sdk'], dict)
   assert props['properties']['validation'] == 'docs'
   with api.step.nest("launch builds") as presentation:
-    reqs = api.shard_util.schedule_builds(build_configs, presentation)
+    reqs = api.shard_util.schedule_builds(
+        build_configs,
+        presentation,
+        branch=api.properties.get('git_ref', 'main'),
+    )
   with api.step.nest("collect builds") as presentation:
     builds = api.shard_util.collect(reqs)
     for build in builds.values():
@@ -163,7 +167,6 @@ def GenTests(api):
           collect_step='collect builds',
       )
   )
-
   presubmit_props_bb = copy.deepcopy(props_bb)
   presubmit_props_bb['git_url'] = 'http://abc'
   presubmit_props_bb['git_ref'] = 'refs/123/main'
@@ -173,6 +176,20 @@ def GenTests(api):
       api.buildbucket_util.test('presubmit_bb', tryjob=False, status='FAILURE')
       + api.properties(**presubmit_props_bb) + api.platform.name('linux') +
       api.shard_util.child_build_steps(
+          subbuilds=[try_failure],
+          launch_step='launch builds.schedule',
+          collect_step='collect builds',
+      )
+  )
+
+  yield (
+      api.buildbucket_util
+      .test('presubmit_bb_release', tryjob=False, status='FAILURE') +
+      api.properties(
+          **({
+              **presubmit_props_bb, 'git_ref': 'flutter-1.0-candidate.1'
+          })
+      ) + api.platform.name('linux') + api.shard_util.child_build_steps(
           subbuilds=[try_failure],
           launch_step='launch builds.schedule',
           collect_step='collect builds',

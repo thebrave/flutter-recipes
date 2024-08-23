@@ -4,6 +4,7 @@ DEPS = [
     'depot_tools/gclient',
     'depot_tools/git',
     'flutter/cache',
+    'flutter/common',
     'flutter/monorepo',
     'flutter/retry',
     'flutter/shard_util',

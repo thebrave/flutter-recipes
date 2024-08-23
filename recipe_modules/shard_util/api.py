@@ -401,6 +401,13 @@ class ShardUtilApi(recipe_api.RecipeApi):
       )
 
       timeout_in_minutes = build.get('timeout', None)
+
+      if self.m.common.is_release_candidate_branch(branch):
+        # Due to limited capacity for release builds, extend timeout
+        timeout_in_minutes = max(
+            timeout_in_minutes if timeout_in_minutes is not None else 0,
+            60 * 4,  # 4 hours in minutes
+        )
       if timeout_in_minutes is not None:
         req.execution_timeout.FromSeconds(timeout_in_minutes * 60)
       elif drone_properties.get("no_goma", False):

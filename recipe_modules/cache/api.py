@@ -76,7 +76,9 @@ class CacheApi(recipe_api.RecipeApi):
       hash_value = self.m.cas.archive('Archive %s' % name, path, log_level='debug')
       cache_metadata['hashes'][name] = hash_value
     platform = self.m.platform.name
-    local_cache_path = self.m.path.cleanup_dir / f'{cache_name}-{platform}.json'
+    local_cache_path = self.m.path['cleanup'].join(
+        '%s-%s.json' % (cache_name, platform)
+    )
     self.m.file.write_json(
         'Write cache metadata', local_cache_path, cache_metadata
     )
@@ -104,7 +106,7 @@ class CacheApi(recipe_api.RecipeApi):
       force (bool): Whether to recreate the caches or skip them if they already exist..
     """
     with self.m.step.nest('Mount caches'):
-      cache_root = cache_root or self.m.path.cache_dir
+      cache_root = cache_root or self.m.path['cache']
       cloud_path = self._cache_path(cache_name)
       metadata = self.m.gsutil.cat(
           cloud_path, stdout=self.m.json.output()
@@ -113,11 +115,11 @@ class CacheApi(recipe_api.RecipeApi):
         metadata = metadata or collections.defaultdict(dict)
       for k, v in metadata['hashes'].items():
         if force:
-          self.m.file.rmtree('Clobber local cache: %s' % k, cache_root / k)
+          self.m.file.rmtree('Clobber local cache: %s' % k, cache_root.join(k))
         # Mount the cache only if it doesn't exist locally.
-        if not self.m.path.exists(cache_root / k):
+        if not self.m.path.exists(cache_root.join(k)):
           self.m.cas.download(
-              'Mounting %s with hash %s' % (k, v), v, cache_root / k
+              'Mounting %s with hash %s' % (k, v), v, cache_root.join(k)
           )
 
   def should_force_mount(self, mount_path):

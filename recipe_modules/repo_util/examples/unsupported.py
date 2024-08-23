@@ -9,7 +9,7 @@ DEPS = [
 
 
 def RunSteps(api):
-  repo_dir = api.path.start_dir / 'unsupported_repo'
+  repo_dir = api.path['start_dir'].join('unsupported_repo')
   api.repo_util.checkout('unsupported_repo', repo_dir)
 
 

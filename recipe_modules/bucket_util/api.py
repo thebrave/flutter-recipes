@@ -76,12 +76,14 @@ class BucketUtilApi(recipe_api.RecipeApi):
     """
     with self.m.os_utils.make_temp_directory(dir_label) as temp_dir:
       remote_name = '%s/%s' % (platform, zip_name) if platform else zip_name
-      local_zip = temp_dir / zip_name
+      local_zip = temp_dir.join(zip_name)
       remote_zip = self.get_cloud_path(remote_name)
       if isinstance(parent_directory, str):
-        parent_directory = self.m.path.cache_dir / 'builder' / parent_directory
+        parent_directory = self.m.path['cache'].join(
+            'builder', parent_directory
+        )
       pkg = self.m.zip.make_package(parent_directory, local_zip)
-      pkg.add_directory(parent_directory / folder_name)
+      pkg.add_directory(parent_directory.join(folder_name))
 
       if file_paths is not None:
         self.add_files(pkg, file_paths)
@@ -182,7 +184,7 @@ class BucketUtilApi(recipe_api.RecipeApi):
         destination filename in the archive.
     """
     for path in relative_paths:
-      pkg.add_file(pkg.root / path, archive_name=self.m.path.basename(path))
+      pkg.add_file(pkg.root.join(path), archive_name=self.m.path.basename(path))
 
   def add_directories(self, pkg, relative_paths=[]):
     """Adds directories to the package.
@@ -194,7 +196,7 @@ class BucketUtilApi(recipe_api.RecipeApi):
         the archive.
     """
     for path in relative_paths:
-      pkg.add_directory(pkg.root / path)
+      pkg.add_directory(pkg.root.join(path))
 
   def get_cloud_path(self, path):
     """Gets the path in the cloud bucket.

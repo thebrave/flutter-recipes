@@ -537,7 +537,7 @@ class ShardUtilApi(recipe_api.RecipeApi):
       A string with the hash of the cas archive.
     """
     cas_dir = self.m.path.mkdtemp('out-cas-directory')
-    cas_engine = cas_dir / target
+    cas_engine = cas_dir.join(target)
     self.m.file.copytree('Copy %s' % target, build_dir, cas_engine)
 
     # pylint: disable=unused-argument

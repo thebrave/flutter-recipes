@@ -53,7 +53,7 @@ def RunSteps(api):
   if not artifact:
     raise ValueError('An artifact property is required')
 
-  flutter_path = api.path.mkdtemp() / 'flutter sdk'
+  flutter_path = api.path.mkdtemp().join('flutter sdk')
   api.repo_util.checkout(
       'flutter',
       flutter_path,
@@ -84,10 +84,10 @@ def RunSteps(api):
   )
   benchmark_tags = api.json.dumps(device_tags)
 
-  devicelab_path = flutter_path / 'dev/devicelab'
+  devicelab_path = flutter_path.join('dev', 'devicelab')
   git_branch = api.properties.get('git_branch')
   # Create tmp file to store results in
-  results_path = api.path.mkdtemp(prefix='results') / 'results'
+  results_path = api.path.mkdtemp(prefix='results').join('results')
   # Run test
   parent_builder = api.properties.get('parent_builder')
   # Quote builder name if running on windows.
@@ -100,7 +100,7 @@ def RunSteps(api):
   artifact_destination_dir = api.path.mkdtemp()
   download_artifact(api, artifact, artifact_destination_dir)
   # Test taskArgs
-  artifact_path = artifact_destination_dir / artifact
+  artifact_path = artifact_destination_dir.join(artifact)
   runner_params.extend([
       '--task-args', 'test', '--task-args',
       'application-binary-path=%s' % artifact_path
@@ -281,7 +281,7 @@ def uploadMetricsToCas(api, results_path):
 
 
 def GenTests(api):
-  checkout_path = api.path.cleanup_dir / 'tmp_tmp_1/flutter sdk'
+  checkout_path = api.path['cleanup'].join('tmp_tmp_1', 'flutter sdk')
   yield api.test(
       "no-task-name",
       api.expect_exception('ValueError'),

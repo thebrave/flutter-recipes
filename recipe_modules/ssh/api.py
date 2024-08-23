@@ -76,10 +76,10 @@ class SSHApi(recipe_api.RecipeApi):
     if not self._ssh_paths:
       self._ssh_paths = SSHFilePaths(
           api=self.m,
-          host_private=self.ssh_cache_root / 'ssh_host_key',
-          host_public=self.ssh_cache_root / 'ssh_host_key.pub',
-          id_private=self.ssh_cache_root / 'id_ed25519',
-          id_public=self.ssh_cache_root / 'id_ed25519.pub',
+          host_private=self.ssh_cache_root.join('ssh_host_key'),
+          host_public=self.ssh_cache_root.join('ssh_host_key.pub'),
+          id_private=self.ssh_cache_root.join('id_ed25519'),
+          id_public=self.ssh_cache_root.join('id_ed25519.pub'),
       )
 
     if not self.m.file.listdir(name='check ssh cache content',
@@ -148,4 +148,4 @@ class SSHApi(recipe_api.RecipeApi):
 
   @property
   def ssh_cache_root(self):
-    return self.m.buildbucket.builder_cache_path / 'ssh'
+    return self.m.buildbucket.builder_cache_path.join('ssh')

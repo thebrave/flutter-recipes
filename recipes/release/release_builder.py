@@ -8,11 +8,16 @@
 # marked with release_build: true, and spawens a subbuild.
 
 import re
+from contextlib import contextmanager
 
 from PB.recipes.flutter.release.release import InputProperties
 from PB.recipes.flutter.release.release import EnvProperties
 
 from RECIPE_MODULES.flutter.repo_util.api import REPOS
+
+from google.protobuf import struct_pb2
+
+import json
 
 DEPS = [
     'flutter/display_util',
@@ -79,7 +84,8 @@ def RunSteps(api, properties, env_properties):
   repository = api.properties.get(
       'git_repo'
   ) or api.buildbucket.gitiles_commit.project
-  checkout_path = api.path.start_dir / repository
+  repository_parts = repository.split('/')
+  checkout_path = api.path['start_dir'].join(*repository_parts)
   git_ref = api.properties.get('git_ref') or api.buildbucket.gitiles_commit.ref
   git_url = api.properties.get('git_url') or REPOS[repository]
   api.repo_util.checkout(
@@ -90,7 +96,7 @@ def RunSteps(api, properties, env_properties):
   # the config_name of targets to explitly retry
   retry_override_list = api.properties.get('retry_override_list', '').split()
 
-  ci_yaml_path = checkout_path / '.ci.yaml'
+  ci_yaml_path = checkout_path.join('.ci.yaml')
   ci_yaml = api.yaml.read('read ci yaml', ci_yaml_path, api.json.output())
 
   # Get release branch.

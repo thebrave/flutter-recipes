@@ -62,7 +62,7 @@ def PatchLoadPath(api, ouput_path, package_name):
     return
   artifacts = BIANRY_ARTIFACT_MAP[package_name]
   for artifact in artifacts:
-    artifact_path = ouput_path / artifact
+    artifact_path = ouput_path.join(artifact)
     otool_step_data = api.step(
         'Get linked paths from %s before patch' % artifact,
         ['otool', '-L', artifact_path],
@@ -137,7 +137,8 @@ def GetDylibFilenames(api, dir, package_name):
       "checking dylib file inside: %s" % dir,
       dir,
       test_data=[
-          dir / "libimobiledevice-1.0.6.dylib", dir / "libplist-2.0.3.dylib"
+          dir.join("libimobiledevice-1.0.6.dylib"),
+          dir.join("libplist-2.0.3.dylib")
       ]
   )
   directory_string_paths = [('%s' % path) for path in directory_paths]
@@ -198,12 +199,12 @@ def EmbedCodesignConfiguration(api, package_out_dir, package_name):
 
   api.file.write_text(
       "writing entitlements codesign list for %s" % package_name,
-      package_out_dir / "entitlements.txt",
+      package_out_dir.join("entitlements.txt"),
       '\n'.join(entitlement_file_contents) + '\n'
   )
   api.file.write_text(
       "writing the list of files to be codesigned without entitlements for %s" %
-      package_name, package_out_dir / "without_entitlements.txt",
+      package_name, package_out_dir.join("without_entitlements.txt"),
       '\n'.join(without_entitlement_file_contents) + '\n'
   )
 
@@ -224,7 +225,7 @@ def UploadPackage(
   if not upload:
     return
   EmbedCodesignConfiguration(api, package_out_dir, package_name)
-  package_zip_file = work_dir / f'{package_name}.zip'
+  package_zip_file = work_dir.join('%s.zip' % package_name)
   api.zip.directory(
       'zipping %s dir' % package_name, package_out_dir, package_zip_file
   )
@@ -259,11 +260,11 @@ def BuildPackage(
       update_library_path(bool): a flag indicating whether there are LIBRARY_PATH updates.
       update_pkg_config_path(bool): a flag indicating whether there are PKG_CONFIG_PATH updates.
   """
-  work_dir = api.path.start_dir
-  src_dir = work_dir / 'src'
-  package_src_dir = src_dir / package_name
-  package_install_dir = src_dir / f'{package_name}_install'
-  package_out_dir = src_dir / f'{package_name}_output'
+  work_dir = api.path['start_dir']
+  src_dir = work_dir.join('src')
+  package_src_dir = work_dir.join('src').join(package_name)
+  package_install_dir = work_dir.join('src').join('%s_install' % package_name)
+  package_out_dir = src_dir.join('%s_output' % package_name)
   api.file.ensure_directory('mkdir %s' % package_src_dir, package_src_dir)
   api.file.ensure_directory(
       'mkdir %s' % package_install_dir, package_install_dir
@@ -277,7 +278,7 @@ def BuildPackage(
         'install %s' % package_name,
         [build_script, package_src_dir, package_install_dir, package_out_dir]
     )
-  commit_sha_file = package_src_dir / 'commit_sha.txt'
+  commit_sha_file = package_src_dir.join('commit_sha.txt')
   commit_sha = None
   if api.path.exists(commit_sha_file):
     commit_sha = api.file.read_text(
@@ -341,7 +342,10 @@ def RunSteps(api):
 def GenTests(api):
   yield api.test(
       'basic',
-      api.path.exists(api.path.start_dir / 'src/ios-deploy/commit_sha.txt',),
+      api.path.exists(
+          api.path['start_dir'].join('src').join('ios-deploy'
+                                                ).join('commit_sha.txt'),
+      ),
       api.step_data(
           'Get linked paths from iproxy before patch',
           stdout=api.raw_io.output_text(

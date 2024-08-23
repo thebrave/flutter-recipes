@@ -15,14 +15,14 @@ DEPS = [
 
 
 def RunSteps(api):
-  start_path = api.path.start_dir
-  infra_path = start_path / 'infra'
+  start_path = api.path['start_dir']
+  infra_path = start_path.join('infra')
   # Checkout flutter/infra
   api.git_checkout('https://flutter.googlesource.com/infra', path=infra_path)
   with api.context(cwd=infra_path):
     api.git('log', 'log', '--oneline', '-n', '10')
   # Validate LUCI config
-  config_path = infra_path / 'config/main.star'
+  config_path = infra_path.join('config', 'main.star')
   api.step(
       'lucicfg validate',
       ['lucicfg', 'validate', '-fail-on-warnings', config_path],

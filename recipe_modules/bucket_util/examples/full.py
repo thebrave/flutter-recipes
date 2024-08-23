@@ -42,7 +42,7 @@ def RunSteps(api):
   # Prepare files.
   temp = api.path.mkdtemp('bucketutil-example')
 
-  local_zip = temp / 'output.zip'
+  local_zip = temp.join('output.zip')
   package = api.zip.make_package(temp, local_zip)
 
   # Add files to zip package.
@@ -58,7 +58,7 @@ def RunSteps(api):
 
   if api.properties.get('try_bad_file', False):
     api.bucket_util.safe_upload(
-        temp / 'A_file_that_does_not_exist',  # local_path
+        temp.join('A_file_that_does_not_exist'),  # local_path
         'bar',  # remote_path
         skip_on_duplicate=True,
         add_mock=False

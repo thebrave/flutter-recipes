@@ -28,11 +28,11 @@ DEPS = [
 
 def RunSteps(api):
   api.os_utils.collect_os_info()
-  checkout_path = api.path.start_dir / 'flutter'
+  checkout_path = api.path['start_dir'].join('flutter')
   # Bucket to upload apks and logs.
   gcs_bucket = 'flutter_firebase_testlab_staging'
   # Checkout flutter/flutter.
-  checkout_path = api.path.start_dir / 'flutter'
+  checkout_path = api.path['start_dir'].join('flutter')
   api.repo_util.checkout(
       'flutter',
       checkout_path=checkout_path,
@@ -89,7 +89,7 @@ def RunSteps(api):
         infra_step=True,
     )
 
-  test_path = checkout_path / 'dev/integration_tests' / task_name
+  test_path = checkout_path.join('dev', 'integration_tests', task_name)
   with api.step.nest('test_execution') as presentation:
     with api.context(env=env, env_prefixes=env_prefixes, cwd=test_path):
       # Collect the task id which is used to generate the logs destination path.
@@ -141,8 +141,8 @@ def RunSteps(api):
 
       # Download the test logcat files.
       logcat_path = '%s/%s/*/logcat' % (task_name, task_id)
-      tmp_logcat = api.path.cleanup_dir / 'logcat'
-      api.gsutil.download(gcs_bucket, logcat_path, api.path.cleanup_dir)
+      tmp_logcat = api.path['cleanup'].join('logcat')
+      api.gsutil.download(gcs_bucket, logcat_path, api.path['cleanup'])
       # Read the logcat files and add them to the step logs.
       content = api.file.read_text('read', tmp_logcat)
       presentation.logs['logcat'] = content

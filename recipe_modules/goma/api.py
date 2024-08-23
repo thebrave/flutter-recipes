@@ -31,7 +31,7 @@ class GomaApi(recipe_api.RecipeApi):
     with self.m.context(env={
         # Allow user to override from the command line.
         "GOMA_TMP_DIR": self.m.context.env.get(
-            "GOMA_TMP_DIR", self.m.path.cleanup_dir / "goma"),
+            "GOMA_TMP_DIR", self.m.path["cleanup"].join("goma")),
         "GOMA_USE_LOCAL": False,
     }):
       with self.m.step.nest("setup goma"):
@@ -60,10 +60,10 @@ class GomaApi(recipe_api.RecipeApi):
 
   @property
   def _stats_path(self):
-    return self.goma_dir.join("goma_stats.json")
+    return self.m.path.join(self.goma_dir, "goma_stats.json")
 
   def initialize(self):
-    self._goma_log_dir = self.m.path.cleanup_dir
+    self._goma_log_dir = self.m.path["cleanup"]
     if self.m.platform.is_win:
       self._enable_arbitrary_toolchains = True
 
@@ -75,7 +75,7 @@ class GomaApi(recipe_api.RecipeApi):
       return
 
     with self.m.step.nest("ensure goma"), self.m.context(infra_steps=True):
-      self._goma_dir = str(self.m.path.cache_dir / "goma/client")
+      self._goma_dir = self.m.path["cache"].join("goma", "client")
       if self.m.platform.is_mac:
         # On mac always use x64 package.
         # TODO(godofredoc): Remove this workaround and unfork once fuchsia has an arm package.
@@ -94,11 +94,11 @@ class GomaApi(recipe_api.RecipeApi):
         "GLOG_log_dir":
             self._goma_log_dir,
         "GOMA_CACHE_DIR":
-            self.m.path.cache_dir / "goma",
+            self.m.path["cache"].join("goma"),
         "GOMA_DEPS_CACHE_FILE":
             "goma_deps_cache",
         "GOMA_LOCAL_OUTPUT_CACHE_DIR":
-            self.m.path.cache_dir / "goma/localoutputcache",
+            self.m.path["cache"].join("goma", "localoutputcache"),
         "GOMA_STORE_LOCAL_RUN_OUTPUT":
             True,
         "GOMA_SERVER_HOST":
@@ -116,7 +116,7 @@ class GomaApi(recipe_api.RecipeApi):
     with self.m.context(env=env, infra_steps=True):
       return self.m.python3(
           step_name,
-          [self.goma_dir.join("goma_ctl.py")] + list(args),
+          [self.m.path.join(self.goma_dir, "goma_ctl.py")] + list(args),
           **kwargs,
       )
 
@@ -187,8 +187,8 @@ class GomaApi(recipe_api.RecipeApi):
 
     self._goma_started = False
 
-    compiler_proxy_warning_log_path = (
-        self._goma_log_dir / "compiler_proxy.WARNING"
+    compiler_proxy_warning_log_path = self._goma_log_dir.join(
+        "compiler_proxy.WARNING"
     )
     # Not all builds use goma, so it might not exist.
     self.m.path.mock_add_paths(compiler_proxy_warning_log_path)

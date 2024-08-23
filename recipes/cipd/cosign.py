@@ -26,12 +26,12 @@ def RunSteps(api):
       env, env_prefixes, api.properties.get('dependencies', [])
   )
 
-  cosign_default_dir = api.path.start_dir / 'cosign'
+  cosign_default_dir = api.path['start_dir'].join('cosign')
 
   cosign_download_uris = GetLatestCosignDownloadUris(api)
 
   for platform in ['darwin', 'linux', 'windows']:
-    cosign_dir = cosign_default_dir / platform
+    cosign_dir = cosign_default_dir.join(platform)
 
     DownloadCosignArtifacts(api, cosign_dir, platform, cosign_download_uris)
 
@@ -121,7 +121,7 @@ def DownloadCosignArtifacts(api, cosign_dir, platform, cosign_download_uris):
   api.step(
       'Download %s cosign binary' % platform, [
           'curl', '-L', cosign_binary_download_uri, '-o',
-          cosign_dir / f'bin/cosign{exe}', '--create-dirs'
+          cosign_dir.join('bin', 'cosign%s' % exe), '--create-dirs'
       ],
       infra_step=True
   )
@@ -129,7 +129,8 @@ def DownloadCosignArtifacts(api, cosign_dir, platform, cosign_download_uris):
   api.step(
       'Download %s cosign certificate' % platform, [
           'curl', '-L', cosign_certificate_download_uri, '-o',
-          cosign_dir / f'certificate/cosign-cert{exe}.pem', '--create-dirs'
+          cosign_dir.join("certificate", "cosign-cert%s.pem" % exe),
+          '--create-dirs'
       ],
       infra_step=True
   )
@@ -137,7 +138,8 @@ def DownloadCosignArtifacts(api, cosign_dir, platform, cosign_download_uris):
   api.step(
       'Download %s cosign signature' % platform, [
           'curl', '-L', cosign_signature_download_uri, '-o',
-          cosign_dir / f'certificate/cosign-sig{exe}.sig', '--create-dirs'
+          cosign_dir.join("certificate", "cosign-sig%s.sig" % exe),
+          '--create-dirs'
       ],
       infra_step=True
   )
@@ -145,7 +147,8 @@ def DownloadCosignArtifacts(api, cosign_dir, platform, cosign_download_uris):
   if platform == 'linux' or platform == 'darwin':
     api.step(
         'Make %s cosign binary executable' % platform,
-        ['chmod', '755', cosign_dir / f'bin/cosign{exe}']
+        ['chmod', '755',
+         cosign_dir.join('bin', 'cosign%s' % exe)]
     )
 
 
@@ -167,9 +170,10 @@ def VerifyCosignArtifactSignature(api, cosign_dir, platform):
   api.step(
       'Verify %s cosign binary is legitimate' % platform, [
           'cosign', 'verify-blob', '--cert',
-          cosign_dir / f'certificate/cosign-cert{exe}.pem', '--signature',
-          cosign_dir / f'certificate/cosign-sig{exe}.sig',
-          cosign_dir / f'bin/cosign{exe}'
+          cosign_dir.join("certificate", "cosign-cert%s.pem" % exe),
+          '--signature',
+          cosign_dir.join("certificate", "cosign-sig%s.sig" % exe),
+          cosign_dir.join("bin", "cosign%s" % exe)
       ]
   )
 

@@ -28,7 +28,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
       env['AVD_ROOT'] = self.avd_root
       env['ADB_PATH'] = self.adb_path
       return
-    self.avd_root = self.m.path.cache_dir / 'avd'
+    self.avd_root = self.m.path['cache'].join('avd')
     self.download(
         env=env,
         env_prefixes=env_prefixes,
@@ -77,10 +77,10 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
             )
         )
 
-      adb_root = (
-          self.avd_root / 'src/third_party/android_sdk/public/platform-tools'
+      adb_root = self.avd_root.join(
+          'src', 'third_party', 'android_sdk', 'public', 'platform-tools'
       )
-      self.adb_path = adb_root / 'adb'
+      self.adb_path = adb_root.join('adb')
       paths = env_prefixes.get('PATH', [])
       paths.append(adb_root)
       env_prefixes['PATH'] = paths
@@ -89,7 +89,7 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
 
   def _get_config_version(self, version):
     """Get the config if given an integer version
-
+    
     Args:
     """
     avd_config = None
@@ -101,17 +101,19 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
 
     if is_int_version:
       if int(version) > 33:
-        avd_config = (
-            self.avd_root / 'src/tools/android/avd/proto' /
-            f'android_{version}_google_apis_x64.textpb'
+        avd_config = self.avd_root.join(
+            'src', 'tools', 'android', 'avd', 'proto',
+            'android_%s_google_apis_x64.textpb' % version
         )
       else:
-        avd_config = (
-            self.avd_root /
-            f'src/tools/android/avd/proto/generic_android{version}.textpb'
+        avd_config = self.avd_root.join(
+            'src', 'tools', 'android', 'avd', 'proto',
+            'generic_android%s.textpb' % version
         )
     else:
-      avd_config = self.avd_root / f'src/tools/android/avd/proto{version}'
+      avd_config = self.avd_root.join(
+          'src', 'tools', 'android', 'avd', 'proto', '%s' % version
+      )
 
     return avd_config
 
@@ -126,7 +128,9 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
     with self.m.step.nest('start avd'):
       with self.m.context(env=env, env_prefixes=env_prefixes,
                           cwd=self.avd_root), self.m.depot_tools.on_path():
-        avd_script_path = self.avd_root / 'src/tools/android/avd/avd.py'
+        avd_script_path = self.avd_root.join(
+            'src', 'tools', 'android', 'avd', 'avd.py'
+        )
 
         avd_config = self._get_config_version(version=version)
 
@@ -213,7 +217,9 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
     with self.m.step.nest('uninstall avd'):
       with self.m.context(env=env, env_prefixes=env_prefixes,
                           cwd=self.avd_root), self.m.depot_tools.on_path():
-        avd_script_path = self.avd_root / 'src/tools/android/avd/avd.py'
+        avd_script_path = self.avd_root.join(
+            'src', 'tools', 'android', 'avd', 'avd.py'
+        )
 
         avd_config = self._get_config_version(version=version)
 

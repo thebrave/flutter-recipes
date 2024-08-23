@@ -110,16 +110,16 @@ class ArchivesApi(recipe_api.RecipeApi):
     """
     results = []
     self.m.path.mock_add_directory(
-        self.m.path.start_dir /
-        'out/android_profile/zip_archives/download.flutter.io'
+        self.m.path['start_dir']
+        .join('out/android_profile/zip_archives/download.flutter.io')
     )
     for include_path in archive_config.get('include_paths', []):
-      full_include_path = self.m.path.abspath(checkout / include_path)
+      full_include_path = self.m.path.abspath(checkout.join(include_path))
       if self.m.path.isdir(full_include_path):
         test_data = []
         paths = self.m.file.listdir(
             'Expand directory',
-            checkout / include_path,
+            checkout.join(include_path),
             recursive=True,
             test_data=(MOCK_JAR_PATH, MOCK_POM_PATH)
         )
@@ -157,7 +157,7 @@ class ArchivesApi(recipe_api.RecipeApi):
     bucket, path = self._split_dst_parts(dst)
     dir_part = self.m.path.dirname(path)
     archive_dir = self.m.path.mkdtemp()
-    local_dst_tree = archive_dir.joinpath(*dir_part.split('/'))
+    local_dst_tree = archive_dir.join(*dir_part.split('/'))
     self.m.file.ensure_directory('Ensure %s' % dir_part, local_dst_tree)
     self.m.file.copy('Copy %s to tmp location' % src, src, local_dst_tree)
     self.m.gsutil.upload(
@@ -201,11 +201,11 @@ class ArchivesApi(recipe_api.RecipeApi):
       bucket = MONOREPO_TRY_BUCKET
       include_build_id = True
     elif self.m.monorepo.is_monorepo_ci_build:
-      commit = self.m.repo_util.get_commit(checkout / '../../monorepo')
+      commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))
       bucket = MONOREPO
       include_build_id = True
     else:
-      commit = self.m.repo_util.get_commit(checkout / 'flutter')
+      commit = self.m.repo_util.get_commit(checkout.join('flutter'))
       bucket = self.m.buildbucket.build.builder.bucket
       include_build_id = False
     build_id = self.m.monorepo.build_identifier if include_build_id else ''
@@ -214,7 +214,7 @@ class ArchivesApi(recipe_api.RecipeApi):
       is_android_artifact = ANDROID_ARTIFACTS_BUCKET in include_path
       dir_part = self.m.path.dirname(include_path)
       full_base_path = self.m.path.abspath(
-          checkout / archive_config.get('base_path', '')
+          checkout.join(archive_config.get('base_path', ''))
       )
       rel_path = self.m.path.relpath(dir_part, full_base_path)
       rel_path = '' if rel_path == '.' else rel_path
@@ -270,11 +270,11 @@ class ArchivesApi(recipe_api.RecipeApi):
       bucket = MONOREPO_TRY_BUCKET
       include_build_id = True
     elif self.m.monorepo.is_monorepo_ci_build:
-      commit = self.m.repo_util.get_commit(checkout / '../../monorepo')
+      commit = self.m.repo_util.get_commit(checkout.join('../../monorepo'))
       bucket = MONOREPO
       include_build_id = True
     else:
-      commit = self.m.repo_util.get_commit(checkout / 'flutter')
+      commit = self.m.repo_util.get_commit(checkout.join('flutter'))
       bucket = self.m.buildbucket.build.builder.bucket
       include_build_id = False
 
@@ -283,7 +283,7 @@ class ArchivesApi(recipe_api.RecipeApi):
       bucket_plus_realm = '_'.join(filter(None, (bucket, realm)))
       build_id = self.m.monorepo.build_identifier if include_build_id else ''
       gcs_bucket, bucket_postfix = LUCI_TO_GCS_PREFIX.get(bucket_plus_realm)
-      source = checkout / archive.get('source')
+      source = checkout.join(archive.get('source'))
       artifact_path = '/'.join(
           filter(
               bool, [

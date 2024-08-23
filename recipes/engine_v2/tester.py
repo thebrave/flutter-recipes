@@ -31,11 +31,11 @@ SAMPLE_MONOREPO_COMMITS = {
 
 
 def get_monorepo_framework(api):
-  monorepo = api.path.cache_dir / 'builder/monorepo'
+  monorepo = api.path['cache'].join('builder', 'monorepo')
   api.repo_util.checkout('monorepo', monorepo)
   commits = api.file.read_json(
       'get commits from monorepo',
-      monorepo / 'commits.json',
+      monorepo.join('commits.json'),
       test_data=SAMPLE_MONOREPO_COMMITS,
       include_log=True
   )
@@ -63,7 +63,7 @@ def copy_offband_artifacts(api, checkout, artifact_url):
   # fonts.zip
   src = api.file.read_text(
       'read material fonts version',
-      checkout / 'bin/internal/material_fonts.version',
+      checkout.join('bin', 'internal', 'material_fonts.version'),
       test_data='flutter_infra_release/flutter/fonts/12345/fonts.zip',
       include_log=True
   )
@@ -71,7 +71,7 @@ def copy_offband_artifacts(api, checkout, artifact_url):
   # Gradle wrapper
   src = api.file.read_text(
       'read graddle wrapper version',
-      checkout / 'bin/internal/gradle_wrapper.version',
+      checkout.join('bin', 'internal', 'gradle_wrapper.version'),
       test_data='flutter_infra_release/gradle-wrapper/12345/gradle-wrapper.tgz',
       include_log=True
   )
@@ -86,8 +86,8 @@ def copy_offband_artifacts(api, checkout, artifact_url):
 def RunSteps(api):
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
-  builder = api.path.cache_dir / 'builder'
-  flutter = builder / 'flutter'
+  builder = api.path['cache'].join('builder')
+  flutter = builder.join('flutter')
   if api.monorepo.is_monorepo_try_build:
     framework_ref = 'refs/heads/main'
     artifact_url = 'https://storage.googleapis.com/flutter_archives_v2/monorepo_try/%s' % api.monorepo.build_identifier
@@ -102,8 +102,8 @@ def RunSteps(api):
     engine_version = api.properties.get('parent_commit')
   api.repo_util.checkout('flutter', flutter, ref=framework_ref)
   api.file.write_text(
-      'update engine version', flutter / 'bin/internal/engine.version',
-      engine_version + '\n'
+      'update engine version',
+      flutter.join('bin', 'internal', 'engine.version'), engine_version + '\n'
   )
 
   # Not all artifacts were just built and put into [artifact_url]-relative url, so
@@ -136,7 +136,8 @@ def RunSteps(api):
     )
     api.step(
         'Run %s tests' % shard_name,
-        [flutter / 'bin/dart', flutter / 'dev/bots/test.dart']
+        [flutter.join('bin', 'dart'),
+         flutter.join('dev', 'bots', 'test.dart')]
     )
   # This is to clean up leaked processes.
   api.os_utils.kill_processes()

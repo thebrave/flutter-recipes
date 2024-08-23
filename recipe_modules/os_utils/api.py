@@ -74,8 +74,8 @@ class OsUtilsApi(recipe_api.RecipeApi):
     sdks are used in the same bot. To prevent those failures we will start
     deleting the folder before every task.
     """
-    derived_data_path = (
-        self.m.path.home_dir / 'Library/Developer/Xcode/DerivedData'
+    derived_data_path = self.m.path['home'].join(
+        'Library', 'Developer', 'Xcode', 'DerivedData'
     )
     if self.m.platform.is_mac:
       self.m.step(
@@ -273,16 +273,19 @@ class OsUtilsApi(recipe_api.RecipeApi):
       return
     with self.m.step.nest('ios_debug_symbol_doctor'):
       cocoon_path = self._checkout_cocoon()
-      entrypoint = (
-          cocoon_path /
-          'cipd_packages/device_doctor/bin/ios_debug_symbol_doctor.dart'
+      entrypoint = cocoon_path.join(
+          'cipd_packages',
+          'device_doctor',
+          'bin',
+          'ios_debug_symbol_doctor.dart',
       )
 
       timeout = self._get_initial_timeout()
       # Since we double the timeout on each retry, the last retry will have a
       # timeout of 16 minutes
       retry_count = 4
-      with self.m.context(cwd=cocoon_path / 'cipd_packages/device_doctor',
+      with self.m.context(cwd=cocoon_path.join('cipd_packages',
+                                               'device_doctor'),
                           infra_steps=True):
         self.m.step(
             'pub get device_doctor',
@@ -349,7 +352,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
             except self.m.step.InfraFailure:
               infra_dialog_project_path = self._infra_dialog_directory_path(
                   cocoon_path
-              ) / 'infra-dialog.xcodeproj'
+              ).join('infra-dialog.xcodeproj')
               self.m.step(
                   'Open infra-dialog in Xcode',
                   ['open', infra_dialog_project_path],
@@ -414,7 +417,9 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
               self._dismiss_automation_dialog('Xcode', 'com.apple.dt.Xcode')
 
   def _infra_dialog_directory_path(self, cocoon_path):
-    return cocoon_path / 'cipd_packages/device_doctor/tool/infra-dialog'
+    return cocoon_path.join(
+        'cipd_packages', 'device_doctor', 'tool', 'infra-dialog'
+    )
 
   def _open_quick_time(self, device_id):
     """Gives permissions to automate QuickTime. Then opens QuickTime with
@@ -789,7 +794,7 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
 
   def _checkout_cocoon(self):
     """Checkout cocoon at HEAD to the cache and return the path."""
-    cocoon_path = self.m.path.cache_dir / 'cocoon'
+    cocoon_path = self.m.path['cache'].join('cocoon')
     self.m.repo_util.checkout('cocoon', cocoon_path, ref='refs/heads/main')
     return cocoon_path
 

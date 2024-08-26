@@ -22,9 +22,9 @@ DEPS = [
 
 def RunSteps(api):
   """Steps to checkout cocoon, dependencies and execute tests."""
-  start_path = api.path['start_dir']
-  cocoon_path = start_path.join('cocoon')
-  flutter_path = start_path.join('flutter')
+  start_path = api.path.start_dir
+  cocoon_path = start_path / 'cocoon'
+  flutter_path = start_path / 'flutter'
 
   repo = api.properties.get("git_repo")
   with api.step.nest('checkout source code'):
@@ -42,11 +42,11 @@ def RunSteps(api):
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
 
   with api.context(env=env, env_prefixes=env_prefixes,
-                   cwd=cocoon_path.join('app_dart')):
+                   cwd=cocoon_path / 'app_dart'):
     api.step('flutter doctor', cmd=['flutter', 'doctor'])
     api.step('dart pub get', cmd=['dart', 'pub', 'get'])
-    validate_task_owernship_path = cocoon_path.join(
-        'app_dart', 'bin', 'validate_task_ownership.dart'
+    validate_task_owernship_path = (
+        cocoon_path / 'app_dart/bin/validate_task_ownership.dart'
     )
     api.step(
         'validate test ownership',
@@ -62,9 +62,7 @@ def RunSteps(api):
 def GenTests(api):
   yield api.test(
       'basic',
-      api.repo_util.flutter_environment_data(
-          api.path['start_dir'].join('flutter')
-      ),
+      api.repo_util.flutter_environment_data(api.path.start_dir / 'flutter'),
       api.properties(
           git_ref='refs/pull/123/head',
           git_url='https://abc.com/flutter',

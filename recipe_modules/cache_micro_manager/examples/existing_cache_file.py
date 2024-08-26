@@ -17,15 +17,15 @@ from unittest.mock import Mock
 
 
 def RunSteps(api):
-  cache_target_dir = api.path['cache'].join('osx_sdk')
+  cache_target_dir = api.path.cache_dir / 'osx_sdk'
 
-  fake_dirdep_1_path = cache_target_dir.join('fake_dep_package_1')
-  fake_filedep_1_path = cache_target_dir.join('fake_dep_file_1')
-  fake_filedep_2_path = cache_target_dir.join('fake_dep_file_2')
+  fake_dirdep_1_path = cache_target_dir / 'fake_dep_package_1'
+  fake_filedep_1_path = cache_target_dir / 'fake_dep_file_1'
+  fake_filedep_2_path = cache_target_dir / 'fake_dep_file_2'
 
-  fake_expired_file = cache_target_dir.join('fake_expired_file')
+  fake_expired_file = cache_target_dir / 'fake_expired_file'
 
-  cache_file_name = cache_target_dir.join('.osx_sdk_cache_metadata.json')
+  cache_file_name = cache_target_dir / '.osx_sdk_cache_metadata.json'
 
   api.path.mock_add_directory(fake_dirdep_1_path)
   api.path.mock_add_file(fake_filedep_1_path)

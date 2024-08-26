@@ -59,8 +59,8 @@ def RunSteps(api):
   )
   assert git_branch and tag and release_channel in ('stable', 'beta')
 
-  flutter_checkout = api.path['start_dir'].join('flutter')
-  engine_checkout = api.path['start_dir'].join('engine')
+  flutter_checkout = api.path.start_dir / 'flutter'
+  engine_checkout = api.path.start_dir / 'engine'
   flutter_git_url = 'https://github.com/flutter/flutter'
   engine_git_url = 'https://github.com/flutter/engine'
 
@@ -81,7 +81,7 @@ def RunSteps(api):
   with api.step.nest('checkout engine release branch'):
     engine_tot = api.repo_util.checkout(
         'engine',
-        api.path['start_dir'].join('engine'),
+        api.path.start_dir / 'engine',
         url=engine_git_url,
         ref='refs/heads/%s' % git_branch,
     )
@@ -124,7 +124,7 @@ def RunSteps(api):
     rel_hash = flutter_rel_hash if repo == 'flutter' else engine_version
 
     with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout):
-      token_decrypted = api.path['cleanup'].join('token.txt')
+      token_decrypted = api.path.cleanup_dir / 'token.txt'
       api.kms.get_secret(
           'flutter-release-github-token.encrypted', token_decrypted
       )
@@ -153,7 +153,7 @@ def GetEngineVersion(api, flutter_checkout):
 
 
 def GenTests(api):
-  checkout_path = api.path['start_dir'].join('flutter')
+  checkout_path = api.path.start_dir / 'flutter'
   for tag in ('1.2.3-4.5.pre', '1.2.3'):
     for release_channel in ('stable', 'beta'):
       for force in ('True', 'False'):

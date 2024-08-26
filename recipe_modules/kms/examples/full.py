@@ -14,7 +14,7 @@ DEPS = [
 def RunSteps(api):
   env = {}
   api.kms.decrypt_secrets(env, {'a': 'a'})
-  api.kms.get_secret('in', api.path['cleanup'].join('out'))
+  api.kms.get_secret('in', api.path.cleanup_dir / 'out')
 
 
 def GenTests(api):

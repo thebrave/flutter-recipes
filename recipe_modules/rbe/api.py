@@ -119,13 +119,13 @@ class RbeApi(recipe_api.RecipeApi):
   @property
   def _bootstrap_path(self):
     assert self._reclient_path
-    return self._reclient_path.join("bootstrap")
+    return self._reclient_path / "bootstrap"
 
   def _environment(self, working_dir):
-    cache_dir = self.m.path["cache"].join("rbe")
-    deps_cache_dir = cache_dir.join("deps")
+    cache_dir = self.m.path.cache_dir / "rbe"
+    deps_cache_dir = cache_dir / "deps"
     self.m.file.ensure_directory("create rbe cache dir", deps_cache_dir)
-    rbe_server_address = 'pipe://reproxy.pipe' if self.m.platform.is_win else f"unix://{working_dir.join('reproxy.sock')}"
+    rbe_server_address = 'pipe://reproxy.pipe' if self.m.platform.is_win else f"unix://{working_dir / 'reproxy.sock'}"
     # Environment. These values are used to modify the configuration in
     # Infrastructure when appropriate. These should not be used to modify
     # the behavior of the build in a meaningful way.
@@ -145,7 +145,7 @@ class RbeApi(recipe_api.RecipeApi):
         "RBE_output_dir": working_dir,
         "RBE_proxy_log_dir": working_dir,
         "RBE_server_address": rbe_server_address,
-        "RBE_socket_path": working_dir.join("reproxy.sock"),
+        "RBE_socket_path": working_dir / "reproxy.sock",
         # Use GCE credentials by default. Infrastructure presents an
         # emulated GCE metadata server in all environments for uniformity.
         "RBE_use_application_default_credentials": "false",
@@ -155,7 +155,7 @@ class RbeApi(recipe_api.RecipeApi):
   @property
   def _reproxy_path(self):
     assert self._reclient_path
-    return self._reclient_path.join("reproxy")
+    return self._reclient_path / "reproxy"
 
   def _start(self, config_path):
     """Start reproxy."""
@@ -218,7 +218,7 @@ class RbeApi(recipe_api.RecipeApi):
       ]
 
       for output in diagnostic_outputs:
-        path = working_dir.join(output)
+        path = working_dir / output
         # Not all builds use rbe, so it might not exist.
         self.m.path.mock_add_paths(path)
         if self.m.path.exists(path):

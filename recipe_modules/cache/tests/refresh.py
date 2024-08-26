@@ -14,12 +14,12 @@ def RunSteps(api):
   result = api.cache.requires_refresh('builder')
   api.assertions.assertTrue(result)
   paths = [
-      api.path['cache'].join('builder'),
-      api.path['cache'].join('git'),
+      api.path.cache_dir / 'builder',
+      api.path.cache_dir / 'git',
   ]
   api.cache.write('builder', paths, 60)
-  api.cache.mount_cache('builder', api.path['cache'])
-  api.cache.should_force_mount(api.path['cache'].join('builder'))
+  api.cache.mount_cache('builder', api.path.cache_dir)
+  api.cache.should_force_mount(api.path.cache_dir / 'builder')
 
 
 def GenTests(api):

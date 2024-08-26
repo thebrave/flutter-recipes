@@ -14,23 +14,26 @@ DEPS = [
 
 
 def RunSteps(api):
-  checkout = api.path['start_dir']
+  checkout = api.path.start_dir
   env_prefixes = {}
   with api.context(env_prefixes=env_prefixes):
     api.build_util.run_gn([], checkout)
     api.build_util.build(
-        'profile', checkout, ['mytarget'], {
-            'CLANG_CRASH_DIAGNOSTICS_DIR': api.path['start_dir'],
-            'FLUTTER_LOGS_DIR': api.path['start_dir']
+        'profile',
+        checkout,
+        ['mytarget'],
+        {
+            'CLANG_CRASH_DIAGNOSTICS_DIR': api.path.start_dir,
+            'FLUTTER_LOGS_DIR': api.path.start_dir
         },
-        rbe_working_path=api.path["cleanup"].join("rbe"),
+        rbe_working_path=api.path.cleanup_dir / "rbe",
     )
   with api.context(env_prefixes=env_prefixes):
     api.build_util.run_gn(['--no-goma', '--no-rbe'], checkout)
     api.build_util.build(
         'release', checkout, ['mytarget'], {
-            'CLANG_CRASH_DIAGNOSTICS_DIR': api.path['start_dir'],
-            'FLUTTER_LOGS_DIR': api.path['start_dir']
+            'CLANG_CRASH_DIAGNOSTICS_DIR': api.path.start_dir,
+            'FLUTTER_LOGS_DIR': api.path.start_dir
         }
     )
   with api.context(env_prefixes=env_prefixes):
@@ -40,10 +43,10 @@ def RunSteps(api):
         checkout,
         ['rbe_target'],
         {
-            'CLANG_CRASH_DIAGNOSTICS_DIR': api.path['start_dir'],
-            'FLUTTER_LOGS_DIR': api.path['start_dir']
+            'CLANG_CRASH_DIAGNOSTICS_DIR': api.path.start_dir,
+            'FLUTTER_LOGS_DIR': api.path.start_dir
         },
-        rbe_working_path=api.path["cleanup"].join("rbe"),
+        rbe_working_path=api.path.cleanup_dir / "rbe",
     )
 
 
@@ -56,7 +59,7 @@ def GenTests(api):
           'build profile mytarget',
           retcode=1,
       ),
-      api.path.exists(api.path['start_dir'].join('foo.sh')),
+      api.path.exists(api.path.start_dir / 'foo.sh'),
       status='FAILURE',
   )
   yield api.test(

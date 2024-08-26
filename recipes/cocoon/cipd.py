@@ -26,8 +26,8 @@ DEPS = [
 
 # This recipe builds the codesign CIPD package.
 def RunSteps(api):
-  start_path = api.path['start_dir']
-  cocoon_dir = start_path.join('cocoon')
+  start_path = api.path.start_dir
+  cocoon_dir = start_path / 'cocoon'
   cocoon_git_rev = api.repo_util.checkout(
       'cocoon',
       cocoon_dir,
@@ -48,9 +48,9 @@ def RunSteps(api):
   script_path_list = api.properties.get('script')
   cipd_full_name = api.properties.get('cipd_name')
   project_name = cipd_full_name.split('/')[1]
-  project_path = cocoon_dir.join('cipd_packages').join(project_name)
+  project_path = cocoon_dir / 'cipd_packages' / project_name
 
-  build_file = cocoon_dir.join(script_path_list)
+  build_file = cocoon_dir / script_path_list
 
   cmd = [build_file]
   env = {}
@@ -68,7 +68,7 @@ def RunSteps(api):
 
   cipd_zip_path = project_name + '.zip'
 
-  api.cipd.build(project_path.join('build'), cipd_zip_path, cipd_full_name)
+  api.cipd.build(project_path / 'build', cipd_zip_path, cipd_full_name)
   if api.buildbucket.build.builder.bucket == 'prod' and should_upload:
     api.cipd.register(cipd_full_name, cipd_zip_path, refs=["latest"])
 

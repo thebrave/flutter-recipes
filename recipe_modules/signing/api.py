@@ -106,27 +106,27 @@ class CodeSignApi(recipe_api.RecipeApi):
           infra_step=True,
       )
     # Only filepath with a .p12 suffix will be recognized.
-    p12_suffix_filepath = self.m.path['cleanup'].join('flutter.p12')
+    p12_suffix_filepath = self.m.path.cleanup_dir / 'flutter.p12'
     env['P12_SUFFIX_FILEPATH'] = p12_suffix_filepath
-    setup_keychain_log_file = self.m.path['cleanup'].join('setup_keychain_logs.txt')
+    setup_keychain_log_file = self.m.path.cleanup_dir / 'setup_keychain_logs.txt'
 
     env['SETUP_KEYCHAIN_LOGS_PATH'] = setup_keychain_log_file
     with self.m.context(env=env, env_prefixes=env_prefixes):
       try:
-          self.m.step(
-              'run keychain setup script', [resource_name],
-          )
+        self.m.step(
+            'run keychain setup script', [resource_name],
+        )
       finally:
-          # This will namespace the remote GCS path by the buildbucket build ID
-          buildbucket_id = self.m.buildbucket_util.id
-          remote_path = '%s/setup_keychain_logs.txt' % buildbucket_id
-          self.m.gsutil.upload(
-              bucket='flutter_tmp_logs',
-              source=setup_keychain_log_file,
-              dest=remote_path,
-              args=['-r'],
-              name='upload debug logs to %s' % remote_path
-          )
+        # This will namespace the remote GCS path by the buildbucket build ID
+        buildbucket_id = self.m.buildbucket_util.id
+        remote_path = '%s/setup_keychain_logs.txt' % buildbucket_id
+        self.m.gsutil.upload(
+            bucket='flutter_tmp_logs',
+            source=setup_keychain_log_file,
+            dest=remote_path,
+            args=['-r'],
+            name='upload debug logs to %s' % remote_path
+        )
 
   def _signer_tasks(self, env, env_prefixes, files_to_sign):
     """Concurrently creates jobs to codesign each binary.

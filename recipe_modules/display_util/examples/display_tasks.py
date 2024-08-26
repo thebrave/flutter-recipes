@@ -29,7 +29,7 @@ def RunSteps(api):
   metadata = api.swarming.trigger("Trigger Tests", requests=[request])
   links = {m.id: m.task_ui_link for m in metadata}
   # Collect the result of the task by metadata.
-  fuchsia_output = api.path["cleanup"].join("fuchsia_test_output")
+  fuchsia_output = api.path.cleanup_dir / "fuchsia_test_output"
   api.file.ensure_directory("swarming output", fuchsia_output)
   results = api.swarming.collect(
       "collect", metadata, output_dir=fuchsia_output, timeout="30m"

@@ -35,7 +35,7 @@ def GenTests(api):
 
   yield (
       api.test("linux_goma_dir") + api.platform.name("linux") +
-      goma_properties(goma_dir="path/to/goma")
+      goma_properties(goma_dir="/path/to/goma")
   )
 
   yield (

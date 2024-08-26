@@ -12,11 +12,11 @@ def RunSteps(api):
   env = {}
   api.logs_util.initialize_logs_collection(env)
   api.logs_util.upload_logs('mytaskname')
-  s = api.path['cleanup'].join('flutter_logs_dir')
+  s = api.path.cleanup_dir / 'flutter_logs_dir'
   api.logs_util.upload_test_metrics(s, 'taskname', 'hash')
   api.logs_util.upload_test_metrics('/path/to/tmp/json', 'taskname2')
-  api.file.write_json('write file', s.join('errors.log'), {'a': 'b'})
-  api.logs_util.show_logs_stdout(s.join('errors.log'))
+  api.file.write_json('write file', s / 'errors.log', {'a': 'b'})
+  api.logs_util.show_logs_stdout(s / 'errors.log')
   api.logs_util.show_logs_stdout('no_file')
 
 

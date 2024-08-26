@@ -69,7 +69,7 @@ class RecipeTestingApi(recipe_api.RecipeApi):
         """
 
     with self.m.step.nest("get_affected_recipes") as parent_step:
-      recipes_dir = recipes_path.join("recipes")
+      recipes_dir = recipes_path / "recipes"
       recipe_files = self.m.file.listdir(
           "ls-recipes", recipes_dir, recursive=True
       )
@@ -135,10 +135,11 @@ class RecipeTestingApi(recipe_api.RecipeApi):
       res = self.m.step(
           "recipes-analyze",
           [
-              recipes_path.join("recipes.py"),
+              recipes_path / "recipes.py",
               "analyze",
               self.m.json.input({
-                  "recipes": all_recipes, "files": filtered_changed_files
+                  "recipes": all_recipes,
+                  "files": filtered_changed_files
               }),
               self.m.json.output(),
           ],
@@ -314,7 +315,7 @@ class RecipeTestingApi(recipe_api.RecipeApi):
     with self.m.context(cwd=recipes_path):
       self.m.step(
           "lint",
-          cmd=[self.m.context.cwd.join("recipes.py")] + args,
+          cmd=[self.m.context.cwd / "recipes.py"] + args,
       )
 
   def run_unit_tests(self, recipes_path):
@@ -323,7 +324,7 @@ class RecipeTestingApi(recipe_api.RecipeApi):
       self.m.step(
           "test",
           cmd=[
-              self.m.context.cwd.join("recipes.py"),
+              self.m.context.cwd / "recipes.py",
               "test",
               "run",
           ],

@@ -18,16 +18,18 @@ def RunSteps(api):
 
   api.cache_micro_manager.today = Mock(return_value=datetime(2023, 12, 15, 13, 43, 21, 621929))
 
-  api.step('run cache micro manager', api.cache_micro_manager.run('dne', deps_list))
+  api.step(
+      'run cache micro manager', api.cache_micro_manager.run('/dne', deps_list)
+  )
 
 
 def GenTests(api):
   yield (
-    api.test(
-      'cache_directory_does_not_exist',
-      api.post_check(
-        MustRun,
-        'Running Cache Micro Manager on dne..Cache Micro Manager, cache directory exists check'
+      api.test(
+          'cache_directory_does_not_exist',
+          api.post_check(
+              MustRun,
+              'Running Cache Micro Manager on /dne..Cache Micro Manager, cache directory exists check'
+          )
       )
-    )
   )

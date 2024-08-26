@@ -21,9 +21,9 @@ def RunSteps(api):
   """Steps to checkout cocoon, dependencies and execute tests."""
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
-  start_path = api.path['start_dir']
-  cocoon_path = start_path.join('cocoon')
-  flutter_path = start_path.join('flutter')
+  start_path = api.path.start_dir
+  cocoon_path = start_path / 'cocoon'
+  flutter_path = start_path / 'flutter'
 
   api.repo_util.checkout(
       'cocoon',
@@ -43,14 +43,14 @@ def RunSteps(api):
   )
 
   # Read yaml file
-  tests_yaml_path = start_path.join('cocoon', 'tests.yaml')
+  tests_yaml_path = start_path / 'cocoon/tests.yaml'
   result = api.yaml.read('read yaml', tests_yaml_path, api.json.output())
   env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
   # The context adds dart-sdk tools to PATH and sets PUB_CACHE.
   with api.context(env=env, env_prefixes=env_prefixes, cwd=start_path):
     api.step('flutter doctor', cmd=['flutter', 'doctor'])
-    prepare_script_path = cocoon_path.join(
-        'test_utilities', 'bin', 'prepare_environment.sh'
+    prepare_script_path = (
+        cocoon_path / 'test_utilities/bin/prepare_environment.sh'
     )
     api.step(
         'prepare environment',
@@ -58,8 +58,8 @@ def RunSteps(api):
         infra_step=True,
     )
     for task in result.json.output['tasks']:
-      script_path = cocoon_path.join(task['script'])
-      test_folder = cocoon_path.join(task['task'])
+      script_path = cocoon_path / task['script']
+      test_folder = cocoon_path / task['task']
       api.step(task['task'], cmd=['bash', script_path, test_folder])
   # This is to clean up leaked processes.
   api.os_utils.kill_processes()
@@ -73,8 +73,6 @@ def GenTests(api):
       api.properties(
           git_url='https://github.com/flutter/cocoon',
           git_ref='refs/pull/1/head'
-      ),
-      api.repo_util.flutter_environment_data(
-          api.path['start_dir'].join('flutter')
-      ), api.step_data('read yaml.parse', api.json.output(tasks_dict))
+      ), api.repo_util.flutter_environment_data(api.path.start_dir / 'flutter'),
+      api.step_data('read yaml.parse', api.json.output(tasks_dict))
   )

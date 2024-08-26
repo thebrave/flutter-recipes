@@ -40,20 +40,20 @@ class RepoUtilApi(recipe_api.RecipeApi):
   def _setup_win_toolchain(self, env):
     """Setups local win toolchain if available."""
     if self.m.platform.is_win:
-      toolchain_metadata_src = self.m.path['cache'].join(
-          'builder', 'vs_toolchain_root', 'data.json'
+      toolchain_metadata_src = (
+          self.m.path.cache_dir / 'builder/vs_toolchain_root/data.json'
       )
       self.m.path.mock_add_paths(toolchain_metadata_src)
       if self.m.path.exists(toolchain_metadata_src):
-        toolchain_metadata_dst = self.m.path['cache'].join(
-            'builder', 'src', 'build', 'win_toolchain.json'
+        toolchain_metadata_dst = (
+            self.m.path.cache_dir / 'builder/src/build/win_toolchain.json'
         )
         self.m.file.copy(
             'copy win_toolchain_metadata', toolchain_metadata_src,
             toolchain_metadata_dst
         )
-        data_file = self.m.path['cache'].join(
-            'builder', 'vs_toolchain_root', 'data.json'
+        data_file = (
+            self.m.path.cache_dir / 'builder/vs_toolchain_root/data.json'
         )
         metadata = self.m.file.read_json(
             'read win toolchain metadata',
@@ -69,7 +69,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     with self.m.depot_tools.on_path():
       if self.m.path.exists(checkout_path):
         self.m.file.rmcontents('Clobber cache', checkout_path)
-      git_cache_path = self.m.path['cache'].join('git')
+      git_cache_path = self.m.path.cache_dir / 'git'
       self.m.path.mock_add_directory(git_cache_path)
       if self.m.path.exists(git_cache_path):
         self.m.file.rmtree('Clobber git cache', git_cache_path)
@@ -89,8 +89,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
     # Set vs_toolchain env to cache it.
     if self.m.platform.is_win:
       # Set win toolchain root to a directory inside cache/builder to cache it.
-      env['DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT'] = self.m.path['cache'].join(
-          'builder', 'vs_toolchain_root'
+      env['DEPOT_TOOLS_WIN_TOOLCHAIN_ROOT'] = (
+          self.m.path.cache_dir / 'builder/vs_toolchain_root'
       )
       env['DEPOT_TOOLS_WIN_TOOLCHAIN'] = 1
 
@@ -99,11 +99,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
     clobber = self.m.properties.get('clobber', False)
 
     # Calculate if we need to mount the cache and mount it if required.
-    mount_git = self.m.cache.should_force_mount(
-        self.m.path['cache'].join('git')
-    )
+    mount_git = self.m.cache.should_force_mount(self.m.path.cache_dir / 'git')
     mount_builder = self.m.cache.should_force_mount(
-        self.m.path['cache'].join('builder')
+        self.m.path.cache_dir / 'builder'
     )
     if (not clobber) and (bucket != OFFICIAL_BUILD_BUCKET):
       self.m.cache.mount_cache('builder', force=True)
@@ -398,8 +396,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
 
   def flutter_environment(self, checkout_path, clear_features=True):
     """Returns env and env_prefixes of an flutter/dart command environment."""
-    dart_bin = checkout_path.join('bin', 'cache', 'dart-sdk', 'bin')
-    flutter_bin = checkout_path.join('bin')
+    dart_bin = checkout_path / 'bin/cache/dart-sdk/bin'
+    flutter_bin = checkout_path / 'bin'
     # Fail if flutter bin folder does not exist. dart-sdk/bin folder will be
     # available only after running "flutter doctor" and it needs to be run as
     # the first command on the context using the environment.
@@ -412,7 +410,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
           'Flutter Environment', status=self.m.step.FAILURE, step_text=msg
       )
     git_ref = self.m.properties.get('git_ref', '')
-    pub_cache_path = self.m.path['start_dir'].join('.pub-cache')
+    pub_cache_path = self.m.path.start_dir / '.pub-cache'
     env = {
         # Setup our own pub_cache to not affect other slaves on this machine,
         # and so that the pre-populated pub cache is contained in the package.
@@ -451,7 +449,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     if clear_features and not self.m.monorepo.is_monorepo:
       self.m.step(
           'flutter config --clear-features',
-          [flutter_bin.join(flutter_exe), 'config', '--clear-features'],
+          [flutter_bin / flutter_exe, 'config', '--clear-features'],
       )
     return env, env_prefixes
 
@@ -467,18 +465,14 @@ class RepoUtilApi(recipe_api.RecipeApi):
   def engine_environment(self, checkout_path):
     """Returns env and env_prefixes of an flutter/dart command environment."""
     # Original path to the Dart SDK
-    dart_bin = checkout_path.join(
-        'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk', 'bin'
-    )
+    dart_bin = checkout_path / 'src/third_party/dart/tools/sdks/dart-sdk/bin'
+
     # Path to the Dart SDK after the buildroot migration.
-    new_dart_bin = checkout_path.join(
-        'src', 'flutter', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
-        'bin'
+    new_dart_bin = (
+        checkout_path / 'src/flutter/third_party/dart/tools/sdks/dart-sdk/bin'
     )
     git_ref = self.m.properties.get('git_ref', '')
-    android_home = checkout_path.join(
-        'src', 'third_party', 'android_tools', 'sdk'
-    )
+    android_home = checkout_path / 'src/third_party/android_tools/sdk'
     android_tmp = self.m.path.mkdtemp()
     env = {
         # Windows Packaging script assumes this is set.
@@ -495,7 +489,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'LUCI_BRANCH':
             self.m.properties.get('release_ref', '').replace('refs/heads/', ''),
         'GIT_BRANCH':
-            self.get_branch(checkout_path.join('flutter')),
+            self.get_branch(checkout_path / 'flutter'),
         'OS':
             'linux' if self.m.platform.name == 'linux' else
             ('darwin' if self.m.platform.name == 'mac' else 'win'),
@@ -504,11 +498,11 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'ANDROID_SDK_HOME':
             str(android_tmp),
         'ANDROID_USER_HOME':
-            str(android_tmp.join('.android')),
+            str(android_tmp / '.android'),
         'LUCI_WORKDIR':
-            str(self.m.path['start_dir']),
+            str(self.m.path.start_dir),
         'LUCI_CLEANUP':
-            str(self.m.path['cleanup']),
+            str(self.m.path.cleanup_dir),
         'REVISION':
             self.m.buildbucket.gitiles_commit.id or '',
         'CLANG_CRASH_DIAGNOSTICS_DIR':
@@ -522,28 +516,25 @@ class RepoUtilApi(recipe_api.RecipeApi):
   def monorepo_environment(self, checkout_path):
     """Returns env and env_prefixes of a monorepo command environment."""
     # Original path to the Dart SDK
-    dart_bin = checkout_path.join(
-        'engine', 'src', 'third_party', 'dart', 'tools', 'sdks', 'dart-sdk',
-        'bin'
+    dart_bin = (
+        checkout_path / 'engine/src/third_party/dart/tools/sdks/dart-sdk/bin'
     )
     # Path to the Dart SDK after the buildroot migration.
-    new_dart_bin = checkout_path.join(
-        'engine', 'src', 'flutter', 'third_party', 'dart', 'tools', 'sdks',
-        'dart-sdk', 'bin'
+    new_dart_bin = (
+        checkout_path /
+        'engine/src/flutter/third_party/dart/tools/sdks/dart-sdk/bin'
     )
     git_ref = self.m.properties.get('git_ref', '')
-    android_home = checkout_path.join(
-        'engine', 'src', 'third_party', 'android_tools', 'sdk'
-    )
+    android_home = checkout_path / 'engine/src/third_party/android_tools/sdk'
     android_tmp = self.m.path.mkdtemp()
     env = {
         # Windows Packaging script assumes this is set.
         'DEPOT_TOOLS':
             str(self.m.depot_tools.root),
         'ENGINE_CHECKOUT_PATH':
-            checkout_path.join('engine'),
+            checkout_path / 'engine',
         'ENGINE_PATH':
-            checkout_path.join('engine'),
+            checkout_path / 'engine',
         'LUCI_CI':
             True,
         'LUCI_PR':
@@ -551,7 +542,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'LUCI_BRANCH':
             self.m.properties.get('release_ref', '').replace('refs/heads/', ''),
         'GIT_BRANCH':
-            self.get_branch(checkout_path.join('flutter')),
+            self.get_branch(checkout_path / 'flutter'),
         'OS':
             'linux' if self.m.platform.name == 'linux' else
             ('darwin' if self.m.platform.name == 'mac' else 'win'),
@@ -560,9 +551,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'ANDROID_SDK_HOME':
             str(android_tmp),
         'ANDROID_USER_HOME':
-            str(android_tmp.join('.android')),
+            str(android_tmp / '.android'),
         'LUCI_WORKDIR':
-            str(self.m.path['start_dir']),
+            str(self.m.path.start_dir),
         'REVISION':
             self.m.buildbucket.gitiles_commit.id or ''
     }
@@ -629,7 +620,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
     if not build:
       self.checkout(
           project,
-          checkout_path=checkout.join('flutter'),
+          checkout_path=checkout / 'flutter',
           url=self.m.properties.get('git_url'),
           ref=self.m.properties.get('git_ref')
       )
@@ -639,8 +630,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
   def ReadBuildConfig(self, checkout_path):
     """Reads an standalone build configuration."""
     config_name = self.m.properties.get('config_name')
-    config_path = checkout_path.join(
-        'flutter', 'ci', 'builders', 'standalone', '%s.json' % config_name
+    config_path = (
+        checkout_path / f'flutter/ci/builders/standalone/{config_name}.json'
     )
     config = self.m.file.read_json(
         'Read build config file', config_path, test_data={}

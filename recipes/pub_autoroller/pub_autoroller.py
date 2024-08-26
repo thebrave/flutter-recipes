@@ -16,7 +16,7 @@ DEPS = [
 
 def RunSteps(api):
   assert api.platform.is_linux, 'This recipe should only be run once per commit, on Linux'
-  checkout_path = api.path['start_dir'].join('flutter')
+  checkout_path = api.path.start_dir / 'flutter'
   api.repo_util.checkout(
       'flutter',
       checkout_path=checkout_path,
@@ -31,18 +31,15 @@ def RunSteps(api):
       env_prefixes,
       api.properties.get('dependencies', []),
   )
-  conductor_dir = checkout_path.join('dev', 'conductor')
+  conductor_dir = checkout_path / 'dev/conductor'
   with api.context(env=env, env_prefixes=env_prefixes, cwd=conductor_dir):
     roll_packages(api, conductor_dir)
 
 
 def roll_packages(api, conductor_dir):
-  token_file = conductor_dir.join('token.txt')
+  token_file = conductor_dir / 'token.txt'
   api.kms.get_secret('pub-roller-github-token.encrypted', token_file)
-  autoroll_script = conductor_dir.join(
-      'bin',
-      'packages_autoroller',
-  )
+  autoroll_script = conductor_dir / 'bin/packages_autoroller'
   api.step(
       'run roll-packages script', [
           autoroll_script,

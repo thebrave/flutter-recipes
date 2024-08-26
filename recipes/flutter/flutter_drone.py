@@ -34,8 +34,7 @@ DEVICELAB_TIMEOUT_SECS = 10 * 60
 def RunShard(api, env, env_prefixes, checkout_path):
   with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout_path):
     cmd_list = [
-        'dart', '--enable-asserts',
-        checkout_path.join('dev', 'bots', 'test.dart')
+        'dart', '--enable-asserts', checkout_path / 'dev/bots/test.dart'
     ]
     if env.get('LOCAL_WEB_SDK'):
       cmd_list.extend(['--local-web-sdk', env.get('LOCAL_WEB_SDK')])
@@ -56,9 +55,9 @@ def RunShard(api, env, env_prefixes, checkout_path):
           cmd_list,
           timeout_secs=deps_timeout_secs
       )
-      api.logs_util.show_logs_stdout(checkout_path.join('error.log'))
+      api.logs_util.show_logs_stdout(checkout_path / 'error.log')
       api.logs_util.upload_test_metrics(
-          checkout_path.join('test_results.json'), '%s_%s' %
+          checkout_path / 'test_results.json', '%s_%s' %
           (api.properties.get('shard'), api.properties.get('subshard'))
       )
 
@@ -71,7 +70,7 @@ def RunSteps(api):
   # If on macOS, reset Xcode in case a previous build failed to do so.
   api.osx_sdk.reset_xcode()
 
-  checkout_path = api.path['start_dir'].join('flutter')
+  checkout_path = api.path.start_dir / 'flutter'
   api.flutter_bcid.report_stage(BcidStage.FETCH.value)
   api.repo_util.checkout(
       'flutter',

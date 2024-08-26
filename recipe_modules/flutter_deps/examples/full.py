@@ -50,9 +50,8 @@ def RunSteps(api):
   api.assertions.assertTrue(env.get('FIREFOX_EXECUTABLE'))
   api.assertions.assertEqual(
       env_prefixes.get('PATH'), [
-          api.path['cache'].join('chrome', 'chrome'),
-          api.path['cache'].join('chrome',
-                                 'drivers'), api.path['cache'].join('firefox')
+          api.path.cache_dir / 'chrome/chrome',
+          api.path.cache_dir / 'chrome/drivers', api.path.cache_dir / 'firefox'
       ]
   )
   api.flutter_deps.go_sdk(env, env_prefixes, 'v4')
@@ -100,12 +99,12 @@ def RunSteps(api):
     api.flutter_deps.gh_cli(env, env_prefixes, 'latest')
 
   # Gems dependency requires to run from a flutter_environment.
-  checkout_path = api.path['start_dir'].join('flutter sdk')
+  checkout_path = api.path.start_dir / 'flutter sdk'
   env, env_prefixes = api.repo_util.flutter_environment(checkout_path)
 
 
 def GenTests(api):
-  checkout_path = api.path['start_dir'].join('flutter sdk')
+  checkout_path = api.path.start_dir / 'flutter sdk'
   yield api.test(
       'basic',
       api.repo_util.flutter_environment_data(checkout_path),
@@ -119,15 +118,20 @@ def GenTests(api):
       'mac',
       api.platform('mac', 64),
       api.properties(
-          dependencies=[{"dependency": "xcode"},
-                        {'dependency': 'chrome_and_driver'}]
+          dependencies=[{
+              "dependency": "xcode"
+          }, {
+              'dependency': 'chrome_and_driver'
+          }]
       ),
       api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
       api.path.exists(
-          api.path['cache'].join(
+          (
+              api.path.cache_dir /
               'osx_sdk/XCode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift'
           ),
-          api.path['cache'].join(
+          (
+              api.path.cache_dir /
               'osx_sdk/XCode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.0'
           ),
       ),
@@ -139,16 +143,21 @@ def GenTests(api):
       'mac_old',
       api.platform('mac', 64),
       api.properties(
-          dependencies=[{"dependency": "xcode"}, {
-              'dependency': 'chrome_and_driver', 'version': 'version:117.0'
+          dependencies=[{
+              "dependency": "xcode"
+          }, {
+              'dependency': 'chrome_and_driver',
+              'version': 'version:117.0'
           }]
       ),
       api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
       api.path.exists(
-          api.path['cache'].join(
+          (
+              api.path.cache_dir /
               'osx_sdk/XCode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift'
           ),
-          api.path['cache'].join(
+          (
+              api.path.cache_dir /
               'osx_sdk/XCode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.0'
           ),
       ),

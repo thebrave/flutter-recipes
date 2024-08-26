@@ -13,7 +13,7 @@ DEPS = [
 def RunSteps(api):
   api.flutter_bcid.report_stage('one')
   api.flutter_bcid.upload_provenance(
-      api.path['cache'].join('file.zip'), 'gs://bucket/final_path/file.txt'
+      api.path.cache_dir / 'file.zip', 'gs://bucket/final_path/file.txt'
   )
   api.flutter_bcid.is_official_build()
   api.flutter_bcid.is_prod_build()

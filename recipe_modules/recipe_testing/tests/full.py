@@ -25,7 +25,7 @@ PROPERTIES = InputProperties
 
 
 def RunSteps(api, props):  # pylint: disable=invalid-name
-  recipes_path = api.path["start_dir"].join("recipe_path")
+  recipes_path = api.path.start_dir / "recipe_path"
 
   api.recipe_testing.run_lint(recipes_path, allowlist=r"allowed_module")
   api.recipe_testing.run_unit_tests(recipes_path)

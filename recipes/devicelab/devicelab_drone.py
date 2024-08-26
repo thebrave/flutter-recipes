@@ -64,7 +64,7 @@ def RunSteps(api):
     raise ValueError('A task_name property is required')
 
   api.flutter_bcid.report_stage(BcidStage.FETCH.value)
-  flutter_path = api.path.mkdtemp().join('flutter sdk')
+  flutter_path = api.path.mkdtemp() / 'flutter sdk'
   api.repo_util.checkout(
       'flutter',
       flutter_path,
@@ -106,10 +106,10 @@ def RunSteps(api):
   )
   benchmark_tags = api.json.dumps(device_tags)
 
-  devicelab_path = flutter_path.join('dev', 'devicelab')
+  devicelab_path = flutter_path / 'dev/devicelab'
   git_branch = api.properties.get('git_branch')
   # Create tmp file to store results in
-  results_path = api.path.mkdtemp(prefix='results').join('results')
+  results_path = api.path.mkdtemp(prefix='results') / 'results'
   # Run test
   runner_params = [
       '-t', task_name, '--results-file', results_path, '--luci-builder',
@@ -298,7 +298,7 @@ def uploadMetricsToCas(api, results_path):
 
 
 def GenTests(api):
-  checkout_path = api.path['cleanup'].join('tmp_tmp_1', 'flutter sdk')
+  checkout_path = api.path.cleanup_dir / 'tmp_tmp_1/flutter sdk'
   avd_version = "android_31_google_apis_x64.textpb"
   avd_cipd_version = "AVDCIPDVERSION"
   yield api.test(

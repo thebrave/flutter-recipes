@@ -4,11 +4,6 @@
 
 """Recipe for framework tests running with web-engine repository tests."""
 
-import contextlib
-import copy
-
-from recipe_engine import recipe_api
-
 from PB.recipes.flutter.engine.engine import InputProperties
 from PB.recipes.flutter.engine.engine import EnvProperties
 
@@ -41,30 +36,30 @@ DRONE_TIMEOUT_SECS = 3600 * 3  # 3 hours.
 
 def Archive(api, target):
   checkout = GetCheckoutPath(api)
-  build_dir = checkout.join('out', target)
+  build_dir = checkout / 'out' / target
   cas_dir = api.path.mkdtemp('cas-directory')
-  cas_out = cas_dir.join('out', target)
+  cas_out = cas_dir / 'out' / target
   api.file.copytree('Copy wasm_release', build_dir, cas_out)
-  source_dir = checkout.join('flutter', 'prebuilts')
-  cas_source = cas_dir.join('flutter', 'prebuilts')
+  source_dir = checkout / 'flutter/prebuilts'
+  cas_source = cas_dir / 'flutter/prebuilts'
   api.file.copytree('Copy source', source_dir, cas_source)
   return api.cas_util.upload(cas_dir, step_name='Archive Flutter Web SDK CAS')
 
 
 def GetCheckoutPath(api):
-  return api.path['cache'].join('builder', 'src')
+  return api.path.cache_dir / 'builder/src'
 
 
 def RunSteps(api, properties, env_properties):
   """Steps to checkout flutter engine and execute web tests."""
   # Collect memory/cpu/process before task execution.
   api.os_utils.collect_os_info()
-  cache_root = api.path['cache'].join('builder')
+  cache_root = api.path.cache_dir / 'builder'
   checkout = GetCheckoutPath(api)
 
   if properties.clobber:
     api.file.rmtree('Clobber cache', cache_root)
-  api.file.rmtree('Clobber build output', checkout.join('out'))
+  api.file.rmtree('Clobber build output', checkout / 'out')
 
   api.file.ensure_directory('Ensure checkout cache', cache_root)
   env, env_prefixes = api.repo_util.engine_environment(cache_root)
@@ -93,7 +88,7 @@ def RunSteps(api, properties, env_properties):
     url = 'https://github.com/flutter/flutter'
 
     # Checkout flutter to run the web integration tests with the local engine.
-    flutter_checkout_path = api.path['cache'].join('flutter')
+    flutter_checkout_path = api.path.cache_dir / 'flutter'
     api.repo_util.checkout(
         'flutter', checkout_path=flutter_checkout_path, url=url, ref=ref
     )
@@ -109,17 +104,15 @@ def RunSteps(api, properties, env_properties):
     deps = api.properties.get('dependencies', [])
     api.flutter_deps.required_deps(f_env, f_env_prefix, deps)
     with api.context(cwd=cache_root, env=f_env, env_prefixes=f_env_prefix):
-      configure_script = checkout.join(
-          'flutter',
-          'tools',
-          'configure_framework_commit.sh',
+      configure_script = (
+          checkout / 'flutter/tools/configure_framework_commit.sh'
       )
       api.step(
           'configure framework commit',
           [configure_script],
           infra_step=True,
       )
-      commit_no_file = flutter_checkout_path.join('flutter_ref.txt',)
+      commit_no_file = flutter_checkout_path / 'flutter_ref.txt'
       ref = api.file.read_text(
           'read commit no', commit_no_file, 'b6efc758213fdfffee1234465'
       )
@@ -166,10 +159,11 @@ def generate_targets(api, cas_hash, ref, url, deps):
 def GenTests(api):
   yield api.test(
       'linux-pre-submit',
-      api.repo_util.flutter_environment_data(api.path['cache'].join('flutter')),
+      api.repo_util.flutter_environment_data(api.path.cache_dir / 'flutter'),
       api.properties(
           dependencies=[{
-              'dependency': 'chrome_and_driver', 'version': 'version:96.2'
+              'dependency': 'chrome_and_driver',
+              'version': 'version:96.2'
           }],
           drone_dimensions=['os=Linux'],
           shard='web_tests',

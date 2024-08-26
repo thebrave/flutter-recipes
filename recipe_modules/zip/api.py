@@ -13,8 +13,8 @@ class ZipApi(recipe_api.RecipeApi):
 
     Usage:
       pkg = api.zip.make_package(root, output)
-      pkg.add_file(root.join('file'))
-      pkg.add_directory(root.join('directory'))
+      pkg.add_file(root / 'file')
+      pkg.add_directory(root / 'directory')
       yield pkg.zip('zipping step')
 
     Args:
@@ -110,9 +110,11 @@ class ZipPackage(object):
       path: absolute path to a file, should be in |root| subdirectory.
       archive_name: name of the file in the archive, if non-None
     """
-    assert self._root.is_parent_of(path), path
+    assert self._root in path.parents, path
     self._entries.append({
-        'type': 'file', 'path': str(path), 'archive_name': archive_name
+        'type': 'file',
+        'path': str(path),
+        'archive_name': archive_name
     })
 
   def add_directory(self, path):
@@ -122,7 +124,7 @@ class ZipPackage(object):
       path: absolute path to a directory, should be in |root| subdirectory.
     """
     # TODO(vadimsh): Implement 'exclude' filter.
-    assert self._root.is_parent_of(path) or path == self._root, path
+    assert self._root in path.parents or path == self._root, path
     self._entries.append({
         'type': 'dir',
         'path': str(path),

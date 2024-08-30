@@ -12,7 +12,6 @@ from PB.recipe_modules.flutter.recipe_testing.tests.full import InputProperties
 DEPS = [
     "flutter/recipe_testing",
     "fuchsia/buildbucket_util",
-    "fuchsia/commit_queue",
     "recipe_engine/json",
     "recipe_engine/path",
     "recipe_engine/properties",
@@ -48,7 +47,8 @@ def GenTests(api):  # pylint: disable=invalid-name
 
   yield (
       api.buildbucket_util.test("recursive_ls") + api.recipe_testing.options() +
-      api.commit_queue.test_data(project, "empty") + test.affected_recipes_data(
+      api.recipe_testing.commit_queue_config_data(project, "empty") +
+      test.affected_recipes_data(
           affected_recipes=[],
           recipe_files=["flutter/flutter.py", "abc.resources/bar.py", "abc.py"],
       )
@@ -56,7 +56,8 @@ def GenTests(api):  # pylint: disable=invalid-name
 
   yield (
       api.buildbucket_util.test("recipes_cfg") + api.recipe_testing.options() +
-      api.commit_queue.test_data(project, "empty") + test.affected_recipes_data(
+      api.recipe_testing.commit_queue_config_data(project, "empty") +
+      test.affected_recipes_data(
           affected_recipes=[],
           recipe_files=["a.py", "b.py", "c.py", "d.py", "e.py"],
           changed_files=["infra/config/recipes.cfg"],
@@ -65,7 +66,8 @@ def GenTests(api):  # pylint: disable=invalid-name
 
   yield (
       api.buildbucket_util.test("recipe_proto") + api.recipe_testing.options() +
-      api.commit_queue.test_data(project) + test.affected_recipes_data(
+      api.recipe_testing.commit_queue_config_data(project) +
+      test.affected_recipes_data(
           affected_recipes=[],
           changed_files=["recipe_proto/infra/flutter.proto"],
       )
@@ -73,7 +75,8 @@ def GenTests(api):  # pylint: disable=invalid-name
 
   yield (
       api.buildbucket_util.test("no_build_old_build_ignored_build") +
-      api.recipe_testing.options() + api.commit_queue.test_data(project) +
+      api.recipe_testing.options() +
+      api.recipe_testing.commit_queue_config_data(project) +
       test.affected_recipes_data(["flutter"]) + test.build_data(
           "fuchsia/try/cobalt-x64-linux",
           "cobalt",
@@ -90,7 +93,7 @@ def GenTests(api):  # pylint: disable=invalid-name
       api.buildbucket_util.test("excluded") + api.recipe_testing.options([
           api.recipe_testing.project(excluded_buckets=("try",))
       ]) + api.properties(ignored_buckets=["try"]) +
-      api.commit_queue.test_data(project) +
+      api.recipe_testing.commit_queue_config_data(project) +
       test.affected_recipes_data(["flutter"]) + api.post_process(
           post_process.MustRun,
           "excluding 3 builders from bucket flutter/try",
@@ -99,7 +102,8 @@ def GenTests(api):  # pylint: disable=invalid-name
 
   yield (
       api.buildbucket_util.test("two_pass_one_skip") +
-      api.recipe_testing.options() + api.commit_queue.test_data(project) +
+      api.recipe_testing.options() +
+      api.recipe_testing.commit_queue_config_data(project) +
       test.affected_recipes_data(["fuchsia"]) +
       test.build_data("fuchsia/try/cobalt-x64-linux", "cobalt", skip=True) +
       test.build_data(
@@ -110,7 +114,8 @@ def GenTests(api):  # pylint: disable=invalid-name
 
   yield (
       api.buildbucket_util.test("fuchsia_recipe_unaffected") +
-      api.recipe_testing.options() + api.commit_queue.test_data(project) +
+      api.recipe_testing.options() +
+      api.recipe_testing.commit_queue_config_data(project) +
       test.affected_recipes_data(["qemu"]) +
       test.build_data("fuchsia/try/cobalt-x64-linux", "cobalt", skip=True) +
       test.build_data("fuchsia/try/core.x64-debug", "fuchsia", skip=True) +
@@ -119,14 +124,14 @@ def GenTests(api):  # pylint: disable=invalid-name
 
   yield (
       api.buildbucket_util.test("recipes") + api.recipe_testing.options() +
-      api.commit_queue.test_data(project, "recipes-only") +
+      api.recipe_testing.commit_queue_config_data(project, "recipes-only") +
       test.affected_recipes_data(["recipes"]) +
       test.build_data("fuchsia/try/recipes", "recipes")
   )
 
   yield (
       api.buildbucket_util.test("with_buildbucket") +
-      api.commit_queue.test_data(project) +
+      api.recipe_testing.commit_queue_config_data(project) +
       test.affected_recipes_data(["fuchsia"]) + test.build_data(
           "fuchsia/try/cobalt-x64-linux",
           "cobalt",
@@ -160,7 +165,7 @@ def GenTests(api):  # pylint: disable=invalid-name
 
   yield (
       api.buildbucket_util.test("recipes_with_buildbucket") +
-      api.commit_queue.test_data(project, "recipes-only") +
+      api.recipe_testing.commit_queue_config_data(project, "recipes-only") +
       test.affected_recipes_data(["recipes"]) +
       test.build_data("fuchsia/try/recipes", "recipes", using_led=False) +
       api.recipe_testing.options(use_buildbucket=True)
@@ -168,7 +173,7 @@ def GenTests(api):  # pylint: disable=invalid-name
 
   yield (
       api.buildbucket_util.test("no_latest_cl") + api.recipe_testing.options() +
-      api.commit_queue.test_data(project) +
+      api.recipe_testing.commit_queue_config_data(project) +
       test.affected_recipes_data(["fuchsia"]) +
       test.build_data("fuchsia/try/core.x64-debug", "fuchsia", cl_cached=True) +
       test.build_data(

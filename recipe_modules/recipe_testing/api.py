@@ -11,10 +11,12 @@ import functools
 from google.protobuf import json_format as jsonpb
 from google.protobuf import timestamp_pb2
 
-from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 from PB.go.chromium.org.luci.buildbucket.proto import (
     builds_service as builds_service_pb2,
+    common as common_pb2,
 )
+from PB.go.chromium.org.luci.cv.api.config.v2 import config as config_pb2
+
 from PB.recipe_modules.flutter.recipe_testing import properties as properties_pb2
 from recipe_engine import recipe_api
 from RECIPE_MODULES.flutter.swarming_retry import api as swarming_retry_api
@@ -365,7 +367,7 @@ class RecipeTestingApi(recipe_api.RecipeApi):
     builders = set()
     for project in config.projects:
       project_builders = set(
-          self.m.commit_queue.all_tryjobs(
+          self._all_tryjobs(
               project=project.name,
               include_unrestricted=project.include_unrestricted,
               include_restricted=project.include_restricted,
@@ -549,3 +551,46 @@ class RecipeTestingApi(recipe_api.RecipeApi):
       cl_information = \
           self.m.gerrit_util.get_gerrit_cl_details(host, cl_number)
       return cl_information.get('branch')
+
+  def _all_tryjobs(
+      self, project, include_unrestricted, include_restricted, config_name
+  ):
+    cfg = self.m.luci_config.commit_queue(
+        project=project,
+        config_name=config_name or "commit-queue.cfg",
+    )
+    builders = set()
+    config_groups = cfg.config_groups if cfg else []
+    for group in config_groups:
+      triggering_repos = set()
+      for g in group.gerrit:
+        gitiles_host = g.url.replace("-review", "")
+        for p in g.projects:
+          triggering_repos.add(f"{gitiles_host}/{p.name}")
+
+      for builder in group.verifiers.tryjob.builders:
+        # Exclude experimental/optional builders.
+        if builder.experiment_percentage or builder.includable_only:
+          continue
+        # Exclude non-FULL_RUN builders.
+        # mode_allowlist includes "FULL_RUN" by default.
+        if "FULL_RUN" not in (builder.mode_allowlist or ("FULL_RUN",)):
+          continue
+
+        if (not include_unrestricted and
+            builder.result_visibility != config_pb2.COMMENT_LEVEL_RESTRICTED):
+          continue
+        if (not include_restricted and
+            builder.result_visibility == config_pb2.COMMENT_LEVEL_RESTRICTED):
+          continue
+        # If the first location filter is not an exclude rule, then
+        # the builder only runs on an allowlisted (likely very
+        # small) set of file paths and should probably not be
+        # included by default.
+        if (builder.location_filters and
+            not builder.location_filters[0].exclude):
+          continue
+        builders.add(builder.name)
+    builders = sorted(builders)
+    self.m.step.empty("all tryjobs").presentation.logs["tryjobs"] = builders
+    return builders

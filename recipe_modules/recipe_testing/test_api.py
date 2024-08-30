@@ -18,6 +18,260 @@ from recipe_engine import recipe_test_api
 ONE_DAY = int(datetime.timedelta(days=1).total_seconds())
 MAX_BUILD_AGE_SECONDS = int(datetime.timedelta(days=28).total_seconds())
 
+DEFAULT_COMMIT_QUEUE_CFGS = {
+    "default":
+        """
+    submit_options: {
+      max_burst: 4
+      burst_delay: {
+        seconds: 480
+      }
+    }
+
+    config_groups: {
+      gerrit: {
+        url: "https://fuchsia-review.googlesource.com"
+        projects: {
+          name: "cobalt"
+          ref_regexp: "refs/heads/.+"
+        }
+      }
+
+      verifiers: {
+        gerrit_cq_ability: {
+          committer_list: "project-fuchsia-committers"
+          dry_run_access_list: "project-fuchsia-tryjob-access"
+        }
+        tryjob: {
+          builders: {
+            name: "fuchsia/try/cobalt-x64-linux"
+          }
+        }
+      }
+    }
+
+    config_groups: {
+      gerrit: {
+        url: "https://fuchsia-review.googlesource.com"
+        projects: {
+          name: "docs"
+          ref_regexp: "refs/heads/.+"
+        }
+      }
+
+      verifiers: {
+        gerrit_cq_ability: {
+          committer_list: "project-fuchsia-committers"
+          dry_run_access_list: "project-fuchsia-tryjob-access"
+        }
+        tryjob: {
+          builders: {
+            name: "fuchsia/try/doc-checker"
+            experiment_percentage: 100
+          }
+          builders: {
+            name: "fuchsia/try/secret-tryjob"
+            result_visibility: COMMENT_LEVEL_RESTRICTED
+          }
+        }
+      }
+    }
+
+    config_groups: {
+      gerrit: {
+        url: "https://fuchsia-review.googlesource.com"
+        projects: {
+          name: "fuchsia"
+          ref_regexp: "refs/heads/.+"
+        }
+      }
+      verifiers: {
+        gerrit_cq_ability: {
+          committer_list: "project-fuchsia-committers"
+          dry_run_access_list: "project-fuchsia-tryjob-access"
+        }
+        tree_status: {
+          url: "https://fuchsia-stem-status.appspot.com"
+        }
+
+        tryjob: {
+          builders: {
+            name: "fuchsia/try/core.arm64-debug"
+          }
+          builders: {
+            name: "fuchsia/try/core.x64-debug"
+          }
+        }
+      }
+    }
+    """,
+    "recipes-only":
+        """
+    submit_options: {
+      max_burst: 4
+      burst_delay: {
+        seconds: 480
+      }
+    }
+
+    config_groups: {
+      gerrit: {
+        url: "https://fuchsia-review.googlesource.com"
+        projects: {
+          name: "cobalt"
+          ref_regexp: "refs/heads/.+"
+        }
+      }
+
+      verifiers: {
+        gerrit_cq_ability: {
+          committer_list: "project-fuchsia-committers"
+          dry_run_access_list: "project-fuchsia-tryjob-access"
+        }
+        tryjob: {
+          builders: {
+            name: "fuchsia/try/recipes"
+          }
+        }
+      }
+    }
+    """,
+    "only-fuchsia-debug":
+        """
+    submit_options: {
+      max_burst: 4
+      burst_delay: {
+        seconds: 480
+      }
+    }
+
+    config_groups: {
+      gerrit: {
+        url: "https://fuchsia-review.googlesource.com"
+        projects: {
+          name: "fuchsia"
+          ref_regexp: "refs/heads/.+"
+        }
+      }
+      verifiers: {
+        gerrit_cq_ability: {
+          committer_list: "project-fuchsia-committers"
+          dry_run_access_list: "project-fuchsia-tryjob-access"
+        }
+        tree_status: {
+          url: "https://fuchsia-stem-status.appspot.com"
+        }
+
+        tryjob: {
+          builders: {
+            name: "fuchsia/try/core.arm64-debug"
+          }
+          builders: {
+            name: "fuchsia/try/core.x64-debug"
+          }
+        }
+      }
+    }
+    """,
+    "includable_only":
+        """
+    submit_options: {
+      max_burst: 4
+      burst_delay: {
+        seconds: 480
+      }
+    }
+
+    config_groups: {
+      gerrit: {
+        url: "https:xx//fuchsia-review.googlesource.com"
+        projects: {
+          name: "fuchsia"
+          ref_regexp: "refs/heads/.+"
+        }
+      }
+      verifiers: {
+        gerrit_cq_ability: {
+          committer_list: "project-fuchsia-committers"
+          dry_run_access_list: "project-fuchsia-tryjob-access"
+        }
+        tree_status: {
+          url: "https://fuchsia-stem-status.appspot.com"
+        }
+
+        tryjob: {
+          builders: {
+            name: "fuchsia/try/core.arm64-debug"
+            includable_only: true
+          }
+        }
+      }
+    }
+    """,
+    "mode_allowlist":
+        """
+    config_groups: {
+      verifiers: {
+        tryjob: {
+          builders: {
+            name: "fuchsia/tricium/tricium"
+            mode_allowlist: "ANALYZER_RUN"
+          }
+        }
+      }
+    }
+    """,
+    "location_filters":
+        """
+    config_groups: {
+      verifiers: {
+        tryjob: {
+          builders: {
+            name: "fuchsia/foo/foo"
+            location_filters {
+              path_regexp: "only-run-on-this-path"
+            }
+          }
+          builders: {
+            name: "fuchsia/foo/bar"
+            location_filters {
+              path_regexp: "don't-run-on-this-path"
+              exclude: true
+            }
+          }
+        }
+      }
+    }
+    """,
+    "empty":
+        """
+    submit_options: {
+      max_burst: 4
+      burst_delay: {
+        seconds: 480
+      }
+    }
+
+    config_groups: {
+      gerrit: {
+        url: "https://fuchsia-review.googlesource.com"
+        projects: {
+          name: "fuchsia"
+          ref_regexp: "refs/heads/.+"
+        }
+      }
+      verifiers: {
+        gerrit_cq_ability: {
+          committer_list: "project-fuchsia-committers"
+          dry_run_access_list: "project-fuchsia-tryjob-access"
+        }
+        tree_status: {
+          url: "https://fuchsia-stem-status.appspot.com"
+        }
+      }
+    }
+    """,
+}
 
 class FlutterRecipeTestingTestApi(recipe_test_api.RecipeTestApi):
 
@@ -188,3 +442,9 @@ class FlutterRecipeTestingTestApi(recipe_test_api.RecipeTestApi):
         search_results,
         step_name="get builders.get green tryjobs",
     )
+
+  def commit_queue_config_data(
+      self, project, data="default", config_name="commit-queue.cfg"
+  ):
+    data = DEFAULT_COMMIT_QUEUE_CFGS.get(data, data)
+    return self.m.luci_config.mock_config(project, config_name, data)

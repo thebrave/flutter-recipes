@@ -5,10 +5,10 @@
 DEPS = [
     "flutter/gerrit_util",
     "fuchsia/buildbucket_util",
-    "fuchsia/commit_queue",
     "fuchsia/gerrit",
     "fuchsia/git",
     "fuchsia/gitiles",
+    "fuchsia/luci_config",
     "flutter/subbuild",
     "flutter/swarming_retry",
     "recipe_engine/buildbucket",

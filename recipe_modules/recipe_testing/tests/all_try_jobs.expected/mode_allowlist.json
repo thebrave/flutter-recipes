@@ -1,0 +1,39 @@
+[
+  {
+    "cmd": [],
+    "name": "fetch flutter commit-queue.cfg"
+  },
+  {
+    "cmd": [
+      "prpc",
+      "call",
+      "-format=json",
+      "config.luci.app",
+      "config.service.v2.Configs.GetConfig"
+    ],
+    "infra_step": true,
+    "name": "fetch flutter commit-queue.cfg.get",
+    "stdin": "{\n  \"config_set\": \"projects/flutter\",\n  \"path\": \"commit-queue.cfg\"\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"raw_content\": \"CiAgICBjb25maWdfZ3JvdXBzOiB7CiAgICAgIHZlcmlmaWVyczogewogICAgICAgIHRyeWpvYjogewogICAgICAgICAgYnVpbGRlcnM6IHsKICAgICAgICAgICAgbmFtZTogImZ1Y2hzaWEvdHJpY2l1bS90cmljaXVtIgogICAgICAgICAgICBtb2RlX2FsbG93bGlzdDogIkFOQUxZWkVSX1JVTiIKICAgICAgICAgIH0KICAgICAgICB9CiAgICAgIH0KICAgIH0KICAgIA==\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "all tryjobs",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@tryjobs@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "builders"
+  },
+  {
+    "name": "$result"
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "cmd": [],
+    "name": "fetch flutter commit-queue.cfg"
+  },
+  {
+    "cmd": [
+      "prpc",
+      "call",
+      "-format=json",
+      "config.luci.app",
+      "config.service.v2.Configs.GetConfig"
+    ],
+    "infra_step": true,
+    "name": "fetch flutter commit-queue.cfg.get",
+    "stdin": "{\n  \"config_set\": \"projects/flutter\",\n  \"path\": \"commit-queue.cfg\"\n}",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"raw_content\": \"CiAgICBjb25maWdfZ3JvdXBzOiB7CiAgICAgIHZlcmlmaWVyczogewogICAgICAgIHRyeWpvYjogewogICAgICAgICAgYnVpbGRlcnM6IHsKICAgICAgICAgICAgbmFtZTogImZ1Y2hzaWEvZm9vL2ZvbyIKICAgICAgICAgICAgbG9jYXRpb25fZmlsdGVycyB7CiAgICAgICAgICAgICAgcGF0aF9yZWdleHA6ICJvbmx5LXJ1bi1vbi10aGlzLXBhdGgiCiAgICAgICAgICAgIH0KICAgICAgICAgIH0KICAgICAgICAgIGJ1aWxkZXJzOiB7CiAgICAgICAgICAgIG5hbWU6ICJmdWNoc2lhL2Zvby9iYXIiCiAgICAgICAgICAgIGxvY2F0aW9uX2ZpbHRlcnMgewogICAgICAgICAgICAgIHBhdGhfcmVnZXhwOiAiZG9uJ3QtcnVuLW9uLXRoaXMtcGF0aCIKICAgICAgICAgICAgICBleGNsdWRlOiB0cnVlCiAgICAgICAgICAgIH0KICAgICAgICAgIH0KICAgICAgICB9CiAgICAgIH0KICAgIH0KICAgIA==\"@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "all tryjobs",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@tryjobs@fuchsia/foo/bar@@@",
+      "@@@STEP_LOG_END@tryjobs@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "fuchsia/foo/bar"
+    ],
+    "name": "builders"
+  },
+  {
+    "name": "$result"
+  }
+]

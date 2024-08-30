@@ -59,6 +59,12 @@ def GenTests(api):
       api.step_data('Detect installation (2)', stdout=api.json.output([])),
   )
   yield api.test(
+      'win_mismatched_version',
+      api.platform('win', 64),
+      api.step_data('Detect installation', stdout=api.json.output([{"isComplete": True}])),
+      api.step_data('Detect installation (2)', stdout=api.json.output([{"isComplete": True}])),
+  )
+  yield api.test(
       'win_vswherenoexits', api.platform('win', 64),
       api.os_utils.vswhereexists(False)
   )
@@ -67,11 +73,11 @@ def GenTests(api):
       api.platform('win', 64),
       api.step_data(
           'Detect installation',
-          stdout=api.json.output([{'catalog': {'productLineVersion': '2019'}}])
+          stdout=api.json.output([{'isComplete': True, 'catalog': {'productLineVersion': '2019'}}])
       ),
       api.step_data(
           'Detect installation (2)',
-          stdout=api.json.output([{'catalog': {'productLineVersion': '2019'}}])
+          stdout=api.json.output([{'isComplete': True, 'catalog': {'productLineVersion': '2019'}}])
       ),
   )
   yield api.test(

@@ -212,6 +212,6 @@ def GenTests(api):
       api.platform.name('win'),
       api.step_data(
           'VSBuild.Detect installation',
-          stdout=api.json.output([{'catalog': {'productLineVersion': '2019'}}])
+          stdout=api.json.output([{'isComplete': True, 'catalog': {'productLineVersion': '2019'}}])
       ),
   )

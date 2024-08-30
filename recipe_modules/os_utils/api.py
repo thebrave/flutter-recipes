@@ -834,6 +834,8 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
     device_os = self.m.properties.get('device_os', '')
     return device_os.lower().startswith('ios-')
 
+  # TODO(fujino): Use the Flutter tool's logic rather than duplicating here
+  # https://github.com/flutter/flutter/issues/154453.
   def is_vs_installed(self, version=None):
     if not self.m.platform.is_win:
       return False
@@ -860,12 +862,21 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
         stdout=self.m.json.output()
     )
 
+    installations = result.stdout
+    complete_installations = [
+        i for i in installations if i.get("isComplete", False)
+    ]
+
+    # If there are no complete installations we need to re-install
+    if len(complete_installations) == 0:
+      return False
+
     # If no version is provided any vs_build installed version is ok.
     if not version:
-      return len(result.stdout) > 0
+      return True
 
     # If version is provided we look for that specific version in the installations.
-    for installation in result.stdout:
+    for installation in complete_installations:
       if installation.get('catalog', {}).get('productLineVersion') == version:
         return True
 

@@ -1,0 +1,22 @@
+{
+    // Hide RECIPE_MODULES hack to avoid duplicates in the explorer and search.
+    "files.exclude": {
+        ".vscode/RECIPE_MODULES/**": true
+    },
+    "search.exclude": {
+        ".vscode/RECIPE_MODULES/**": true
+    },
+    // Virtual environment created by the recipe engine.
+    "python.defaultInterpreterPath": "./.recipe_deps/_venv/normal/bin/python",
+    "python.analysis.extraPaths": [
+        // Protos
+        "./.recipe_deps/_pb3",
+        // Other recipe repos we depend on.
+        "./.recipe_deps/dart",
+        "./.recipe_deps/depot_tools",
+        "./.recipe_deps/fuchsia",
+        "./.recipe_deps/recipe_engine",
+        // Trick to allow resolution of RECIPE_MODULES.* imports.
+        "./.vscode"
+    ],
+}

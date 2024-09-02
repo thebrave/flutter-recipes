@@ -13,7 +13,6 @@ from recipe_engine.recipe_api import Property
 
 DEPS = [
     'flutter/recipe_testing',
-    'fuchsia/commit_queue',
     'fuchsia/gerrit',
     'fuchsia/git',
     'fuchsia/git_checkout',

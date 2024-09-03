@@ -634,6 +634,10 @@ class RepoUtilApi(recipe_api.RecipeApi):
         checkout_path / f'flutter/ci/builders/standalone/{config_name}.json'
     )
     config = self.m.file.read_json(
-        'Read build config file', config_path, test_data={}
+        'Read build config file',
+        config_path,
+        test_data={
+            "name": "flutter/build",
+        }
     )
     return config

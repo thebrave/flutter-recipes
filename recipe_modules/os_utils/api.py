@@ -841,10 +841,9 @@ See https://github.com/flutter/flutter/issues/103511 for more context.
       return False
 
     vswhere_path = self.m.path.join(
-        os.environ.get('PROGRAMFILES(X86)'),
-        'Microsoft Visual Studio',
-        'Installer',
-        'vswhere.exe',
+        'C:\\Program Files (x86)'
+        if self._test_data.enabled else os.environ.get('PROGRAMFILES(X86)'),
+        'Microsoft Visual Studio\\Installer\\vswhere.exe'
     )
 
     # Return mocked result for testing.

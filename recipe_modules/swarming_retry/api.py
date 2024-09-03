@@ -339,16 +339,9 @@ class LedTask(Task):
         )
 
     res = self._led_data.then("launch", "-real-build")
-    host = res.launch_result.swarming_hostname
-    task_id = res.launch_result.task_id or str(res.launch_result.build_id)
-    build_url_swarming = 'https://ci.chromium.org/swarming/task/%s?server=%s' % (
-        task_id,
-        res.launch_result.swarming_hostname,
-    )
-    build_url_bb = 'https://%s/build/%s' % (
-        res.launch_result.buildbucket_hostname, task_id
-    )
-    build_url = build_url_swarming if res.launch_result.task_id else build_url_bb
+    host = res.launch_result.buildbucket_hostname
+    task_id = str(res.launch_result.build_id)
+    build_url = res.launch_result.build_url
     return self._api.swarming_retry.Attempt(
         host=host,
         task_id=task_id,

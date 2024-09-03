@@ -63,8 +63,7 @@ def RunSteps(api):
 def GenTests(api):
   yield (
       api.test(
-          'force_get_candidate_branch',
-          api.expect_exception('ValueError'),
+          'force_get_candidate_branch', api.expect_exception('ValueError'),
           api.properties(
               force_get_release_candidate_branch=True,
               git_branch='beta',
@@ -72,6 +71,7 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               clobber=True,
+              config_name='build_config.json',
               package_sharding='shard1',
               channel='stable',
               env_variables={"key1": "value1"}
@@ -93,6 +93,7 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               clobber=True,
+              config_name='build_config.json',
               package_sharding='shard1',
               channel='stable',
               env_variables={"key1": "value1"}
@@ -126,6 +127,7 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/heads/flutter-3.2-candidate.5',
               clobber=True,
+              config_name='build_config.json',
               package_sharding='shard1',
               channel='stable',
               env_variables={"key1": "value1"}
@@ -159,17 +161,16 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/heads/flutter-3.2-candidate.5',
               clobber=True,
+              config_name='build_config.json',
               package_sharding='shard1',
               channel='stable',
               env_variables={"key1": "value1"}
           ), api.repo_util.flutter_environment_data(),
           api.step_data(
-              'git rev-parse',
-              stdout=api.raw_io.output_text('abchash')
+              'git rev-parse', stdout=api.raw_io.output_text('abchash')
           ),
           api.step_data(
-              'git rev-parse (2)',
-              stdout=api.raw_io.output_text('defhash')
+              'git rev-parse (2)', stdout=api.raw_io.output_text('defhash')
           ),
           api.step_data(
               'Identify branches.git branch',
@@ -200,6 +201,7 @@ def GenTests(api):
               git_url='https://github.com/flutter/engine',
               git_ref='refs/pull/1/head',
               clobber=True,
+              config_name='build_config.json',
               package_sharding='shard1',
               channel='stable',
           ), api.repo_util.flutter_environment_data(),
@@ -237,16 +239,23 @@ def GenTests(api):
   )
   yield api.test(
       'monorepo_release', api.repo_util.flutter_environment_data(),
-      api.properties(git_branch='beta', clobber=True),
-      api.monorepo.ci_build(git_ref='refs/heads/beta'), api.platform('mac', 64)
+      api.properties(
+          git_branch='beta',
+          clobber=True,
+          config_name='build_config.json',
+      ), api.monorepo.ci_build(git_ref='refs/heads/beta'),
+      api.platform('mac', 64)
   )
   yield api.test(
       'monorepo', api.repo_util.flutter_environment_data(),
-      api.monorepo.ci_build()
+      api.properties(config_name='build_config.json',), api.monorepo.ci_build()
   )
   yield api.test(
       'monorepo_tryjob', api.repo_util.flutter_environment_data(),
-      api.properties(clobber=True), api.monorepo.try_build()
+      api.properties(
+          clobber=True,
+          config_name='build_config.json',
+      ), api.monorepo.try_build()
   )
   yield api.test(
       'monorepo_wrong_host', api.repo_util.flutter_environment_data(),
@@ -258,7 +267,10 @@ def GenTests(api):
   yield api.test(
       'monorepo_first_bot_update_failed',
       api.repo_util.flutter_environment_data(),
-      api.properties(clobber=True),
+      api.properties(
+          clobber=True,
+          config_name='build_config.json',
+      ),
       api.monorepo.ci_build(),
       # Next line force a fail condition for the bot update
       # first execution.
@@ -268,14 +280,16 @@ def GenTests(api):
       api.test(
           'bot_update',
           api.properties(
+              config_name='build_config.json',
               git_url='https://github.com/flutter/engine',
-              git_ref='refs/pull/1/head'
+              git_ref='refs/pull/1/head',
           )
       ) + api.repo_util.flutter_environment_data()
   )
   yield api.test(
       'first_bot_update_failed',
       api.properties(
+          config_name='build_config.json',
           git_url='https://github.com/flutter/engine',
           git_ref='refs/pull/1/head'
       ),
@@ -287,6 +301,7 @@ def GenTests(api):
   yield api.test(
       'first_bot_update_revision_not_found',
       api.properties(
+          config_name='build_config.json',
           git_url='https://github.com/flutter/engine',
           git_ref='refs/pull/1/head'
       ),

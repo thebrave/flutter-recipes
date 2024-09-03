@@ -356,6 +356,8 @@ def GenTests(api):
           ]
       }],
       "gn": ["--ios", "--rbe"],
+      "name":
+          "flutter/build",
       "ninja": {
           "config": "ios_debug",
           "targets": []
@@ -479,6 +481,8 @@ def GenTests(api):
       ),
   )
   test_if_build = {
+      "name":
+          "flutter/build",
       "tests": [{
           "name": "mytest",
           "script": "myscript.sh",

@@ -276,16 +276,8 @@ class ShardUtilApi(recipe_api.RecipeApi):
         change_url = f'{project_url}/+/{change.change}/{change.patchset}'
         led_data = led_data.then('edit-cr-cl', change_url)
       launch_res = led_data.then('launch', '-modernize', '-real-build')
-      # real-build is being used and only build_id is being populated
-      task_id = launch_res.launch_result.task_id or launch_res.launch_result.build_id
-      build_url_swarming = 'https://ci.chromium.org/swarming/task/%s?server=%s' % (
-          task_id,
-          launch_res.launch_result.swarming_hostname,
-      )
-      build_url_bb = 'https://%s/build/%s' % (
-          launch_res.launch_result.buildbucket_hostname, task_id
-      )
-      build_url = build_url_swarming if launch_res.launch_result.task_id else build_url_bb
+      task_id = launch_res.launch_result.build_id
+      build_url = launch_res.launch_result.build_url
       results[task_name] = SubbuildResult(
           builder=task_name,
           build_id=task_id,

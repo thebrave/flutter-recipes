@@ -179,7 +179,10 @@ def GenTests(api):
   yield api.test(
       'succeed_on_infra_failure',
       api.repo_util.flutter_environment_data(),
-      api.properties(physical_devices=physical_devices),
+      api.properties(
+          physical_devices=physical_devices,
+          task_name='the_task',
+      ),
       api.step_data('test_execution.gcloud firebase', retcode=15),
       api.step_data('test_execution.gcloud firebase (2)', retcode=15),
       api.step_data('test_execution.gcloud firebase (3)', retcode=15),
@@ -188,7 +191,10 @@ def GenTests(api):
   yield api.test(
       'failure 10',
       api.repo_util.flutter_environment_data(),
-      api.properties(physical_devices=physical_devices),
+      api.properties(
+          physical_devices=physical_devices,
+          task_name='the_task',
+      ),
       api.step_data('test_execution.gcloud firebase', retcode=10),
       status='FAILURE'
   )

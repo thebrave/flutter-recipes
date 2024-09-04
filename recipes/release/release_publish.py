@@ -161,7 +161,12 @@ def GenTests(api):
             (tag == '1.2.3' and release_channel == 'beta')):
           # These are invalid combinations of tag and release_channel.
           # Expect assertion errors for these combinations
-          post_processing = [api.expect_exception('AssertionError')]
+          post_processing = [
+            api.expect_exception('AssertionError'),
+            # Different versions of Python have different assertion tracebacks
+            # See https://flutter-review.googlesource.com/c/recipes/+/59721.
+            api.post_process(post_process.DropExpectation),
+          ]
         else:
           # Remaining tag combinations of tag and release channel are valid.
           post_processing = [

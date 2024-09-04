@@ -12,13 +12,6 @@
 # to be ready and then spawn subbuilds to run expensive tests using
 # engine_v2/tester.py.
 
-from contextlib import contextmanager
-from google.protobuf import struct_pb2
-
-from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
-from PB.go.chromium.org.luci.buildbucket.proto \
-  import builds_service as builds_service_pb2
-
 from RECIPE_MODULES.flutter.flutter_bcid.api import BcidStage
 
 DEPS = [

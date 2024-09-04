@@ -29,9 +29,6 @@ import contextlib
 import copy
 import re
 
-from google.protobuf import struct_pb2
-from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
-
 DEPS = [
     'depot_tools/depot_tools',
     'flutter/archives',

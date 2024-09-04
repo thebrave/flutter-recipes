@@ -46,12 +46,6 @@ This recipe will be called from the engine_v2/engine_v2 recipe using the shard_u
 test configuration is defined in the engine build configurations files as global tests.
 """
 import contextlib
-import copy
-
-from contextlib import contextmanager
-
-from google.protobuf import struct_pb2
-from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 
 DEPS = [
     'depot_tools/depot_tools',

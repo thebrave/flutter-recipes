@@ -129,7 +129,27 @@ class BuildUtilApi(recipe_api.RecipeApi):
         self.m.step(name, ninja_args)
       except self.m.step.StepFailure:
         self._upload_crash_reproducer(env)
+        """
+        This is to troubleshoot https://github.com/flutter/flutter/issues/154437
+        """
+        self._upload_gen_snapshot(build_dir, env)
         raise
+
+  def _upload_gen_snapshot(self, build_dir, env):
+    """Uploads gen_snapshots to GCS when crash happens."""
+    flutter_logs_dir = env['FLUTTER_LOGS_DIR']
+    with self.m.step.nest("upload gen_snapshots"), self.m.context(
+        infra_steps=True):
+      gen_snapshots = self.m.file.glob_paths(
+          "find gen_snapshots",
+          build_dir,
+          "gen_snapshot",
+          test_data=(build_dir / "clang_arm64/gen_snapshot",),
+      )
+      for gen_snapshot in gen_snapshots:
+        self.m.file.copy(
+            'Copy gen_snapshot file %s' % gen_snapshot, gen_snapshot, flutter_logs_dir
+        )
 
   def _upload_crash_reproducer(self, env):
     """Uploads crash reproducer files to GCS when clang crash happens."""

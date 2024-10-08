@@ -142,7 +142,7 @@ class BuildUtilApi(recipe_api.RecipeApi):
         infra_steps=True):
       gen_snapshots = self.m.file.glob_paths(
           "find gen_snapshots",
-          build_dir,
+          build_dir / "clang_arm64",
           "gen_snapshot",
           test_data=(build_dir / "clang_arm64/gen_snapshot",),
       )

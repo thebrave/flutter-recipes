@@ -673,62 +673,6 @@
     "name": "copy crash file"
   },
   {
-    "cmd": [],
-    "name": "upload gen_snapshots"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "glob",
-      "[START_DIR]\\out\\release\\clang_arm64",
-      "gen_snapshot"
-    ],
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "upload gen_snapshots.find gen_snapshots",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@glob@[START_DIR]\\out\\release\\clang_arm64\\[START_DIR]\\out\\release\\clang_arm64\\gen_snapshot@@@",
-      "@@@STEP_LOG_END@glob@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[START_DIR]\\out\\release\\clang_arm64\\[START_DIR]\\out\\release\\clang_arm64\\gen_snapshot",
-      "[START_DIR]"
-    ],
-    "env_suffixes": {
-      "DEPOT_TOOLS_UPDATE": [
-        "0"
-      ],
-      "PATH": [
-        "RECIPE_REPO[depot_tools]"
-      ]
-    },
-    "infra_step": true,
-    "name": "upload gen_snapshots.Copy gen_snapshot file [START_DIR]\\out\\release\\clang_arm64\\[START_DIR]\\out\\release\\clang_arm64\\gen_snapshot",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
     "failure": {
       "failure": {},
       "humanReason": "Step('build release mytarget') (retcode: 1)"

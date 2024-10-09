@@ -320,10 +320,7 @@ def RunSteps(api):
   outputs = {}
   api.logs_util.initialize_logs_collection(env)
   try:
-    if api.platform.is_mac:
-      with api.osx_sdk('ios'):
-        Build(api, checkout, env, env_prefixes, outputs, build)
-    else:
+    with api.osx_sdk('ios'):
       Build(api, checkout, env, env_prefixes, outputs, build)
   finally:
     api.logs_util.upload_logs('builder', type='engine')

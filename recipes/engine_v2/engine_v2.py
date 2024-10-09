@@ -140,20 +140,13 @@ def RunSteps(api):
     out_builds_path = full_engine_checkout / 'src/out'
     api.file.rmtree('Clobber build download folder', out_builds_path)
     api.shard_util.download_full_builds(build_results, out_builds_path)
-    with api.step.nest('Global generators') as presentation:
+    with api.step.nest('Global generators') as presentation, api.osx_sdk('ios'):
       if 'tasks' in generators:
         api.flutter_bcid.report_stage(BcidStage.COMPILE.value)
-        if api.platform.is_mac:
-          with api.osx_sdk('ios'):
-            _run_global_generators(
-                api, generators, full_engine_checkout, env, env_prefixes
-            )
-            _archive(api, archives, full_engine_checkout, env, env_prefixes)
-        else:
-          _run_global_generators(
-              api, generators, full_engine_checkout, env, env_prefixes
-          )
-          _archive(api, archives, full_engine_checkout, env, env_prefixes)
+        _run_global_generators(
+            api, generators, full_engine_checkout, env, env_prefixes
+        )
+        _archive(api, archives, full_engine_checkout, env, env_prefixes)
 
   # Run tests
   if not api.flutter_bcid.is_official_build():

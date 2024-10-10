@@ -718,6 +718,12 @@ Copy-Item "$env:TEMP\dd_vs_setup_*" "$destination"
       paths = env_prefixes.get('PATH', [])
       paths.insert(0, ruby_path / 'bin')
       env_prefixes['PATH'] = paths
+      pod_binary = ruby_path / 'bin' / 'pod'
+      self.m.step(
+          'update cocoapods repo',
+          [pod_binary, 'repo', 'update'],
+          infra_step=True,
+      )
 
   # pylint: disable=unused-argument
   def ktlint(self, env, env_prefixes, version=None):

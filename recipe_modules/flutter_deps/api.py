@@ -82,7 +82,6 @@ class FlutterDepsApi(recipe_api.RecipeApi):
         'clang': self.clang,
         'cmake': self.cmake,
         'codesign': self.codesign,
-        'cosign': self.cosign,
         'curl': self.curl,
         'dart_sdk': self.dart_sdk,
         'dashing': self.dashing,
@@ -106,6 +105,8 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     parsed_deps = []
     for dep in deps:
       dependency = dep.get('dependency')
+      # TODO(fujino): Enforce a hard requirement that there be a version here,
+      # and it isn't `latest`: https://github.com/flutter/flutter/issues/156621
       version = dep.get('version')
       # Ensure there are no duplicate entries
       if dependency in parsed_deps:
@@ -471,7 +472,7 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       env(dict): Current environment variables.
       env_prefixes(dict): Current environment prefixes variables.
     """
-    version = version or 'live'
+    version = version or 'latest'
     codesign_path = self.m.path.mkdtemp()
     codesign = self.m.cipd.EnsureFile()
     codesign.add_package('flutter/codesign/${platform}', version)
@@ -481,23 +482,6 @@ class FlutterDepsApi(recipe_api.RecipeApi):
     paths.append(codesign_path)
     env_prefixes['PATH'] = paths
     return codesign_path / 'codesign'
-
-  def cosign(self, env, env_prefixes, version=None):
-    """Installs cosign.
-
-    Args:
-      env(dict): Current environment variables.
-      env_prefixes(dict): Current environment prefixes variables.
-    """
-    version = version or 'latest'
-    cosign_path = self.m.path.cache_dir / 'cosign'
-    cosign = self.m.cipd.EnsureFile()
-    cosign.add_package('flutter/tools/cosign/${platform}', version)
-    with self.m.step.nest('Install cosign'):
-      self.m.cipd.ensure(cosign_path, cosign)
-    paths = env_prefixes.get('PATH', [])
-    paths.append(cosign_path / 'bin')
-    env_prefixes['PATH'] = paths
 
   def ninja(self, env, env_prefixes, version=None):
     """Installs ninja.

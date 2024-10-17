@@ -75,7 +75,6 @@ def RunSteps(api):
       env, env_prefixes, version='build_id:8787856497187628321'
   )
   api.flutter_deps.codesign(env, env_prefixes, 'latest')
-  api.flutter_deps.cosign(env, env_prefixes)
   api.flutter_deps.ninja(env, env_prefixes)
   api.flutter_deps.clang(env, env_prefixes)
   api.flutter_deps.apple_signing(env, env_prefixes)

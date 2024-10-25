@@ -185,8 +185,7 @@ class TaskTracker:
     )
 
   def process_result(self, attempt, result):
-    # TODO(fujino): ensure this is never empty, https://crbug.com/369586985
-    with self._api.step.nest(result.builder.builder):
+    with self._api.step.nest(result.builder.builder or 'unknown builder'):
       self._in_progress_attempts.remove(attempt)
       attempt.result = result
       try:

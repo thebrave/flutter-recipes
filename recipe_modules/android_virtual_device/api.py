@@ -145,7 +145,6 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
           self.m.step(
               'Start Android emulator (%s)' % version,
               [
-                  'xvfb-run',
                   'vpython3',
                   avd_script_path,
                   'start',

@@ -132,6 +132,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
       git_id = self.m.properties['git_ref']
       git_ref = self.m.properties['git_ref']
 
+    repo_path = '.' if self.is_fusion() else 'src/flutter'
+    default_branch = REPO_BRANCHES['flutter'] if self.is_fusion() else REPO_BRANCHES['engine']
+
     # Inner function to execute code a second time in case of failure.
     # pylint: disable=unused-argument
     def _InnerCheckout(timeout=None):
@@ -143,7 +146,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
           try:
             src_cfg = self.m.gclient.make_config()
             soln = src_cfg.solutions.add()
-            soln.name = 'src/flutter'
+            soln.name = repo_path
             soln.url = git_url
             soln.revision = git_id
             soln.managed = False
@@ -151,11 +154,11 @@ class RepoUtilApi(recipe_api.RecipeApi):
             src_cfg.parent_got_revision_mapping['parent_got_revision'
                                                ] = 'got_revision'
             src_cfg.repo_path_map[git_url] = (
-                'src/flutter', git_ref or
-                'refs/heads/%s' % REPO_BRANCHES['engine']
+                repo_path, git_ref or
+                'refs/heads/%s' % default_branch
             )
             self.m.gclient.c = src_cfg
-            self.m.gclient.c.got_revision_mapping['src/flutter'
+            self.m.gclient.c.got_revision_mapping[repo_path
                                                  ] = 'got_engine_revision'
             # Timeout the checkout at 45 mins to fail fast in slow checkouts so we can
             # retry.
@@ -464,15 +467,12 @@ class RepoUtilApi(recipe_api.RecipeApi):
 
   def engine_environment(self, checkout_path):
     """Returns env and env_prefixes of an flutter/dart command environment."""
-    # Original path to the Dart SDK
-    dart_bin = checkout_path / 'src/third_party/dart/tools/sdks/dart-sdk/bin'
-
-    # Path to the Dart SDK after the buildroot migration.
-    new_dart_bin = (
-        checkout_path / 'src/flutter/third_party/dart/tools/sdks/dart-sdk/bin'
+    engine_path = checkout_path / 'engine' if self.is_fusion() else checkout_path
+    dart_bin = (
+        engine_path / 'src/flutter/third_party/dart/tools/sdks/dart-sdk/bin'
     )
     git_ref = self.m.properties.get('git_ref', '')
-    android_home = checkout_path / 'src/third_party/android_tools/sdk'
+    android_home = engine_path / 'src/third_party/android_tools/sdk'
     android_tmp = self.m.path.mkdtemp()
     env = {
         # Windows Packaging script assumes this is set.
@@ -510,7 +510,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'CLANG_MODULE_CACHE_PATH':
             '',
     }
-    env_prefixes = {'PATH': ['%s' % str(dart_bin), '%s' % str(new_dart_bin)]}
+    env_prefixes = {'PATH': ['%s' % str(dart_bin)]}
     return env, env_prefixes
 
   def monorepo_environment(self, checkout_path):
@@ -641,3 +641,7 @@ class RepoUtilApi(recipe_api.RecipeApi):
         }
     )
     return config
+
+  def is_fusion(self):
+    """Returns true if this build is using a merged framework+engine repository"""
+    return self.m.properties.get('is_fusion', False)

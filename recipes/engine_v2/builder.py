@@ -291,8 +291,13 @@ def RunSteps(api):
   api.osx_sdk.reset_xcode()
 
   api.flutter_bcid.report_stage('start')
-  checkout = api.path.cache_dir / 'builder/src'
+
+  if api.repo_util.is_fusion() or api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
+    checkout = api.path.cache_dir / 'builder/engine/src'
+  else:
+    checkout = api.path.cache_dir / 'builder/src'
   api.file.rmtree('Clobber build output', checkout / 'out')
+
   cache_root = api.path.cache_dir / 'builder'
   api.file.ensure_directory('Ensure checkout cache', cache_root)
 
@@ -309,7 +314,6 @@ def RunSteps(api):
         api.path.cache_dir / 'builder'
     )
     api.repo_util.monorepo_checkout(cache_root, env, env_prefixes)
-    checkout = api.path.cache_dir / 'builder/engine/src'
   else:
     env, env_prefixes = api.repo_util.engine_environment(
         api.path.cache_dir / 'builder'

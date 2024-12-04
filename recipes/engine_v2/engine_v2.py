@@ -62,7 +62,11 @@ def RunSteps(api):
         url=api.properties.get('git_url'),
         ref=api.properties.get('git_ref')
     )
-    config_path = checkout_path / f'ci/builders/{config_name}.json'
+    if api.repo_util.is_fusion():
+      engine_path = checkout_path / 'engine/src/flutter'
+    else:
+      engine_path = checkout_path
+    config_path = engine_path / f'ci/builders/{config_name}.json'
     config = api.file.read_json(
         'Read build config file', config_path, test_data={}
     )
@@ -566,4 +570,35 @@ def GenTests(api):
               }]
           })
       ),
+  )
+
+  yield api.test(
+      'basic_mac_fusion', api.platform.name('mac'),
+      api.properties(
+          builds=builds,
+          tests=[],
+          generators=generators,
+          archives=archives,
+          config_name='config_name',
+          is_fusion='true',
+      ),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='prod-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
+          revision='a' * 40,
+          build_number=123,
+      ),
+      api.shard_util.child_build_steps(
+          subbuilds=[try_subbuild1],
+          launch_step="launch builds.schedule",
+          collect_step="collect builds",
+      ),
+      api.step_data(
+          'Global generators.git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
   )

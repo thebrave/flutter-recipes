@@ -20,6 +20,230 @@
   },
   {
     "cmd": [],
+    "name": "Checkout flutter/engine"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[START_DIR]/engine",
+      "--url",
+      "https://flutter.googlesource.com/mirrors/engine"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.git setup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "--recurse-submodules",
+      "--progress",
+      "--tags"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "env": {
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.git fetch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"deadbeef\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.git clean",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.submodule sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[START_DIR]/engine",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/engine.submodule update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[START_DIR]/engine/engine/src/flutter/ci/builders/config_name.json",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "flutter:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Read build config file",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@config_name.json@{}@@@",
+      "@@@STEP_LOG_END@config_name.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
     "name": "launch builds"
   },
   {
@@ -51,7 +275,7 @@
       }
     },
     "name": "launch builds.schedule",
-    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"prod\", \"builder\": \"Linux Production Engine Drone\", \"project\": \"flutter\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"archives\": [{\"destination\": \"bucket/c.txt\", \"name\": \"c.txt\", \"source\": \"/a/b/c.txt\"}], \"build\": {\"archives\": [{\"base_path\": \"out/host_debug/zip_archives/\", \"include_paths\": [\"out/host_debug/zip_archives/darwin-x64/artifacts.zip\", \"out/host_debug/zip_archives/darwin-x64/FlutterEmbedder.framework.zip\", \"out/host_debug/zip_archives/dart-sdk-darwin-x64.zip\", \"out/host_debug/zip_archives/flutter-web-sdk-darwin-x64.zip\"], \"name\": \"host_debug\", \"type\": \"gcs\"}], \"drone_dimensions\": [\"os=Linux\"], \"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}, \"recipe\": \"engine_v2/builder\"}, \"build_identifier\": \"8945511751514863184\", \"gclient_variables\": {}, \"generators\": {\"tasks\": [{\"language\": \"python3\", \"name\": \"Debug-FlutterMacOS.framework\", \"parameters\": [\"--variant\", \"host_profile\", \"--type\", \"engine\", \"--engine-capture-core-dump\"], \"script\": \"flutter/sky/tools/create_macos_framework.py\", \"type\": \"local\"}]}, \"parent_commit\": \"\", \"recipe\": \"engine_v2/builder\", \"tests\": []}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
+    "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"prod\", \"builder\": \"Linux Production Engine Drone\", \"project\": \"flutter\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/engine\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"archives\": [{\"destination\": \"bucket/c.txt\", \"name\": \"c.txt\", \"source\": \"/a/b/c.txt\"}], \"build\": {\"archives\": [{\"base_path\": \"out/host_debug/zip_archives/\", \"include_paths\": [\"out/host_debug/zip_archives/darwin-x64/artifacts.zip\", \"out/host_debug/zip_archives/darwin-x64/FlutterEmbedder.framework.zip\", \"out/host_debug/zip_archives/dart-sdk-darwin-x64.zip\", \"out/host_debug/zip_archives/flutter-web-sdk-darwin-x64.zip\"], \"name\": \"host_debug\", \"type\": \"gcs\"}], \"drone_dimensions\": [\"os=Linux\"], \"generators\": [{\"name\": \"generator1\", \"script\": \"script1.sh\"}], \"gn\": [\"--ios\"], \"name\": \"ios_debug\", \"ninja\": {\"config\": \"ios_debug\", \"targets\": []}, \"recipe\": \"engine_v2/builder\"}, \"build_identifier\": \"8945511751514863184\", \"config_name\": \"config_name\", \"gclient_variables\": {}, \"generators\": {\"tasks\": [{\"language\": \"python3\", \"name\": \"Debug-FlutterMacOS.framework\", \"parameters\": [\"--variant\", \"host_profile\", \"--type\", \"engine\", \"--engine-capture-core-dump\"], \"script\": \"flutter/sky/tools/create_macos_framework.py\", \"type\": \"local\"}]}, \"is_fusion\": \"true\", \"parent_commit\": \"\", \"recipe\": \"engine_v2/builder\", \"tests\": []}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -141,6 +365,7 @@
       "@@@STEP_LOG_LINE@request@            \"recipe\": \"engine_v2/builder\"@@@",
       "@@@STEP_LOG_LINE@request@          },@@@",
       "@@@STEP_LOG_LINE@request@          \"build_identifier\": \"8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@request@          \"config_name\": \"config_name\",@@@",
       "@@@STEP_LOG_LINE@request@          \"gclient_variables\": {},@@@",
       "@@@STEP_LOG_LINE@request@          \"generators\": {@@@",
       "@@@STEP_LOG_LINE@request@            \"tasks\": [@@@",
@@ -159,6 +384,7 @@
       "@@@STEP_LOG_LINE@request@              }@@@",
       "@@@STEP_LOG_LINE@request@            ]@@@",
       "@@@STEP_LOG_LINE@request@          },@@@",
+      "@@@STEP_LOG_LINE@request@          \"is_fusion\": \"true\",@@@",
       "@@@STEP_LOG_LINE@request@          \"parent_commit\": \"\",@@@",
       "@@@STEP_LOG_LINE@request@          \"recipe\": \"engine_v2/builder\",@@@",
       "@@@STEP_LOG_LINE@request@          \"tests\": []@@@",
@@ -430,9 +656,9 @@
       "-u",
       "RECIPE_MODULE[depot_tools::bot_update]/resources/bot_update.py",
       "--spec-path",
-      "cache_dir = '[CACHE]/git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': False, 'name': 'src/flutter', 'url': 'https://flutter.googlesource.com/mirrors/engine'}]",
+      "cache_dir = '[CACHE]/git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': False, 'name': '.', 'url': 'https://flutter.googlesource.com/mirrors/engine'}]",
       "--revision_mapping_file",
-      "{\"got_engine_revision\": \"src/flutter\"}",
+      "{\"got_engine_revision\": \".\"}",
       "--git-cache-dir",
       "[CACHE]/git",
       "--cleanup-dir",
@@ -440,13 +666,13 @@
       "--output_json",
       "/path/to/tmp/json",
       "--revision",
-      "src/flutter@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      ".@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "--refs",
       "refs/heads/main"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
       "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
       "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
       "CLANG_CRASH_DIAGNOSTICS_DIR": "[CLEANUP]/tmp_tmp_2",
@@ -475,7 +701,7 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/flutter/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/engine/src/flutter/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -509,26 +735,26 @@
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"did_run\": true,@@@",
       "@@@STEP_LOG_LINE@json.output@  \"fixed_revisions\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"src/flutter\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \".\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
       "@@@STEP_LOG_LINE@json.output@  \"manifest\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"src/flutter\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"repository\": \"https://fake.org/src/flutter.git\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \".\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"repository\": \"https://fake.org/..git\",@@@",
       "@@@STEP_LOG_LINE@json.output@      \"revision\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
       "@@@STEP_LOG_LINE@json.output@  \"patch_root\": null,@@@",
       "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision_cp\": \"refs/heads/main@{#84512}\",@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"9221bca00ddbd888260084def81f09543281b952\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_engine_revision_cp\": \"refs/heads/main@{#205336}\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"3a52ce780950d4d969792a2559cd519d7ee8c727\"@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"root\": \"src/flutter\",@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"root\": \".\",@@@",
       "@@@STEP_LOG_LINE@json.output@  \"source_manifest\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"directories\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"src/flutter\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \".\": {@@@",
       "@@@STEP_LOG_LINE@json.output@        \"git_checkout\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@          \"repo_url\": \"https://fake.org/src/flutter.git\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"repo_url\": \"https://fake.org/..git\",@@@",
       "@@@STEP_LOG_LINE@json.output@          \"revision\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"@@@",
       "@@@STEP_LOG_LINE@json.output@        }@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
@@ -539,8 +765,8 @@
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",
       "@@@SET_BUILD_PROPERTY@got_engine_revision@\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"@@@",
-      "@@@SET_BUILD_PROPERTY@got_engine_revision_cp@\"refs/heads/main@{#84512}\"@@@",
-      "@@@SET_BUILD_PROPERTY@got_revision@\"9221bca00ddbd888260084def81f09543281b952\"@@@"
+      "@@@SET_BUILD_PROPERTY@got_engine_revision_cp@\"refs/heads/main@{#205336}\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"3a52ce780950d4d969792a2559cd519d7ee8c727\"@@@"
     ]
   },
   {
@@ -552,7 +778,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
       "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
       "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
       "CLANG_CRASH_DIAGNOSTICS_DIR": "[CLEANUP]/tmp_tmp_2",
@@ -572,7 +798,7 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/flutter/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/engine/src/flutter/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -1496,7 +1722,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
       "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
       "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
       "CLANG_CRASH_DIAGNOSTICS_DIR": "[CLEANUP]/tmp_tmp_2",
@@ -1515,7 +1741,7 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/flutter/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/engine/src/flutter/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {
@@ -1557,7 +1783,7 @@
     ],
     "cwd": "[CACHE]/builder",
     "env": {
-      "ANDROID_HOME": "[CACHE]/builder/src/third_party/android_tools/sdk",
+      "ANDROID_HOME": "[CACHE]/builder/engine/src/third_party/android_tools/sdk",
       "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
       "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
       "CLANG_CRASH_DIAGNOSTICS_DIR": "[CLEANUP]/tmp_tmp_2",
@@ -1576,8 +1802,8 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/src/flutter/third_party/dart/tools/sdks/dart-sdk/bin",
-        "[CACHE]/builder/src/flutter/third_party/dart/tools/sdks/dart-sdk/bin"
+        "[CACHE]/builder/engine/src/flutter/third_party/dart/tools/sdks/dart-sdk/bin",
+        "[CACHE]/builder/engine/src/flutter/third_party/dart/tools/sdks/dart-sdk/bin"
       ]
     },
     "env_suffixes": {

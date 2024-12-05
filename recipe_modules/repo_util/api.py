@@ -630,9 +630,14 @@ class RepoUtilApi(recipe_api.RecipeApi):
   def ReadBuildConfig(self, checkout_path):
     """Reads an standalone build configuration."""
     config_name = self.m.properties.get('config_name')
-    config_path = (
-        checkout_path / f'flutter/ci/builders/standalone/{config_name}.json'
-    )
+    if self.is_fusion():
+      config_path = (
+          checkout_path / f'flutter/engine/src/flutter/ci/builders/standalone/{config_name}.json'
+      )
+    else:
+      config_path = (
+          checkout_path / f'flutter/ci/builders/standalone/{config_name}.json'
+      )
     config = self.m.file.read_json(
         'Read build config file',
         config_path,

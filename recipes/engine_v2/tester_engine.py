@@ -128,7 +128,10 @@ def Test(api, checkout, env, env_prefixes):
 
 def RunSteps(api):
   # Sets the engine environment and checkouts the source code.
-  checkout = api.path.cache_dir / 'builder/src'
+  if api.repo_util.is_fusion():
+    checkout = api.path.cache_dir / 'builder/engine/src'
+  else:
+    checkout = api.path.cache_dir / 'builder/src'
   api.file.rmtree('Clobber build output', checkout / 'out')
   cache_root = api.path.cache_dir / 'builder'
   api.file.ensure_directory('Ensure checkout cache', cache_root)
@@ -161,4 +164,11 @@ def GenTests(api):
   yield api.test(
       'basic',
       api.properties(build=build),
+  )
+  yield api.test(
+      'fusion',
+      api.properties(
+          build=build,
+          is_fusion=True,
+      ),
   )

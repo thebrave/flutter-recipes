@@ -131,6 +131,8 @@ def RunSteps(api):
     else:
       env, env_prefixes = api.repo_util.engine_environment(full_engine_checkout)
       api.repo_util.engine_checkout(full_engine_checkout, env, env_prefixes)
+      if api.repo_util.is_fusion():
+        full_engine_checkout = full_engine_checkout / 'engine'
       # The checkouts are using cache which may have some old artifacts in the out
       # directory. We are cleaning out the folder to ensure we start from an empty
       # out folder.

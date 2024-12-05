@@ -479,9 +479,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'DEPOT_TOOLS':
             str(self.m.depot_tools.root),
         'ENGINE_CHECKOUT_PATH':
-            checkout_path,
+            engine_path,
         'ENGINE_PATH':
-            checkout_path,
+            engine_path,
         'LUCI_CI':
             True,
         'LUCI_PR':

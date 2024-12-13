@@ -326,6 +326,10 @@ def GenTests(api):
   )
   yield api.test(
       'fusion',
-      api.properties(config_name='build_config.json', is_fusion=True),
+      api.properties(
+          config_name='build_config.json',
+          is_fusion=True,
+          flutter_realm='foo-realm',
+          ),
       api.repo_util.flutter_environment_data(),
   )

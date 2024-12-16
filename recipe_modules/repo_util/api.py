@@ -456,10 +456,11 @@ class RepoUtilApi(recipe_api.RecipeApi):
     flutter_exe = 'flutter.bat' if self.m.platform.is_win else 'flutter'
     # If setting environment from engine_v2 do not clear features.
     if clear_features and not self.m.monorepo.is_monorepo:
-      self.m.step(
-          'flutter config --clear-features',
-          [flutter_bin / flutter_exe, 'config', '--clear-features'],
-      )
+      with self.m.context(env=env, env_prefixes=env_prefixes):
+        self.m.step(
+            'flutter config --clear-features',
+            [flutter_bin / flutter_exe, 'config', '--clear-features'],
+        )
     return env, env_prefixes
 
   def add_property_env_variables(self, env):

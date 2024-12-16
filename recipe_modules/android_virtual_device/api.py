@@ -148,7 +148,6 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
                   'vpython3',
                   avd_script_path,
                   'start',
-                  '--wipe-data',
                   '--debug-tags',
                   'all',
                   '--avd-config',

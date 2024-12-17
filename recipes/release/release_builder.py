@@ -8,6 +8,7 @@
 # marked with release_build: true, and spawens a subbuild.
 
 import re
+from enum import Enum
 
 from PB.recipes.flutter.release.release import InputProperties
 from PB.recipes.flutter.release.release import EnvProperties
@@ -22,6 +23,7 @@ DEPS = [
     'flutter/shard_util',
     'flutter/yaml',
     'recipe_engine/buildbucket',
+    'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/platform',
@@ -35,6 +37,14 @@ PROPERTIES = InputProperties
 ENV_PROPERTIES = EnvProperties
 
 RELEASE_CHANNELS = ('refs/heads/beta', 'refs/heads/stable')
+
+
+# TODO(fujino): delete this once Flutter monorepo reaches stable channel
+class RepoContext(Enum):
+  """An enum covering the possible Flutter repository types this recipe will be invoked on."""
+  SINGLE_REPO_FRAMEWORK = 0
+  SINGLE_REPO_ENGINE = 1
+  MONOREPO = 2
 
 
 def ShouldRun(api, git_ref, target, release_branch, retry_override_list):
@@ -74,22 +84,36 @@ def ShouldRun(api, git_ref, target, release_branch, retry_override_list):
   return False
 
 
-def RunSteps(api, properties, env_properties):
-  api.os_utils.collect_os_info()
-  repository = api.properties.get(
-      'git_repo'
-  ) or api.buildbucket.gitiles_commit.project
-  checkout_path = api.path.start_dir / repository
-  git_ref = api.properties.get('git_ref') or api.buildbucket.gitiles_commit.ref
-  git_url = api.properties.get('git_url') or REPOS[repository]
-  api.repo_util.checkout(
-      repository, checkout_path=checkout_path, url=git_url, ref=git_ref
-  )
+def GetRepoInfo(properties, gitiles):
+  """Extracts current repository information from first properties, then fallsback to gitiles object.
 
-  # retry_override_list is optional and is a space separated string of
-  # the config_name of targets to explitly retry
-  retry_override_list = api.properties.get('retry_override_list', '').split()
+  Args:
+    properties(Properties): The build's properties. These are usually overrides provided in LED builds or tests.
+    gitiles(GitilesCommit): For prod builds, the commit that was the source trigger. See https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/build.proto.
 
+  Returns:
+    A tuple of
+    * The name of the repository, one of the string keys of the REPOS dict from the repo_util module
+    * The URL of the repository, one of the string values of the REPOS dict
+    * The git ref to check out
+  """
+  repository = properties.get('git_repo') or gitiles.project
+  url = properties.get('git_url') or REPOS[repository]
+  ref = properties.get('git_ref') or gitiles.ref
+  return (repository, url, ref)
+
+
+def GetRepoContext(api, repository, root):
+  if repository in ('engine', 'mirrors/engine'):
+    return RepoContext.SINGLE_REPO_ENGINE
+  if repository in ('flutter', 'mirrors/flutter'):
+    if api.path.exists(root / 'engine'):
+      return RepoContext.MONOREPO
+    return RepoContext.SINGLE_REPO_FRAMEWORK
+  assert False, f'the repository {repository} is not supported by the release/release_builder.py recipe'
+
+
+def ScheduleBuildsForRepo(api, checkout_path, git_ref, retry_override_list):
   ci_yaml_path = checkout_path / '.ci.yaml'
   ci_yaml = api.yaml.read('read ci yaml', ci_yaml_path, api.json.output())
 
@@ -107,20 +131,58 @@ def RunSteps(api, properties, env_properties):
       if ShouldRun(api, git_ref, target, release_branch, retry_override_list):
         target = api.shard_util.pre_process_properties(target)
         tasks.update(
-            api.shard_util.schedule([
-                target,
-            ],
+            api.shard_util.schedule([target],
                                     presentation,
                                     branch=release_branch)
         )
-  with api.step.nest('collect builds') as presentation:
-    build_results = api.shard_util.collect(tasks)
+  return tasks
 
-  api.display_util.display_subbuilds(
-      step_name='display builds',
-      subbuilds=build_results,
-      raise_on_failure=True,
+
+def RunSteps(api, _, __):
+  api.os_utils.collect_os_info()
+  repository, git_url, git_ref = GetRepoInfo(
+      api.properties, api.buildbucket.gitiles_commit
   )
+  checkout_path = api.path.start_dir / repository
+  api.repo_util.checkout(
+      repository, checkout_path=checkout_path, url=git_url, ref=git_ref
+  )
+
+  context = GetRepoContext(api, repository, checkout_path)
+
+  # retry_override_list is optional and is a space separated string of
+  # the config_name of targets to explitly retry
+  retry_override_list = api.properties.get('retry_override_list', '').split()
+
+  def collect_and_display_builds(builds):
+    with api.step.nest('collect builds'):
+      build_results = api.shard_util.collect(builds)
+    api.display_util.display_subbuilds(
+        step_name='display builds',
+        subbuilds=build_results,
+        raise_on_failure=True,
+    )
+
+  if context in (RepoContext.SINGLE_REPO_FRAMEWORK, RepoContext.SINGLE_REPO_ENGINE):
+    collect_and_display_builds(
+        ScheduleBuildsForRepo(api, checkout_path, git_ref, retry_override_list)
+    )
+  elif context == RepoContext.MONOREPO:
+    collect_and_display_builds(
+        ScheduleBuildsForRepo(
+            api,
+            checkout_path / 'engine',
+            git_ref,
+            retry_override_list,
+        )
+    )
+
+    collect_and_display_builds(
+        ScheduleBuildsForRepo(api, checkout_path, git_ref, retry_override_list)
+    )
+  else:
+    assert False, "You must update release/release_builder.py to handle a new RepoContext"  # pragma: nocover
+
 
 
 def GenTests(api):
@@ -246,4 +308,74 @@ def GenTests(api):
           stdout=api.raw_io
           .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
       ),
+  )
+  yield api.test(
+      'framework_single_repo',
+      api.properties(environment='Staging', repository='framework'),
+      api.buildbucket.try_build(
+          project='dart-internal',
+          bucket='flutter',
+          builder='prod-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          revision='a' * 40,
+          build_number=123,
+          git_ref='refs/heads/%s' % git_ref,
+      ),
+      api.step_data(
+          'read ci yaml.parse', api.json.output(tasks_dict_scheduler)
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io
+          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+      ),
+  )
+  yield api.test(
+      'engine_monorepo',
+      api.properties(
+          environment='Staging',
+          repository='flutter',
+      ),
+      api.path.files_exist(
+          api.path.start_dir / 'mirrors' / 'flutter' / 'engine',
+      ),
+      api.buildbucket.try_build(
+          project='dart-internal',
+          bucket='flutter',
+          builder='prod-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          revision='a' * 40,
+          build_number=123,
+          git_ref='refs/heads/%s' % git_ref,
+      ),
+      # Engine .ci.yaml
+      api.step_data(
+          'read ci yaml.parse', api.json.output(tasks_dict_scheduler)
+      ),
+      # Framework .ci.yaml
+      api.step_data(
+          'read ci yaml (2).parse', api.json.output(tasks_dict_scheduler)
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io
+          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+      ),
+  )
+  yield api.test(
+      'throws_assertion_on_unsupported_repo',
+      api.properties(
+          environment='Staging',
+          git_repo='openpay',
+      ),
+      api.buildbucket.try_build(
+          project='dart-internal',
+          bucket='flutter',
+          builder='prod-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/openpay',
+          revision='a' * 40,
+          build_number=123,
+          git_ref='refs/heads/%s' % git_ref,
+      ),
+      api.expect_exception('AssertionError'),
   )

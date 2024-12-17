@@ -47,6 +47,8 @@ def Archive(api, target):
 
 
 def GetCheckoutPath(api):
+  if api.repo_util.is_fusion():
+    return api.path.cache_dir / 'builder/engine/src'
   return api.path.cache_dir / 'builder/src'
 
 
@@ -174,6 +176,26 @@ def GenTests(api):
           git_branch='main',
           clobber=True,
           task_name='abc'
+      ),
+      api.platform('linux', 64),
+      api.buildbucket.try_build(
+          project='flutter',
+          bucket='try',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main'
+      ),
+  )
+  yield api.test(
+      'linux-pre-submit-fusion',
+      api.repo_util.flutter_environment_data(api.path.cache_dir / 'flutter'),
+      api.properties(
+          shard='web_tests',
+          subshards=['0', '1_last'],
+          git_url='https://mygitrepo',
+          git_ref='refs/pull/1/head',
+          git_branch='main',
+          task_name='abc',
+          is_fusion=True
       ),
       api.platform('linux', 64),
       api.buildbucket.try_build(

@@ -622,6 +622,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
     """
     if self.m.monorepo.is_monorepo_ci_build or self.m.monorepo.is_monorepo_try_build:
       project = 'monorepo'
+    elif self.is_fusion():
+      project = 'flutter'
     else:
       project = 'engine'
     build = self.m.properties.get('build', None)

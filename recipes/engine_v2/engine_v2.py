@@ -50,6 +50,8 @@ def RunSteps(api):
     # Read builds configuration from repository under test.
     if api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
       project = 'monorepo'
+    elif api.repo_util.is_fusion():
+      project = 'flutter'
     else:
       project = 'engine'
 

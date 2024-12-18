@@ -127,7 +127,8 @@ class RepoUtilApi(recipe_api.RecipeApi):
       # automatically deleted for example when try bots checkout an old hash.
       clobber = True
 
-    git_url = REPOS['engine']
+    engine_repo = 'flutter' if self.is_fusion() else 'engine'
+    git_url = REPOS[engine_repo]
     git_id = self.m.buildbucket.gitiles_commit.id
     git_ref = self.m.buildbucket.gitiles_commit.ref
     if 'git_url' in self.m.properties and 'git_ref' in self.m.properties:

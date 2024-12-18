@@ -588,7 +588,7 @@ def GenTests(api):
           project='flutter',
           bucket='prod',
           builder='prod-builder',
-          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
           git_ref='refs/heads/main',
           revision='a' * 40,
           build_number=123,

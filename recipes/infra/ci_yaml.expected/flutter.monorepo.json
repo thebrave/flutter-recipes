@@ -1,0 +1,1478 @@
+[
+  {
+    "cmd": [],
+    "name": "Checkout flutter/flutter"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[START_DIR]/flutter",
+      "--url",
+      "https://flutter.googlesource.com/mirrors/flutter"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/flutter.git setup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "master",
+      "--recurse-submodules",
+      "--progress",
+      "--tags"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "env": {
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/flutter.git fetch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/flutter.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/flutter.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"deadbeef\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/flutter.git clean",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/flutter.submodule sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/flutter.submodule update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Checkout flutter/cocoon"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[START_DIR]/cocoon",
+      "--url",
+      "https://flutter.googlesource.com/mirrors/cocoon"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/cocoon.git setup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "main",
+      "--recurse-submodules",
+      "--progress",
+      "--tags"
+    ],
+    "cwd": "[START_DIR]/cocoon",
+    "env": {
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/cocoon.git fetch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[START_DIR]/cocoon",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/cocoon.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/cocoon",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/cocoon.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"deadbeef\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/cocoon",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/cocoon.git clean",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/cocoon",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/cocoon.submodule sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[START_DIR]/cocoon",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/cocoon.submodule update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Checkout flutter/infra"
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[START_DIR]/infra",
+      "--url",
+      "https://flutter.googlesource.com/infra"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/infra.git setup",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "main",
+      "--recurse-submodules",
+      "--progress",
+      "--tags"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "env": {
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/infra.git fetch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/infra.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/infra.read revision",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"deadbeef\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/infra.git clean",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/infra.submodule sync",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Checkout flutter/infra.submodule update",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/protoc",
+      "-ensure-file",
+      "infra/3pp/tools/protoc/${platform} version:2@3.17.3",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@3.17.3\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/protoc/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git rev-parse"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/flutter/bin/flutter",
+      "config",
+      "--clear-features"
+    ],
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "flutter config --clear-features"
+  },
+  {
+    "cmd": [
+      "flutter",
+      "doctor"
+    ],
+    "cwd": "[START_DIR]/cocoon/app_dart",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "flutter doctor"
+  },
+  {
+    "cmd": [
+      "dart",
+      "pub",
+      "get"
+    ],
+    "cwd": "[START_DIR]/cocoon/app_dart",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "dart pub get"
+  },
+  {
+    "cmd": [
+      "dart",
+      "[START_DIR]/cocoon/app_dart/bin/generate_jspb.dart",
+      "flutter",
+      "master"
+    ],
+    "cwd": "[START_DIR]/cocoon/app_dart",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "generate jspb",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "{\"hello\": \"world\"}",
+      "[START_DIR]/infra/config/generated/ci_yaml/flutter_config.json"
+    ],
+    "cwd": "[START_DIR]/cocoon/app_dart",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "write jspb"
+  },
+  {
+    "cmd": [
+      "dart",
+      "[START_DIR]/cocoon/app_dart/bin/generate_jspb.dart",
+      "flutter",
+      "master",
+      "engine/src/flutter/.ci.yaml"
+    ],
+    "cwd": "[START_DIR]/cocoon/app_dart",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "generate jspb (2)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "",
+      "[START_DIR]/infra/config/generated/ci_yaml/engine_config.json"
+    ],
+    "cwd": "[START_DIR]/cocoon/app_dart",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "write jspb (2)"
+  },
+  {
+    "cmd": [
+      "cp",
+      "[START_DIR]/cocoon/app_dart/lib/src/model/proto/internal/scheduler.proto",
+      "[START_DIR]/infra/config/lib/ci_yaml"
+    ],
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/protoc/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Roll scheduler.proto"
+  },
+  {
+    "cmd": [
+      "bash",
+      "[START_DIR]/infra/config/lib/ci_yaml/compile_proto.sh"
+    ],
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/protoc/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Compile scheduler.proto"
+  },
+  {
+    "cmd": [
+      "lucicfg",
+      "generate",
+      "config/main.star"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "luci generate"
+  },
+  {
+    "cmd": [
+      "lucicfg",
+      "validate",
+      "config/main.star"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "luci validate"
+  },
+  {
+    "cmd": [
+      "git",
+      "ls-files",
+      "--modified",
+      "--deleted",
+      "--exclude-standard"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "check for no-op commit",
+    "timeout": 300.0,
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@stdout@hello@@@",
+      "@@@STEP_LOG_END@stdout@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "add",
+      "--update"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git add",
+    "timeout": 300.0
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git rev-parse (2)",
+    "timeout": 300.0
+  },
+  {
+    "cmd": [],
+    "name": "calculate Change-Id",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@I520324b8ea4bfe51bb4d3690983686816663e896@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "diff",
+      "--unified=0",
+      "--cached"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "calculate Change-Id.git diff",
+    "timeout": 300.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@diff --git a/foo.txt b/foo.txt@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@--- a/foo.txt@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@+++ b/foo.txt@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@@@ -16 +16 @@@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@-        foo = 5@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@+        foo = 6@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@diff --git a/bar.txt b/bar.txt@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@--- a/bar.txt@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@+++ b/bar.txt@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@@@ -5 +5 @@@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@-        bar = 0@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@+        bar = 1@@@",
+      "@@@STEP_LOG_LINE@diff (without hashes)@@@@",
+      "@@@STEP_LOG_END@diff (without hashes)@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "hash-object",
+      "diff --git a/foo.txt b/foo.txt\n--- a/foo.txt\n+++ b/foo.txt\n@@ -16 +16 @@\n-        foo = 5\n+        foo = 6\ndiff --git a/bar.txt b/bar.txt\n--- a/bar.txt\n+++ b/bar.txt\n@@ -5 +5 @@\n-        bar = 0\n+        bar = 1\n####builder############"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "calculate Change-Id.git hash-object",
+    "timeout": 300.0,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure infra/tools/luci/gerrit/${platform}"
+  },
+  {
+    "cmd": [],
+    "name": "ensure infra/tools/luci/gerrit/${platform}.get packages",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "RECIPE_MODULE[fuchsia::gerrit]/resources/cipd.ensure",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure infra/tools/luci/gerrit/${platform}.get packages.read ensure file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@cipd.ensure@infra/tools/luci/gerrit/${platform} version:pinned-version@@@",
+      "@@@STEP_LOG_END@cipd.ensure@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07",
+      "-ensure-file",
+      "infra/tools/luci/gerrit/${platform} version:pinned-version",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure infra/tools/luci/gerrit/${platform}.install infra/tools/luci/gerrit.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:pinned-v\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/gerrit/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/gerrit",
+      "change-query",
+      "-host",
+      "https://flutter-review.googlesource.com",
+      "-input",
+      "{\"params\": {\"o\": [\"CURRENT_COMMIT\", \"CURRENT_REVISION\", \"MESSAGES\", \"DETAILED_ACCOUNTS\"], \"q\": \"change:infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\"}}",
+      "-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "check for identical roll",
+    "timeout": 600,
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@[]@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@json.input@{@@@",
+      "@@@STEP_LOG_LINE@json.input@  \"params\": {@@@",
+      "@@@STEP_LOG_LINE@json.input@    \"o\": [@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"CURRENT_COMMIT\",@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"CURRENT_REVISION\",@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"MESSAGES\",@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"DETAILED_ACCOUNTS\"@@@",
+      "@@@STEP_LOG_LINE@json.input@    ],@@@",
+      "@@@STEP_LOG_LINE@json.input@    \"q\": \"change:infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\"@@@",
+      "@@@STEP_LOG_LINE@json.input@  }@@@",
+      "@@@STEP_LOG_LINE@json.input@}@@@",
+      "@@@STEP_LOG_END@json.input@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "commit",
+      "-m",
+      "Roll flutter to abc123\n\nRoller-URL: https://ci.chromium.org/b/8945511751514863184\nCQ-Do-Not-Cancel-Tryjobs: true\nChange-Id: I520324b8ea4bfe51bb4d3690983686816663e896",
+      "-a",
+      "--no-verify"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git commit",
+    "timeout": 600.0
+  },
+  {
+    "cmd": [
+      "git",
+      "push",
+      "--push-option",
+      "nokeycheck",
+      "origin",
+      "HEAD:refs/for/main%l=Bot-Commit+1,l=Commit-Queue+2"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git push",
+    "timeout": 180.0,
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@stdout@@@@",
+      "@@@STEP_LOG_END@stdout@@@",
+      "@@@STEP_LINK@gerrit link@https://flutter-review.googlesource.com/q/infra~main~I520324b8ea4bfe51bb4d3690983686816663e896@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "output gerrit change id",
+    "~followup_annotations": [
+      "@@@SET_BUILD_PROPERTY@gerrit_changes@[{\"change_id\": \"infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\", \"host\": \"flutter-review.googlesource.com\"}]@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "check for completion"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/infra/tools/luci/gerrit/0e548aa33f8113a45a5b3b62201e114e98e63d00f97296912380138f44597b07/gerrit",
+      "change-detail",
+      "-host",
+      "https://flutter-review.googlesource.com",
+      "-input",
+      "{\"change_id\": \"infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\", \"params\": {\"o\": [\"CURRENT_REVISION\", \"DETAILED_ACCOUNTS\"]}}",
+      "-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "check for completion.check if done (0)",
+    "timeout": 600,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"current_revision\": \"abc123\",@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"labels\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"Commit-Queue\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"all\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"value\": 2@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      ],@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"approved\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"email\": \"roller@fuchsia-service-account.com\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  },@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"status\": \"MERGED\"@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@json.input@{@@@",
+      "@@@STEP_LOG_LINE@json.input@  \"change_id\": \"infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\",@@@",
+      "@@@STEP_LOG_LINE@json.input@  \"params\": {@@@",
+      "@@@STEP_LOG_LINE@json.input@    \"o\": [@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"CURRENT_REVISION\",@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"DETAILED_ACCOUNTS\"@@@",
+      "@@@STEP_LOG_LINE@json.input@    ]@@@",
+      "@@@STEP_LOG_LINE@json.input@  }@@@",
+      "@@@STEP_LOG_LINE@json.input@}@@@",
+      "@@@STEP_LOG_END@json.input@@@",
+      "@@@STEP_LINK@gerrit link@https://flutter-review.googlesource.com/q/infra~main~I520324b8ea4bfe51bb4d3690983686816663e896@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]

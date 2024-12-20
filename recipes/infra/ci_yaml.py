@@ -76,18 +76,24 @@ def RunSteps(api):
     api.step('dart pub get', cmd=['dart', 'pub', 'get'])
     generate_jspb_path = cocoon_path / 'app_dart/bin/generate_jspb.dart'
     config_name = '%s_config.json' % repo
+    # TODO(fujino): verify if we can delete this check
     if git_branch and not _is_default_branch(git_branch):
       config_name = '%s_%s_config.json' % (repo, git_branch)
     infra_config_path = infra_path / f'config/generated/ci_yaml/{config_name}'
 
-    # Generate_jspb
-    jspb_step = api.step(
-        'generate jspb',
-        cmd=['dart', generate_jspb_path, repo, git_ref],
-        stdout=api.raw_io.output_text(add_output_log=True),
-        stderr=api.raw_io.output_text(add_output_log=True)
+    _generate_json(
+        api, generate_jspb_path, repo, git_ref, infra_config_path, False
     )
-    api.file.write_raw('write jspb', infra_config_path, jspb_step.stdout)
+    # If is_fusion, generate for the nested engine .ci.yaml
+    if api.repo_util.is_fusion():
+      _generate_json(
+          api,
+          generate_jspb_path,
+          repo,
+          git_ref,
+          infra_path / f'config/generated/ci_yaml/engine_config.json',
+          True,
+      )
 
   # Roll scheduler.proto
   with api.context(env_prefixes={'PATH': [protoc_path / 'bin']}):
@@ -124,6 +130,21 @@ def RunSteps(api):
       )
 
 
+def _generate_json(api, bin_path, repo, git_ref, output_path, is_fusion):
+  cmd = ['dart', bin_path, repo, git_ref]
+  if is_fusion:
+    cmd.append('engine/src/flutter/.ci.yaml')
+  # Generate_jspb for root .ci.yaml
+  jspb_step = api.step(
+      'generate jspb',
+      cmd=cmd,
+      stdout=api.raw_io.output_text(add_output_log=True),
+      stderr=api.raw_io.output_text(add_output_log=True)
+  )
+
+  api.file.write_raw('write jspb', output_path, jspb_step.stdout)
+
+
 def GenTests(api):
   yield api.test(
       'basic',
@@ -133,6 +154,22 @@ def GenTests(api):
           revision='abc123'
       ), api.properties(git_branch='main', git_repo='engine'),
       api.repo_util.flutter_environment_data(api.path.start_dir / 'flutter'),
+      api.step_data(
+          'generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}')
+      ), api.auto_roller.success()
+  )
+  yield api.test(
+      'flutter.monorepo',
+      api.buildbucket.ci_build(
+          bucket='prod',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          revision='abc123'
+      ),
+      api.properties(
+          git_branch='master',
+          git_repo='flutter',
+          is_fusion='true',
+      ), api.repo_util.flutter_environment_data(api.path.start_dir / 'flutter'),
       api.step_data(
           'generate jspb', stdout=api.raw_io.output_text('{"hello": "world"}')
       ), api.auto_roller.success()

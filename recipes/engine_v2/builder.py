@@ -292,8 +292,10 @@ def RunSteps(api):
 
   api.flutter_bcid.report_stage('start')
 
-  if api.repo_util.is_fusion() or api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
+  if api.repo_util.is_fusion():
     checkout = api.path.cache_dir / 'builder/engine/src'
+  elif api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
+    checkout = api.path.cache_dir / 'builder/flutter/engine/src'
   else:
     checkout = api.path.cache_dir / 'builder/src'
   api.file.rmtree('Clobber build output', checkout / 'out')
@@ -427,6 +429,19 @@ def GenTests(api):
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           git_ref='refs/heads/flutter-3.17-candidate.0',
           revision='abcd' * 10,
+          build_number=123,
+      ),
+  )
+  yield api.test(
+      'basic_fusion',
+      api.properties(builds=[build], no_goma=True, is_fusion=True),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='prod-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          git_ref='refs/heads/main',
+          revision='a' * 40,
           build_number=123,
       ),
   )

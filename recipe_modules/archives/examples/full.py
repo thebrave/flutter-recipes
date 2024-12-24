@@ -16,7 +16,10 @@ DEPS = [
 
 
 def RunSteps(api):
-  checkout = api.path.start_dir
+  if api.monorepo.is_monorepo:
+    checkout = api.path.start_dir / "flutter" / "engine" / "src"
+  else:
+    checkout = api.path.start_dir
   config = api.properties.get('config')
   expected_destinations = api.properties.get('expected_destinations')
   results = api.archives.engine_v2_gcs_paths(checkout, config)
@@ -43,6 +46,22 @@ def GenTests(api):
           "out/android_profile/zip_archives/android-arm-profile/linux-x64.zip",
           "out/android_profile/zip_archives/android-arm-profile/symbols.zip",
           "out/android_profile/zip_archives/download.flutter.io"
+      ]
+  }
+
+  archive_monorepo_config = {
+      "name":
+          "android_profile",
+      "type":
+          "gcs",
+      "realm":
+          "production",
+      "base_path":
+          "flutter/engine/src/out/android_profile/zip_archives/",
+      "include_paths": [
+          "flutter/engine/src/out/android_profile/zip_archives/android-arm-profile/artifacts.zip",
+          "flutter/engine/src/out/android_profile/zip_archives/android-arm-profile/linux-x64.zip",
+          "flutter/engine/src/out/android_profile/zip_archives/android-arm-profile/symbols.zip",
       ]
   }
 
@@ -395,7 +414,7 @@ def GenTests(api):
   yield api.test(
       'monorepo_ci', api.monorepo.ci_build(),
       api.properties(
-          config=archive_config,
+          config=archive_monorepo_config,
           expected_destinations=monorepo_production_realm
       ),
       api.step_data(
@@ -406,7 +425,7 @@ def GenTests(api):
   )
 
   # Monorepo ci  with "experimental" realm in build configuration file.
-  monorepo_experimental_realm_config = copy.deepcopy(archive_config)
+  monorepo_experimental_realm_config = copy.deepcopy(archive_monorepo_config)
   monorepo_experimental_realm_config['realm'] = 'experimental'
   monorepo_experimental_realm = [
       'gs://flutter_archives_v2/monorepo/123/flutter_infra_release/flutter/12345abcde12345abcde12345abcde12345abcde/android-arm-profile/artifacts.zip',
@@ -439,7 +458,7 @@ def GenTests(api):
   yield api.test(
       'monorepo_try_production_realm',
       api.properties(
-          config=archive_config,
+          config=archive_monorepo_config,
           expected_destinations=monorepo_try_production_realm,
       ),
       api.monorepo.try_build(build_id=123),
@@ -453,7 +472,7 @@ def GenTests(api):
       'gs://flutter_archives_v2/monorepo_try/123/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.jar',
       'gs://flutter_archives_v2/monorepo_try/123/download.flutter.io/io/flutter/x86_debug/1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584/x86_debug-1.0.0-0005149dca9b248663adcde4bdd7c6c915a76584.pom'
   ]
-  monorepo_experimental_realm_config = copy.deepcopy(archive_config)
+  monorepo_experimental_realm_config = copy.deepcopy(archive_monorepo_config)
   monorepo_experimental_realm_config['realm'] = 'experimental'
   yield api.test(
       'monorepo_try_experimental_realm',

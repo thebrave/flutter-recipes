@@ -725,6 +725,61 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[CACHE]/builder/flutter/DEPS",
+      "[CACHE]/builder/flutter/DEPS.bak"
+    ],
+    "cwd": "[CACHE]/builder/flutter",
+    "env": {
+      "ANDROID_HOME": "[CACHE]/android/sdk",
+      "ANDROID_NDK_PATH": "[CACHE]/android/ndk",
+      "ANDROID_SDK_HOME": "[CLEANUP]/tmp_tmp_1",
+      "ANDROID_SDK_ROOT": "[CACHE]/android/sdk",
+      "ANDROID_USER_HOME": "[CLEANUP]/tmp_tmp_1/.android",
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com/flutter_archives_v2/monorepo/123",
+      "GIT_BRANCH": "",
+      "GRADLE_OPTS": "-Dorg.gradle.daemon=false",
+      "GRADLE_USER_HOME": "[CACHE]/gradle",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CACHE]/builder/flutter",
+      "SHARD": "framework_tests",
+      "SUBSHARD": "slow"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/flutter/bin",
+        "[CACHE]/builder/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart:ci.sandbox"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:123",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Rename [CACHE]/builder/flutter/DEPS to DEPS.bak to preserve engine.version"
+  },
+  {
+    "cmd": [
       "flutter",
       "update-packages",
       "-v"

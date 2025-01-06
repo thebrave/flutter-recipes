@@ -125,6 +125,8 @@ def RunSteps(api):
         'Ensure full engine checkout folder', full_engine_checkout
     )
     if api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
+      full_engine_checkout = full_engine_checkout / 'flutter'
+
       env, env_prefixes = api.repo_util.monorepo_environment(
           full_engine_checkout
       )

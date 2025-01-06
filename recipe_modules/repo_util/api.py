@@ -198,8 +198,6 @@ class RepoUtilApi(recipe_api.RecipeApi):
       checkout_path(Path): The path to checkout source code and dependencies.
       env(dict): A dictionary with the environment variables to set.
       env_prefixes(dict): A dictionary with the paths to be added to environment variables.
-      clobber(bool): A boolean indicating whether the checkout folder should be cleaned.
-      custom_vars(dict): A dictionary with custom variable definitions for gclient solution.
     """
     # Calculate if we need to clean the source code cache.
     clobber = self.m.properties.get('clobber', False)

@@ -122,7 +122,6 @@ def RunSteps(api):
     # Generators, archives and codesign require a full engine checkout.
     full_engine_checkout = api.path.cache_dir / 'builder'
     if api.monorepo.is_monorepo_ci_build or api.monorepo.is_monorepo_try_build:
-      full_engine_checkout = full_engine_checkout / 'flutter'
       api.file.ensure_directory(
           'Ensure monorepo full engine checkout folder', full_engine_checkout
       )
@@ -131,7 +130,7 @@ def RunSteps(api):
           full_engine_checkout
       )
       api.repo_util.monorepo_checkout(full_engine_checkout, env, env_prefixes)
-      full_engine_checkout = full_engine_checkout / 'engine'
+      full_engine_checkout = full_engine_checkout / 'flutter' / 'engine'
     else:
       api.file.ensure_directory(
           'Ensure full engine checkout folder', full_engine_checkout

@@ -270,7 +270,7 @@ class ArchivesApi(recipe_api.RecipeApi):
       bucket = MONOREPO_TRY_BUCKET
       include_build_id = True
     elif self.m.monorepo.is_monorepo_ci_build:
-      commit = self.m.repo_util.get_commit(checkout / '../../monorepo')
+      commit = self.m.repo_util.get_commit(checkout / '../../../monorepo')
       bucket = MONOREPO
       include_build_id = True
     else:

@@ -336,7 +336,7 @@ def GenTests(api):
           environment='Staging',
           repository='flutter',
       ),
-      api.path.files_exist(
+      api.path.dirs_exist(
           api.path.start_dir / 'mirrors' / 'flutter' / 'engine',
       ),
       api.buildbucket.try_build(

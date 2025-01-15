@@ -118,6 +118,42 @@
     ]
   },
   {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/flutter",
+    "infra_step": true,
+    "name": "git rev-parse"
+  },
+  {
+    "cmd": [
+      "[START_DIR]/flutter/bin/flutter",
+      "config",
+      "--clear-features"
+    ],
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "GIT_BRANCH": "flutter-2.8-candidate.9",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/flutter/bin",
+        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "name": "flutter config --clear-features"
+  },
+  {
     "cmd": [],
     "name": "checkout engine release branch"
   },
@@ -234,42 +270,6 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
-  },
-  {
-    "cmd": [
-      "git",
-      "rev-parse",
-      "HEAD"
-    ],
-    "cwd": "[START_DIR]/flutter",
-    "infra_step": true,
-    "name": "git rev-parse"
-  },
-  {
-    "cmd": [
-      "[START_DIR]/flutter/bin/flutter",
-      "config",
-      "--clear-features"
-    ],
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "flutter-2.8-candidate.9",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[START_DIR]/flutter"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/flutter/bin",
-        "[START_DIR]/flutter/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "name": "flutter config --clear-features"
   },
   {
     "cmd": [
@@ -425,12 +425,12 @@
       "LUCI_PR": "",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "RELEASE_CHANNEL": "beta",
+      "RELEASE_CHANNEL": "stable",
       "REL_HASH": "deadbeef",
       "REPO": "flutter",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
-      "TAG": "1.2.3-4.5.pre",
+      "TAG": "1.2.3",
       "TOKEN_PATH": "[CLEANUP]/token.txt"
     },
     "env_prefixes": {
@@ -593,11 +593,11 @@
       "LUCI_PR": "",
       "LUCI_WORKDIR": "[START_DIR]",
       "OS": "linux",
-      "RELEASE_CHANNEL": "beta",
+      "RELEASE_CHANNEL": "stable",
       "REL_HASH": "",
       "REPO": "engine",
       "REVISION": "",
-      "TAG": "1.2.3-4.5.pre",
+      "TAG": "1.2.3",
       "TOKEN_PATH": "[CLEANUP]/token.txt"
     },
     "env_prefixes": {

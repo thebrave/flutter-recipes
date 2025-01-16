@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 
 DEPS = [
-    "fuchsia/buildbucket_util",
     "fuchsia/python3",
     "fuchsia/utils",
+    "recipe_engine/buildbucket",
     "recipe_engine/cipd",
     "recipe_engine/platform",
     "recipe_engine/step",

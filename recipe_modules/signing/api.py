@@ -118,7 +118,7 @@ class CodeSignApi(recipe_api.RecipeApi):
         )
       finally:
         # This will namespace the remote GCS path by the buildbucket build ID
-        buildbucket_id = self.m.buildbucket_util.id
+        buildbucket_id = self.m.buildbucket.build.id
         remote_path = '%s/setup_keychain_logs.txt' % buildbucket_id
         self.m.gsutil.upload(
             bucket='flutter_tmp_logs',

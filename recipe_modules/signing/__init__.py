@@ -7,7 +7,7 @@ DEPS = [
     'flutter/flutter_deps',
     'flutter/kms',
     'flutter/zip',
-    'fuchsia/buildbucket_util',
+    'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/futures',

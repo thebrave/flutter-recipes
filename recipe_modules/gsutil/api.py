@@ -95,7 +95,7 @@ class GSUtilApi(recipe_api.RecipeApi):
 
   def namespaced_gcs_path(self, relative_path, namespace=None):
     if not namespace:
-      namespace = self.m.buildbucket_util.id
+      namespace = self.m.buildbucket.build.id
     return f"builds/{namespace}/{relative_path}"
 
   def http_url(self, bucket, dest, unauthenticated_url=False):

@@ -555,9 +555,10 @@ class RecipeTestingApi(recipe_api.RecipeApi):
   def _all_tryjobs(
       self, project, include_unrestricted, include_restricted, config_name
   ):
-    cfg = self.m.luci_config.commit_queue(
+    cfg = self.m.luci_config.fetch_config(
+        config_name or "commit-queue.cfg",
+        config_pb2.Config,
         project=project,
-        config_name=config_name or "commit-queue.cfg",
     )
     builders = set()
     config_groups = cfg.config_groups if cfg else []

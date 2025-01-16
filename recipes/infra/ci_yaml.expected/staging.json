@@ -597,6 +597,7 @@
       "-json-output",
       "/path/to/tmp/json"
     ],
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:staging"
@@ -961,10 +962,39 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "check for no-op commit",
+    "name": "check for no-op commit: unstaged / ignored files",
     "timeout": 300.0,
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@stdout@hello@@@",
+      "@@@STEP_LOG_END@stdout@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "diff",
+      "HEAD",
+      "--cached",
+      "--name-only"
+    ],
+    "cwd": "[START_DIR]/infra",
+    "luci_context": {
+      "realm": {
+        "name": "project:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "check for no-op commit: staged files",
+    "timeout": 300.0,
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@stdout@staged-foo.txt@@@",
+      "@@@STEP_LOG_LINE@stdout@staged-bar.txt@@@",
       "@@@STEP_LOG_END@stdout@@@"
     ]
   },
@@ -1261,7 +1291,7 @@
       "git",
       "commit",
       "-m",
-      "Roll engine to abc123\n\nRoller-URL: https://ci.chromium.org/b/8945511751514863184\nCQ-Do-Not-Cancel-Tryjobs: true\nChange-Id: I520324b8ea4bfe51bb4d3690983686816663e896",
+      "Roll engine to abc123\n\nRoller-URL: https://cr-buildbucket.appspot.com/build/8945511751514863184\nCQ-Do-Not-Cancel-Tryjobs: true\nChange-Id: I520324b8ea4bfe51bb4d3690983686816663e896",
       "-a",
       "--no-verify"
     ],
@@ -1331,7 +1361,7 @@
       "-host",
       "https://flutter-review.googlesource.com",
       "-input",
-      "{\"change_id\": \"infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\", \"params\": {\"o\": [\"CURRENT_REVISION\", \"DETAILED_ACCOUNTS\"]}}",
+      "{\"change_id\": \"infra~main~I520324b8ea4bfe51bb4d3690983686816663e896\", \"params\": {\"o\": [\"CURRENT_REVISION\", \"DETAILED_ACCOUNTS\", \"SUBMITTABLE\"]}}",
       "-output",
       "/path/to/tmp/json"
     ],
@@ -1375,7 +1405,8 @@
       "@@@STEP_LOG_LINE@json.input@  \"params\": {@@@",
       "@@@STEP_LOG_LINE@json.input@    \"o\": [@@@",
       "@@@STEP_LOG_LINE@json.input@      \"CURRENT_REVISION\",@@@",
-      "@@@STEP_LOG_LINE@json.input@      \"DETAILED_ACCOUNTS\"@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"DETAILED_ACCOUNTS\",@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"SUBMITTABLE\"@@@",
       "@@@STEP_LOG_LINE@json.input@    ]@@@",
       "@@@STEP_LOG_LINE@json.input@  }@@@",
       "@@@STEP_LOG_LINE@json.input@}@@@",

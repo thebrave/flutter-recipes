@@ -171,7 +171,7 @@ def RunSteps(api, _, __):
     collect_and_display_builds(
         ScheduleBuildsForRepo(
             api,
-            checkout_path / 'engine',
+            checkout_path / 'engine' / 'src' / 'flutter',
             git_ref,
             retry_override_list,
         )

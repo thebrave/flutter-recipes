@@ -561,7 +561,9 @@ class RepoUtilApi(recipe_api.RecipeApi):
         'LUCI_WORKDIR':
             str(self.m.path.start_dir),
         'REVISION':
-            self.m.buildbucket.gitiles_commit.id or ''
+            self.m.buildbucket.gitiles_commit.id or '',
+        'CLANG_CRASH_DIAGNOSTICS_DIR':
+            self.m.path.mkdtemp(),
     }
     env_prefixes = {'PATH': ['%s' % str(dart_bin), '%s' % str(new_dart_bin)]}
     return env, env_prefixes

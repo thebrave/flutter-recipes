@@ -47,8 +47,13 @@ class RepoContext(Enum):
   MONOREPO = 2
 
 
-def ShouldRun(api, git_ref, target, release_branch, retry_override_list):
-  """Validates if a target should run based on platform, channel and repo."""
+def ShouldRun(
+    api, git_ref, target, release_branch, retry_override_list, repo_context
+):
+  """Validates if a target should run based on platform, channel and repo.
+
+  If repo_context == RepoContext.MONOREPO, then the target platform does not
+  need to match the current platform."""
 
   # If retry_override_list list of targets to retry has been provided,
   # skip the target if not specified on list.
@@ -71,8 +76,10 @@ def ShouldRun(api, git_ref, target, release_branch, retry_override_list):
       return False
 
   release_build = target.get('properties', {}).get('release_build', False)
-  for_this_platform = target['name'].lower().startswith(api.platform.name)
+  for_this_platform = repo_context == RepoContext.MONOREPO or target[
+      'name'].lower().startswith(api.platform.name)
   # Postsubmit for engine and flutter repositories.
+  # TODO(fujino): once 3.29 reaches stable, ignore [for_this_platform]
   if (release_build and for_this_platform and
       (git_ref not in RELEASE_CHANNELS)):
     return True
@@ -113,7 +120,9 @@ def GetRepoContext(api, repository, root):
   assert False, f'the repository {repository} is not supported by the release/release_builder.py recipe'
 
 
-def ScheduleBuildsForRepo(api, checkout_path, git_ref, retry_override_list):
+def ScheduleBuildsForRepo(
+    api, checkout_path, git_ref, retry_override_list, context
+):
   ci_yaml_path = checkout_path / '.ci.yaml'
   ci_yaml = api.yaml.read('read ci yaml', ci_yaml_path, api.json.output())
 
@@ -128,7 +137,8 @@ def ScheduleBuildsForRepo(api, checkout_path, git_ref, retry_override_list):
   build_results = []
   with api.step.nest('launch builds') as presentation:
     for target in ci_yaml.json.output['targets']:
-      if ShouldRun(api, git_ref, target, release_branch, retry_override_list):
+      if ShouldRun(api, git_ref, target, release_branch, retry_override_list,
+                   context):
         target = api.shard_util.pre_process_properties(target)
         tasks.update(
             api.shard_util.schedule([target],
@@ -165,7 +175,9 @@ def RunSteps(api, _, __):
 
   if context in (RepoContext.SINGLE_REPO_FRAMEWORK, RepoContext.SINGLE_REPO_ENGINE):
     collect_and_display_builds(
-        ScheduleBuildsForRepo(api, checkout_path, git_ref, retry_override_list)
+        ScheduleBuildsForRepo(
+            api, checkout_path, git_ref, retry_override_list, context
+        )
     )
   elif context == RepoContext.MONOREPO:
     collect_and_display_builds(
@@ -174,11 +186,18 @@ def RunSteps(api, _, __):
             checkout_path / 'engine' / 'src' / 'flutter',
             git_ref,
             retry_override_list,
+            context,
         )
     )
 
     collect_and_display_builds(
-        ScheduleBuildsForRepo(api, checkout_path, git_ref, retry_override_list)
+        ScheduleBuildsForRepo(
+            api,
+            checkout_path,
+            git_ref,
+            retry_override_list,
+            context,
+        )
     )
   else:
     assert False, "You must update release/release_builder.py to handle a new RepoContext"  # pragma: nocover
@@ -227,13 +246,35 @@ def GenTests(api):
         api.step_data('read ci yaml.parse', api.json.output(tasks_dict)),
     )
 
+  multiplatform_tasks = {
+      'targets': [
+          {
+              'name': 'Linux flutter_test',
+              'recipe': 'release/something',
+              'properties': {},
+              'enabled_branches': ['flutter-3.2-candidate.5'],
+              'drone_dimensions': ['os=Linux']
+          },
+          {
+              'name': 'Mac flutter_test',
+              'recipe': 'release/something',
+              'properties': {
+                  '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'
+              },
+              'enabled_branches': ['flutter-3.2-candidate.5'],
+              'drone_dimensions': ['os=Mac']
+          },
+      ]
+  }
   tasks_dict_scheduler = {
       'targets': [
           {
               'name': 'linux packaging one',
               'recipe': 'release/something',
               #'scheduler': 'release',
-              'properties': {'$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'},
+              'properties': {
+                  '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'
+              },
               'enabled_branches': ['flutter-3.2-candidate.5'],
               'drone_dimensions': ['os=Linux']
           },
@@ -241,7 +282,9 @@ def GenTests(api):
               'name': 'linux packaging two',
               'recipe': 'release/something',
               #'scheduler': 'release',
-              'properties': {'$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'},
+              'properties': {
+                  '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'
+              },
               'enabled_branches': ['beta', 'main'],
               'drone_dimensions': ['os=Linux']
           }
@@ -310,8 +353,9 @@ def GenTests(api):
       ),
   )
   yield api.test(
-      'framework_single_repo',
+      'linux_framework_single_repo',
       api.properties(environment='Staging', repository='framework'),
+      api.platform.name('linux'),
       api.buildbucket.try_build(
           project='dart-internal',
           bucket='flutter',
@@ -322,7 +366,7 @@ def GenTests(api):
           git_ref='refs/heads/%s' % git_ref,
       ),
       api.step_data(
-          'read ci yaml.parse', api.json.output(tasks_dict_scheduler)
+          'read ci yaml.parse', api.json.output(multiplatform_tasks)
       ),
       api.step_data(
           'Identify branches.git branch',
@@ -331,11 +375,12 @@ def GenTests(api):
       ),
   )
   yield api.test(
-      'engine_monorepo',
+      'linux_engine_monorepo',
       api.properties(
           environment='Staging',
           repository='flutter',
       ),
+      api.platform.name('linux'),
       api.path.dirs_exist(
           api.path.start_dir / 'mirrors' / 'flutter' / 'engine',
       ),
@@ -350,7 +395,7 @@ def GenTests(api):
       ),
       # Engine .ci.yaml
       api.step_data(
-          'read ci yaml.parse', api.json.output(tasks_dict_scheduler)
+          'read ci yaml.parse', api.json.output(multiplatform_tasks)
       ),
       # Framework .ci.yaml
       api.step_data(

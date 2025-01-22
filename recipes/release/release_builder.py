@@ -140,6 +140,9 @@ def ScheduleBuildsForRepo(
       if ShouldRun(api, git_ref, target, release_branch, retry_override_list,
                    context):
         target = api.shard_util.pre_process_properties(target)
+        if context == RepoContext.MONOREPO:
+          properties = target.setdefault('properties', {})
+          properties['is_fusion'] = 'true'
         tasks.update(
             api.shard_util.schedule([target],
                                     presentation,
@@ -246,13 +249,14 @@ def GenTests(api):
         api.step_data('read ci yaml.parse', api.json.output(tasks_dict)),
     )
 
+  git_ref = 'flutter-3.2-candidate.5'
   multiplatform_tasks = {
       'targets': [
           {
               'name': 'Linux flutter_test',
               'recipe': 'release/something',
               'properties': {},
-              'enabled_branches': ['flutter-3.2-candidate.5'],
+              'enabled_branches': [git_ref],
               'drone_dimensions': ['os=Linux']
           },
           {
@@ -261,7 +265,30 @@ def GenTests(api):
               'properties': {
                   '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'
               },
-              'enabled_branches': ['flutter-3.2-candidate.5'],
+              'enabled_branches': [git_ref],
+              'drone_dimensions': ['os=Mac']
+          },
+      ]
+  }
+  release_multiplatform_tasks = {
+      'targets': [
+          {
+              'name': 'Linux flutter_test',
+              'recipe': 'release/something',
+              'properties': {
+                  'release_build': 'true',
+              },
+              'enabled_branches': [git_ref],
+              'drone_dimensions': ['os=Linux']
+          },
+          {
+              'name': 'Mac flutter_test',
+              'recipe': 'release/something',
+              'properties': {
+                  '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}',
+                  'release_build': 'true',
+              },
+              'enabled_branches': [git_ref],
               'drone_dimensions': ['os=Mac']
           },
       ]
@@ -375,7 +402,7 @@ def GenTests(api):
       ),
   )
   yield api.test(
-      'linux_engine_monorepo',
+      'linux_engine_monorepo_candidate',
       api.properties(
           environment='Staging',
           repository='flutter',
@@ -395,7 +422,7 @@ def GenTests(api):
       ),
       # Engine .ci.yaml
       api.step_data(
-          'read ci yaml.parse', api.json.output(multiplatform_tasks)
+          'read ci yaml.parse', api.json.output(release_multiplatform_tasks)
       ),
       # Framework .ci.yaml
       api.step_data(
@@ -403,8 +430,9 @@ def GenTests(api):
       ),
       api.step_data(
           'Identify branches.git branch',
-          stdout=api.raw_io
-          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+          stdout=api.raw_io.output_text(
+              'remotes/origin/branch1\nremotes/origin/branch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
       ),
   )
   yield api.test(

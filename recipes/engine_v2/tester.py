@@ -127,10 +127,9 @@ def RunSteps(api):
     shard_name = '%s %s' % (shard, subshard)
   else:
     shard_name = shard
+  env['FLUTTER_ENGINE_VERSION'] = engine_version
   env['FLUTTER_STORAGE_BASE_URL'] = artifact_url
   with api.context(env=env, env_prefixes=env_prefixes, cwd=flutter):
-    api.file.move('Rename %s/engine/src/.gn to .gn.bak to preserve engine.version' % flutter,
-      flutter / 'engine' / 'src' / '.gn', flutter / 'engine' / 'src' / '.gn.bak')
     api.retry.step(
         'download dependencies', ['flutter', 'update-packages', '-v'],
         max_attempts=2,

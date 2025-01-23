@@ -744,58 +744,6 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "move",
-      "[CACHE]/builder/flutter/engine/src/.gn",
-      "[CACHE]/builder/flutter/engine/src/.gn.bak"
-    ],
-    "cwd": "[CACHE]/builder/flutter",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
-      "CHROME_NO_SANDBOX": "true",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com/flutter_archives_v2/monorepo/123",
-      "GIT_BRANCH": "",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "linux",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CACHE]/builder/flutter",
-      "SHARD": "web_tests",
-      "SUBSHARD": "3"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/flutter/bin",
-        "[CACHE]/builder/flutter/bin/cache/dart-sdk/bin",
-        "[CACHE]/chrome/chrome",
-        "[CACHE]/chrome/drivers"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart:ci.sandbox"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:123",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Rename [CACHE]/builder/flutter/engine/src/.gn to .gn.bak to preserve engine.version"
-  },
-  {
-    "cmd": [
       "flutter",
       "update-packages",
       "-v"
@@ -806,6 +754,7 @@
       "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
       "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_ENGINE_VERSION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com/flutter_archives_v2/monorepo/123",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",
@@ -852,6 +801,7 @@
       "CHROME_EXECUTABLE": "[CACHE]/chrome/chrome/chrome",
       "CHROME_NO_SANDBOX": "true",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_ENGINE_VERSION": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "FLUTTER_STORAGE_BASE_URL": "https://storage.googleapis.com/flutter_archives_v2/monorepo/123",
       "GIT_BRANCH": "",
       "LUCI_BRANCH": "",

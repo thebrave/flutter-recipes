@@ -31,6 +31,14 @@ def GenTests(api):
     yield (api.test(platform) + api.platform.name(platform))
 
   yield api.test(
+      'skipped_xcode',
+      api.platform.name('mac'),
+      api.properties(**{'$flutter/osx_sdk': {
+        'skip_xcode_install': True,
+      }})
+  )
+
+  yield api.test(
       'explicit_version', api.platform.name('mac'),
       api.properties(
           **{

@@ -48,6 +48,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
     self._cleanup_cache = False
     self.macos_13_or_later = False
     self._xcode_cipd_package_source = None
+    self._skip = False
 
   def initialize(self):
     """Initializes xcode, and ios versions.
@@ -57,6 +58,9 @@ class OSXSDKApi(recipe_api.RecipeApi):
     """
     if not self.m.platform.is_mac:
       return
+
+    if 'skip_xcode_install' in self._sdk_properties:
+      self._skip = self._sdk_properties['skip_xcode_install']
 
     if 'cleanup_cache' in self._sdk_properties:
       self._cleanup_cache = self._sdk_properties['cleanup_cache']
@@ -154,7 +158,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
         StepFailure or InfraFailure.
     """
     assert kind in ('mac', 'ios'), 'Invalid kind %r' % (kind,)
-    if not self.m.platform.is_mac:
+    if self._skip or not self.m.platform.is_mac:
       yield
       return
 
@@ -174,7 +178,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
   def reset_xcode(self):
     '''Unset manually defined Xcode path for Xcode command line tools on macOS.'''
-    if not self.m.platform.is_mac:
+    if self._skip or not self.m.platform.is_mac:
       return
     with self.m.context(infra_steps=True):
       self.m.step('reset XCode', ['sudo', 'xcode-select', '--reset'])

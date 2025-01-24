@@ -39,6 +39,10 @@ PROPERTIES = {
       toolchain_pkg=Single(str),
       toolchain_ver_arm=Single(str),
       toolchain_ver_intel=Single(str),
+
+      # Skip xcode install
+      skip_xcode_install=Single(bool),
+
       # Cleanup caches
       cleanup_cache=Single(bool),
 

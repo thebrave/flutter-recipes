@@ -445,9 +445,17 @@ class RepoUtilApi(recipe_api.RecipeApi):
             self.get_commit(checkout_path),
     }
     self.add_property_env_variables(env)
+
+    # Cocoon signal that we want to pin the engine realm. See flutter/bin/internal/update_engine_version.sh
     flutter_realm = self.m.properties.get('flutter_realm', False)
     if flutter_realm:
       env['FLUTTER_REALM'] = flutter_realm
+
+    # Cocoon signal that we want to pin the engine version. See flutter/bin/internal/update_engine_version.sh
+    flutter_prebuilt_engine_version = self.m.properties.get('flutter_prebuilt_engine_version', False)
+    if flutter_prebuilt_engine_version:
+      env['FLUTTER_PREBUILT_ENGINE_VERSION'] = flutter_prebuilt_engine_version
+
     if self.m.properties.get('gn_artifacts', False):
       env['FLUTTER_STORAGE_BASE_URL'
          ] = 'https://storage.googleapis.com/flutter_archives_v2'

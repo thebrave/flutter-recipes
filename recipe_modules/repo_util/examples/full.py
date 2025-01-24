@@ -330,6 +330,7 @@ def GenTests(api):
           config_name='build_config.json',
           is_fusion=True,
           flutter_realm='foo-realm',
+          flutter_prebuilt_engine_version='sha1234',
           ),
       api.repo_util.flutter_environment_data(),
   )

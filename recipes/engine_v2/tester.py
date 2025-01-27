@@ -127,7 +127,7 @@ def RunSteps(api):
     shard_name = '%s %s' % (shard, subshard)
   else:
     shard_name = shard
-  env['FLUTTER_ENGINE_VERSION'] = engine_version
+  env['FLUTTER_PREBUILT_ENGINE_VERSION'] = engine_version
   env['FLUTTER_STORAGE_BASE_URL'] = artifact_url
   with api.context(env=env, env_prefixes=env_prefixes, cwd=flutter):
     api.retry.step(

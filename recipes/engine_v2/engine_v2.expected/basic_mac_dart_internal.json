@@ -817,6 +817,43 @@
     "name": "Global generators"
   },
   {
+    "cmd": [],
+    "name": "Global generators.verify launch services",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "log",
+      "show",
+      "--last",
+      "24h",
+      "--style",
+      "compact",
+      "--predicate",
+      "logType == \"error\" AND process == \"xcodebuild\" AND subsystem == \"com.apple.launchservices\" AND composedMessage CONTAINS \"disconnect event interruption received for service\""
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Global generators.verify launch services.Check if xcodebuild impacted by Launch Services",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
     "cmd": [
       "echo",
       "[CACHE]/osx_sdk/xcode_12a7209"

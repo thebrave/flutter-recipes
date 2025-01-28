@@ -15,8 +15,13 @@ DEPS = [
     'recipe_engine/step',
 ]
 
+from datetime import datetime
+from unittest.mock import Mock
+
+_MOCK_TIME_NOW = Mock(return_value=datetime(2023, 12, 15, 13, 43, 21, 621929)) # 2023-12-15 13:43:21
 
 def RunSteps(api):
+  api.osx_sdk.now = _MOCK_TIME_NOW
   with api.osx_sdk('mac'):
     api.step('gn', ['gn', 'gen', 'out/Release'])
     api.step('ninja', ['ninja', '-C', 'out/Release'])
@@ -541,4 +546,98 @@ def GenTests(api):
           retcode=1
       ),
       api.step_data('install xcode.install xcode from cipd', retcode=1),
+  )
+
+  _MOCK_TIME_RECENT = "2023-12-13 13:43:21"
+  _MOCK_TIME_LONG_AGO = "2023-12-01 13:43:21"
+
+  yield api.test(
+      'launch_services_unresponsive_mac_recently_reset',
+      api.platform.name('mac'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
+      api.properties(**{'$flutter/osx_sdk': {
+          'sdk_version': 'deadbeef',
+      }}),
+      api.path.exists(
+          (sdk_app_path),
+          (api.path.cache_dir / 'osx_sdk/launch_services_reset_log.txt'),
+      ),
+      api.step_data(
+          'verify launch services.Check if xcodebuild impacted by Launch Services',
+          stdout=api.raw_io.output_text(
+              'Timestamp               Ty Process[PID:TID]\n' +
+              '2025-01-25 22:47:00.906 E  xcodebuild[11687:149bd] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.modifydb\n'
+              +
+              '2025-01-25 22:47:00.906 E  xcodebuild[11687:149c6] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.mapdb'
+          )
+      ),
+      api.step_data(
+          'verify launch services.Check if Launch Services db has been reset recently',
+          api.file.read_text(
+              text_content=(_MOCK_TIME_LONG_AGO + '\n' + _MOCK_TIME_RECENT)
+          )
+      ),
+  )
+
+  yield api.test(
+        'launch_services_unresponsive_mac_reset_long_ago',
+        api.platform.name('mac'),
+        api.step_data(
+            "find macOS version",
+            stdout=api.raw_io.output_text("13.5.1"),
+        ),
+        api.properties(**{'$flutter/osx_sdk': {
+            'sdk_version': 'deadbeef',
+        }}),
+        api.path.exists(
+            (sdk_app_path),
+            (api.path.cache_dir / 'osx_sdk/launch_services_reset_log.txt'),
+        ),
+        api.step_data(
+            'verify launch services.Check if xcodebuild impacted by Launch Services',
+            stdout=api.raw_io.output_text(
+                'Timestamp               Ty Process[PID:TID]\n' +
+                '2025-01-25 22:47:00.906 E  xcodebuild[11687:149bd] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.modifydb\n'
+                +
+                '2025-01-25 22:47:00.906 E  xcodebuild[11687:149c6] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.mapdb'
+            )
+        ),
+        api.step_data(
+            'verify launch services.Check if Launch Services db has been reset recently',
+            api.file.read_text(
+                text_content=_MOCK_TIME_LONG_AGO
+            )
+        ),
+    )
+
+  yield api.test(
+      'launch_services_unresponsive_mac_already_reset_invalid date',
+      api.platform.name('mac'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
+      api.properties(**{'$flutter/osx_sdk': {
+          'sdk_version': 'deadbeef',
+      }}),
+      api.path.exists(
+          (sdk_app_path),
+          (api.path.cache_dir / 'osx_sdk/launch_services_reset_log.txt'),
+      ),
+      api.step_data(
+          'verify launch services.Check if xcodebuild impacted by Launch Services',
+          stdout=api.raw_io.output_text(
+              'Timestamp               Ty Process[PID:TID]\n' +
+              '2025-01-25 22:47:00.906 E  xcodebuild[11687:149bd] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.modifydb\n'
+              +
+              '2025-01-25 22:47:00.906 E  xcodebuild[11687:149c6] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.mapdb'
+          )
+      ),
+      api.step_data(
+          'verify launch services.Check if Launch Services db has been reset recently',
+          api.file.read_text(text_content='invalid date')
+      ),
   )

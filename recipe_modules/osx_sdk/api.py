@@ -10,6 +10,7 @@ Available only to Google-run bots."""
 from contextlib import contextmanager
 
 from recipe_engine import recipe_api
+from datetime import datetime
 
 # Rationalized from https://en.wikipedia.org/wiki/Xcode.
 #
@@ -24,7 +25,6 @@ _RUNTIMESPATH = (
     'Contents/Developer/Platforms/iPhoneOS.platform/Library/'
     'Developer/CoreSimulator/Profiles/Runtimes'
 )
-
 
 # This CIPD source contains Xcode and iOS runtimes create and maintained by the
 # Flutter team.
@@ -164,6 +164,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
 
     try:
       with self.m.context(infra_steps=True):
+        self._diagnose_unresponsive_mac(devicelab)
         self._setup_osx_sdk(kind, devicelab)
         runtime_simulators = self.m.step(
             'list runtimes', ['xcrun', 'simctl', 'list', 'runtimes'],
@@ -426,6 +427,96 @@ class OSXSDKApi(recipe_api.RecipeApi):
             ],
             ok_ret='any',
         )
+
+  def _diagnose_unresponsive_mac(self, devicelab):
+    """Checks if `xcodebuild` commands may have potentially hung due to Launch
+    Services issues. If so, reset the Launch Services database. Only reset the
+    database if it hasn't been reset in the past week.
+
+    Args:
+      devicelab: (bool) tells the module which path we should be working with.
+    """
+
+    with self.m.step.nest('verify launch services'):
+      # Check if xcodebuild commands have potentially been slowed by Launch
+      # Services.
+      xcodebuild_logs = self.m.step(
+          'Check if xcodebuild impacted by Launch Services',
+          [
+              'log',
+              'show',
+              '--last',
+              '24h',
+              '--style',
+              'compact',
+              '--predicate',
+              'logType == "error" AND process == "xcodebuild" AND '
+              'subsystem == "com.apple.launchservices" AND composedMessage '
+              'CONTAINS "disconnect event interruption received for service"',
+          ],
+          stdout=self.m.raw_io.output_text(add_output_log=True),
+      )
+
+      # Remove first line, which is headers.
+      xcodebuild_logs_stdout = xcodebuild_logs.stdout.splitlines()[1:]
+
+      # Only reset Launch Services db if there are logs indicating xcodebuild
+      # has failed due to Launch Services.
+      if len(xcodebuild_logs_stdout) == 0:
+        return
+
+      launch_services_reset_log = self._get_xcode_base_cache_path(
+          devicelab
+      ) / 'launch_services_reset_log.txt'
+
+      reset_logs = ''
+      if self.m.path.exists(launch_services_reset_log):
+        reset_logs = self.m.file.read_text(
+            'Check if Launch Services db has been reset recently',
+            launch_services_reset_log,
+        )
+
+        try:
+          # Get last entry in log.
+          last_entry = reset_logs.splitlines()[-1].rstrip()
+          last_entry_time = datetime.strptime(last_entry, "%Y-%m-%d %H:%M:%S")
+
+          # If Launch Services has already been reset within last 7 days,
+          # don't reset again.
+          if (self.now() - last_entry_time).days <= 7:
+            return
+        except:
+          # If there was an invalid date, reset the log file.
+          reset_logs = ''
+
+      start_time = self.now().strftime("%Y-%m-%d %H:%M:%S")
+
+      self.m.step(
+          'Reset and rescan Launch Services db',
+          [
+              '/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister',
+              '-kill',
+              '-r',
+              '-domain',
+              'local',
+              '-domain',
+              'system',
+              '-domain',
+              'user',
+          ],
+      )
+
+      # Add an entry of when Launch Services was reset in the
+      # launch_services_reset_log.txt file.
+      self.m.file.write_text(
+          'Update Launch Services reset log',
+          launch_services_reset_log,
+          '%s\n%s' % (reset_logs, start_time),
+      )
+
+  def now(self):
+    """Provide a deterministic date when running tests."""
+    return datetime.now()  # pragma: nocover
 
   def _ensure_sdk(self, kind, devicelab):
     """Ensures the mac_toolchain tool and OSX SDK packages are installed.

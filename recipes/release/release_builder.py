@@ -76,11 +76,11 @@ def ShouldRun(
       return False
 
   release_build = target.get('properties', {}).get('release_build', False)
-  for_this_platform = repo_context == RepoContext.MONOREPO or target[
-      'name'].lower().startswith(api.platform.name)
+  for_this_platform = target['name'].lower().startswith(api.platform.name)
   # Postsubmit for engine and flutter repositories.
-  # TODO(fujino): once 3.29 reaches stable, ignore [for_this_platform]
-  if (release_build and for_this_platform and
+  # TODO(fujino): once 3.29 reaches stable, ignore repo_context
+  if (release_build and
+      (repo_context == RepoContext.MONOREPO or for_this_platform) and
       (git_ref not in RELEASE_CHANNELS)):
     return True
   # Packaging for the flutter repository.
@@ -229,25 +229,40 @@ def GenTests(api):
       }]
   }
   for git_ref in ['main', 'beta']:
-    yield api.test(
-        'basic_linux_%s' % git_ref,
-        api.platform.name('linux'),
-        api.properties(environment='Staging', repository='engine'),
-        api.buildbucket.try_build(
-            project='prod',
-            builder='try-builder',
-            git_repo='https://flutter.googlesource.com/mirrors/engine',
-            revision='a' * 40,
-            build_number=123,
-            git_ref='refs/heads/%s' % git_ref,
-        ),
-        api.shard_util.child_build_steps(
-            subbuilds=[try_subbuild1],
-            launch_step="launch builds.schedule",
-            collect_step="collect builds",
-        ),
-        api.step_data('read ci yaml.parse', api.json.output(tasks_dict)),
-    )
+    # TODO(fujino): delete once 3.29 reaches stable
+    for is_monorepo in [True, False]:
+      props = [
+          api.platform.name('linux'),
+          api.properties(environment='Staging', repository='engine'),
+          api.buildbucket.try_build(
+              project='prod',
+              builder='try-builder',
+              git_repo='https://flutter.googlesource.com/mirrors/engine',
+              revision='a' * 40,
+              build_number=123,
+              git_ref='refs/heads/%s' % git_ref,
+          ),
+          api.shard_util.child_build_steps(
+              subbuilds=[try_subbuild1],
+              launch_step="launch builds.schedule",
+              collect_step="collect builds",
+          ),
+          api.step_data('read ci yaml.parse', api.json.output(tasks_dict)),
+      ]
+
+      if is_monorepo:
+        yield api.test(
+            'base_linux_%s_monorepo' % git_ref,
+            api.path.dirs_exist(
+                api.path.start_dir / 'mirrors' / 'flutter' / 'engine',
+            ),
+            *props,
+        )
+      else:
+        yield api.test(
+            'base_linux_%s' % git_ref,
+            *props,
+        )
 
   git_ref = 'flutter-3.2-candidate.5'
   multiplatform_tasks = {

@@ -143,7 +143,9 @@ def RunSteps(api):
     with api.context(env=env, env_prefixes=env_prefixes, cwd=checkout):
       token_decrypted = api.path.cleanup_dir / 'token.txt'
       api.kms.get_secret(
-          'flutter-release-github-token.encrypted', token_decrypted
+          # TODO(fujino): restore this to 'flutter-release-github-token.encrypted'
+          # once https://github.com/flutter/flutter/issues/162544 is resolved
+          'pub-roller-github-token.encrypted', token_decrypted
       )
 
       env['FORCE_FLAG'] = '--force' if force else ''
@@ -152,7 +154,9 @@ def RunSteps(api):
       env['REL_HASH'] = rel_hash
       env['RELEASE_CHANNEL'] = release_channel
       env['GIT_BRANCH'] = git_branch
-      env['GITHUB_USER'] = 'fluttergithubbot'
+      # TODO(fujino) restore this to 'fluttergithubbot' once
+      # https://github.com/flutter/flutter/issues/162544 is resolved
+      env['GITHUB_USER'] = 'flutter-pub-roller-bot'
       env['REPO'] = 'flutter' if repo == 'flutter' else 'engine'
 
       # Run script within a new context to use the new env variables.

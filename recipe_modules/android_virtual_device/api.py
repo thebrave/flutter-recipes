@@ -150,6 +150,9 @@ class AndroidVirtualDeviceApi(recipe_api.RecipeApi):
                   'start',
                   '--debug-tags',
                   'all',
+                  # Enables network access for AVDs that may need it for running tests.
+                  # See https://github.com/flutter/flutter/issues/160691 for context.
+                  '--enable-network',
                   '--avd-config',
                   avd_config
               ],

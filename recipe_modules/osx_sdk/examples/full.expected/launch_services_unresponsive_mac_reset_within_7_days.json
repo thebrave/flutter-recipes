@@ -8,7 +8,31 @@
   },
   {
     "cmd": [],
-    "name": "verify launch services"
+    "name": "verify launch services",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@Launch Services has already been reset recently. Please file a bug and see go/flutter-infra-macos-troubleshoot.@@@",
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/osx_sdk/launch_services_reset_log.txt",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "verify launch services.Check if Launch Services db has been reset recently",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-01 13:43:21@@@",
+      "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-13 13:43:21@@@",
+      "@@@STEP_LOG_END@launch_services_reset_log.txt@@@"
+    ]
   },
   {
     "cmd": [
@@ -33,21 +57,40 @@
   },
   {
     "cmd": [
+      "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister",
+      "-kill",
+      "-r",
+      "-domain",
+      "local",
+      "-domain",
+      "system",
+      "-domain",
+      "user"
+    ],
+    "infra_step": true,
+    "name": "verify launch services.Reset and rescan Launch Services db",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
       "vpython3",
       "-u",
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[CACHE]/osx_sdk/launch_services_reset_log.txt",
-      "/path/to/tmp/"
+      "2023-12-01 13:43:21\n2023-12-13 13:43:21\n2023-12-15 13:43:21",
+      "[CACHE]/osx_sdk/launch_services_reset_log.txt"
     ],
     "infra_step": true,
-    "name": "verify launch services.Check if Launch Services db has been reset recently",
+    "name": "verify launch services.Update Launch Services reset log",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-01 13:43:21@@@",
       "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-13 13:43:21@@@",
+      "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-15 13:43:21@@@",
       "@@@STEP_LOG_END@launch_services_reset_log.txt@@@"
     ]
   },

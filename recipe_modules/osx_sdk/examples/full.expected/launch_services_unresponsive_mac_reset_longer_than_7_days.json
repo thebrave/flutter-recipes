@@ -12,6 +12,25 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/osx_sdk/launch_services_reset_log.txt",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "verify launch services.Check if Launch Services db has been reset recently",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-01 13:43:21@@@",
+      "@@@STEP_LOG_END@launch_services_reset_log.txt@@@"
+    ]
+  },
+  {
+    "cmd": [
       "log",
       "show",
       "--last",
@@ -29,25 +48,6 @@
       "@@@STEP_LOG_LINE@raw_io.output_text@2025-01-25 22:47:00.906 E  xcodebuild[11687:149bd] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.modifydb@@@",
       "@@@STEP_LOG_LINE@raw_io.output_text@2025-01-25 22:47:00.906 E  xcodebuild[11687:149c6] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.mapdb@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "[CACHE]/osx_sdk/launch_services_reset_log.txt",
-      "/path/to/tmp/"
-    ],
-    "infra_step": true,
-    "name": "verify launch services.Check if Launch Services db has been reset recently",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-01 13:43:21@@@",
-      "@@@STEP_LOG_END@launch_services_reset_log.txt@@@"
     ]
   },
   {

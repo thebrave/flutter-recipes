@@ -18,7 +18,10 @@ DEPS = [
 from datetime import datetime
 from unittest.mock import Mock
 
-_MOCK_TIME_NOW = Mock(return_value=datetime(2023, 12, 15, 13, 43, 21, 621929)) # 2023-12-15 13:43:21
+_MOCK_TIME_NOW = Mock(
+    return_value=datetime(2023, 12, 15, 13, 43, 21, 621929)
+)  # 2023-12-15 13:43:21
+
 
 def RunSteps(api):
   api.osx_sdk.now = _MOCK_TIME_NOW
@@ -36,10 +39,9 @@ def GenTests(api):
     yield (api.test(platform) + api.platform.name(platform))
 
   yield api.test(
-      'skipped_xcode',
-      api.platform.name('mac'),
+      'skipped_xcode', api.platform.name('mac'),
       api.properties(**{'$flutter/osx_sdk': {
-        'skip_xcode_install': True,
+          'skip_xcode_install': True,
       }})
   )
 
@@ -48,7 +50,8 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver_intel': '123abc',
                   'cleanup_cache': True
               }
           }
@@ -67,7 +70,8 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-13-0', 'ios-14-0']
               }
           }
@@ -140,7 +144,8 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-16-4', 'ios-16-2']
               }
           }
@@ -158,7 +163,8 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-16-4_14e300c']
               }
           }
@@ -185,7 +191,10 @@ def GenTests(api):
           'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg (2)',
           api.json.output({
               'result': {
-                  'pin': {'package': 'xxx', 'instance_id': 'xxx'},
+                  'pin': {
+                      'package': 'xxx',
+                      'instance_id': 'xxx'
+                  },
                   'registered_by':
                       'xxx',
                   'registered_ts':
@@ -193,11 +202,13 @@ def GenTests(api):
                   'tags': [
                       {
                           'tag': 'ios_runtime_build:20e247',
-                          'registered_by': 'xxx', 'registered_ts': 'xxx'
+                          'registered_by': 'xxx',
+                          'registered_ts': 'xxx'
                       },
                       {
                           'tag': 'ios_runtime_version:ios-16-4',
-                          'registered_by': 'xxx', 'registered_ts': 'xxx'
+                          'registered_by': 'xxx',
+                          'registered_ts': 'xxx'
                       },
                   ],
               }
@@ -222,7 +233,8 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-16-4_14e300c']
               }
           }
@@ -246,7 +258,10 @@ def GenTests(api):
           'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg (2)',
           api.json.output({
               'result': {
-                  'pin': {'package': 'xxx', 'instance_id': 'xxx'},
+                  'pin': {
+                      'package': 'xxx',
+                      'instance_id': 'xxx'
+                  },
                   'registered_by':
                       'xxx',
                   'registered_ts':
@@ -254,11 +269,13 @@ def GenTests(api):
                   'tags': [
                       {
                           'tag': 'ios_runtime_build:20e247',
-                          'registered_by': 'xxx', 'registered_ts': 'xxx'
+                          'registered_by': 'xxx',
+                          'registered_ts': 'xxx'
                       },
                       {
                           'tag': 'ios_runtime_version:ios-16-4',
-                          'registered_by': 'xxx', 'registered_ts': 'xxx'
+                          'registered_by': 'xxx',
+                          'registered_ts': 'xxx'
                       },
                   ],
               }
@@ -283,7 +300,8 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-16-4_14e300c']
               }
           }
@@ -307,14 +325,18 @@ def GenTests(api):
           'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg (2)',
           api.json.output({
               'result': {
-                  'pin': {'package': 'xxx', 'instance_id': 'xxx'},
+                  'pin': {
+                      'package': 'xxx',
+                      'instance_id': 'xxx'
+                  },
                   'registered_by':
                       'xxx',
                   'registered_ts':
                       'xxx',
                   'tags': [{
                       'tag': 'ios_runtime_build_invalid_tag',
-                      'registered_by': 'xxx', 'registered_ts': 'xxx'
+                      'registered_by': 'xxx',
+                      'registered_ts': 'xxx'
                   }],
               }
           }),
@@ -332,7 +354,8 @@ def GenTests(api):
       api.properties(
           **{
               '$flutter/osx_sdk': {
-                  'sdk_version': 'deadbeef', 'toolchain_ver_intel': '123abc',
+                  'sdk_version': 'deadbeef',
+                  'toolchain_ver_intel': '123abc',
                   'runtime_versions': ['ios-16-4_14e300c']
               }
           }
@@ -404,7 +427,10 @@ def GenTests(api):
           'install runtimes.cipd describe ios-16-4_14e300c.cipd describe infra_internal/ios/xcode/ios_runtime_dmg',
           api.json.output({
               'result': {
-                  'pin': {'package': 'xxx', 'instance_id': 'xxx'},
+                  'pin': {
+                      'package': 'xxx',
+                      'instance_id': 'xxx'
+                  },
                   'registered_by':
                       'xxx',
                   'registered_ts':
@@ -412,11 +438,13 @@ def GenTests(api):
                   'tags': [
                       {
                           'tag': 'ios_runtime_build:20e247',
-                          'registered_by': 'xxx', 'registered_ts': 'xxx'
+                          'registered_by': 'xxx',
+                          'registered_ts': 'xxx'
                       },
                       {
                           'tag': 'ios_runtime_version:ios-16-4',
-                          'registered_by': 'xxx', 'registered_ts': 'xxx'
+                          'registered_by': 'xxx',
+                          'registered_ts': 'xxx'
                       },
                   ],
               }
@@ -539,7 +567,9 @@ def GenTests(api):
           "find macOS version",
           stdout=api.raw_io.output_text("13.5.1"),
       ),
-      api.properties(**{'$flutter/osx_sdk': {'sdk_version': 'deadbeef',}}),
+      api.properties(**{'$flutter/osx_sdk': {
+          'sdk_version': 'deadbeef',
+      }}),
       api.path.exists(sdk_app_path),
       api.step_data(
           'install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.check xcode version',
@@ -548,11 +578,12 @@ def GenTests(api):
       api.step_data('install xcode.install xcode from cipd', retcode=1),
   )
 
-  _MOCK_TIME_RECENT = "2023-12-13 13:43:21"
-  _MOCK_TIME_LONG_AGO = "2023-12-01 13:43:21"
+  _MOCK_TIME_WITHIN_7_DAYS = "2023-12-13 13:43:21"
+  _MOCK_TIME_WITHIN_1_DAY = "2023-12-15 00:00:00"
+  _MOCK_TIME_LONGER_THAN_7_DAYS = "2023-12-01 13:43:21"
 
   yield api.test(
-      'launch_services_unresponsive_mac_recently_reset',
+      'launch_services_unresponsive_mac_reset_within_a_day',
       api.platform.name('mac'),
       api.step_data(
           "find macOS version",
@@ -577,41 +608,75 @@ def GenTests(api):
       api.step_data(
           'verify launch services.Check if Launch Services db has been reset recently',
           api.file.read_text(
-              text_content=(_MOCK_TIME_LONG_AGO + '\n' + _MOCK_TIME_RECENT)
+              text_content=(
+                  _MOCK_TIME_LONGER_THAN_7_DAYS + '\n' + _MOCK_TIME_WITHIN_1_DAY
+              )
           )
       ),
   )
 
   yield api.test(
-        'launch_services_unresponsive_mac_reset_long_ago',
-        api.platform.name('mac'),
-        api.step_data(
-            "find macOS version",
-            stdout=api.raw_io.output_text("13.5.1"),
-        ),
-        api.properties(**{'$flutter/osx_sdk': {
-            'sdk_version': 'deadbeef',
-        }}),
-        api.path.exists(
-            (sdk_app_path),
-            (api.path.cache_dir / 'osx_sdk/launch_services_reset_log.txt'),
-        ),
-        api.step_data(
-            'verify launch services.Check if xcodebuild impacted by Launch Services',
-            stdout=api.raw_io.output_text(
-                'Timestamp               Ty Process[PID:TID]\n' +
-                '2025-01-25 22:47:00.906 E  xcodebuild[11687:149bd] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.modifydb\n'
-                +
-                '2025-01-25 22:47:00.906 E  xcodebuild[11687:149c6] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.mapdb'
-            )
-        ),
-        api.step_data(
-            'verify launch services.Check if Launch Services db has been reset recently',
-            api.file.read_text(
-                text_content=_MOCK_TIME_LONG_AGO
-            )
-        ),
-    )
+      'launch_services_unresponsive_mac_reset_within_7_days',
+      api.platform.name('mac'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
+      api.properties(**{'$flutter/osx_sdk': {
+          'sdk_version': 'deadbeef',
+      }}),
+      api.path.exists(
+          (sdk_app_path),
+          (api.path.cache_dir / 'osx_sdk/launch_services_reset_log.txt'),
+      ),
+      api.step_data(
+          'verify launch services.Check if xcodebuild impacted by Launch Services',
+          stdout=api.raw_io.output_text(
+              'Timestamp               Ty Process[PID:TID]\n' +
+              '2025-01-25 22:47:00.906 E  xcodebuild[11687:149bd] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.modifydb\n'
+              +
+              '2025-01-25 22:47:00.906 E  xcodebuild[11687:149c6] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.mapdb'
+          )
+      ),
+      api.step_data(
+          'verify launch services.Check if Launch Services db has been reset recently',
+          api.file.read_text(
+              text_content=(
+                  _MOCK_TIME_LONGER_THAN_7_DAYS + '\n' +
+                  _MOCK_TIME_WITHIN_7_DAYS
+              )
+          )
+      ),
+  )
+
+  yield api.test(
+      'launch_services_unresponsive_mac_reset_longer_than_7_days',
+      api.platform.name('mac'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
+      api.properties(**{'$flutter/osx_sdk': {
+          'sdk_version': 'deadbeef',
+      }}),
+      api.path.exists(
+          (sdk_app_path),
+          (api.path.cache_dir / 'osx_sdk/launch_services_reset_log.txt'),
+      ),
+      api.step_data(
+          'verify launch services.Check if xcodebuild impacted by Launch Services',
+          stdout=api.raw_io.output_text(
+              'Timestamp               Ty Process[PID:TID]\n' +
+              '2025-01-25 22:47:00.906 E  xcodebuild[11687:149bd] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.modifydb\n'
+              +
+              '2025-01-25 22:47:00.906 E  xcodebuild[11687:149c6] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.mapdb'
+          )
+      ),
+      api.step_data(
+          'verify launch services.Check if Launch Services db has been reset recently',
+          api.file.read_text(text_content=_MOCK_TIME_LONGER_THAN_7_DAYS)
+      ),
+  )
 
   yield api.test(
       'launch_services_unresponsive_mac_already_reset_invalid date',

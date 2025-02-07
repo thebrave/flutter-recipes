@@ -8,14 +8,38 @@
   },
   {
     "cmd": [],
-    "name": "verify launch services"
+    "name": "verify launch services",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@Launch Services has already been reset recently. Please file a bug and see go/flutter-infra-macos-troubleshoot.@@@",
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/osx_sdk/launch_services_reset_log.txt",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "verify launch services.Check if Launch Services db has been reset recently",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-01 13:43:21@@@",
+      "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-15 00:00:00@@@",
+      "@@@STEP_LOG_END@launch_services_reset_log.txt@@@"
+    ]
   },
   {
     "cmd": [
       "log",
       "show",
-      "--last",
-      "24h",
+      "--start",
+      "2023-12-15 00:30:00",
       "--style",
       "compact",
       "--predicate",
@@ -25,7 +49,49 @@
     "name": "verify launch services.Check if xcodebuild impacted by Launch Services",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@Timestamp               Ty Process[PID:TID]@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@2025-01-25 22:47:00.906 E  xcodebuild[11687:149bd] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.modifydb@@@",
+      "@@@STEP_LOG_LINE@raw_io.output_text@2025-01-25 22:47:00.906 E  xcodebuild[11687:149c6] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.mapdb@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister",
+      "-kill",
+      "-r",
+      "-domain",
+      "local",
+      "-domain",
+      "system",
+      "-domain",
+      "user"
+    ],
+    "infra_step": true,
+    "name": "verify launch services.Reset and rescan Launch Services db",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "2023-12-01 13:43:21\n2023-12-15 00:00:00\n2023-12-15 13:43:21",
+      "[CACHE]/osx_sdk/launch_services_reset_log.txt"
+    ],
+    "infra_step": true,
+    "name": "verify launch services.Update Launch Services reset log",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-01 13:43:21@@@",
+      "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-15 00:00:00@@@",
+      "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-15 13:43:21@@@",
+      "@@@STEP_LOG_END@launch_services_reset_log.txt@@@"
     ]
   },
   {
@@ -77,17 +143,13 @@
   },
   {
     "cmd": [],
-    "name": "install xcode",
-    "~followup_annotations": [
-      "@@@STEP_EXCEPTION@@@"
-    ]
+    "name": "install xcode"
   },
   {
     "cmd": [],
     "name": "install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_EXCEPTION@@@"
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -113,8 +175,7 @@
     "name": "install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.check xcode version",
     "timeout": 300,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_EXCEPTION@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -139,75 +200,6 @@
     "name": "install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.dismiss damaged notification",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "codesign",
-      "-vv",
-      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
-    ],
-    "infra_step": true,
-    "name": "install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.verify codesign",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "install xcode.verify launch services",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister",
-      "-kill",
-      "-r",
-      "-domain",
-      "local",
-      "-domain",
-      "system",
-      "-domain",
-      "user"
-    ],
-    "infra_step": true,
-    "name": "install xcode.verify launch services.Reset and rescan Launch Services db",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "\n2023-12-15 13:43:21",
-      "[CACHE]/osx_sdk/launch_services_reset_log.txt"
-    ],
-    "infra_step": true,
-    "name": "install xcode.verify launch services.Update Launch Services reset log",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@launch_services_reset_log.txt@@@@",
-      "@@@STEP_LOG_LINE@launch_services_reset_log.txt@2023-12-15 13:43:21@@@",
-      "@@@STEP_LOG_END@launch_services_reset_log.txt@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "rm",
-      "-rf",
-      "[CACHE]/osx_sdk/xcode_deadbeef"
-    ],
-    "infra_step": true,
-    "name": "install xcode.Cleaning up Xcode cache",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
@@ -271,355 +263,7 @@
     "name": "install xcode.install xcode from cipd",
     "timeout": 1800,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_EXCEPTION@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "ls",
-      "-al",
-      "[CACHE]/osx_sdk/xcode_deadbeef"
-    ],
-    "infra_step": true,
-    "name": "install xcode.Show tool_dir cache (2)",
-    "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "ls",
-      "-al",
-      "[CACHE]/osx_sdk/xcode_deadbeef"
-    ],
-    "infra_step": true,
-    "name": "install xcode.Show app_dir cache",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "CoreServicesUIAgent"
-    ],
-    "infra_step": true,
-    "name": "install xcode.dismiss damaged notification",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "codesign",
-      "-vv",
-      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
-    ],
-    "infra_step": true,
-    "name": "install xcode.verify codesign",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "rm",
-      "-rf",
-      "[CACHE]/osx_sdk/xcode_deadbeef"
-    ],
-    "infra_step": true,
-    "name": "install xcode.Cleaning up Xcode cache (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "install xcode.Failed to install Xcode",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_EXCEPTION@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CACHE]/osx_sdk/xcode_deadbeef",
-      "-ensure-file",
-      "infra/tools/mac_toolchain/${platform} latest",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "name": "install xcode.ensure_installed (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "ls",
-      "-al",
-      "[CACHE]/osx_sdk/xcode_deadbeef"
-    ],
-    "infra_step": true,
-    "name": "install xcode.Show tool_dir cache (3)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/osx_sdk/xcode_deadbeef/mac_toolchain",
-      "install",
-      "-kind",
-      "mac",
-      "-xcode-version",
-      "deadbeef",
-      "-output-dir",
-      "[CACHE]/osx_sdk/xcode_deadbeef/temp_00000000-0000-0000-0000-000000001337_xcode.app",
-      "-cipd-package-prefix",
-      "infra_internal/ios/xcode",
-      "-with-runtime=True",
-      "-verbose"
-    ],
-    "infra_step": true,
-    "name": "install xcode.install xcode from cipd (2)",
-    "timeout": 1800,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "mv",
-      "[CACHE]/osx_sdk/xcode_deadbeef/temp_00000000-0000-0000-0000-000000001337_xcode.app",
-      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
-    ],
-    "infra_step": true,
-    "name": "install xcode.move to final destination",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "rm",
-      "-rf",
-      "[CACHE]/osx_sdk/xcode_deadbeef/temp_00000000-0000-0000-0000-000000001337_xcode.app"
-    ],
-    "infra_step": true,
-    "name": "install xcode.clean temporary install path",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Cleaning up runtimes cache"
-  },
-  {
-    "cmd": [
-      "sudo",
-      "xcode-select",
-      "--switch",
-      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
-    ],
-    "infra_step": true,
-    "name": "Cleaning up runtimes cache.select xcode",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "xcrun",
-      "simctl",
-      "runtime",
-      "delete",
-      "all"
-    ],
-    "infra_step": true,
-    "name": "Cleaning up runtimes cache.Cleaning up mounted simulator runtimes",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "xcrun",
-      "xcodebuild",
-      "-version"
-    ],
-    "infra_step": true,
-    "name": "Cleaning up runtimes cache.check xcode version",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "xcrun",
-      "simctl",
-      "list",
-      "runtimes"
-    ],
-    "infra_step": true,
-    "name": "Cleaning up runtimes cache.list runtimes",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "install runtimes"
-  },
-  {
-    "cmd": [],
-    "name": "install runtimes.install xcode",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "sudo",
-      "xcode-select",
-      "--switch",
-      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
-    ],
-    "infra_step": true,
-    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.select xcode",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "xcrun",
-      "xcodebuild",
-      "-version"
-    ],
-    "infra_step": true,
-    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.check xcode version",
-    "timeout": 300,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "sudo",
-      "xcode-select",
-      "--reset"
-    ],
-    "infra_step": true,
-    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.reset XCode",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "CoreServicesUIAgent"
-    ],
-    "infra_step": true,
-    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.dismiss damaged notification",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@3@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CACHE]/osx_sdk/xcode_deadbeef",
-      "-ensure-file",
-      "infra/tools/mac_toolchain/${platform} latest",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "name": "install runtimes.install xcode.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/mac_toolchain/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "ls",
-      "-al",
-      "[CACHE]/osx_sdk/xcode_deadbeef"
-    ],
-    "infra_step": true,
-    "name": "install runtimes.install xcode.Show tool_dir cache",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/osx_sdk/xcode_deadbeef/mac_toolchain",
-      "install",
-      "-kind",
-      "mac",
-      "-xcode-version",
-      "deadbeef",
-      "-output-dir",
-      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
-      "-cipd-package-prefix",
-      "infra_internal/ios/xcode",
-      "-with-runtime=True",
-      "-verbose"
-    ],
-    "infra_step": true,
-    "name": "install runtimes.install xcode.install xcode from cipd",
-    "timeout": 1800,
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -844,7 +488,7 @@
   },
   {
     "cmd": [],
-    "name": "Cleaning up runtimes cache (2)"
+    "name": "Cleaning up runtimes cache"
   },
   {
     "cmd": [
@@ -854,7 +498,7 @@
       "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache (2).select xcode",
+    "name": "Cleaning up runtimes cache.select xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -868,7 +512,7 @@
       "all"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache (2).Cleaning up mounted simulator runtimes",
+    "name": "Cleaning up runtimes cache.Cleaning up mounted simulator runtimes",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -881,7 +525,7 @@
       "-version"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache (2).check xcode version",
+    "name": "Cleaning up runtimes cache.check xcode version",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -895,7 +539,7 @@
       "runtimes"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache (2).list runtimes",
+    "name": "Cleaning up runtimes cache.list runtimes",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -903,18 +547,18 @@
   },
   {
     "cmd": [],
-    "name": "install runtimes (2)"
+    "name": "install runtimes"
   },
   {
     "cmd": [],
-    "name": "install runtimes (2).install xcode",
+    "name": "install runtimes.install xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "install runtimes (2).install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
+    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -927,7 +571,7 @@
       "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
     ],
     "infra_step": true,
-    "name": "install runtimes (2).install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.select xcode",
+    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.select xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -939,7 +583,7 @@
       "-version"
     ],
     "infra_step": true,
-    "name": "install runtimes (2).install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.check xcode version",
+    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.check xcode version",
     "timeout": 300,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
@@ -952,7 +596,7 @@
       "--reset"
     ],
     "infra_step": true,
-    "name": "install runtimes (2).install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.reset XCode",
+    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.reset XCode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -964,7 +608,7 @@
       "CoreServicesUIAgent"
     ],
     "infra_step": true,
-    "name": "install runtimes (2).install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.dismiss damaged notification",
+    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.dismiss damaged notification",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@"
     ]
@@ -983,7 +627,7 @@
       "/path/to/tmp/json"
     ],
     "infra_step": true,
-    "name": "install runtimes (2).install xcode.ensure_installed",
+    "name": "install runtimes.install xcode.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -1006,7 +650,7 @@
       "[CACHE]/osx_sdk/xcode_deadbeef"
     ],
     "infra_step": true,
-    "name": "install runtimes (2).install xcode.Show tool_dir cache",
+    "name": "install runtimes.install xcode.Show tool_dir cache",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1027,7 +671,7 @@
       "-verbose"
     ],
     "infra_step": true,
-    "name": "install runtimes (2).install xcode.install xcode from cipd",
+    "name": "install runtimes.install xcode.install xcode from cipd",
     "timeout": 1800,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -1192,7 +836,7 @@
   },
   {
     "cmd": [],
-    "name": "Cleaning up runtimes cache (3)"
+    "name": "Cleaning up runtimes cache (2)"
   },
   {
     "cmd": [
@@ -1202,7 +846,7 @@
       "/opt/flutter/xcode/deadbeef/XCode.app"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache (3).select xcode",
+    "name": "Cleaning up runtimes cache (2).select xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -1216,7 +860,7 @@
       "all"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache (3).Cleaning up mounted simulator runtimes",
+    "name": "Cleaning up runtimes cache (2).Cleaning up mounted simulator runtimes",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -1229,7 +873,7 @@
       "-version"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache (3).check xcode version",
+    "name": "Cleaning up runtimes cache (2).check xcode version",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -1243,7 +887,7 @@
       "runtimes"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache (3).list runtimes",
+    "name": "Cleaning up runtimes cache (2).list runtimes",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -1251,11 +895,11 @@
   },
   {
     "cmd": [],
-    "name": "install runtimes (3)"
+    "name": "install runtimes (2)"
   },
   {
     "cmd": [],
-    "name": "install runtimes (3).install xcode",
+    "name": "install runtimes (2).install xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -1274,7 +918,7 @@
       "/path/to/tmp/json"
     ],
     "infra_step": true,
-    "name": "install runtimes (3).install xcode.ensure_installed",
+    "name": "install runtimes (2).install xcode.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -1297,7 +941,7 @@
       "[CLEANUP]/tmp_tmp_1/osx_sdk"
     ],
     "infra_step": true,
-    "name": "install runtimes (3).install xcode.Show tool_dir cache",
+    "name": "install runtimes (2).install xcode.Show tool_dir cache",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1318,7 +962,7 @@
       "-verbose"
     ],
     "infra_step": true,
-    "name": "install runtimes (3).install xcode.install xcode from cipd",
+    "name": "install runtimes (2).install xcode.install xcode from cipd",
     "timeout": 1800,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
@@ -1446,7 +1090,7 @@
   },
   {
     "cmd": [],
-    "name": "Cleaning up runtimes cache (4)"
+    "name": "Cleaning up runtimes cache (3)"
   },
   {
     "cmd": [
@@ -1456,7 +1100,7 @@
       "/opt/flutter/xcode/deadbeef/XCode.app"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache (4).select xcode",
+    "name": "Cleaning up runtimes cache (3).select xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -1470,7 +1114,7 @@
       "all"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache (4).Cleaning up mounted simulator runtimes",
+    "name": "Cleaning up runtimes cache (3).Cleaning up mounted simulator runtimes",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -1483,7 +1127,7 @@
       "-version"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache (4).check xcode version",
+    "name": "Cleaning up runtimes cache (3).check xcode version",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -1497,7 +1141,7 @@
       "runtimes"
     ],
     "infra_step": true,
-    "name": "Cleaning up runtimes cache (4).list runtimes",
+    "name": "Cleaning up runtimes cache (3).list runtimes",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
@@ -1505,11 +1149,11 @@
   },
   {
     "cmd": [],
-    "name": "install runtimes (4)"
+    "name": "install runtimes (3)"
   },
   {
     "cmd": [],
-    "name": "install runtimes (4).install xcode",
+    "name": "install runtimes (3).install xcode",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -1528,7 +1172,7 @@
       "/path/to/tmp/json"
     ],
     "infra_step": true,
-    "name": "install runtimes (4).install xcode.ensure_installed",
+    "name": "install runtimes (3).install xcode.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -1551,7 +1195,7 @@
       "[CLEANUP]/tmp_tmp_2/osx_sdk"
     ],
     "infra_step": true,
-    "name": "install runtimes (4).install xcode.Show tool_dir cache",
+    "name": "install runtimes (3).install xcode.Show tool_dir cache",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -1572,7 +1216,7 @@
       "-verbose"
     ],
     "infra_step": true,
-    "name": "install runtimes (4).install xcode.install xcode from cipd",
+    "name": "install runtimes (3).install xcode.install xcode from cipd",
     "timeout": 1800,
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"

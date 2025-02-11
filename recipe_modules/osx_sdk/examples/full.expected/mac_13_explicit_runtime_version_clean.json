@@ -7,6 +7,17 @@
     "name": "find macOS version"
   },
   {
+    "cmd": [
+      "pgrep",
+      "Setup Assistant"
+    ],
+    "infra_step": true,
+    "name": "check for Setup Assistant",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
     "cmd": [],
     "name": "verify launch services"
   },
@@ -454,28 +465,6 @@
     ],
     "infra_step": true,
     "name": "reset XCode"
-  },
-  {
-    "cmd": [],
-    "name": "verify launch services (2)"
-  },
-  {
-    "cmd": [
-      "log",
-      "show",
-      "--last",
-      "24h",
-      "--style",
-      "compact",
-      "--predicate",
-      "logType == \"error\" AND process == \"xcodebuild\" AND subsystem == \"com.apple.launchservices\" AND composedMessage CONTAINS \"disconnect event interruption received for service\""
-    ],
-    "infra_step": true,
-    "name": "verify launch services (2).Check if xcodebuild impacted by Launch Services",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
   },
   {
     "cmd": [

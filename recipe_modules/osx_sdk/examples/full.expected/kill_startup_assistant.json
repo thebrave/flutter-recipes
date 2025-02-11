@@ -14,12 +14,40 @@
     "infra_step": true,
     "name": "check for Setup Assistant",
     "~followup_annotations": [
+      "@@@STEP_LOG_LINE@raw_io.output_text@123@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
     ]
   },
   {
+    "cmd": [
+      "pkill",
+      "-9",
+      "Setup Assistant"
+    ],
+    "infra_step": true,
+    "name": "Kill Setup Assistant"
+  },
+  {
     "cmd": [],
     "name": "verify launch services"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/osx_sdk/launch_services_reset_log.txt",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "name": "verify launch services.Check if Launch Services db has been reset recently",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@launch_services_reset_log.txt@@@"
+    ]
   },
   {
     "cmd": [
@@ -42,7 +70,7 @@
   {
     "cmd": [
       "echo",
-      "[CACHE]/osx_sdk/xcode_12a7209"
+      "[CACHE]/osx_sdk/xcode_deadbeef"
     ],
     "infra_step": true,
     "name": "show app_dir"
@@ -61,11 +89,20 @@
     "name": "Running Cache Micro Manager on [CACHE]/osx_sdk."
   },
   {
-    "cmd": [],
-    "name": "Running Cache Micro Manager on [CACHE]/osx_sdk..Cache Micro Manager, cache directory exists check",
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/osx_sdk"
+    ],
+    "infra_step": true,
+    "name": "Running Cache Micro Manager on [CACHE]/osx_sdk..Reading cache directory [CACHE]/osx_sdk",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@Cache dir does not exist, skipping.@@@"
+      "@@@STEP_LOG_END@listdir@@@"
     ]
   },
   {
@@ -82,11 +119,68 @@
     "name": "install xcode"
   },
   {
+    "cmd": [],
+    "name": "install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--switch",
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
+    ],
+    "infra_step": true,
+    "name": "install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.select xcode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "xcodebuild",
+      "-version"
+    ],
+    "infra_step": true,
+    "name": "install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.check xcode version",
+    "timeout": 300,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--reset"
+    ],
+    "infra_step": true,
+    "name": "install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.reset XCode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "CoreServicesUIAgent"
+    ],
+    "infra_step": true,
+    "name": "install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.dismiss damaged notification",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
     "cmd": [
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/osx_sdk/xcode_12a7209",
+      "[CACHE]/osx_sdk/xcode_deadbeef",
       "-ensure-file",
       "infra/tools/mac_toolchain/${platform} latest",
       "-max-threads",
@@ -115,7 +209,7 @@
     "cmd": [
       "ls",
       "-al",
-      "[CACHE]/osx_sdk/xcode_12a7209"
+      "[CACHE]/osx_sdk/xcode_deadbeef"
     ],
     "infra_step": true,
     "name": "install xcode.Show tool_dir cache",
@@ -125,14 +219,14 @@
   },
   {
     "cmd": [
-      "[CACHE]/osx_sdk/xcode_12a7209/mac_toolchain",
+      "[CACHE]/osx_sdk/xcode_deadbeef/mac_toolchain",
       "install",
       "-kind",
       "mac",
       "-xcode-version",
-      "12a7209",
+      "deadbeef",
       "-output-dir",
-      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app",
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
       "-cipd-package-prefix",
       "infra_internal/ios/xcode",
       "-with-runtime=True",
@@ -160,7 +254,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app"
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
     ],
     "infra_step": true,
     "name": "select xcode"
@@ -188,7 +282,7 @@
     "cmd": [
       "rm",
       "-rf",
-      "[CACHE]/osx_sdk/xcode_12a7209"
+      "[CACHE]/osx_sdk/xcode_deadbeef"
     ],
     "infra_step": true,
     "name": "Cleaning up Xcode cache"
@@ -196,7 +290,7 @@
   {
     "cmd": [
       "echo",
-      "[CACHE]/osx_sdk/xcode_12a7209"
+      "[CACHE]/osx_sdk/xcode_deadbeef"
     ],
     "infra_step": true,
     "name": "show app_dir (2)"
@@ -215,11 +309,20 @@
     "name": "Running Cache Micro Manager on [CACHE]/osx_sdk. (2)"
   },
   {
-    "cmd": [],
-    "name": "Running Cache Micro Manager on [CACHE]/osx_sdk. (2).Cache Micro Manager, cache directory exists check",
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/osx_sdk"
+    ],
+    "infra_step": true,
+    "name": "Running Cache Micro Manager on [CACHE]/osx_sdk. (2).Reading cache directory [CACHE]/osx_sdk",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@Cache dir does not exist, skipping.@@@"
+      "@@@STEP_LOG_END@listdir@@@"
     ]
   },
   {
@@ -236,11 +339,68 @@
     "name": "install xcode (2)"
   },
   {
+    "cmd": [],
+    "name": "install xcode (2).verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--switch",
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
+    ],
+    "infra_step": true,
+    "name": "install xcode (2).verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.select xcode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "xcodebuild",
+      "-version"
+    ],
+    "infra_step": true,
+    "name": "install xcode (2).verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.check xcode version",
+    "timeout": 300,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--reset"
+    ],
+    "infra_step": true,
+    "name": "install xcode (2).verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.reset XCode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "CoreServicesUIAgent"
+    ],
+    "infra_step": true,
+    "name": "install xcode (2).verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.dismiss damaged notification",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
     "cmd": [
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/osx_sdk/xcode_12a7209",
+      "[CACHE]/osx_sdk/xcode_deadbeef",
       "-ensure-file",
       "infra/tools/mac_toolchain/${platform} latest",
       "-max-threads",
@@ -269,7 +429,7 @@
     "cmd": [
       "ls",
       "-al",
-      "[CACHE]/osx_sdk/xcode_12a7209"
+      "[CACHE]/osx_sdk/xcode_deadbeef"
     ],
     "infra_step": true,
     "name": "install xcode (2).Show tool_dir cache",
@@ -279,14 +439,14 @@
   },
   {
     "cmd": [
-      "[CACHE]/osx_sdk/xcode_12a7209/mac_toolchain",
+      "[CACHE]/osx_sdk/xcode_deadbeef/mac_toolchain",
       "install",
       "-kind",
       "mac",
       "-xcode-version",
-      "12a7209",
+      "deadbeef",
       "-output-dir",
-      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app",
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
       "-cipd-package-prefix",
       "infra_internal/ios/xcode",
       "-with-runtime=True",
@@ -308,7 +468,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app"
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
     ],
     "infra_step": true,
     "name": "Cleaning up runtimes cache.select xcode",
@@ -370,11 +530,68 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--switch",
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
+    ],
+    "infra_step": true,
+    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.select xcode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "xcrun",
+      "xcodebuild",
+      "-version"
+    ],
+    "infra_step": true,
+    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.check xcode version",
+    "timeout": 300,
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "sudo",
+      "xcode-select",
+      "--reset"
+    ],
+    "infra_step": true,
+    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.reset XCode",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "killall",
+      "-9",
+      "CoreServicesUIAgent"
+    ],
+    "infra_step": true,
+    "name": "install runtimes.install xcode.verify xcode [CACHE]/osx_sdk/xcode_deadbeef/XCode.app.dismiss damaged notification",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@"
+    ]
+  },
+  {
     "cmd": [
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/osx_sdk/xcode_12a7209",
+      "[CACHE]/osx_sdk/xcode_deadbeef",
       "-ensure-file",
       "infra/tools/mac_toolchain/${platform} latest",
       "-max-threads",
@@ -403,7 +620,7 @@
     "cmd": [
       "ls",
       "-al",
-      "[CACHE]/osx_sdk/xcode_12a7209"
+      "[CACHE]/osx_sdk/xcode_deadbeef"
     ],
     "infra_step": true,
     "name": "install runtimes.install xcode.Show tool_dir cache",
@@ -413,14 +630,14 @@
   },
   {
     "cmd": [
-      "[CACHE]/osx_sdk/xcode_12a7209/mac_toolchain",
+      "[CACHE]/osx_sdk/xcode_deadbeef/mac_toolchain",
       "install",
       "-kind",
       "mac",
       "-xcode-version",
-      "12a7209",
+      "deadbeef",
       "-output-dir",
-      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app",
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app",
       "-cipd-package-prefix",
       "infra_internal/ios/xcode",
       "-with-runtime=True",
@@ -448,7 +665,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app"
+      "[CACHE]/osx_sdk/xcode_deadbeef/XCode.app"
     ],
     "infra_step": true,
     "name": "select xcode (2)"
@@ -495,7 +712,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "rmtree",
-      "/opt/flutter/xcode/12a7209"
+      "/opt/flutter/xcode/deadbeef"
     ],
     "infra_step": true,
     "name": "Cleaning up Xcode cache (2)"
@@ -553,9 +770,9 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "12a7209",
+      "deadbeef",
       "-output-dir",
-      "/opt/flutter/xcode/12a7209/XCode.app",
+      "/opt/flutter/xcode/deadbeef/XCode.app",
       "-cipd-package-prefix",
       "infra_internal/ios/xcode",
       "-with-runtime=True",
@@ -577,7 +794,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "/opt/flutter/xcode/12a7209/XCode.app"
+      "/opt/flutter/xcode/deadbeef/XCode.app"
     ],
     "infra_step": true,
     "name": "Cleaning up runtimes cache (2).select xcode",
@@ -687,9 +904,9 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "12a7209",
+      "deadbeef",
       "-output-dir",
-      "/opt/flutter/xcode/12a7209/XCode.app",
+      "/opt/flutter/xcode/deadbeef/XCode.app",
       "-cipd-package-prefix",
       "infra_internal/ios/xcode",
       "-with-runtime=True",
@@ -717,7 +934,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "/opt/flutter/xcode/12a7209/XCode.app"
+      "/opt/flutter/xcode/deadbeef/XCode.app"
     ],
     "infra_step": true,
     "name": "select xcode (3)"
@@ -749,7 +966,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "rmtree",
-      "/opt/flutter/xcode/12a7209"
+      "/opt/flutter/xcode/deadbeef"
     ],
     "infra_step": true,
     "name": "Cleaning up Xcode cache (3)"
@@ -807,9 +1024,9 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "12a7209",
+      "deadbeef",
       "-output-dir",
-      "/opt/flutter/xcode/12a7209/XCode.app",
+      "/opt/flutter/xcode/deadbeef/XCode.app",
       "-cipd-package-prefix",
       "infra_internal/ios/xcode",
       "-with-runtime=True",
@@ -831,7 +1048,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "/opt/flutter/xcode/12a7209/XCode.app"
+      "/opt/flutter/xcode/deadbeef/XCode.app"
     ],
     "infra_step": true,
     "name": "Cleaning up runtimes cache (3).select xcode",
@@ -941,9 +1158,9 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "12a7209",
+      "deadbeef",
       "-output-dir",
-      "/opt/flutter/xcode/12a7209/XCode.app",
+      "/opt/flutter/xcode/deadbeef/XCode.app",
       "-cipd-package-prefix",
       "infra_internal/ios/xcode",
       "-with-runtime=True",
@@ -971,7 +1188,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "/opt/flutter/xcode/12a7209/XCode.app"
+      "/opt/flutter/xcode/deadbeef/XCode.app"
     ],
     "infra_step": true,
     "name": "select xcode (4)"

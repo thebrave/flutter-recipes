@@ -439,6 +439,11 @@ class OSXSDKApi(recipe_api.RecipeApi):
       skip_check: (bool) if true, skips checking the logs and goes directly to
       resetting the database.
     """
+    if devicelab:
+      return
+
+    # Try to kill setup assistant
+    self._kill_setup_assistant()
 
     with self.m.step.nest('verify launch services') as display_step:
       launch_services_reset_log = self._get_xcode_base_cache_path(
@@ -531,6 +536,32 @@ class OSXSDKApi(recipe_api.RecipeApi):
           'Update Launch Services reset log',
           launch_services_reset_log,
           '%s\n%s' % (reset_logs, start_time),
+      )
+
+  def _kill_setup_assistant(self):
+    """Tries to kill Setup Assistant. Sometimes on macOS, tests will be blocked
+    by a Setup Assistant window. This appears to be a bug with macOS
+    (see b/343978626). To workaround, kill Setup Assistant."""
+
+    pgrep_result = self.m.step(
+        'check for Setup Assistant',
+        [
+            'pgrep',
+            'Setup Assistant',
+        ],
+        ok_ret='any',
+        stdout=self.m.raw_io.output_text(add_output_log=True),
+    )
+
+    if pgrep_result.stdout != '':
+      self.m.step(
+          'Kill Setup Assistant',
+          [
+              'pkill',
+              '-9',
+              'Setup Assistant',
+          ],
+          ok_ret='any',
       )
 
   def now(self):

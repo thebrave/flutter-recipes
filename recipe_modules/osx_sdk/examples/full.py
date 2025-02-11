@@ -706,3 +706,22 @@ def GenTests(api):
           api.file.read_text(text_content='invalid date')
       ),
   )
+
+  yield api.test(
+      'kill_startup_assistant',
+      api.platform.name('mac'),
+      api.step_data(
+          "find macOS version",
+          stdout=api.raw_io.output_text("13.5.1"),
+      ),
+      api.properties(**{'$flutter/osx_sdk': {
+          'sdk_version': 'deadbeef',
+      }}),
+      api.path.exists(
+          (sdk_app_path),
+          (api.path.cache_dir / 'osx_sdk/launch_services_reset_log.txt'),
+      ),
+      api.step_data(
+          'check for Setup Assistant', stdout=api.raw_io.output_text('123')
+      ),
+  )

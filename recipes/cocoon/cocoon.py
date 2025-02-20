@@ -33,11 +33,10 @@ def RunSteps(api):
   )
 
   # Checkout flutter/flutter at head.
-  flutter_git_ref = 'refs/heads/stable'
   api.repo_util.checkout(
       'flutter',
       flutter_path,
-      ref=flutter_git_ref,
+      ref='refs/heads/master',
       url='https://github.com/flutter/flutter',
       override_sha=True
   )
@@ -49,14 +48,6 @@ def RunSteps(api):
   # The context adds dart-sdk tools to PATH and sets PUB_CACHE.
   with api.context(env=env, env_prefixes=env_prefixes, cwd=start_path):
     api.step('flutter doctor', cmd=['flutter', 'doctor'])
-    prepare_script_path = (
-        cocoon_path / 'test_utilities/bin/prepare_environment.sh'
-    )
-    api.step(
-        'prepare environment',
-        cmd=['bash', prepare_script_path],
-        infra_step=True,
-    )
     for task in result.json.output['tasks']:
       script_path = cocoon_path / task['script']
       test_folder = cocoon_path / task['task']

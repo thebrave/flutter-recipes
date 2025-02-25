@@ -169,7 +169,10 @@ class BuildUtilApi(recipe_api.RecipeApi):
       targets(list): A list of string with the ninja targets to build.
       rbe_working_path(path): Path to rbe working directory.
     """
-    ninja_path = checkout_path / 'flutter/third_party/ninja/ninja'
+    ninja_exe = 'ninja.exe' if self.m.platform.is_win else 'ninja'
+    ninja_path = checkout_path / 'flutter/third_party/ninja' / ninja_exe
+    if not self.m.path.exists(ninja_path):
+      ninja_path = self.m.path.dirname(self.m.path.dirname(checkout_path)) / 'third_party/ninja' / ninja_exe
 
     if self.use_goma:
       self._build_goma(config, checkout_path, targets, ninja_path, env)

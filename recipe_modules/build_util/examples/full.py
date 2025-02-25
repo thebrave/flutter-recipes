@@ -14,7 +14,7 @@ DEPS = [
 
 
 def RunSteps(api):
-  checkout = api.path.start_dir
+  checkout = api.path.start_dir / 'engine/src'
   env_prefixes = {}
   with api.context(env_prefixes=env_prefixes):
     api.build_util.run_gn([], checkout)

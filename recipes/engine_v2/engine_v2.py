@@ -45,6 +45,8 @@ def RunSteps(api):
   tests = api.properties.get('tests')
   generators = api.properties.get('generators')
   archives = api.properties.get('archives')
+  luci_flags = api.properties.get('luci_flags')
+
   checkout_path = None
   if config_name:
     # Read builds configuration from repository under test.
@@ -80,6 +82,8 @@ def RunSteps(api):
       generators = config.get('generators')
     if archives is None:
       archives = config.get('archives')
+    if luci_flags is None:
+      luci_flags = config.get('luci_flags')
   if builds is None:
     builds = []
   if tests is None:
@@ -88,6 +92,8 @@ def RunSteps(api):
     generators = []
   if archives is None:
     archives = []
+  if luci_flags is None:
+    luci_flags = {}
 
   gclient_variables = api.properties.get('gclient_variables')
   if gclient_variables:
@@ -106,14 +112,18 @@ def RunSteps(api):
     tasks = api.shard_util.schedule_builds(
         builds, presentation, branch=current_branch
     )
-  with api.step.nest('collect builds') as presentation:
-    build_results = api.shard_util.collect(tasks)
 
-  api.display_util.display_subbuilds(
-      step_name='display builds',
-      subbuilds=build_results,
-      raise_on_failure=True,
-  )
+  # Builds will take some time to come back; see if we want to do some other work while we wait.
+  flag_delay_collect_builds = luci_flags.get('delay_collect_builds') or False
+  if not flag_delay_collect_builds:
+    with api.step.nest('collect builds') as presentation:
+        build_results = api.shard_util.collect(tasks)
+
+    api.display_util.display_subbuilds(
+        step_name='display builds',
+        subbuilds=build_results,
+        raise_on_failure=True,
+    )
 
   # Global generators
   if generators or archives or (
@@ -144,6 +154,16 @@ def RunSteps(api):
       # out folder.
       api.file.rmtree('Clobber build output', full_engine_checkout / 'src/out')
 
+  if flag_delay_collect_builds:
+    with api.step.nest('collect builds') as presentation:
+        build_results = api.shard_util.collect(tasks)
+
+    api.display_util.display_subbuilds(
+        step_name='display builds',
+        subbuilds=build_results,
+        raise_on_failure=True,
+    )
+
   if generators:
     # If on macOS, reset Xcode in case a previous build failed to do so.
     api.osx_sdk.reset_xcode()
@@ -151,7 +171,10 @@ def RunSteps(api):
     # Download sub-builds
     out_builds_path = full_engine_checkout / 'src/out'
     api.file.rmtree('Clobber build download folder', out_builds_path)
-    api.shard_util.download_full_builds(build_results, out_builds_path)
+
+    flag_parallel_download_builds = luci_flags.get('parallel_download_builds') or False
+
+    api.shard_util.download_full_builds(build_results, out_builds_path, flag_parallel_download_builds)
     with api.step.nest('Global generators') as presentation, api.osx_sdk('ios'):
       if 'tasks' in generators:
         api.flutter_bcid.report_stage(BcidStage.COMPILE.value)
@@ -589,6 +612,74 @@ def GenTests(api):
           archives=archives,
           config_name='config_name',
           is_fusion='true',
+      ),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='prod-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          git_ref='refs/heads/main',
+          revision='a' * 40,
+          build_number=123,
+      ),
+      api.shard_util.child_build_steps(
+          subbuilds=[try_subbuild1],
+          launch_step="launch builds.schedule",
+          collect_step="collect builds",
+      ),
+      api.step_data(
+          'Global generators.git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
+  )
+
+  yield api.test(
+      'delay_collect_builds', api.platform.name('mac'),
+      api.properties(
+          builds=builds,
+          tests=[],
+          generators=generators,
+          archives=archives,
+          config_name='config_name',
+          is_fusion='true',
+          luci_flags={
+            "delay_collect_builds": True,
+          }
+      ),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='prod-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          git_ref='refs/heads/main',
+          revision='a' * 40,
+          build_number=123,
+      ),
+      api.shard_util.child_build_steps(
+          subbuilds=[try_subbuild1],
+          launch_step="launch builds.schedule",
+          collect_step="collect builds",
+      ),
+      api.step_data(
+          'Global generators.git rev-parse',
+          stdout=api.raw_io
+          .output_text('12345abcde12345abcde12345abcde12345abcde\n')
+      )
+  )
+
+  yield api.test(
+      'parallel_download_builds', api.platform.name('mac'),
+      api.properties(
+          builds=builds,
+          tests=[],
+          generators=generators,
+          archives=archives,
+          config_name='config_name',
+          is_fusion='true',
+          luci_flags={
+            "parallel_download_builds": True,
+          }
       ),
       api.buildbucket.ci_build(
           project='flutter',

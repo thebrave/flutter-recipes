@@ -52,7 +52,8 @@ def RunSteps(api):
     api.shard_util.archive_full_build(
         api.path.start_dir / 'out/host_debug', 'host_debug'
     )
-    api.shard_util.download_full_builds(builds, api.path.cleanup_dir / 'out')
+    flag_parallel_download_builds = api.properties.get('parallel_download_builds') or False
+    api.shard_util.download_full_builds(builds, api.path.cleanup_dir / 'out', flag_parallel_download_builds)
   with api.step.nest("launch builds") as presentation:
     reqs = api.shard_util.schedule_tests(test_configs, builds, presentation)
   api.shard_util.get_base_bucket_name()
@@ -167,6 +168,33 @@ def GenTests(api):
           collect_step='collect builds',
       )
   )
+
+  yield api.test(
+      'flag_parallel_download_builds',
+      api.properties(
+        **({
+            **presubmit_props,
+            'parallel_download_builds': True,
+        })
+      ),
+      api.platform.name('linux'),
+      api.buildbucket.ci_build(
+          project='proj',
+          builder='try-builder',
+          git_repo='https://github.com/repo/a',
+          revision='a' * 40,
+          build_number=123
+      ), api.led.mock_get_builder(
+          job,
+          project='proj',
+          bucket='ci',
+      ),
+      api.shard_util.child_led_steps(
+          subbuilds=[led_try_subbuild1],
+          collect_step='collect builds',
+      )
+  )
+
   presubmit_props_bb = copy.deepcopy(props_bb)
   presubmit_props_bb['git_url'] = 'http://abc'
   presubmit_props_bb['git_ref'] = 'refs/123/main'

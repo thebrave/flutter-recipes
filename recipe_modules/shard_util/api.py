@@ -496,27 +496,44 @@ class ShardUtilApi(recipe_api.RecipeApi):
       )
     return builds
 
-  def download_full_builds(self, build_results, out_build_paths):
+  def download_full_builds(self, build_results, out_build_paths, flag_parallel_download_builds=False):
     """Downloads intermediate builds from CAS.
 
     Args:
       build_results (dict(int, SubbuildResult)): A dictionary with the subbuild
         result and the build id as key.
+      flag_parallel_download_builds: attempt to download all builds at once.
 
     Mac and fuchsia use artifacts from different sub-builds to generate the final artifacts.
     Calls to this API will happen most likely after all the subbuilds have been completed and
     only if global generators will be executed.
     """
+
+    futures = []
     for build_id in build_results:
       build_props = build_results[build_id].build_proto.output.properties
       if 'cas_output_hash' in build_props:
         cas_out_dict = build_props['cas_output_hash']
         build_name = build_results[build_id].build_name
         if 'full_build' in cas_out_dict:
-          self.m.cas.download(
-              'Download for build %s and cas key %s' % (build_id, build_name),
-              cas_out_dict['full_build'], out_build_paths
-          )
+          if flag_parallel_download_builds:
+            futures.append(
+              self.m.futures.spawn(
+                self.m.cas.download,
+                'Download for build %s and cas key %s' % (build_id, build_name),
+                cas_out_dict['full_build'], out_build_paths
+              )
+            )
+          else:
+            self.m.cas.download(
+                'Download for build %s and cas key %s' % (build_id, build_name),
+                cas_out_dict['full_build'], out_build_paths
+            )
+    if futures:
+      self.m.futures.wait(futures)
+      # We awaited above; this loop will raise the first exception (if any)
+      for future in futures:
+        future.result()
 
   def archive_full_build(self, build_dir, target):
     """Archives a full build in cas.

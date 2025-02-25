@@ -170,8 +170,6 @@ class BuildUtilApi(recipe_api.RecipeApi):
       rbe_working_path(path): Path to rbe working directory.
     """
     ninja_path = checkout_path / 'flutter/third_party/ninja/ninja'
-    if not self.m.path.exists(ninja_path):
-      ninja_path = self.m.path.dirname(self.m.path.dirname(checkout_path)) / 'third_party/ninja/ninja'
 
     if self.use_goma:
       self._build_goma(config, checkout_path, targets, ninja_path, env)

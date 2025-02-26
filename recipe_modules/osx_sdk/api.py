@@ -366,7 +366,6 @@ class OSXSDKApi(recipe_api.RecipeApi):
       # 'install xcode from cipd' step may get stuck until it times out.
       self._verify_xcode(install_path)
     except self.m.step.StepFailure:
-      self._diagnose_unresponsive_mac(devicelab, skip_check=True)
       self._cleanup_cache = True
       self._clean_xcode_cache(devicelab)
 
@@ -429,15 +428,15 @@ class OSXSDKApi(recipe_api.RecipeApi):
             ok_ret='any',
         )
 
-  def _diagnose_unresponsive_mac(self, devicelab, skip_check=False):
-    """Checks if `xcodebuild` commands may have potentially hung due to Launch
-    Services issues. If so, reset the Launch Services database. Print a warning
-    if the database has already been reset in the past week.
+  def _diagnose_unresponsive_mac(self, devicelab):
+    """To prevent mac tests from hanging due to unresponsive host, kill Setup
+    Assistant and reset the Launch Services database.
+
+    Also, check if `xcodebuild` commands may have potentially hung due to Launch
+    Services issues. If so, add entry to Launch Services reset log and print a warning.
 
     Args:
       devicelab: (bool) tells the module which path we should be working with.
-      skip_check: (bool) if true, skips checking the logs and goes directly to
-      resetting the database.
     """
     if devicelab:
       return
@@ -446,6 +445,23 @@ class OSXSDKApi(recipe_api.RecipeApi):
     self._kill_setup_assistant()
 
     with self.m.step.nest('verify launch services') as display_step:
+      start_time = self.now().strftime("%Y-%m-%d %H:%M:%S")
+
+      self.m.step(
+          'Reset and rescan Launch Services db',
+          [
+              '/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister',
+              '-kill',
+              '-r',
+              '-domain',
+              'local',
+              '-domain',
+              'system',
+              '-domain',
+              'user',
+          ],
+      )
+
       launch_services_reset_log = self._get_xcode_base_cache_path(
           devicelab
       ) / 'launch_services_reset_log.txt'
@@ -465,73 +481,51 @@ class OSXSDKApi(recipe_api.RecipeApi):
           # If there was an invalid date, reset the log file.
           reset_logs = ''
 
-      if skip_check == False:
-        # If last log entry was within 24 hours, only search logs since that time
-        # (with a 30 minute buffer). Otherwise search the last 24 hours
-        if last_entry_time and (self.now() - last_entry_time).days <= 1:
-          search_time = (last_entry_time +
-                         timedelta(minutes=30)).strftime("%Y-%m-%d %H:%M:%S")
-          time_parameters = [
-              '--start',
-              search_time,
-          ]
-        else:
-          time_parameters = [
-              '--last',
-              '24h',
-          ]
+      # If last log entry was within 24 hours, only search logs since that time
+      # (with a 30 minute buffer). Otherwise search the last 24 hours
+      if last_entry_time and (self.now() - last_entry_time).days <= 1:
+        search_time = (last_entry_time +
+                       timedelta(minutes=30)).strftime("%Y-%m-%d %H:%M:%S")
+        time_parameters = [
+            '--start',
+            search_time,
+        ]
+      else:
+        time_parameters = [
+            '--last',
+            '24h',
+        ]
 
-        # Check if xcodebuild commands have potentially been slowed by Launch
-        # Services.
-        xcodebuild_logs = self.m.step(
-            'Check if xcodebuild impacted by Launch Services',
-            [
-                'log',
-                'show',
-                *time_parameters,
-                '--style',
-                'compact',
-                '--predicate',
-                'logType == "error" AND process == "xcodebuild" AND '
-                'subsystem == "com.apple.launchservices" AND composedMessage '
-                'CONTAINS "disconnect event interruption received for service"',
-            ],
-            stdout=self.m.raw_io.output_text(add_output_log=True),
-        )
-
-        # Remove first line, which is headers.
-        xcodebuild_logs_stdout = xcodebuild_logs.stdout.splitlines()[1:]
-
-        # Only reset Launch Services db if there are logs indicating xcodebuild
-        # has failed due to Launch Services.
-        if len(xcodebuild_logs_stdout) == 0:
-          return
-
-      # If Launch Services was reset within a week and we have gotten more
-      # errors since then, print a warning.
-      if last_entry_time and (self.now() - last_entry_time).days <= 7:
-        display_step.status = self.m.step.INFRA_FAILURE
-        display_step.step_text = 'Launch Services has already been reset recently. Please file a bug and see go/flutter-infra-macos-troubleshoot.'
-
-      start_time = self.now().strftime("%Y-%m-%d %H:%M:%S")
-
-      self.m.step(
-          'Reset and rescan Launch Services db',
+      # Check if xcodebuild commands have potentially been slowed by Launch
+      # Services.
+      xcodebuild_logs = self.m.step(
+          'Check if xcodebuild impacted by Launch Services',
           [
-              '/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister',
-              '-kill',
-              '-r',
-              '-domain',
-              'local',
-              '-domain',
-              'system',
-              '-domain',
-              'user',
+              'log',
+              'show',
+              *time_parameters,
+              '--style',
+              'compact',
+              '--predicate',
+              'logType == "error" AND process == "xcodebuild" AND '
+              'subsystem == "com.apple.launchservices" AND composedMessage '
+              'CONTAINS "disconnect event interruption received for service"',
           ],
+          stdout=self.m.raw_io.output_text(add_output_log=True),
       )
 
-      # Add an entry of when Launch Services was reset in the
-      # launch_services_reset_log.txt file.
+      # Remove first line, which is headers.
+      xcodebuild_logs_stdout = xcodebuild_logs.stdout.splitlines()[1:]
+
+      # Since Launch Services resets on every build, xcodebuild should not
+      # continue to fail. If there are still errors here, print a warning and
+      # update the reset log.
+      if len(xcodebuild_logs_stdout) == 0:
+        return
+
+      display_step.status = self.m.step.INFRA_FAILURE
+      display_step.step_text = 'Launch Services has already been reset recently. Please file a bug and see go/flutter-infra-macos-troubleshoot.'
+
       self.m.file.write_text(
           'Update Launch Services reset log',
           launch_services_reset_log,

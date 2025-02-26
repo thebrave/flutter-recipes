@@ -19,7 +19,29 @@
   },
   {
     "cmd": [],
-    "name": "verify launch services"
+    "name": "verify launch services",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@Launch Services has already been reset recently. Please file a bug and see go/flutter-infra-macos-troubleshoot.@@@",
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister",
+      "-kill",
+      "-r",
+      "-domain",
+      "local",
+      "-domain",
+      "system",
+      "-domain",
+      "user"
+    ],
+    "infra_step": true,
+    "name": "verify launch services.Reset and rescan Launch Services db",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -59,24 +81,6 @@
       "@@@STEP_LOG_LINE@raw_io.output_text@2025-01-25 22:47:00.906 E  xcodebuild[11687:149bd] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.modifydb@@@",
       "@@@STEP_LOG_LINE@raw_io.output_text@2025-01-25 22:47:00.906 E  xcodebuild[11687:149c6] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.mapdb@@@",
       "@@@STEP_LOG_END@raw_io.output_text@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister",
-      "-kill",
-      "-r",
-      "-domain",
-      "local",
-      "-domain",
-      "system",
-      "-domain",
-      "user"
-    ],
-    "infra_step": true,
-    "name": "verify launch services.Reset and rescan Launch Services db",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {

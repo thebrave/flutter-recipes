@@ -12,5 +12,5 @@ set -e
 if [ -f /usr/local/bin/unlock_login_keychain.sh ]
 then
   /usr/local/bin/unlock_login_keychain.sh
-  xcrun xcodebuild -project infra-dialog.xcodeproj -scheme infra-dialog -destination id=$1 test CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=S8QB4VV633 PROVISIONING_PROFILE_SPECIFIER='match Development *'
+  xcrun xcodebuild -project infra-dialog.xcodeproj -scheme infra-dialog -destination id=$1 test CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=S8QB4VV633 PROVISIONING_PROFILE_SPECIFIER='match Development *' -allowProvisioningUpdates
 fi

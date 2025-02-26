@@ -650,35 +650,6 @@ def GenTests(api):
   )
 
   yield api.test(
-      'launch_services_unresponsive_mac_reset_longer_than_7_days',
-      api.platform.name('mac'),
-      api.step_data(
-          "find macOS version",
-          stdout=api.raw_io.output_text("13.5.1"),
-      ),
-      api.properties(**{'$flutter/osx_sdk': {
-          'sdk_version': 'deadbeef',
-      }}),
-      api.path.exists(
-          (sdk_app_path),
-          (api.path.cache_dir / 'osx_sdk/launch_services_reset_log.txt'),
-      ),
-      api.step_data(
-          'verify launch services.Check if xcodebuild impacted by Launch Services',
-          stdout=api.raw_io.output_text(
-              'Timestamp               Ty Process[PID:TID]\n' +
-              '2025-01-25 22:47:00.906 E  xcodebuild[11687:149bd] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.modifydb\n'
-              +
-              '2025-01-25 22:47:00.906 E  xcodebuild[11687:149c6] [com.apple.launchservices:default] LaunchServices: disconnect event interruption received for service com.apple.lsd.mapdb'
-          )
-      ),
-      api.step_data(
-          'verify launch services.Check if Launch Services db has been reset recently',
-          api.file.read_text(text_content=_MOCK_TIME_LONGER_THAN_7_DAYS)
-      ),
-  )
-
-  yield api.test(
       'launch_services_unresponsive_mac_already_reset_invalid date',
       api.platform.name('mac'),
       api.step_data(

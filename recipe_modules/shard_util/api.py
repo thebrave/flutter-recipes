@@ -395,6 +395,10 @@ class ShardUtilApi(recipe_api.RecipeApi):
       timeout_in_minutes = build.get('timeout', None)
 
       if self.m.common.is_release_candidate_branch(branch):
+        # `timout_in_minutes` only applys to the shard being run
+        # not the task launching the shard. That means for practical
+        # reasons timeout should be less than the timeout value in
+        # go/flutter-internal-release-release-builder
         # Due to limited capacity for release builds, extend timeout
         timeout_in_minutes = max(
             timeout_in_minutes if timeout_in_minutes is not None else 0,

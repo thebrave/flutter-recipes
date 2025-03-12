@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import attr
+import datetime
 import json
 import collections
 
@@ -555,8 +556,16 @@ class ShardUtilApi(recipe_api.RecipeApi):
 
     # pylint: disable=unused-argument
     def _upload(timeout=None):
-      return self.m.cas_util.upload(
-          cas_dir, step_name='Archive full build for %s' % target
+      return self.m.cas.archive(
+          'Archive full build for %s' % target,
+          cas_dir,
+          # Debug logs are helpful for understanding the root cause of
+          # upload failures.
+          log_level="debug",
+          # TODO(fxbug.dev/122153): Stop setting a timeout once CAS
+          # slowness is resolved and/or the CAS CLI sets shorter
+          # internal timeouts.
+          timeout=datetime.timedelta(minutes=20),
       )
 
     # Windows CAS upload is flaky, hashes are calculated before files are fully synced to disk.

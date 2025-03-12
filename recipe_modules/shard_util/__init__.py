@@ -6,7 +6,6 @@ DEPS = [
     'flutter/common',
     'flutter/monorepo',
     'flutter/retry',
-    'fuchsia/cas_util',
     'recipe_engine/buildbucket',
     'recipe_engine/cas',
     'recipe_engine/file',

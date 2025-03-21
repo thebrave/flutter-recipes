@@ -225,35 +225,29 @@ def uploadResults(
     benchmark_tags,
     test_status='Succeeded',
 ):
-  """Upload DeviceLab test results to Cocoon/skia perf.
+  """Upload DeviceLab test results to skia perf.
 
   luci-auth only gurantees a service account token life of 3 minutes. To work
   around this limitation, results uploading is separate from the the test run.
 
-  Only post-submit tests upload results to Cocoon/skia perf.
+  Only post-submit tests upload results to skia perf.
 
   If `upload_metrics: true`, generated test metrics will be uploaded to skia perf
-  for both prod and staging tests.
-
-  Otherwise, test status will be updated in Cocoon for tests running in prod pool,
-  and staging tests without `upload_metrics: true` will not be updated.
+  for both prod and staging tests. Otherwise staging tests without
+  `upload_metrics: true` will not be updated.
 
   Args:
     env(dict): Current environment variables.
     env_prefixes(dict):  Current environment prefixes variables.
     results_path(str): Path to test results.
-    is_test_flaky(bool): Flaky flag for the test running step.
-    git_branch(str): Branch the test runs against.
-    builder_name(str): The builder name that is being run on.
     commit_time(str): The commit time in UNIX timestamp.
     task_name(str): The task name of the current test.
     benchmark_tags(str): Json dumped str of benchmark tags, which includes host and device info.
-    test_status(str): The status of the test running step.
   """
   if shouldNotUpdate(api, git_branch):
     return
   bucket = api.buildbucket.build.builder.bucket
-  runner_params = ['--test-flaky', is_test_flaky, '--builder-bucket', bucket]
+  runner_params = []
   if api.properties.get('upload_metrics'):
     runner_params.extend([
         '--results-file', results_path, '--commit-time', commit_time,
@@ -265,18 +259,9 @@ def uploadResults(
     #  - staging ones do not need to as we are not tracking staging tests in cocoon datastore.
     if bucket == 'staging':
       return
-    else:
-      runner_params.extend([
-          '--git-branch', git_branch, '--luci-builder', builder_name,
-          '--test-status', test_status
-      ])
 
   with api.step.nest('Upload metrics'):
     with api.token_util.metric_center_token(env, env_prefixes):
-      runner_params.extend([
-          '--service-account-token-file',
-          api.token_util.cocoon_token()
-      ])
       upload_command = ['dart', 'bin/test_runner.dart', 'upload-metrics']
       upload_command.extend(runner_params)
       with api.context(env=env, env_prefixes=env_prefixes):

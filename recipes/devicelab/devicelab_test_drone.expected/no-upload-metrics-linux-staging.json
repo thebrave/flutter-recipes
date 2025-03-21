@@ -1,35 +1,17 @@
 [
   {
     "cmd": [
-      "sw_vers",
-      "-productVersion"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "find macOS version"
-  },
-  {
-    "cmd": [
       "top",
-      "-l",
+      "-b",
+      "-n",
       "3",
       "-o",
-      "mem"
+      "%MEM"
     ],
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -40,67 +22,6 @@
       }
     },
     "name": "OS info"
-  },
-  {
-    "cmd": [
-      "xattr",
-      "/opt/s/w/ir/cipd_bin_packages/python3"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "python3 xattr info"
-  },
-  {
-    "cmd": [
-      "xattr",
-      "/opt/s/w/ir/cipd_bin_packages/git"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "git xattr info"
-  },
-  {
-    "cmd": [
-      "sudo",
-      "xcode-select",
-      "--reset"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "reset XCode"
   },
   {
     "cmd": [],
@@ -118,7 +39,7 @@
     ],
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -149,7 +70,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -175,7 +96,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -200,7 +121,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -229,7 +150,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -254,7 +175,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -281,7 +202,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -307,7 +228,7 @@
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk",
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -330,7 +251,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -355,7 +276,7 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
@@ -368,7 +289,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -399,7 +320,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -428,7 +349,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -449,35 +370,21 @@
   },
   {
     "cmd": [
-      "ideviceinfo",
-      "--key",
-      "ProductType"
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "-r",
+      "gs://flutter_devicelab/flutter/staging/2d72510e447ab60a9728aeea2362d8be2cbd7789/def",
+      "[CLEANUP]/tmp_tmp_2"
     ],
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -487,12 +394,13 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Find device type"
+    "name": "gsutil download artifact"
   },
   {
     "cmd": [
       "flutter",
-      "doctor"
+      "doctor",
+      "--verbose"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -504,11 +412,10 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
@@ -518,7 +425,7 @@
     },
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -547,11 +454,10 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
@@ -562,7 +468,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -572,51 +478,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "dart pub get",
-    "timeout": 600
-  },
-  {
-    "cmd": [
-      "rm",
-      "-rf",
-      "[HOME]/Library/Developer/Xcode/DerivedData"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Delete mac deriveddata"
+    "name": "dart pub get"
   },
   {
     "cmd": [
@@ -634,21 +496,22 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -663,57 +526,21 @@
   },
   {
     "cmd": [
-      "chmod",
-      "755",
-      "RECIPE[flutter::devicelab/devicelab_drone].resources/runner.sh"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Set execute permission"
-  },
-  {
-    "cmd": [
       "bash",
       "RECIPE_MODULE[flutter::test_utils]/resources/runner.sh",
-      "RECIPE[flutter::devicelab/devicelab_drone].resources/runner.sh",
+      "dart",
+      "bin/test_runner.dart",
+      "test",
       "-t",
       "abc",
       "--results-file",
       "[CLEANUP]/results_tmp_1/results",
       "--luci-builder",
-      "Mac_ios abc",
+      "ghi",
+      "--task-args",
+      "test",
+      "--task-args",
+      "application-binary-path=[CLEANUP]/tmp_tmp_2/def",
       "--git-branch",
       "master"
     ],
@@ -724,25 +551,26 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOGS_FILE": "[CLEANUP]/tmp_tmp_2",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_3",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
     },
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -763,7 +591,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[CLEANUP]/tmp_tmp_2",
+      "[CLEANUP]/tmp_tmp_3",
       "/path/to/tmp/"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
@@ -773,18 +601,19 @@
       "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
       "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
       "GIT_BRANCH": "master",
-      "LOGS_FILE": "[CLEANUP]/tmp_tmp_2",
+      "LOGS_FILE": "[CLEANUP]/tmp_tmp_3",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
@@ -792,7 +621,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -804,7 +633,7 @@
     },
     "name": "read_logs",
     "~followup_annotations": [
-      "@@@STEP_LOG_END@tmp_tmp_2@@@"
+      "@@@STEP_LOG_END@tmp_tmp_3@@@"
     ]
   },
   {
@@ -835,14 +664,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
@@ -850,7 +680,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -887,14 +717,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
@@ -902,7 +733,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -947,14 +778,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
@@ -962,7 +794,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -985,9 +817,55 @@
   },
   {
     "cmd": [
-      "killall",
-      "-9",
-      "-v",
+      "pkill",
+      "-e",
+      "chrome"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Killing Processes.kill chrome",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "pkill",
+      "-e",
       "dart"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
@@ -1000,14 +878,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
@@ -1015,7 +894,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1032,9 +911,8 @@
   },
   {
     "cmd": [
-      "killall",
-      "-9",
-      "-v",
+      "pkill",
+      "-e",
       "flutter"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
@@ -1047,14 +925,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
@@ -1062,7 +941,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1079,103 +958,8 @@
   },
   {
     "cmd": [
-      "killall",
-      "-9",
-      "-v",
-      "Chrome"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Killing Processes.kill Chrome",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "-v",
-      "Safari"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Killing Processes.kill Safari",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "-v",
+      "pkill",
+      "-e",
       "java"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
@@ -1188,14 +972,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
@@ -1203,7 +988,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1220,9 +1005,8 @@
   },
   {
     "cmd": [
-      "killall",
-      "-9",
-      "-v",
+      "pkill",
+      "-e",
       "adb"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
@@ -1235,14 +1019,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
@@ -1250,7 +1035,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1267,105 +1052,12 @@
   },
   {
     "cmd": [
-      "killall",
-      "-9",
-      "-v",
-      "Xcode"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Killing Processes.kill Xcode",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "killall",
-      "-9",
-      "-v",
-      "QuickTime Player"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Killing Processes.kill QuickTime",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
       "top",
-      "-l",
+      "-b",
+      "-n",
       "3",
       "-o",
-      "mem"
+      "%MEM"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -1377,14 +1069,15 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
         "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
       ]
@@ -1392,7 +1085,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1406,151 +1099,14 @@
   },
   {
     "cmd": [
-      "xattr",
-      "/opt/s/w/ir/cipd_bin_packages/python3"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "python3 xattr info (2)"
-  },
-  {
-    "cmd": [
-      "xattr",
-      "/opt/s/w/ir/cipd_bin_packages/git"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "git xattr info (2)"
-  },
-  {
-    "cmd": [],
-    "name": "Upload metrics"
-  },
-  {
-    "cmd": [
-      "luci-auth",
-      "token",
-      "-scopes",
-      "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/datastore",
-      "-lifetime",
-      "3m"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Upload metrics.get access token for default account",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
       "vpython3",
       "-u",
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "extra.secret.token.should.not.be.logged",
-      "[CLEANUP]/tmp_tmp_3"
+      "RECIPE_MODULE[recipe_engine::cas]/resources/infra.sha1",
+      "/path/to/tmp/"
     ],
     "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
     "env": {
@@ -1562,11 +1118,10 @@
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
-      "OS": "darwin",
+      "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
     },
     "env_prefixes": {
       "PATH": [
@@ -1577,7 +1132,7 @@
     "infra_step": true,
     "luci_context": {
       "realm": {
-        "name": "project:ci"
+        "name": "project:staging"
       },
       "resultdb": {
         "current_invocation": {
@@ -1587,224 +1142,182 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Upload metrics.write metric center token",
+    "name": "read infra revision",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "luci-auth",
-      "token",
-      "-lifetime",
-      "3m"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Upload metrics.get access token for default account (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "extra.secret.token.should.not.be.logged",
-      "[CLEANUP]/tmp_tmp_4"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Upload metrics.write cocoon token",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "dart",
-      "bin/test_runner.dart",
-      "upload-metrics",
-      "--test-flaky",
-      "False",
-      "--builder-bucket",
-      "ci",
-      "--git-branch",
-      "master",
-      "--luci-builder",
-      "Mac_ios abc",
-      "--test-status",
-      "Succeeded",
-      "--service-account-token-file",
-      "[CLEANUP]/tmp_tmp_4"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GCP_PROJECT": "flutter-infra-staging",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "TOKEN_PATH": "[CLEANUP]/tmp_tmp_3",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Upload metrics.upload results",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "remove",
-      "[CLEANUP]/tmp_tmp_3"
-    ],
-    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
-    "env": {
-      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
-      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
-      "GIT_BRANCH": "master",
-      "LUCI_BRANCH": "",
-      "LUCI_CI": "True",
-      "LUCI_PR": "",
-      "OS": "darwin",
-      "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
-      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk",
-      "USE_EMULATOR": "False"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
-        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Upload metrics.delete metric center token",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_LOG_LINE@infra.sha1@git_revision:mock_infra_git_revision@@@",
+      "@@@STEP_LOG_END@infra.sha1@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "Upload results"
+    "name": "install infra/tools/luci/cas"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[START_DIR]/cipd_tool/infra/tools/luci/cas/33f9d887e5b8aeaaf9d65506acccfa8da2c480712e534a23a79e92c342c44bee"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "install infra/tools/luci/cas.ensure package directory",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/cipd_tool/infra/tools/luci/cas/33f9d887e5b8aeaaf9d65506acccfa8da2c480712e534a23a79e92c342c44bee",
+      "-ensure-file",
+      "infra/tools/luci/cas/${platform} git_revision:mock_infra_git_revision",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "install infra/tools/luci/cas.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-git_revision:moc\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cas/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/infra/tools/luci/cas/33f9d887e5b8aeaaf9d65506acccfa8da2c480712e534a23a79e92c342c44bee/cas",
+      "archive",
+      "-log-level",
+      "info",
+      "-cas-instance",
+      "projects/example-cas-server/instances/default_instance",
+      "-dump-digest",
+      "/path/to/tmp/",
+      "-paths-json",
+      "[[\"[CLEANUP]/results_tmp_1\", \"results\"]]"
+    ],
+    "cwd": "[CLEANUP]/tmp_tmp_1/flutter sdk/dev/devicelab",
+    "env": {
+      "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
+      "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
+      "FLUTTER_LOGS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "FLUTTER_TEST_OUTPUTS_DIR": "[CLEANUP]/flutter_logs_dir",
+      "GIT_BRANCH": "master",
+      "LUCI_BRANCH": "",
+      "LUCI_CI": "True",
+      "LUCI_PR": "",
+      "OS": "linux",
+      "PUB_CACHE": "[START_DIR]/.pub-cache",
+      "REVISION": "12345abcde12345abcde12345abcde12345abcde",
+      "SDK_CHECKOUT_PATH": "[CLEANUP]/tmp_tmp_1/flutter sdk"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin",
+        "[CLEANUP]/tmp_tmp_1/flutter sdk/bin/cache/dart-sdk/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:staging"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Upload metrics to CAS",
+    "~followup_annotations": [
+      "@@@STEP_LINK@CAS UI@https://cas-viewer.appspot.com/projects/example-cas-server/instances/default_instance/blobs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0/tree@@@",
+      "@@@SET_BUILD_PROPERTY@results_cas_hash@\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/0\"@@@"
+    ]
   },
   {
     "name": "$result"

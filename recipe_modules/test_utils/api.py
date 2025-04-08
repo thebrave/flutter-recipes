@@ -61,6 +61,7 @@ IDENTIFIER_NAME_MAP = {
     'iPhone14,5': 'iPhone 13',
     'iPhone14,2': 'iPhone 13 Pro',
     'iPhone14,3': 'iPhone 13 Pro Max',
+    'iPhone17,3': 'iPhone 16 Pro',
 }
 
 # Regexp for windows os version number

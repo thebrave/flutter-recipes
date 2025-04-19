@@ -297,7 +297,7 @@ def RunSteps(api):
   # If on macOS, reset Xcode in case a previous build failed to do so.
   api.osx_sdk.reset_xcode()
 
-  with api.osx_sdk('ios', devicelab=True):
+  with api.osx_sdk('ios', devicelab=False):
     env_prefixes = {'PATH': [], 'LIBRARY_PATH': []}
     env = {}
     BuildPackage(api, env, env_prefixes, 'ios-deploy', upload=True)

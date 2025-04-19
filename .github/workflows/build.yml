@@ -1,0 +1,34 @@
+name: "Build"
+on:
+  push:
+    # Only run on branches
+    branches:
+    - '**'
+
+jobs:
+
+  macos-intel:
+    runs-on: macos-13
+    steps:
+    - name: "Checkout sources"
+      uses: actions/checkout@v4
+
+    - name: Install Depot Tools
+      uses: newkdev/setup-depot-tools@v1.0.1
+
+    - name: "Compile and install dependencies"
+      run: |
+        python3 recipes.py run ios_usb_dependencies/ios-usb-dependencies
+
+  macos-arm:
+    runs-on: macos-15
+    steps:
+    - name: "Checkout sources"
+      uses: actions/checkout@v4
+
+    - name: Install Depot Tools
+      uses: newkdev/setup-depot-tools@v1.0.1
+
+    - name: "Compile and install dependencies"
+      run: |
+        python3 recipes.py run ios_usb_dependencies/ios-usb-dependencies

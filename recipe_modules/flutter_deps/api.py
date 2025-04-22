@@ -301,7 +301,10 @@ class FlutterDepsApi(recipe_api.RecipeApi):
       paths = env_prefixes.get('PATH', [])
       paths.append(firefox_path)
       env_prefixes['PATH'] = paths
-      env['FIREFOX_EXECUTABLE'] = firefox_path / 'firefox'
+      if self.m.platform.is_mac:
+        env['FIREFOX_EXECUTABLE'] = firefox_path / 'Firefox.app/Contents/MacOS/firefox'
+      else:
+        env['FIREFOX_EXECUTABLE'] = firefox_path / 'firefox'
 
   def gh_cli(self, env, env_prefixes, version):
     """Installs GitHub CLI."""

@@ -28,5 +28,5 @@ git rev-parse HEAD > "commit_sha.txt"
 
 make install
 
-cp ./COPYING "$INSTALL_DIR"/lib/libusbmuxd-2.0.6.dylib \
+cp ./COPYING "$INSTALL_DIR"/lib/libusbmuxd-2.0.7.dylib \
   "$INSTALL_DIR"/bin/iproxy "$OUTPUT_DIR"

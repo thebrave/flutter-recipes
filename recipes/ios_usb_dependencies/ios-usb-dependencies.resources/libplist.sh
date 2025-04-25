@@ -28,5 +28,5 @@ git rev-parse HEAD > "commit_sha.txt"
 
 make install
 
-cp ./COPYING "$INSTALL_DIR"/lib/libplist-2.0.3.dylib "$OUTPUT_DIR"
+cp ./COPYING "$INSTALL_DIR"/lib/libplist-2.0.4.dylib "$OUTPUT_DIR"
 ls "$OUTPUT_DIR"

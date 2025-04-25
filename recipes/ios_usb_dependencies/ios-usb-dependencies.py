@@ -26,17 +26,22 @@ LIBSSL_PATTERN = r'^\t?(.*(libssl.*\.dylib)).*'
 LIBCRYPTO_PATTERN = r'^\t?(.*(libcrypto.*\.dylib)).*'
 LIBIMOBILEDEVICE_PATTERN = r'^\t?(.*(libimobiledevice.*\.dylib)).*'
 LIBIMOBILEDEVICEGLUE_PATTERN = r'^\t?(.*(libimobiledevice-glue.*\.dylib)).*'
+LIBTATSU_PATTERN = r'^\t?(.*(libtatsu.*\.dylib)).*'
 
 DIRNAME_PATTERN_DICT = {
-    'libusbmuxd': LIBUSBMUXD_PATTERN, 'libplist': LIBPLIST_PATTERN,
-    'libssl': LIBSSL_PATTERN, 'libcrypto': LIBCRYPTO_PATTERN,
+    'libusbmuxd': LIBUSBMUXD_PATTERN,
+    'libplist': LIBPLIST_PATTERN,
+    'libssl': LIBSSL_PATTERN,
+    'libcrypto': LIBCRYPTO_PATTERN,
     'libimobiledevice': LIBIMOBILEDEVICE_PATTERN,
-    'libimobiledeviceglue': LIBIMOBILEDEVICEGLUE_PATTERN
+    'libimobiledeviceglue': LIBIMOBILEDEVICEGLUE_PATTERN,
+    'libtatsu': LIBTATSU_PATTERN,
 }
 
 # Map between package and its artifacts that need path patch.
 BIANRY_ARTIFACT_MAP = {
-    'libusbmuxd': ['iproxy'], 'openssl': ['libcrypto.3.dylib'],
+    'libusbmuxd': ['iproxy'],
+    'openssl': ['libcrypto.3.dylib'],
     'libimobiledevice': ['idevicescreenshot', 'idevicesyslog']
 }
 
@@ -137,7 +142,7 @@ def GetDylibFilenames(api, dir, package_name):
       "checking dylib file inside: %s" % dir,
       dir,
       test_data=[
-          dir / "libimobiledevice-1.0.6.dylib", dir / "libplist-2.0.3.dylib"
+          dir / "libimobiledevice-1.0.6.dylib", dir / "libplist-2.0.4.dylib"
       ]
   )
   directory_string_paths = [('%s' % path) for path in directory_paths]
@@ -317,6 +322,9 @@ def RunSteps(api):
         update_pkg_config_path=True
     )
     BuildPackage(
+        api, env, env_prefixes, 'libtatsu', update_pkg_config_path=True
+    )
+    BuildPackage(
         api,
         env,
         env_prefixes,
@@ -345,7 +353,7 @@ def GenTests(api):
       api.step_data(
           'Get linked paths from iproxy before patch',
           stdout=api.raw_io.output_text(
-              '\t/opt/s/w/ir/x/w/src/libusbmuxd_install/lib/libusbmuxd-2.0.6.dylib (compatibility version 7.0.0, current version 7.0.0)'
+              '\t/opt/s/w/ir/x/w/src/libusbmuxd_install/lib/libusbmuxd-2.0.7.dylib (compatibility version 7.0.0, current version 7.0.0)'
           ),
           retcode=0
       )

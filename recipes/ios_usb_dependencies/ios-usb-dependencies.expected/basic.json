@@ -216,7 +216,7 @@
     "name": "checking dylib file inside: [START_DIR]/src/libplist_output",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libplist_output/[START_DIR]/src/libplist_output/libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libplist_output/[START_DIR]/src/libplist_output/libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libplist_output/[START_DIR]/src/libplist_output/libplist-2.0.4.dylib@@@",
       "@@@STEP_LOG_END@listdir@@@"
     ]
   },
@@ -246,14 +246,14 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "libimobiledevice-1.0.6.dylib\nlibplist-2.0.3.dylib\n",
+      "libimobiledevice-1.0.6.dylib\nlibplist-2.0.4.dylib\n",
       "[START_DIR]/src/libplist_output/without_entitlements.txt"
     ],
     "infra_step": true,
     "name": "writing the list of files to be codesigned without entitlements for libplist",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@without_entitlements.txt@libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@without_entitlements.txt@libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_LINE@without_entitlements.txt@libplist-2.0.4.dylib@@@",
       "@@@STEP_LOG_END@without_entitlements.txt@@@"
     ]
   },
@@ -573,7 +573,7 @@
     "name": "checking dylib file inside: [START_DIR]/src/libimobiledeviceglue_output",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledeviceglue_output/[START_DIR]/src/libimobiledeviceglue_output/libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledeviceglue_output/[START_DIR]/src/libimobiledeviceglue_output/libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledeviceglue_output/[START_DIR]/src/libimobiledeviceglue_output/libplist-2.0.4.dylib@@@",
       "@@@STEP_LOG_END@listdir@@@"
     ]
   },
@@ -649,6 +649,85 @@
       "ensure-directory",
       "--mode",
       "0o777",
+      "[START_DIR]/src/libtatsu"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libtatsu"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[START_DIR]/src/libtatsu_install"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libtatsu_install"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[START_DIR]/src/libtatsu_output"
+    ],
+    "infra_step": true,
+    "name": "mkdir [START_DIR]/src/libtatsu_output"
+  },
+  {
+    "cmd": [
+      "chmod",
+      "777",
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libtatsu.sh"
+    ],
+    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libtatsu.sh executable"
+  },
+  {
+    "cmd": [
+      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libtatsu.sh",
+      "[START_DIR]/src/libtatsu",
+      "[START_DIR]/src/libtatsu_install",
+      "[START_DIR]/src/libtatsu_output"
+    ],
+    "env": {
+      "CPATH": "[START_DIR]/src/libimobiledeviceglue_install/include"
+    },
+    "env_prefixes": {
+      "LIBRARY_PATH": [
+        "[START_DIR]/src/libusb_install/lib",
+        "[START_DIR]/src/libimobiledeviceglue_install/lib"
+      ],
+      "PATH": [
+        "[START_DIR]/src/libplist_install/bin",
+        "[START_DIR]/src/bison_install/bin",
+        "[START_DIR]/src/libtasn1_install/bin"
+      ],
+      "PKG_CONFIG_PATH": [
+        "[START_DIR]/src/libimobiledeviceglue_install/lib/pkgconfig"
+      ]
+    },
+    "name": "install libtatsu"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
       "[START_DIR]/src/libusbmuxd"
     ],
     "infra_step": true,
@@ -713,7 +792,8 @@
         "[START_DIR]/src/libtasn1_install/bin"
       ],
       "PKG_CONFIG_PATH": [
-        "[START_DIR]/src/libimobiledeviceglue_install/lib/pkgconfig"
+        "[START_DIR]/src/libimobiledeviceglue_install/lib/pkgconfig",
+        "[START_DIR]/src/libtatsu_install/lib/pkgconfig"
       ]
     },
     "name": "install libusbmuxd"
@@ -730,8 +810,8 @@
     "cmd": [
       "install_name_tool",
       "-change",
-      "/opt/s/w/ir/x/w/src/libusbmuxd_install/lib/libusbmuxd-2.0.6.dylib",
-      "@loader_path/../libusbmuxd-2.0.6.dylib",
+      "/opt/s/w/ir/x/w/src/libusbmuxd_install/lib/libusbmuxd-2.0.7.dylib",
+      "@loader_path/../libusbmuxd-2.0.7.dylib",
       "[START_DIR]/src/libusbmuxd_output/iproxy"
     ],
     "name": "Patch [START_DIR]/src/libusbmuxd_output/iproxy with install_name_tool"
@@ -758,7 +838,7 @@
     "name": "checking dylib file inside: [START_DIR]/src/libusbmuxd_output",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libusbmuxd_output/[START_DIR]/src/libusbmuxd_output/libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libusbmuxd_output/[START_DIR]/src/libusbmuxd_output/libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libusbmuxd_output/[START_DIR]/src/libusbmuxd_output/libplist-2.0.4.dylib@@@",
       "@@@STEP_LOG_END@listdir@@@"
     ]
   },
@@ -788,14 +868,14 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "libimobiledevice-1.0.6.dylib\nlibplist-2.0.3.dylib\n",
+      "libimobiledevice-1.0.6.dylib\nlibplist-2.0.4.dylib\n",
       "[START_DIR]/src/libusbmuxd_output/without_entitlements.txt"
     ],
     "infra_step": true,
     "name": "writing the list of files to be codesigned without entitlements for libusbmuxd",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@without_entitlements.txt@libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@without_entitlements.txt@libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_LINE@without_entitlements.txt@libplist-2.0.4.dylib@@@",
       "@@@STEP_LOG_END@without_entitlements.txt@@@"
     ]
   },
@@ -901,6 +981,7 @@
       ],
       "PKG_CONFIG_PATH": [
         "[START_DIR]/src/libimobiledeviceglue_install/lib/pkgconfig",
+        "[START_DIR]/src/libtatsu_install/lib/pkgconfig",
         "[START_DIR]/src/libusbmuxd_install/lib/pkgconfig"
       ]
     },
@@ -936,7 +1017,7 @@
     "name": "checking dylib file inside: [START_DIR]/src/openssl_output",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libplist-2.0.4.dylib@@@",
       "@@@STEP_LOG_END@listdir@@@"
     ]
   },
@@ -954,7 +1035,7 @@
     "name": "checking dylib file inside: [START_DIR]/src/openssl_output (2)",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libplist-2.0.4.dylib@@@",
       "@@@STEP_LOG_END@listdir@@@"
     ]
   },
@@ -1098,6 +1179,7 @@
       ],
       "PKG_CONFIG_PATH": [
         "[START_DIR]/src/libimobiledeviceglue_install/lib/pkgconfig",
+        "[START_DIR]/src/libtatsu_install/lib/pkgconfig",
         "[START_DIR]/src/libusbmuxd_install/lib/pkgconfig",
         "[START_DIR]/src/openssl_install/lib/pkgconfig"
       ]
@@ -1150,7 +1232,7 @@
     "name": "checking dylib file inside: [START_DIR]/src/libimobiledevice_output",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledevice_output/[START_DIR]/src/libimobiledevice_output/libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledevice_output/[START_DIR]/src/libimobiledevice_output/libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledevice_output/[START_DIR]/src/libimobiledevice_output/libplist-2.0.4.dylib@@@",
       "@@@STEP_LOG_END@listdir@@@"
     ]
   },
@@ -1181,14 +1263,14 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "libimobiledevice-1.0.6.dylib\nlibplist-2.0.3.dylib\n",
+      "libimobiledevice-1.0.6.dylib\nlibplist-2.0.4.dylib\n",
       "[START_DIR]/src/libimobiledevice_output/without_entitlements.txt"
     ],
     "infra_step": true,
     "name": "writing the list of files to be codesigned without entitlements for libimobiledevice",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@without_entitlements.txt@libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@without_entitlements.txt@libplist-2.0.3.dylib@@@",
+      "@@@STEP_LOG_LINE@without_entitlements.txt@libplist-2.0.4.dylib@@@",
       "@@@STEP_LOG_END@without_entitlements.txt@@@"
     ]
   },

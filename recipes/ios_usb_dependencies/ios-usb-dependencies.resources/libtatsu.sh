@@ -15,13 +15,15 @@ set -u
 SRC_DIR="$1"
 INSTALL_DIR="$2"
 OUTPUT_DIR="$3"
-REMOTE_URL="https://github.com/libimobiledevice/libimobiledevice-glue.git"
+REMOTE_URL="https://github.com/libimobiledevice/libtatsu.git"
 
 git clone "$REMOTE_URL" "$SRC_DIR"
 cd "$SRC_DIR"
 git rev-parse HEAD > "commit_sha.txt"
 
-brew install pkg-config
+export libcurl_CFLAGS="-I`xcrun --sdk macosx --show-sdk-path 2>/dev/null`/usr/include"
+export libcurl_LIBS="-lcurl"
+
 
 ./autogen.sh
 
@@ -29,4 +31,4 @@ brew install pkg-config
 
 make install
 
-cp "$INSTALL_DIR"/lib/libimobiledevice-glue-1.0.0.dylib "$OUTPUT_DIR"
+cp "$INSTALL_DIR"/lib/libtatsu.0.dylib "$OUTPUT_DIR"

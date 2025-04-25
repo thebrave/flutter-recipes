@@ -70,7 +70,7 @@ def zip_with_subprocess(root, output, entries):
 def walk_dir_and_do(directory_path, callback):
   for cur, _, files in os.walk(directory_path):
     for name in files:
-      callback(os.path / cur / name)
+      callback(os.path.join(cur, name))
 
 
 def hash_file(file_path):

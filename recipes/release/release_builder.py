@@ -69,7 +69,7 @@ def ShouldRun(
       # Current branch didn't match any of the enabled branches.
       return False
 
-  release_build = target.get('properties', {}).get('release_build', False)
+  release_build = target.get('properties', {}).get('release_build', '') == 'true'
   for_this_platform = target['name'].lower().startswith(api.platform.name)
   # Postsubmit for engine and flutter repositories.
   # TODO(fujino): once 3.29 reaches stable, ignore repo_context
@@ -211,7 +211,7 @@ def GenTests(api):
   tasks_dict = {
       'targets': [{
           'name': 'linux one', 'recipe': 'engine/something', 'properties': {
-              'release_build': True,
+              'release_build': 'true',
               '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'
           }, 'drone_dimensions': ['os=Linux']
       }, {

@@ -10,9 +10,6 @@
 import re
 from enum import Enum
 
-from PB.recipes.flutter.release.release import InputProperties
-from PB.recipes.flutter.release.release import EnvProperties
-
 from RECIPE_MODULES.flutter.repo_util.api import REPOS
 
 DEPS = [
@@ -32,9 +29,6 @@ DEPS = [
     'recipe_engine/runtime',
     'recipe_engine/step',
 ]
-
-PROPERTIES = InputProperties
-ENV_PROPERTIES = EnvProperties
 
 RELEASE_CHANNELS = ('refs/heads/beta', 'refs/heads/stable')
 
@@ -151,7 +145,7 @@ def ScheduleBuildsForRepo(
   return tasks
 
 
-def RunSteps(api, _, __):
+def RunSteps(api):
   api.os_utils.collect_os_info()
   repository, git_url, git_ref = GetRepoInfo(
       api.properties, api.buildbucket.gitiles_commit

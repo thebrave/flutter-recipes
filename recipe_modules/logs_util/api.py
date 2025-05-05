@@ -34,7 +34,7 @@ class LogUtilsApi(recipe_api.RecipeApi):
           'Write noop file', logs_path / 'noop.txt', '', include_log=False
       )
 
-  def upload_logs(self, task, type='flutter'):
+  def upload_logs(self, task, type='flutter', uuid=None):
     """Upload the log files in FLUTTER_LOGS_DIR to GCS.
 
     Args:
@@ -43,7 +43,8 @@ class LogUtilsApi(recipe_api.RecipeApi):
     git_hash = self.m.buildbucket.gitiles_commit.id
     # gitiles_commit is only populated on post-submits.
     # UUID is used in LED and try jobs.
-    uuid = self.m.uuid.random()
+    if uuid is None:
+      uuid = self.m.uuid.random()
     invocation_id = git_hash if git_hash else uuid
     logs_path = self.m.path.cleanup_dir / 'flutter_logs_dir'
     with self.m.step.nest('process logs'):

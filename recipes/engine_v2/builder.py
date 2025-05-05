@@ -137,6 +137,10 @@ def run_tests(api, tests, checkout, env, env_prefixes):
     tmp_env.update(test.get('env', {}))
     # Run tests within a exitStack context
     with contextlib.ExitStack() as exit_stack:
+      logs_override = test.get('upload_logs') or {}
+      name = logs_override.get('name') or test.get('name')
+      uuid = logs_override.get('uuid')
+
       api.flutter_deps.enter_contexts(
           exit_stack, test.get('contexts', []), tmp_env, env_prefixes
       )
@@ -173,7 +177,7 @@ def run_tests(api, tests, checkout, env, env_prefixes):
               step_name=step_name
           )
       finally:
-        api.logs_util.upload_logs(test.get('name'))
+        api.logs_util.upload_logs(name, uuid=uuid)
 
 
 def Build(api, checkout, env, env_prefixes, outputs, build):
@@ -561,6 +565,62 @@ def GenTests(api):
           bucket='prod',
           builder='linux-host',
           git_repo='https://flutter.googlesource.com/mirrors/engine',
+          revision='abcd' * 10,
+          build_number=123,
+      ),
+  )
+  build = {
+      "archives": [{
+          "name":
+              "android_jit_release_x86",
+          "type":
+              "gcs",
+          "realm":
+              "production",
+          "base_path":
+              "out/android_jit_release_x86/zip_archives/",
+          "include_paths": [
+              "out/android_jit_release_x86/zip_archives/android-x86-jit-release/artifacts.zip",
+              "out/android_jit_release_x86/zip_archives/download.flutter.io"
+          ]
+      }],
+      "gn": ["--ios", "--rbe"],
+      "name":
+          "flutter/build",
+      "ninja": {
+          "config": "ios_debug",
+          "targets": []
+      },
+      "generators": {
+          "pub_dirs": ["dev"],
+          "tasks": [{
+              "name": "generator1",
+              "scripts": ["script1.sh", "dev/felt.dart"],
+              "parameters": ["--argument1"]
+          }]
+      },
+      "tests": [{
+          "name": "mytest",
+          "script": "myscript.sh",
+          "parameters": ["param1", "param2", '${FLUTTER_LOGS_DIR}'],
+          "type": "local",
+          "contexts": ["metric_center_token"],
+          "upload_logs": {
+            "name": "test_arm64",
+            "uuid": "uuid-1234"
+          }
+      }]
+  }
+  yield api.test(
+      'upload_logs',
+      api.properties(build=build, no_goma=True),
+      api.platform('mac', 64),
+      api.buildbucket.ci_build(
+          project='flutter',
+          bucket='prod',
+          builder='mac-host',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main',
           revision='abcd' * 10,
           build_number=123,
       ),

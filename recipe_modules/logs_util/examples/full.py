@@ -12,6 +12,7 @@ def RunSteps(api):
   env = {}
   api.logs_util.initialize_logs_collection(env)
   api.logs_util.upload_logs('mytaskname')
+  api.logs_util.upload_logs('uniquetask', uuid='uuid-abc')
   s = api.path.cleanup_dir / 'flutter_logs_dir'
   api.logs_util.upload_test_metrics(s, 'taskname', 'hash')
   api.logs_util.upload_test_metrics('/path/to/tmp/json', 'taskname2')

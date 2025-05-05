@@ -7,11 +7,15 @@ import re
 
 DEPS = [
     'depot_tools/gsutil',
+    'flutter/flutter_bcid',
     'flutter/osx_sdk',
+    'flutter/signing',
     'flutter/zip',
+    'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
+    'recipe_engine/platform',
     'recipe_engine/raw_io',
     'recipe_engine/runtime',
     'recipe_engine/step',
@@ -86,10 +90,14 @@ def PatchLoadPath(api, ouput_path, package_name):
     )
 
 
-def GetCloudPath(api, package_name, commit_sha):
+def GetCloudPath(api, package_name, commit_sha, signed=False):
   """Location of cloud bucket for unsigned binaries"""
   version_namespace = 'led' if api.runtime.is_experimental else commit_sha
-  return 'ios-usb-dependencies/unsigned/%s/%s/%s.zip' % (
+  if not signed:
+    return 'ios-usb-dependencies/unsigned/%s/%s/%s.zip' % (
+        package_name, version_namespace, package_name
+    )
+  return 'ios-usb-dependencies/%s/%s/%s.zip' % (
       package_name, version_namespace, package_name
   )
 
@@ -233,10 +241,17 @@ def UploadPackage(
   api.zip.directory(
       'zipping %s dir' % package_name, package_out_dir, package_zip_file
   )
+
+  # Only codesign if running in dart-internal
+  signed = False
+  if api.flutter_bcid.is_official_build():
+    api.signing.code_sign([package_zip_file])
+    signed = True
+
   api.gsutil.upload(
       package_zip_file,
       BUCKET_NAME,
-      GetCloudPath(api, package_name, commit_sha),
+      GetCloudPath(api, package_name, commit_sha, signed),
       link_name='%s.zip' % package_name,
       name='upload of %s.zip' % package_name,
   )
@@ -350,6 +365,23 @@ def GenTests(api):
   yield api.test(
       'basic',
       api.path.exists(api.path.start_dir / 'src/ios-deploy/commit_sha.txt',),
+      api.step_data(
+          'Get linked paths from iproxy before patch',
+          stdout=api.raw_io.output_text(
+              '\t/opt/s/w/ir/x/w/src/libusbmuxd_install/lib/libusbmuxd-2.0.7.dylib (compatibility version 7.0.0, current version 7.0.0)'
+          ),
+          retcode=0
+      )
+  )
+  yield api.test(
+      'with_codesigning', api.platform.name('mac'),
+      api.path.exists(api.path.start_dir / 'src/ios-deploy/commit_sha.txt',),
+      api.buildbucket.ci_build(
+          project='dart-internal',
+          bucket='flutter',
+          git_repo='https://flutter.googlesource.com/mirrors/engine',
+          git_ref='refs/heads/main'
+      ),
       api.step_data(
           'Get linked paths from iproxy before patch',
           stdout=api.raw_io.output_text(

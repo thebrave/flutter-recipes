@@ -25,7 +25,7 @@
   },
   {
     "cmd": [],
-    "name": "Checkout flutter/mirrors/engine"
+    "name": "Checkout flutter/mirrors/flutter"
   },
   {
     "cmd": [
@@ -33,9 +33,9 @@
       "-u",
       "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
       "--path",
-      "[START_DIR]/mirrors/engine",
+      "[START_DIR]/mirrors/flutter",
       "--url",
-      "https://flutter.googlesource.com/mirrors/engine"
+      "https://flutter.googlesource.com/mirrors/flutter"
     ],
     "luci_context": {
       "realm": {
@@ -49,7 +49,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/mirrors/engine.git setup",
+    "name": "Checkout flutter/mirrors/flutter.git setup",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -64,7 +64,7 @@
       "--progress",
       "--tags"
     ],
-    "cwd": "[START_DIR]/mirrors/engine",
+    "cwd": "[START_DIR]/mirrors/flutter",
     "env": {
       "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
     },
@@ -81,7 +81,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/mirrors/engine.git fetch",
+    "name": "Checkout flutter/mirrors/flutter.git fetch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -93,7 +93,7 @@
       "-f",
       "FETCH_HEAD"
     ],
-    "cwd": "[START_DIR]/mirrors/engine",
+    "cwd": "[START_DIR]/mirrors/flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -107,7 +107,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/mirrors/engine.git checkout",
+    "name": "Checkout flutter/mirrors/flutter.git checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -118,7 +118,7 @@
       "rev-parse",
       "HEAD"
     ],
-    "cwd": "[START_DIR]/mirrors/engine",
+    "cwd": "[START_DIR]/mirrors/flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -132,7 +132,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/mirrors/engine.read revision",
+    "name": "Checkout flutter/mirrors/flutter.read revision",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@",
@@ -147,7 +147,7 @@
       "-d",
       "-x"
     ],
-    "cwd": "[START_DIR]/mirrors/engine",
+    "cwd": "[START_DIR]/mirrors/flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -161,7 +161,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/mirrors/engine.git clean",
+    "name": "Checkout flutter/mirrors/flutter.git clean",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -172,7 +172,7 @@
       "submodule",
       "sync"
     ],
-    "cwd": "[START_DIR]/mirrors/engine",
+    "cwd": "[START_DIR]/mirrors/flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -186,7 +186,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/mirrors/engine.submodule sync",
+    "name": "Checkout flutter/mirrors/flutter.submodule sync",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -199,7 +199,7 @@
       "--init",
       "--recursive"
     ],
-    "cwd": "[START_DIR]/mirrors/engine",
+    "cwd": "[START_DIR]/mirrors/flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -213,7 +213,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Checkout flutter/mirrors/engine.submodule update",
+    "name": "Checkout flutter/mirrors/flutter.submodule update",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -234,7 +234,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[START_DIR]/mirrors/engine/.ci.yaml",
+      "[START_DIR]/mirrors/flutter/engine/src/flutter/.ci.yaml",
       "/path/to/tmp/"
     ],
     "infra_step": true,
@@ -261,7 +261,7 @@
       "vpython3",
       "RECIPE_MODULE[flutter::yaml]/resources/parse_yaml.py",
       "--yaml_file",
-      "[START_DIR]/mirrors/engine/.ci.yaml",
+      "[START_DIR]/mirrors/flutter/engine/src/flutter/.ci.yaml",
       "--json_file",
       "/path/to/tmp/json"
     ],
@@ -279,6 +279,171 @@
       }
     },
     "name": "read ci yaml.parse",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"targets\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"drone_dimensions\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"os=Linux\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      ],@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"enabled_branches\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"flutter-3.2-candidate.5\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      ],@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"Linux flutter_test\",@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"release_build\": \"true\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      },@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"recipe\": \"release/something\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    },@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"drone_dimensions\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"os=Mac\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      ],@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"enabled_branches\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"flutter-3.2-candidate.5\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      ],@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"name\": \"Mac flutter_test\",@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"$flutter/osx_sdk\": \"{\\\"sdk_version\\\": \\\"14a5294e\\\"}\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"release_build\": \"true\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      },@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"recipe\": \"release/something\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Identify branches"
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/mirrors/flutter/engine/src/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "prod:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Identify branches.git rev-parse",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "branch",
+      "-a",
+      "--contains",
+      "12345abcde12345abcde12345abcde12345abcde"
+    ],
+    "cwd": "[START_DIR]/mirrors/flutter/engine/src/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "prod:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Identify branches.git branch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "launch builds"
+  },
+  {
+    "cmd": [],
+    "name": "collect builds"
+  },
+  {
+    "cmd": [],
+    "name": "display builds"
+  },
+  {
+    "cmd": [],
+    "name": "read ci yaml (2)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@yaml@@@@",
+      "@@@STEP_LOG_END@yaml@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[START_DIR]/mirrors/flutter/.ci.yaml",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "prod:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "read ci yaml (2).read",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@.ci.yaml@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "RECIPE_MODULE[flutter::yaml]/resources/parse_yaml.py",
+      "--yaml_file",
+      "[START_DIR]/mirrors/flutter/.ci.yaml",
+      "--json_file",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "prod:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "read ci yaml (2).parse",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -317,7 +482,7 @@
   },
   {
     "cmd": [],
-    "name": "Identify branches"
+    "name": "Identify branches (2)"
   },
   {
     "cmd": [
@@ -325,7 +490,7 @@
       "rev-parse",
       "HEAD"
     ],
-    "cwd": "[START_DIR]/mirrors/engine",
+    "cwd": "[START_DIR]/mirrors/flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -339,7 +504,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Identify branches.git rev-parse",
+    "name": "Identify branches (2).git rev-parse",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -352,7 +517,7 @@
       "--contains",
       "12345abcde12345abcde12345abcde12345abcde"
     ],
-    "cwd": "[START_DIR]/mirrors/engine",
+    "cwd": "[START_DIR]/mirrors/flutter",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -366,22 +531,22 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Identify branches.git branch",
+    "name": "Identify branches (2).git branch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "launch builds"
+    "name": "launch builds (2)"
   },
   {
     "cmd": [],
-    "name": "collect builds"
+    "name": "collect builds (2)"
   },
   {
     "cmd": [],
-    "name": "display builds"
+    "name": "display builds (2)"
   },
   {
     "name": "$result"

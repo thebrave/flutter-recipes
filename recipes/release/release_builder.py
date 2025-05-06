@@ -2,10 +2,33 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Orchestrator recipe that runs subbuilds required to release engine.
+# Orchestrator recipe that runs sub-builds required to build engine artifacts
+# suitable to be used for a published release (i.e. a release candidate build
+# that will eventually be tagged and released as "beta" or "stable").
 #
-# This recipe reads <engine_checkout>/.ci_yaml, and for every target
-# marked with release_build: true, and spawens a subbuild.
+# Each *engine* target that is explicitly has the property release_build: "true" is scheduled:
+#
+# ##############################################################################
+# # CONTENTS of //engine/src/flutter/.ci.yaml
+# # ############################################################################
+# targets:
+#   # NOT SCHEDULED.
+#   - name: Linux linux_host_engine_test
+#     recipe: engine_v2/engine_v2
+#   # SCHEDULED.
+#   - name: Linux linux_host_desktop_engine
+#     recipe: engine_v2/engine_v2
+#     properties:
+#       release_build: "true"
+# ##############################################################################
+#
+# Recipe is referenced here:
+# https://dart-internal.googlesource.com/dart-internal/+/99cf8f57df5164a99eba7155351c74fbf7d2599a/flutter-internal/flutter.star#33
+#
+# Builder is executed via polling for changes to a branch matching "flutter-\\d+\\.\\d+-candidate\\.\\d+"
+# when it is mirrored, via CopyBara, to https://flutter.googlesource.com/mirrors/flutter (automatic, but
+# can take 5-15 minutes):
+# https://dart-internal.googlesource.com/dart-internal/+/99cf8f57df5164a99eba7155351c74fbf7d2599a/flutter-internal/flutter.star#23
 
 import re
 from enum import Enum

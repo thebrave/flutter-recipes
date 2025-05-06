@@ -1,6 +1,10 @@
 [
   {
     "cmd": [],
+    "name": "validate platform and properties"
+  },
+  {
+    "cmd": [],
     "name": "checkout flutter release branch"
   },
   {
@@ -30,7 +34,7 @@
       "git",
       "fetch",
       "origin",
-      "flutter-2.8-candidate.9",
+      "flutter-1.2.3-candidate.0",
       "--recurse-submodules",
       "--progress",
       "--tags"
@@ -118,6 +122,30 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "validate engine.version"
+  },
+  {
+    "cmd": [
+      "bash",
+      "[START_DIR]/flutter/bin/internal/last_engine_commit.sh"
+    ],
+    "name": "validate engine.version.compute last engine commit",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cat",
+      "[START_DIR]/flutter/bin/internal/engine.version"
+    ],
+    "name": "validate engine.version.read engine.version file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
     "cmd": [
       "git",
       "rev-parse",
@@ -136,7 +164,7 @@
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "flutter-2.8-candidate.9",
+      "GIT_BRANCH": "flutter-1.2.3-candidate.0",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -179,7 +207,7 @@
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "flutter-2.8-candidate.9",
+      "GIT_BRANCH": "flutter-1.2.3-candidate.0",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -226,7 +254,7 @@
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "flutter-2.8-candidate.9",
+      "GIT_BRANCH": "flutter-1.2.3-candidate.0",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -258,7 +286,7 @@
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "GIT_BRANCH": "flutter-2.8-candidate.9",
+      "GIT_BRANCH": "flutter-1.2.3-candidate.0",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
@@ -283,20 +311,20 @@
     "env": {
       "ARTIFACT_HUB_REPOSITORY": "artifactregistry://us-maven.pkg.dev/artifact-foundry-prod/maven-3p",
       "DEPOT_TOOLS": "RECIPE_REPO[depot_tools]",
-      "FORCE_FLAG": "--force",
+      "FORCE_FLAG": "",
       "GITHUB_USER": "flutter-pub-roller-bot",
-      "GIT_BRANCH": "flutter-2.8-candidate.9",
+      "GIT_BRANCH": "flutter-1.2.3-candidate.0",
       "LUCI_BRANCH": "",
       "LUCI_CI": "True",
       "LUCI_PR": "",
       "OS": "linux",
       "PUB_CACHE": "[START_DIR]/.pub-cache",
-      "RELEASE_CHANNEL": "stable",
+      "RELEASE_CHANNEL": "beta",
       "REL_HASH": "deadbeef",
       "REPO": "flutter",
       "REVISION": "12345abcde12345abcde12345abcde12345abcde",
       "SDK_CHECKOUT_PATH": "[START_DIR]/flutter",
-      "TAG": "1.2.3",
+      "TAG": "3.32.0-0.3.pre",
       "TOKEN_PATH": "[CLEANUP]/token.txt"
     },
     "env_prefixes": {

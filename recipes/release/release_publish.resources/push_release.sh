@@ -18,10 +18,7 @@ else
   # Ignore exit code if this is being forced
   git tag $TAG $REL_HASH || true
 fi
-git remote set-url origin https://$GITHUB_USER:$TOKEN@github.com/flutter/$REPO.git
+git remote set-url origin https://$GITHUB_USER:$TOKEN@github.com/flutter/flutter.git
 git push origin $TAG || true
-if [ $REPO == 'flutter' ]
-then
-  echo "##### PUSHING TO $RELEASE_CHANNEL #####"
-  git push origin $REL_HASH:$RELEASE_CHANNEL $FORCE_FLAG
-fi
+echo "##### PUSHING TO $RELEASE_CHANNEL #####"
+git push origin $REL_HASH:$RELEASE_CHANNEL $FORCE_FLAG

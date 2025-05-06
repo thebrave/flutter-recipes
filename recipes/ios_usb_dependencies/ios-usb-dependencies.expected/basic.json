@@ -147,6 +147,41 @@
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
+      "copy",
+      "",
+      "[CLEANUP]/tmp_tmp_1/latest_unsigned.version"
+    ],
+    "infra_step": true,
+    "name": "Write latest_unsigned.version for ios-deploy",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@latest_unsigned.version@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "[CLEANUP]/tmp_tmp_1/latest_unsigned.version",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/ios-deploy/latest_unsigned.version"
+    ],
+    "infra_step": true,
+    "name": "gsutil upload of ios-deploy/latest_unsigned.version",
+    "~followup_annotations": [
+      "@@@STEP_LINK@ios-deploy/latest_unsigned.version@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/unsigned/ios-deploy/latest_unsigned.version@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
       "0o777",

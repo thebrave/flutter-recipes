@@ -7,15 +7,11 @@ import re
 
 DEPS = [
     'depot_tools/gsutil',
-    'flutter/flutter_bcid',
     'flutter/osx_sdk',
-    'flutter/signing',
     'flutter/zip',
-    'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
-    'recipe_engine/platform',
     'recipe_engine/raw_io',
     'recipe_engine/runtime',
     'recipe_engine/step',
@@ -90,14 +86,10 @@ def PatchLoadPath(api, ouput_path, package_name):
     )
 
 
-def GetCloudPath(api, package_name, commit_sha, signed=False):
+def GetCloudPath(api, package_name, commit_sha):
   """Location of cloud bucket for unsigned binaries"""
   version_namespace = 'led' if api.runtime.is_experimental else commit_sha
-  if not signed:
-    return 'ios-usb-dependencies/unsigned/%s/%s/%s.zip' % (
-        package_name, version_namespace, package_name
-    )
-  return 'ios-usb-dependencies/%s/%s/%s.zip' % (
+  return 'ios-usb-dependencies/unsigned/%s/%s/%s.zip' % (
       package_name, version_namespace, package_name
   )
 
@@ -242,18 +234,32 @@ def UploadPackage(
       'zipping %s dir' % package_name, package_out_dir, package_zip_file
   )
 
-  # Only codesign if running in dart-internal
-  signed = False
-  if api.flutter_bcid.is_official_build():
-    api.signing.code_sign([package_zip_file])
-    signed = True
-
   api.gsutil.upload(
       package_zip_file,
       BUCKET_NAME,
-      GetCloudPath(api, package_name, commit_sha, signed),
+      GetCloudPath(api, package_name, commit_sha),
       link_name='%s.zip' % package_name,
       name='upload of %s.zip' % package_name,
+  )
+  UploadLatestVersion(api, package_name, commit_sha)
+
+
+def UploadLatestVersion(api, package_name, commit_sha):
+  if commit_sha is None:
+    return
+  temp_dir = api.path.mkdtemp('tmp')
+  version_file = temp_dir / 'latest_unsigned.version'
+  api.file.write_text(
+      'Write latest_unsigned.version for %s' % package_name,
+      version_file,
+      commit_sha,
+  )
+  api.gsutil.upload(
+      version_file,
+      BUCKET_NAME,
+      'ios-usb-dependencies/unsigned/%s/latest_unsigned.version' % package_name,
+      link_name='%s/latest_unsigned.version' % package_name,
+      name='upload of %s/latest_unsigned.version' % package_name,
   )
 
 
@@ -365,23 +371,6 @@ def GenTests(api):
   yield api.test(
       'basic',
       api.path.exists(api.path.start_dir / 'src/ios-deploy/commit_sha.txt',),
-      api.step_data(
-          'Get linked paths from iproxy before patch',
-          stdout=api.raw_io.output_text(
-              '\t/opt/s/w/ir/x/w/src/libusbmuxd_install/lib/libusbmuxd-2.0.7.dylib (compatibility version 7.0.0, current version 7.0.0)'
-          ),
-          retcode=0
-      )
-  )
-  yield api.test(
-      'with_codesigning', api.platform.name('mac'),
-      api.path.exists(api.path.start_dir / 'src/ios-deploy/commit_sha.txt',),
-      api.buildbucket.ci_build(
-          project='dart-internal',
-          bucket='flutter',
-          git_repo='https://flutter.googlesource.com/mirrors/engine',
-          git_ref='refs/heads/main'
-      ),
       api.step_data(
           'Get linked paths from iproxy before patch',
           stdout=api.raw_io.output_text(

@@ -40,6 +40,167 @@
     "name": "reset XCode"
   },
   {
+    "cmd": [
+      "pgrep",
+      "Setup Assistant"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "check for Setup Assistant",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "verify launch services"
+  },
+  {
+    "cmd": [
+      "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister",
+      "-kill",
+      "-r",
+      "-domain",
+      "local",
+      "-domain",
+      "system",
+      "-domain",
+      "user"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "verify launch services.Reset and rescan Launch Services db",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "log",
+      "show",
+      "--last",
+      "24h",
+      "--style",
+      "compact",
+      "--predicate",
+      "logType == \"error\" AND process == \"xcodebuild\" AND subsystem == \"com.apple.launchservices\" AND composedMessage CONTAINS \"disconnect event interruption received for service\""
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "verify launch services.Check if xcodebuild impacted by Launch Services",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "echo",
+      "[CACHE]/osx_sdk/xcode_12a7209"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "show app_dir"
+  },
+  {
+    "cmd": [
+      "ls",
+      "-al",
+      "[CACHE]/osx_sdk"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Show xcode cache"
+  },
+  {
+    "cmd": [],
+    "name": "Running Cache Micro Manager on [CACHE]/osx_sdk."
+  },
+  {
+    "cmd": [],
+    "name": "Running Cache Micro Manager on [CACHE]/osx_sdk..Cache Micro Manager, cache directory exists check",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@Cache dir does not exist, skipping.@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ls",
+      "-al",
+      "[CACHE]/osx_sdk"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Show xcode cache (2)"
+  },
+  {
     "cmd": [],
     "name": "install xcode"
   },
@@ -48,7 +209,7 @@
       "cipd",
       "ensure",
       "-root",
-      "[CLEANUP]/tmp_tmp_1/osx_sdk",
+      "[CACHE]/osx_sdk/xcode_12a7209",
       "-ensure-file",
       "infra/tools/mac_toolchain/${platform} latest",
       "-max-threads",
@@ -89,7 +250,7 @@
     "cmd": [
       "ls",
       "-al",
-      "[CLEANUP]/tmp_tmp_1/osx_sdk"
+      "[CACHE]/osx_sdk/xcode_12a7209"
     ],
     "infra_step": true,
     "luci_context": {
@@ -111,14 +272,14 @@
   },
   {
     "cmd": [
-      "[CLEANUP]/tmp_tmp_1/osx_sdk/mac_toolchain",
+      "[CACHE]/osx_sdk/xcode_12a7209/mac_toolchain",
       "install",
       "-kind",
       "ios",
       "-xcode-version",
       "12a7209",
       "-output-dir",
-      "/opt/flutter/xcode/12a7209/XCode.app",
+      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app",
       "-cipd-package-prefix",
       "infra_internal/ios/xcode",
       "-with-runtime=True",
@@ -170,7 +331,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "/opt/flutter/xcode/12a7209/XCode.app"
+      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app"
     ],
     "infra_step": true,
     "luci_context": {
@@ -232,13 +393,9 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "/opt/flutter/xcode/12a7209"
+      "rm",
+      "-rf",
+      "[CACHE]/osx_sdk/xcode_12a7209"
     ],
     "infra_step": true,
     "luci_context": {
@@ -256,6 +413,80 @@
     "name": "Cleaning up Xcode cache"
   },
   {
+    "cmd": [
+      "echo",
+      "[CACHE]/osx_sdk/xcode_12a7209"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "show app_dir (2)"
+  },
+  {
+    "cmd": [
+      "ls",
+      "-al",
+      "[CACHE]/osx_sdk"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Show xcode cache (3)"
+  },
+  {
+    "cmd": [],
+    "name": "Running Cache Micro Manager on [CACHE]/osx_sdk. (2)"
+  },
+  {
+    "cmd": [],
+    "name": "Running Cache Micro Manager on [CACHE]/osx_sdk. (2).Cache Micro Manager, cache directory exists check",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@Cache dir does not exist, skipping.@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "ls",
+      "-al",
+      "[CACHE]/osx_sdk"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Show xcode cache (4)"
+  },
+  {
     "cmd": [],
     "name": "install xcode (2)"
   },
@@ -264,7 +495,7 @@
       "cipd",
       "ensure",
       "-root",
-      "[CLEANUP]/tmp_tmp_2/osx_sdk",
+      "[CACHE]/osx_sdk/xcode_12a7209",
       "-ensure-file",
       "infra/tools/mac_toolchain/${platform} latest",
       "-max-threads",
@@ -305,7 +536,7 @@
     "cmd": [
       "ls",
       "-al",
-      "[CLEANUP]/tmp_tmp_2/osx_sdk"
+      "[CACHE]/osx_sdk/xcode_12a7209"
     ],
     "infra_step": true,
     "luci_context": {
@@ -327,14 +558,14 @@
   },
   {
     "cmd": [
-      "[CLEANUP]/tmp_tmp_2/osx_sdk/mac_toolchain",
+      "[CACHE]/osx_sdk/xcode_12a7209/mac_toolchain",
       "install",
       "-kind",
       "ios",
       "-xcode-version",
       "12a7209",
       "-output-dir",
-      "/opt/flutter/xcode/12a7209/XCode.app",
+      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app",
       "-cipd-package-prefix",
       "infra_internal/ios/xcode",
       "-with-runtime=True",
@@ -368,7 +599,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "/opt/flutter/xcode/12a7209/XCode.app"
+      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app"
     ],
     "infra_step": true,
     "luci_context": {
@@ -482,7 +713,7 @@
       "cipd",
       "ensure",
       "-root",
-      "[CLEANUP]/tmp_tmp_2/osx_sdk",
+      "[CACHE]/osx_sdk/xcode_12a7209",
       "-ensure-file",
       "infra/tools/mac_toolchain/${platform} latest",
       "-max-threads",
@@ -523,7 +754,7 @@
     "cmd": [
       "ls",
       "-al",
-      "[CLEANUP]/tmp_tmp_2/osx_sdk"
+      "[CACHE]/osx_sdk/xcode_12a7209"
     ],
     "infra_step": true,
     "luci_context": {
@@ -545,14 +776,14 @@
   },
   {
     "cmd": [
-      "[CLEANUP]/tmp_tmp_2/osx_sdk/mac_toolchain",
+      "[CACHE]/osx_sdk/xcode_12a7209/mac_toolchain",
       "install",
       "-kind",
       "ios",
       "-xcode-version",
       "12a7209",
       "-output-dir",
-      "/opt/flutter/xcode/12a7209/XCode.app",
+      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app",
       "-cipd-package-prefix",
       "infra_internal/ios/xcode",
       "-with-runtime=True",
@@ -604,7 +835,7 @@
       "sudo",
       "xcode-select",
       "--switch",
-      "/opt/flutter/xcode/12a7209/XCode.app"
+      "[CACHE]/osx_sdk/xcode_12a7209/XCode.app"
     ],
     "infra_step": true,
     "luci_context": {
@@ -644,15 +875,15 @@
   },
   {
     "cmd": [
-      "vpython3",
+      "python3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/ios-deploy"
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/ios-deploy/latest_unsigned.version",
+      "[CLEANUP]/tmp_tmp_1/latest_unsigned.version"
     ],
     "infra_step": true,
     "luci_context": {
@@ -667,102 +898,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "mkdir [START_DIR]/src/ios-deploy"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/ios-deploy_install"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/ios-deploy_install"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/ios-deploy_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/ios-deploy_output"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "777",
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/ios-deploy.sh"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/ios-deploy.sh executable"
-  },
-  {
-    "cmd": [
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/ios-deploy.sh",
-      "[START_DIR]/src/ios-deploy",
-      "[START_DIR]/src/ios-deploy_install",
-      "[START_DIR]/src/ios-deploy_output"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install ios-deploy"
+    "name": "gsutil download latest_unsigned.version"
   },
   {
     "cmd": [
@@ -772,7 +908,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[START_DIR]/src/ios-deploy/commit_sha.txt",
+      "[CLEANUP]/tmp_tmp_1/latest_unsigned.version",
       "/path/to/tmp/"
     ],
     "infra_step": true,
@@ -788,76 +924,26 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "read commit_sha.txt for ios-deploy",
+    "name": "Read latest_unsigned.version",
     "~followup_annotations": [
-      "@@@STEP_LOG_END@commit_sha.txt@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "ios-deploy\n",
-      "[START_DIR]/src/ios-deploy_output/entitlements.txt"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "writing entitlements codesign list for ios-deploy",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@entitlements.txt@ios-deploy@@@",
-      "@@@STEP_LOG_END@entitlements.txt@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "\n",
-      "[START_DIR]/src/ios-deploy_output/without_entitlements.txt"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "writing the list of files to be codesigned without entitlements for ios-deploy",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@without_entitlements.txt@@@@",
-      "@@@STEP_LOG_END@without_entitlements.txt@@@"
+      "@@@STEP_LOG_LINE@latest_unsigned.version@  123456  @@@",
+      "@@@STEP_LOG_LINE@latest_unsigned.version@@@@",
+      "@@@STEP_LOG_END@latest_unsigned.version@@@"
     ]
   },
   {
     "cmd": [
       "python3",
-      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/ios-deploy/123456/ios-deploy.zip",
+      "[CLEANUP]/tmp_tmp_1/ios-deploy.zip"
     ],
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "dart-internal:flutter"
@@ -870,8 +956,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "zipping ios-deploy dir",
-    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/src/ios-deploy_output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/ios-deploy.zip\", \"root\": \"[START_DIR]/src/ios-deploy_output\"}"
+    "name": "gsutil download [CLEANUP]/tmp_tmp_1/ios-deploy.zip"
   },
   {
     "cmd": [],
@@ -889,7 +974,7 @@
       "cipd",
       "ensure",
       "-root",
-      "[CLEANUP]/tmp_tmp_3",
+      "[CLEANUP]/tmp_tmp_2",
       "-ensure-file",
       "flutter/codesign/${platform} latest",
       "-max-threads",
@@ -1460,7 +1545,7 @@
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -1497,7 +1582,7 @@
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -1530,8 +1615,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[START_DIR]/ios-deploy.zip",
-      "[START_DIR]/unsigned_ios-deploy.zip"
+      "[CLEANUP]/tmp_tmp_1/ios-deploy.zip",
+      "[CLEANUP]/tmp_tmp_1/unsigned_ios-deploy.zip"
     ],
     "infra_step": true,
     "luci_context": {
@@ -1546,11 +1631,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Move [START_DIR]/ios-deploy.zip"
+    "name": "Move [CLEANUP]/tmp_tmp_1/ios-deploy.zip"
   },
   {
     "cmd": [],
-    "name": "Codesign [START_DIR]/unsigned_ios-deploy.zip"
+    "name": "Codesign [CLEANUP]/tmp_tmp_1/unsigned_ios-deploy.zip"
   },
   {
     "cmd": [
@@ -1572,14 +1657,14 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Codesign [START_DIR]/unsigned_ios-deploy.zip.unlock build keychain",
+    "name": "Codesign [CLEANUP]/tmp_tmp_1/unsigned_ios-deploy.zip.unlock build keychain",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "[CLEANUP]/tmp_tmp_3/codesign",
+      "[CLEANUP]/tmp_tmp_2/codesign",
       "--codesign-cert-name",
       "Developer ID Application: FLUTTER.IO LLC (S8QB4VV633)",
       "--no-dryrun",
@@ -1590,14 +1675,14 @@
       "--codesign-team-id-file-path",
       "[CLEANUP]/CODESIGN_TEAM_ID",
       "--input-zip-file-path",
-      "[START_DIR]/unsigned_ios-deploy.zip",
+      "[CLEANUP]/tmp_tmp_1/unsigned_ios-deploy.zip",
       "--output-zip-file-path",
-      "[START_DIR]/ios-deploy.zip"
+      "[CLEANUP]/tmp_tmp_1/ios-deploy.zip"
     ],
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -1616,7 +1701,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Codesign [START_DIR]/unsigned_ios-deploy.zip.codesign Apple engine binaries",
+    "name": "Codesign [CLEANUP]/tmp_tmp_1/unsigned_ios-deploy.zip.codesign Apple engine binaries",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -1681,8 +1766,8 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
-      "[START_DIR]/ios-deploy.zip",
-      "gs://flutter_infra_release/ios-usb-dependencies/ios-deploy//ios-deploy.zip"
+      "[CLEANUP]/tmp_tmp_1/ios-deploy.zip",
+      "gs://flutter_infra_release/ios-usb-dependencies/ios-deploy/123456/ios-deploy.zip"
     ],
     "infra_step": true,
     "luci_context": {
@@ -1699,227 +1784,22 @@
     },
     "name": "gsutil upload of ios-deploy.zip",
     "~followup_annotations": [
-      "@@@STEP_LINK@ios-deploy.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/ios-deploy//ios-deploy.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libplist"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libplist"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libplist_install"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libplist_install"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libplist_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libplist_output"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "777",
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libplist.sh"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libplist.sh executable"
-  },
-  {
-    "cmd": [
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libplist.sh",
-      "[START_DIR]/src/libplist",
-      "[START_DIR]/src/libplist_install",
-      "[START_DIR]/src/libplist_output"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install libplist"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "listdir",
-      "[START_DIR]/src/libplist_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "checking dylib file inside: [START_DIR]/src/libplist_output",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libplist_output/[START_DIR]/src/libplist_output/libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libplist_output/[START_DIR]/src/libplist_output/libplist-2.0.4.dylib@@@",
-      "@@@STEP_LOG_END@listdir@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "\n",
-      "[START_DIR]/src/libplist_output/entitlements.txt"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "writing entitlements codesign list for libplist",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@entitlements.txt@@@@",
-      "@@@STEP_LOG_END@entitlements.txt@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "libimobiledevice-1.0.6.dylib\nlibplist-2.0.4.dylib\n",
-      "[START_DIR]/src/libplist_output/without_entitlements.txt"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "writing the list of files to be codesigned without entitlements for libplist",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@without_entitlements.txt@libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@without_entitlements.txt@libplist-2.0.4.dylib@@@",
-      "@@@STEP_LOG_END@without_entitlements.txt@@@"
+      "@@@STEP_LINK@ios-deploy.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/ios-deploy/123456/ios-deploy.zip@@@"
     ]
   },
   {
     "cmd": [
       "python3",
-      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/libimobiledeviceglue/latest_unsigned.version",
+      "[CLEANUP]/tmp_tmp_3/latest_unsigned.version"
     ],
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "dart-internal:flutter"
@@ -1932,8 +1812,63 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "zipping libplist dir",
-    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/src/libplist_output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/libplist.zip\", \"root\": \"[START_DIR]/src/libplist_output\"}"
+    "name": "gsutil download latest_unsigned.version (2)"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/tmp_tmp_3/latest_unsigned.version",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Read latest_unsigned.version (2)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@latest_unsigned.version@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/libimobiledeviceglue//libimobiledeviceglue.zip",
+      "[CLEANUP]/tmp_tmp_3/libimobiledeviceglue.zip"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil download [CLEANUP]/tmp_tmp_3/libimobiledeviceglue.zip"
   },
   {
     "cmd": [],
@@ -2469,7 +2404,7 @@
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -2506,7 +2441,7 @@
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -2539,8 +2474,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[START_DIR]/libplist.zip",
-      "[START_DIR]/unsigned_libplist.zip"
+      "[CLEANUP]/tmp_tmp_3/libimobiledeviceglue.zip",
+      "[CLEANUP]/tmp_tmp_3/unsigned_libimobiledeviceglue.zip"
     ],
     "infra_step": true,
     "luci_context": {
@@ -2555,11 +2490,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Move [START_DIR]/libplist.zip"
+    "name": "Move [CLEANUP]/tmp_tmp_3/libimobiledeviceglue.zip"
   },
   {
     "cmd": [],
-    "name": "Codesign [START_DIR]/unsigned_libplist.zip"
+    "name": "Codesign [CLEANUP]/tmp_tmp_3/unsigned_libimobiledeviceglue.zip"
   },
   {
     "cmd": [
@@ -2581,14 +2516,14 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Codesign [START_DIR]/unsigned_libplist.zip.unlock build keychain",
+    "name": "Codesign [CLEANUP]/tmp_tmp_3/unsigned_libimobiledeviceglue.zip.unlock build keychain",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "[CLEANUP]/tmp_tmp_3/codesign",
+      "[CLEANUP]/tmp_tmp_2/codesign",
       "--codesign-cert-name",
       "Developer ID Application: FLUTTER.IO LLC (S8QB4VV633)",
       "--no-dryrun",
@@ -2599,14 +2534,14 @@
       "--codesign-team-id-file-path",
       "[CLEANUP]/CODESIGN_TEAM_ID",
       "--input-zip-file-path",
-      "[START_DIR]/unsigned_libplist.zip",
+      "[CLEANUP]/tmp_tmp_3/unsigned_libimobiledeviceglue.zip",
       "--output-zip-file-path",
-      "[START_DIR]/libplist.zip"
+      "[CLEANUP]/tmp_tmp_3/libimobiledeviceglue.zip"
     ],
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -2625,7 +2560,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Codesign [START_DIR]/unsigned_libplist.zip.codesign Apple engine binaries",
+    "name": "Codesign [CLEANUP]/tmp_tmp_3/unsigned_libimobiledeviceglue.zip.codesign Apple engine binaries",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -2690,8 +2625,8 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
-      "[START_DIR]/libplist.zip",
-      "gs://flutter_infra_release/ios-usb-dependencies/libplist/None/libplist.zip"
+      "[CLEANUP]/tmp_tmp_3/libimobiledeviceglue.zip",
+      "gs://flutter_infra_release/ios-usb-dependencies/libimobiledeviceglue//libimobiledeviceglue.zip"
     ],
     "infra_step": true,
     "luci_context": {
@@ -2706,622 +2641,24 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gsutil upload of libplist.zip",
+    "name": "gsutil upload of libimobiledeviceglue.zip",
     "~followup_annotations": [
-      "@@@STEP_LINK@libplist.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/libplist/None/libplist.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/bison"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/bison"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/bison_install"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/bison_install"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/bison_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/bison_output"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "777",
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/bison.sh"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/bison.sh executable"
-  },
-  {
-    "cmd": [
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/bison.sh",
-      "[START_DIR]/src/bison",
-      "[START_DIR]/src/bison_install",
-      "[START_DIR]/src/bison_output"
-    ],
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/src/libplist_install/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install bison"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libtasn1"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libtasn1"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libtasn1_install"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libtasn1_install"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libtasn1_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libtasn1_output"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "777",
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libtasn1.sh"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libtasn1.sh executable"
-  },
-  {
-    "cmd": [
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libtasn1.sh",
-      "[START_DIR]/src/libtasn1",
-      "[START_DIR]/src/libtasn1_install",
-      "[START_DIR]/src/libtasn1_output"
-    ],
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/src/libplist_install/bin",
-        "[START_DIR]/src/bison_install/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install libtasn1"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libusb"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libusb"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libusb_install"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libusb_install"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libusb_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libusb_output"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "777",
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libusb.sh"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libusb.sh executable"
-  },
-  {
-    "cmd": [
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libusb.sh",
-      "[START_DIR]/src/libusb",
-      "[START_DIR]/src/libusb_install",
-      "[START_DIR]/src/libusb_output"
-    ],
-    "env_prefixes": {
-      "PATH": [
-        "[START_DIR]/src/libplist_install/bin",
-        "[START_DIR]/src/bison_install/bin",
-        "[START_DIR]/src/libtasn1_install/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install libusb"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libimobiledeviceglue"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libimobiledeviceglue"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libimobiledeviceglue_install"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libimobiledeviceglue_install"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libimobiledeviceglue_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libimobiledeviceglue_output"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "777",
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libimobiledeviceglue.sh"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libimobiledeviceglue.sh executable"
-  },
-  {
-    "cmd": [
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libimobiledeviceglue.sh",
-      "[START_DIR]/src/libimobiledeviceglue",
-      "[START_DIR]/src/libimobiledeviceglue_install",
-      "[START_DIR]/src/libimobiledeviceglue_output"
-    ],
-    "env_prefixes": {
-      "LIBRARY_PATH": [
-        "[START_DIR]/src/libusb_install/lib"
-      ],
-      "PATH": [
-        "[START_DIR]/src/libplist_install/bin",
-        "[START_DIR]/src/bison_install/bin",
-        "[START_DIR]/src/libtasn1_install/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install libimobiledeviceglue"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "listdir",
-      "[START_DIR]/src/libimobiledeviceglue_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "checking dylib file inside: [START_DIR]/src/libimobiledeviceglue_output",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledeviceglue_output/[START_DIR]/src/libimobiledeviceglue_output/libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledeviceglue_output/[START_DIR]/src/libimobiledeviceglue_output/libplist-2.0.4.dylib@@@",
-      "@@@STEP_LOG_END@listdir@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "\n",
-      "[START_DIR]/src/libimobiledeviceglue_output/entitlements.txt"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "writing entitlements codesign list for libimobiledeviceglue",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@entitlements.txt@@@@",
-      "@@@STEP_LOG_END@entitlements.txt@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "\n",
-      "[START_DIR]/src/libimobiledeviceglue_output/without_entitlements.txt"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "writing the list of files to be codesigned without entitlements for libimobiledeviceglue",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@without_entitlements.txt@@@@",
-      "@@@STEP_LOG_END@without_entitlements.txt@@@"
+      "@@@STEP_LINK@libimobiledeviceglue.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/libimobiledeviceglue//libimobiledeviceglue.zip@@@"
     ]
   },
   {
     "cmd": [
       "python3",
-      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/libusbmuxd/latest_unsigned.version",
+      "[CLEANUP]/tmp_tmp_4/latest_unsigned.version"
     ],
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "dart-internal:flutter"
@@ -3334,8 +2671,63 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "zipping libimobiledeviceglue dir",
-    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/src/libimobiledeviceglue_output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/libimobiledeviceglue.zip\", \"root\": \"[START_DIR]/src/libimobiledeviceglue_output\"}"
+    "name": "gsutil download latest_unsigned.version (3)"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/tmp_tmp_4/latest_unsigned.version",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Read latest_unsigned.version (3)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@latest_unsigned.version@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/libusbmuxd//libusbmuxd.zip",
+      "[CLEANUP]/tmp_tmp_4/libusbmuxd.zip"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil download [CLEANUP]/tmp_tmp_4/libusbmuxd.zip"
   },
   {
     "cmd": [],
@@ -3871,7 +3263,7 @@
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -3908,7 +3300,7 @@
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -3941,8 +3333,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[START_DIR]/libimobiledeviceglue.zip",
-      "[START_DIR]/unsigned_libimobiledeviceglue.zip"
+      "[CLEANUP]/tmp_tmp_4/libusbmuxd.zip",
+      "[CLEANUP]/tmp_tmp_4/unsigned_libusbmuxd.zip"
     ],
     "infra_step": true,
     "luci_context": {
@@ -3957,11 +3349,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Move [START_DIR]/libimobiledeviceglue.zip"
+    "name": "Move [CLEANUP]/tmp_tmp_4/libusbmuxd.zip"
   },
   {
     "cmd": [],
-    "name": "Codesign [START_DIR]/unsigned_libimobiledeviceglue.zip"
+    "name": "Codesign [CLEANUP]/tmp_tmp_4/unsigned_libusbmuxd.zip"
   },
   {
     "cmd": [
@@ -3983,14 +3375,14 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Codesign [START_DIR]/unsigned_libimobiledeviceglue.zip.unlock build keychain",
+    "name": "Codesign [CLEANUP]/tmp_tmp_4/unsigned_libusbmuxd.zip.unlock build keychain",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "[CLEANUP]/tmp_tmp_3/codesign",
+      "[CLEANUP]/tmp_tmp_2/codesign",
       "--codesign-cert-name",
       "Developer ID Application: FLUTTER.IO LLC (S8QB4VV633)",
       "--no-dryrun",
@@ -4001,14 +3393,14 @@
       "--codesign-team-id-file-path",
       "[CLEANUP]/CODESIGN_TEAM_ID",
       "--input-zip-file-path",
-      "[START_DIR]/unsigned_libimobiledeviceglue.zip",
+      "[CLEANUP]/tmp_tmp_4/unsigned_libusbmuxd.zip",
       "--output-zip-file-path",
-      "[START_DIR]/libimobiledeviceglue.zip"
+      "[CLEANUP]/tmp_tmp_4/libusbmuxd.zip"
     ],
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -4027,7 +3419,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Codesign [START_DIR]/unsigned_libimobiledeviceglue.zip.codesign Apple engine binaries",
+    "name": "Codesign [CLEANUP]/tmp_tmp_4/unsigned_libusbmuxd.zip.codesign Apple engine binaries",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -4092,8 +3484,8 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
-      "[START_DIR]/libimobiledeviceglue.zip",
-      "gs://flutter_infra_release/ios-usb-dependencies/libimobiledeviceglue/None/libimobiledeviceglue.zip"
+      "[CLEANUP]/tmp_tmp_4/libusbmuxd.zip",
+      "gs://flutter_infra_release/ios-usb-dependencies/libusbmuxd//libusbmuxd.zip"
     ],
     "infra_step": true,
     "luci_context": {
@@ -4108,448 +3500,24 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gsutil upload of libimobiledeviceglue.zip",
+    "name": "gsutil upload of libusbmuxd.zip",
     "~followup_annotations": [
-      "@@@STEP_LINK@libimobiledeviceglue.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/libimobiledeviceglue/None/libimobiledeviceglue.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libtatsu"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libtatsu"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libtatsu_install"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libtatsu_install"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libtatsu_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libtatsu_output"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "777",
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libtatsu.sh"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libtatsu.sh executable"
-  },
-  {
-    "cmd": [
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libtatsu.sh",
-      "[START_DIR]/src/libtatsu",
-      "[START_DIR]/src/libtatsu_install",
-      "[START_DIR]/src/libtatsu_output"
-    ],
-    "env": {
-      "CPATH": "[START_DIR]/src/libimobiledeviceglue_install/include"
-    },
-    "env_prefixes": {
-      "LIBRARY_PATH": [
-        "[START_DIR]/src/libusb_install/lib",
-        "[START_DIR]/src/libimobiledeviceglue_install/lib"
-      ],
-      "PATH": [
-        "[START_DIR]/src/libplist_install/bin",
-        "[START_DIR]/src/bison_install/bin",
-        "[START_DIR]/src/libtasn1_install/bin"
-      ],
-      "PKG_CONFIG_PATH": [
-        "[START_DIR]/src/libimobiledeviceglue_install/lib/pkgconfig"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install libtatsu"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libusbmuxd"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libusbmuxd"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libusbmuxd_install"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libusbmuxd_install"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libusbmuxd_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libusbmuxd_output"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "777",
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libusbmuxd.sh"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libusbmuxd.sh executable"
-  },
-  {
-    "cmd": [
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libusbmuxd.sh",
-      "[START_DIR]/src/libusbmuxd",
-      "[START_DIR]/src/libusbmuxd_install",
-      "[START_DIR]/src/libusbmuxd_output"
-    ],
-    "env": {
-      "CPATH": "[START_DIR]/src/libimobiledeviceglue_install/include"
-    },
-    "env_prefixes": {
-      "LIBRARY_PATH": [
-        "[START_DIR]/src/libusb_install/lib",
-        "[START_DIR]/src/libimobiledeviceglue_install/lib"
-      ],
-      "PATH": [
-        "[START_DIR]/src/libplist_install/bin",
-        "[START_DIR]/src/bison_install/bin",
-        "[START_DIR]/src/libtasn1_install/bin"
-      ],
-      "PKG_CONFIG_PATH": [
-        "[START_DIR]/src/libimobiledeviceglue_install/lib/pkgconfig",
-        "[START_DIR]/src/libtatsu_install/lib/pkgconfig"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install libusbmuxd"
-  },
-  {
-    "cmd": [
-      "otool",
-      "-L",
-      "[START_DIR]/src/libusbmuxd_output/iproxy"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Get linked paths from iproxy before patch"
-  },
-  {
-    "cmd": [
-      "install_name_tool",
-      "-change",
-      "/opt/s/w/ir/x/w/src/libusbmuxd_install/lib/libusbmuxd-2.0.7.dylib",
-      "@loader_path/../libusbmuxd-2.0.7.dylib",
-      "[START_DIR]/src/libusbmuxd_output/iproxy"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Patch [START_DIR]/src/libusbmuxd_output/iproxy with install_name_tool"
-  },
-  {
-    "cmd": [
-      "otool",
-      "-L",
-      "[START_DIR]/src/libusbmuxd_output/iproxy"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Get linked paths from [START_DIR]/src/libusbmuxd_output/iproxy after patch"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "listdir",
-      "[START_DIR]/src/libusbmuxd_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "checking dylib file inside: [START_DIR]/src/libusbmuxd_output",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libusbmuxd_output/[START_DIR]/src/libusbmuxd_output/libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libusbmuxd_output/[START_DIR]/src/libusbmuxd_output/libplist-2.0.4.dylib@@@",
-      "@@@STEP_LOG_END@listdir@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "iproxy\n",
-      "[START_DIR]/src/libusbmuxd_output/entitlements.txt"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "writing entitlements codesign list for libusbmuxd",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@entitlements.txt@iproxy@@@",
-      "@@@STEP_LOG_END@entitlements.txt@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "libimobiledevice-1.0.6.dylib\nlibplist-2.0.4.dylib\n",
-      "[START_DIR]/src/libusbmuxd_output/without_entitlements.txt"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "writing the list of files to be codesigned without entitlements for libusbmuxd",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@without_entitlements.txt@libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@without_entitlements.txt@libplist-2.0.4.dylib@@@",
-      "@@@STEP_LOG_END@without_entitlements.txt@@@"
+      "@@@STEP_LINK@libusbmuxd.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/libusbmuxd//libusbmuxd.zip@@@"
     ]
   },
   {
     "cmd": [
       "python3",
-      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/openssl/latest_unsigned.version",
+      "[CLEANUP]/tmp_tmp_5/latest_unsigned.version"
     ],
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "dart-internal:flutter"
@@ -4562,8 +3530,63 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "zipping libusbmuxd dir",
-    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/src/libusbmuxd_output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/libusbmuxd.zip\", \"root\": \"[START_DIR]/src/libusbmuxd_output\"}"
+    "name": "gsutil download latest_unsigned.version (4)"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/tmp_tmp_5/latest_unsigned.version",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Read latest_unsigned.version (4)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@latest_unsigned.version@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/openssl//openssl.zip",
+      "[CLEANUP]/tmp_tmp_5/openssl.zip"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil download [CLEANUP]/tmp_tmp_5/openssl.zip"
   },
   {
     "cmd": [],
@@ -5099,7 +4122,7 @@
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -5136,7 +4159,7 @@
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -5169,8 +4192,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[START_DIR]/libusbmuxd.zip",
-      "[START_DIR]/unsigned_libusbmuxd.zip"
+      "[CLEANUP]/tmp_tmp_5/openssl.zip",
+      "[CLEANUP]/tmp_tmp_5/unsigned_openssl.zip"
     ],
     "infra_step": true,
     "luci_context": {
@@ -5185,11 +4208,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Move [START_DIR]/libusbmuxd.zip"
+    "name": "Move [CLEANUP]/tmp_tmp_5/openssl.zip"
   },
   {
     "cmd": [],
-    "name": "Codesign [START_DIR]/unsigned_libusbmuxd.zip"
+    "name": "Codesign [CLEANUP]/tmp_tmp_5/unsigned_openssl.zip"
   },
   {
     "cmd": [
@@ -5211,14 +4234,14 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Codesign [START_DIR]/unsigned_libusbmuxd.zip.unlock build keychain",
+    "name": "Codesign [CLEANUP]/tmp_tmp_5/unsigned_openssl.zip.unlock build keychain",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "[CLEANUP]/tmp_tmp_3/codesign",
+      "[CLEANUP]/tmp_tmp_2/codesign",
       "--codesign-cert-name",
       "Developer ID Application: FLUTTER.IO LLC (S8QB4VV633)",
       "--no-dryrun",
@@ -5229,14 +4252,14 @@
       "--codesign-team-id-file-path",
       "[CLEANUP]/CODESIGN_TEAM_ID",
       "--input-zip-file-path",
-      "[START_DIR]/unsigned_libusbmuxd.zip",
+      "[CLEANUP]/tmp_tmp_5/unsigned_openssl.zip",
       "--output-zip-file-path",
-      "[START_DIR]/libusbmuxd.zip"
+      "[CLEANUP]/tmp_tmp_5/openssl.zip"
     ],
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -5255,7 +4278,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Codesign [START_DIR]/unsigned_libusbmuxd.zip.codesign Apple engine binaries",
+    "name": "Codesign [CLEANUP]/tmp_tmp_5/unsigned_openssl.zip.codesign Apple engine binaries",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -5320,8 +4343,8 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
-      "[START_DIR]/libusbmuxd.zip",
-      "gs://flutter_infra_release/ios-usb-dependencies/libusbmuxd/None/libusbmuxd.zip"
+      "[CLEANUP]/tmp_tmp_5/openssl.zip",
+      "gs://flutter_infra_release/ios-usb-dependencies/openssl//openssl.zip"
     ],
     "infra_step": true,
     "luci_context": {
@@ -5336,318 +4359,24 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "gsutil upload of libusbmuxd.zip",
+    "name": "gsutil upload of openssl.zip",
     "~followup_annotations": [
-      "@@@STEP_LINK@libusbmuxd.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/libusbmuxd/None/libusbmuxd.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/openssl"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/openssl"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/openssl_install"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/openssl_install"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/openssl_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/openssl_output"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "777",
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/openssl.sh"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/openssl.sh executable"
-  },
-  {
-    "cmd": [
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/openssl.sh",
-      "[START_DIR]/src/openssl",
-      "[START_DIR]/src/openssl_install",
-      "[START_DIR]/src/openssl_output"
-    ],
-    "env": {
-      "CPATH": "[START_DIR]/src/libimobiledeviceglue_install/include"
-    },
-    "env_prefixes": {
-      "LIBRARY_PATH": [
-        "[START_DIR]/src/libusb_install/lib",
-        "[START_DIR]/src/libimobiledeviceglue_install/lib"
-      ],
-      "PATH": [
-        "[START_DIR]/src/libplist_install/bin",
-        "[START_DIR]/src/bison_install/bin",
-        "[START_DIR]/src/libtasn1_install/bin",
-        "[START_DIR]/src/libusbmuxd_install/bin"
-      ],
-      "PKG_CONFIG_PATH": [
-        "[START_DIR]/src/libimobiledeviceglue_install/lib/pkgconfig",
-        "[START_DIR]/src/libtatsu_install/lib/pkgconfig",
-        "[START_DIR]/src/libusbmuxd_install/lib/pkgconfig"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install openssl"
-  },
-  {
-    "cmd": [
-      "otool",
-      "-L",
-      "[START_DIR]/src/openssl_output/libcrypto.3.dylib"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Get linked paths from libcrypto.3.dylib before patch"
-  },
-  {
-    "cmd": [
-      "otool",
-      "-L",
-      "[START_DIR]/src/openssl_output/libcrypto.3.dylib"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Get linked paths from [START_DIR]/src/openssl_output/libcrypto.3.dylib after patch"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "listdir",
-      "[START_DIR]/src/openssl_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "checking dylib file inside: [START_DIR]/src/openssl_output",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libplist-2.0.4.dylib@@@",
-      "@@@STEP_LOG_END@listdir@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "listdir",
-      "[START_DIR]/src/openssl_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "checking dylib file inside: [START_DIR]/src/openssl_output (2)",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/openssl_output/[START_DIR]/src/openssl_output/libplist-2.0.4.dylib@@@",
-      "@@@STEP_LOG_END@listdir@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "\n",
-      "[START_DIR]/src/openssl_output/entitlements.txt"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "writing entitlements codesign list for openssl",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@entitlements.txt@@@@",
-      "@@@STEP_LOG_END@entitlements.txt@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "\n",
-      "[START_DIR]/src/openssl_output/without_entitlements.txt"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "writing the list of files to be codesigned without entitlements for openssl",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@without_entitlements.txt@@@@",
-      "@@@STEP_LOG_END@without_entitlements.txt@@@"
+      "@@@STEP_LINK@openssl.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/openssl//openssl.zip@@@"
     ]
   },
   {
     "cmd": [
       "python3",
-      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/libimobiledevice/latest_unsigned.version",
+      "[CLEANUP]/tmp_tmp_6/latest_unsigned.version"
     ],
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "dart-internal:flutter"
@@ -5660,8 +4389,63 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "zipping openssl dir",
-    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/src/openssl_output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/openssl.zip\", \"root\": \"[START_DIR]/src/openssl_output\"}"
+    "name": "gsutil download latest_unsigned.version (5)"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CLEANUP]/tmp_tmp_6/latest_unsigned.version",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Read latest_unsigned.version (5)",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@latest_unsigned.version@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://flutter_infra_release/ios-usb-dependencies/unsigned/libimobiledevice//libimobiledevice.zip",
+      "[CLEANUP]/tmp_tmp_6/libimobiledevice.zip"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "dart-internal:flutter"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil download [CLEANUP]/tmp_tmp_6/libimobiledevice.zip"
   },
   {
     "cmd": [],
@@ -6197,7 +4981,7 @@
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -6234,7 +5018,7 @@
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -6267,8 +5051,8 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[START_DIR]/openssl.zip",
-      "[START_DIR]/unsigned_openssl.zip"
+      "[CLEANUP]/tmp_tmp_6/libimobiledevice.zip",
+      "[CLEANUP]/tmp_tmp_6/unsigned_libimobiledevice.zip"
     ],
     "infra_step": true,
     "luci_context": {
@@ -6283,11 +5067,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Move [START_DIR]/openssl.zip"
+    "name": "Move [CLEANUP]/tmp_tmp_6/libimobiledevice.zip"
   },
   {
     "cmd": [],
-    "name": "Codesign [START_DIR]/unsigned_openssl.zip"
+    "name": "Codesign [CLEANUP]/tmp_tmp_6/unsigned_libimobiledevice.zip"
   },
   {
     "cmd": [
@@ -6309,14 +5093,14 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Codesign [START_DIR]/unsigned_openssl.zip.unlock build keychain",
+    "name": "Codesign [CLEANUP]/tmp_tmp_6/unsigned_libimobiledevice.zip.unlock build keychain",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [
-      "[CLEANUP]/tmp_tmp_3/codesign",
+      "[CLEANUP]/tmp_tmp_2/codesign",
       "--codesign-cert-name",
       "Developer ID Application: FLUTTER.IO LLC (S8QB4VV633)",
       "--no-dryrun",
@@ -6327,14 +5111,14 @@
       "--codesign-team-id-file-path",
       "[CLEANUP]/CODESIGN_TEAM_ID",
       "--input-zip-file-path",
-      "[START_DIR]/unsigned_openssl.zip",
+      "[CLEANUP]/tmp_tmp_6/unsigned_libimobiledevice.zip",
       "--output-zip-file-path",
-      "[START_DIR]/openssl.zip"
+      "[CLEANUP]/tmp_tmp_6/libimobiledevice.zip"
     ],
     "env": {
       "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
       "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
+      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_2/codesign",
       "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
       "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
       "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
@@ -6353,7 +5137,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "Codesign [START_DIR]/unsigned_openssl.zip.codesign Apple engine binaries",
+    "name": "Codesign [CLEANUP]/tmp_tmp_6/unsigned_libimobiledevice.zip.codesign Apple engine binaries",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -6418,1121 +5202,8 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
-      "[START_DIR]/openssl.zip",
-      "gs://flutter_infra_release/ios-usb-dependencies/openssl/None/openssl.zip"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload of openssl.zip",
-    "~followup_annotations": [
-      "@@@STEP_LINK@openssl.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/openssl/None/openssl.zip@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libimobiledevice"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libimobiledevice"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libimobiledevice_install"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libimobiledevice_install"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/src/libimobiledevice_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "mkdir [START_DIR]/src/libimobiledevice_output"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "777",
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libimobiledevice.sh"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "make RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libimobiledevice.sh executable"
-  },
-  {
-    "cmd": [
-      "RECIPE[flutter::ios_usb_dependencies/ios-usb-dependencies].resources/libimobiledevice.sh",
-      "[START_DIR]/src/libimobiledevice",
-      "[START_DIR]/src/libimobiledevice_install",
-      "[START_DIR]/src/libimobiledevice_output"
-    ],
-    "env": {
-      "CPATH": "[START_DIR]/src/libimobiledeviceglue_install/include"
-    },
-    "env_prefixes": {
-      "LIBRARY_PATH": [
-        "[START_DIR]/src/libusb_install/lib",
-        "[START_DIR]/src/libimobiledeviceglue_install/lib",
-        "[START_DIR]/src/openssl_install/lib"
-      ],
-      "PATH": [
-        "[START_DIR]/src/libplist_install/bin",
-        "[START_DIR]/src/bison_install/bin",
-        "[START_DIR]/src/libtasn1_install/bin",
-        "[START_DIR]/src/libusbmuxd_install/bin",
-        "[START_DIR]/src/openssl_install/bin"
-      ],
-      "PKG_CONFIG_PATH": [
-        "[START_DIR]/src/libimobiledeviceglue_install/lib/pkgconfig",
-        "[START_DIR]/src/libtatsu_install/lib/pkgconfig",
-        "[START_DIR]/src/libusbmuxd_install/lib/pkgconfig",
-        "[START_DIR]/src/openssl_install/lib/pkgconfig"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install libimobiledevice"
-  },
-  {
-    "cmd": [
-      "otool",
-      "-L",
-      "[START_DIR]/src/libimobiledevice_output/idevicescreenshot"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Get linked paths from idevicescreenshot before patch"
-  },
-  {
-    "cmd": [
-      "otool",
-      "-L",
-      "[START_DIR]/src/libimobiledevice_output/idevicescreenshot"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Get linked paths from [START_DIR]/src/libimobiledevice_output/idevicescreenshot after patch"
-  },
-  {
-    "cmd": [
-      "otool",
-      "-L",
-      "[START_DIR]/src/libimobiledevice_output/idevicesyslog"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Get linked paths from idevicesyslog before patch"
-  },
-  {
-    "cmd": [
-      "otool",
-      "-L",
-      "[START_DIR]/src/libimobiledevice_output/idevicesyslog"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Get linked paths from [START_DIR]/src/libimobiledevice_output/idevicesyslog after patch"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "listdir",
-      "[START_DIR]/src/libimobiledevice_output"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "checking dylib file inside: [START_DIR]/src/libimobiledevice_output",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledevice_output/[START_DIR]/src/libimobiledevice_output/libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@listdir@[START_DIR]/src/libimobiledevice_output/[START_DIR]/src/libimobiledevice_output/libplist-2.0.4.dylib@@@",
-      "@@@STEP_LOG_END@listdir@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "idevicescreenshot\nidevicesyslog\n",
-      "[START_DIR]/src/libimobiledevice_output/entitlements.txt"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "writing entitlements codesign list for libimobiledevice",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@entitlements.txt@idevicescreenshot@@@",
-      "@@@STEP_LOG_LINE@entitlements.txt@idevicesyslog@@@",
-      "@@@STEP_LOG_END@entitlements.txt@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "copy",
-      "libimobiledevice-1.0.6.dylib\nlibplist-2.0.4.dylib\n",
-      "[START_DIR]/src/libimobiledevice_output/without_entitlements.txt"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "writing the list of files to be codesigned without entitlements for libimobiledevice",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@without_entitlements.txt@libimobiledevice-1.0.6.dylib@@@",
-      "@@@STEP_LOG_LINE@without_entitlements.txt@libplist-2.0.4.dylib@@@",
-      "@@@STEP_LOG_END@without_entitlements.txt@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "RECIPE_MODULE[flutter::zip]/resources/zip.py"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "zipping libimobiledevice dir",
-    "stdin": "{\"entries\": [{\"path\": \"[START_DIR]/src/libimobiledevice_output\", \"type\": \"dir\"}], \"output\": \"[START_DIR]/libimobiledevice.zip\", \"root\": \"[START_DIR]/src/libimobiledevice_output\"}"
-  },
-  {
-    "cmd": [],
-    "name": "Setup codesign environment (6)"
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[START_DIR]/cloudkms",
-      "-ensure-file",
-      "infra/tools/luci/cloudkms/${platform} latest",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "gs://flutter_configs/exported_p12.encrypted",
-      "[CLEANUP]/exported_p12.encrypted"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).gsutil download",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cloudkms/cloudkms",
-      "decrypt",
-      "-input",
-      "[CLEANUP]/exported_p12.encrypted",
-      "-output",
-      "[CLEANUP]/FLUTTER_P12",
-      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).cloudkms get key",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[START_DIR]/cloudkms",
-      "-ensure-file",
-      "infra/tools/luci/cloudkms/${platform} latest",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).ensure_installed (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "gs://flutter_configs/0325_p12password.encrypted",
-      "[CLEANUP]/0325_p12password.encrypted"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).gsutil download (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cloudkms/cloudkms",
-      "decrypt",
-      "-input",
-      "[CLEANUP]/0325_p12password.encrypted",
-      "-output",
-      "[CLEANUP]/FLUTTER_P12_PASSWORD",
-      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).cloudkms get key (2)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[START_DIR]/cloudkms",
-      "-ensure-file",
-      "infra/tools/luci/cloudkms/${platform} latest",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).ensure_installed (3)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "gs://flutter_configs/codesign_team_id.encrypted",
-      "[CLEANUP]/codesign_team_id.encrypted"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).gsutil download (3)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cloudkms/cloudkms",
-      "decrypt",
-      "-input",
-      "[CLEANUP]/codesign_team_id.encrypted",
-      "-output",
-      "[CLEANUP]/CODESIGN_TEAM_ID",
-      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).cloudkms get key (3)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[START_DIR]/cloudkms",
-      "-ensure-file",
-      "infra/tools/luci/cloudkms/${platform} latest",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).ensure_installed (4)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "gs://flutter_configs/codesign_app_specific_password.encrypted",
-      "[CLEANUP]/codesign_app_specific_password.encrypted"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).gsutil download (4)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cloudkms/cloudkms",
-      "decrypt",
-      "-input",
-      "[CLEANUP]/codesign_app_specific_password.encrypted",
-      "-output",
-      "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
-      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).cloudkms get key (4)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[START_DIR]/cloudkms",
-      "-ensure-file",
-      "infra/tools/luci/cloudkms/${platform} latest",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).ensure_installed (5)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/cloudkms/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "gs://flutter_configs/codesign_app_store_id.encrypted",
-      "[CLEANUP]/codesign_app_store_id.encrypted"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).gsutil download (5)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[START_DIR]/cloudkms/cloudkms",
-      "decrypt",
-      "-input",
-      "[CLEANUP]/codesign_app_store_id.encrypted",
-      "-output",
-      "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "projects/flutter-infra-staging/locations/global/keyRings/luci/cryptoKeys/flutter-infra"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup codesign environment (6).cloudkms get key (5)",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Setup keychain (6)"
-  },
-  {
-    "cmd": [
-      "chmod",
-      "755",
-      "RECIPE_MODULE[flutter::signing]/resources/setup_keychain.dart"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Setup keychain (6).Set execute permission",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "RECIPE_MODULE[flutter::signing]/resources/setup_keychain.dart"
-    ],
-    "env": {
-      "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
-      "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
-      "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
-      "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
-      "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
-      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12",
-      "SETUP_KEYCHAIN_LOGS_PATH": "[CLEANUP]/setup_keychain_logs.txt"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "run keychain setup script (6)"
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "-r",
-      "[CLEANUP]/setup_keychain_logs.txt",
-      "gs://flutter_tmp_logs/8945511751514863184/setup_keychain_logs.txt"
-    ],
-    "env": {
-      "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
-      "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
-      "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
-      "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
-      "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
-      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12",
-      "SETUP_KEYCHAIN_LOGS_PATH": "[CLEANUP]/setup_keychain_logs.txt"
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "gsutil upload debug logs to 8945511751514863184/setup_keychain_logs.txt (6)",
-    "~followup_annotations": [
-      "@@@STEP_LINK@gsutil.upload@https://console.cloud.google.com/storage/browser/flutter_tmp_logs/8945511751514863184/setup_keychain_logs.txt@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "move",
-      "[START_DIR]/libimobiledevice.zip",
-      "[START_DIR]/unsigned_libimobiledevice.zip"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Move [START_DIR]/libimobiledevice.zip"
-  },
-  {
-    "cmd": [],
-    "name": "Codesign [START_DIR]/unsigned_libimobiledevice.zip"
-  },
-  {
-    "cmd": [
-      "security",
-      "unlock-keychain",
-      "-p",
-      "",
-      "build.keychain"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Codesign [START_DIR]/unsigned_libimobiledevice.zip.unlock build keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CLEANUP]/tmp_tmp_3/codesign",
-      "--codesign-cert-name",
-      "Developer ID Application: FLUTTER.IO LLC (S8QB4VV633)",
-      "--no-dryrun",
-      "--app-specific-password-file-path",
-      "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
-      "--codesign-appstore-id-file-path",
-      "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "--codesign-team-id-file-path",
-      "[CLEANUP]/CODESIGN_TEAM_ID",
-      "--input-zip-file-path",
-      "[START_DIR]/unsigned_libimobiledevice.zip",
-      "--output-zip-file-path",
-      "[START_DIR]/libimobiledevice.zip"
-    ],
-    "env": {
-      "CODESIGN_APP_SPECIFIC_PASSWORD": "[CLEANUP]/CODESIGN_APP_SPECIFIC_PASSWORD",
-      "CODESIGN_APP_STORE_ID": "[CLEANUP]/CODESIGN_APP_STORE_ID",
-      "CODESIGN_PATH": "[CLEANUP]/tmp_tmp_3/codesign",
-      "CODESIGN_TEAM_ID": "[CLEANUP]/CODESIGN_TEAM_ID",
-      "FLUTTER_P12": "[CLEANUP]/FLUTTER_P12",
-      "FLUTTER_P12_PASSWORD": "[CLEANUP]/FLUTTER_P12_PASSWORD",
-      "P12_SUFFIX_FILEPATH": "[CLEANUP]/flutter.p12",
-      "SETUP_KEYCHAIN_LOGS_PATH": "[CLEANUP]/setup_keychain_logs.txt"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Codesign [START_DIR]/unsigned_libimobiledevice.zip.codesign Apple engine binaries",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "Keychain cleanup (6)"
-  },
-  {
-    "cmd": [
-      "security",
-      "delete-keychain",
-      "build.keychain"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Keychain cleanup (6).delete keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "security",
-      "default-keychain",
-      "-s",
-      "login.keychain"
-    ],
-    "luci_context": {
-      "realm": {
-        "name": "dart-internal:flutter"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Keychain cleanup (6).Cleanup keychain.restore default keychain",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "[START_DIR]/libimobiledevice.zip",
-      "gs://flutter_infra_release/ios-usb-dependencies/libimobiledevice/None/libimobiledevice.zip"
+      "[CLEANUP]/tmp_tmp_6/libimobiledevice.zip",
+      "gs://flutter_infra_release/ios-usb-dependencies/libimobiledevice//libimobiledevice.zip"
     ],
     "infra_step": true,
     "luci_context": {
@@ -7549,7 +5220,7 @@
     },
     "name": "gsutil upload of libimobiledevice.zip",
     "~followup_annotations": [
-      "@@@STEP_LINK@libimobiledevice.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/libimobiledevice/None/libimobiledevice.zip@@@"
+      "@@@STEP_LINK@libimobiledevice.zip@https://storage.cloud.google.com/flutter_infra_release/ios-usb-dependencies/libimobiledevice//libimobiledevice.zip@@@"
     ]
   },
   {

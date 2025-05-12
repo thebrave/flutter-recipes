@@ -2,6 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# ⚠️ WARNING. This is a *RELEASE* recipe, and it is always used from HEAD.
+#
+# Most recipes are branched, so that a change, for example, to engine_v2, only
+# impacts the cooresponding `master` or `main` branch of the serviced
+# respository (until that branch is eventually promoted to beta or stable).
+#
+# A release recipes is always used from HEAD, meaning any breaking changes are
+# made immediately, even for older release candidates. Changes must be made in
+# a backwards compatible way until older releases are archived or cherrypicks
+# are required to the older release candidates.
+#
+# Example outcome: https://github.com/flutter/flutter/issues/168673
+
 # Orchestrator recipe that runs sub-builds required to build engine artifacts
 # suitable to be used for a published release (i.e. a release candidate build
 # that will eventually be tagged and released as "beta" or "stable").

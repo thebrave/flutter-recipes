@@ -2,6 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# ⚠️ WARNING. This is a *RELEASE* recipe, and it is always used from HEAD.
+#
+# Most recipes are branched, so that a change, for example, to engine_v2, only
+# impacts the cooresponding `master` or `main` branch of the serviced
+# respository (until that branch is eventually promoted to beta or stable).
+#
+# A release recipes is always used from HEAD, meaning any breaking changes are
+# made immediately, even for older release candidates. Changes must be made in
+# a backwards compatible way until older releases are archived or cherrypicks
+# are required to the older release candidates.
+#
+# Example outcome: https://github.com/flutter/flutter/issues/168673
+
 import re
 from recipe_engine import post_process
 
@@ -102,20 +115,22 @@ def RunSteps(api):
           )
       )
 
+    # TODO(matanlurey): Require last_engine_commit.sh and fail if missing.
+    # This provides backwards compatibility for older release candidates.
+    # https://github.com/flutter/flutter/issues/168674
+    compute_last_engine_commit = []
     last_engine_script = checkout / 'bin' / 'internal' / 'last_engine_commit.sh'
-    if not api.path.exists(last_engine_script):
-      raise api.step.StepFailure(
-          'Missing expected file: {last_engine_script}'.format(
-              last_engine_script=last_engine_script,
-          )
-      )
+    if api.path.exists(last_engine_script):
+      compute_last_engine_commit = ['bash', last_engine_script]
+    else:
+      compute_last_engine_commit = [
+          'git', '-C', checkout, 'log -1', '--pretty=format:%H', '--', 'DEPS',
+          'engine'
+      ]
 
     last_commit_step = api.step(
         'compute last engine commit',
-        cmd=[
-            'bash',
-            last_engine_script,
-        ],
+        cmd=compute_last_engine_commit,
         stdout=api.raw_io.output_text(),
     )
     last_commit_sha = last_commit_step.stdout.strip()
@@ -280,19 +295,20 @@ def GenTests(api):
       status='FAILURE',
   )
 
+  # TODO(matanlurey): https://github.com/flutter/flutter/issues/168674.
   # TEST: Must have bin/internal/last_engine_commit.sh
-  yield api.test(
-      'missing_last_engine_commit.sh',
-      api.platform('linux', 64),
-      api.properties(
-          git_branch='flutter-1.2.3-candidate.0',
-          tag='3.32.0-0.3.pre',
-          release_channel='beta',
-          force=False,
-      ),
-      api.path.exists(checkout_path / 'bin' / 'internal' / 'engine.version',),
-      status='FAILURE',
-  )
+  #   yield api.test(
+  #       'missing_last_engine_commit.sh',
+  #       api.platform('linux', 64),
+  #       api.properties(
+  #           git_branch='flutter-1.2.3-candidate.0',
+  #           tag='3.32.0-0.3.pre',
+  #           release_channel='beta',
+  #           force=False,
+  #       ),
+  #       api.path.exists(checkout_path / 'bin' / 'internal' / 'engine.version',),
+  #       status='FAILURE',
+  #   )
 
   # TEST: The commit in engine.version is of out date compared to the source tree.
   yield api.test(
@@ -318,6 +334,30 @@ def GenTests(api):
           stdout=api.raw_io.output_text('\tabc123\t'),
       ),
       status='FAILURE',
+  )
+
+  # TEST: "Successful" run, using fallback logic for last_engine_commit.sh.
+  yield api.test(
+      'success_fallback_last_engine_commit.sh',
+      api.platform('linux', 64),
+      api.properties(
+          git_branch='flutter-1.2.3-candidate.0',
+          tag='3.32.0-0.3.pre',
+          release_channel='beta',
+          force=False,
+      ),
+      api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
+      api.path.exists(
+          checkout_path / 'bin' / 'internal' / 'engine.version',
+      ),
+      api.step_data(
+          'validate engine.version.compute last engine commit',
+          stdout=api.raw_io.output_text('\tabc123\t'),
+      ),
+      api.step_data(
+          'validate engine.version.read engine.version file',
+          stdout=api.raw_io.output_text('\tabc123\t'),
+      ),
   )
 
   # TEST: "Successful" run.

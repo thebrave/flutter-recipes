@@ -12,6 +12,15 @@ from contextlib import contextmanager
 from recipe_engine import recipe_api
 from datetime import datetime, timedelta
 
+# Rationalized from https://en.wikipedia.org/wiki/Xcode.
+#
+# Maps from OS version to the maximum supported version of Xcode for that OS.
+#
+# Keep this sorted by OS version.
+_DEFAULT_VERSION_MAP = [('10.12.6', '9c40b'), ('10.13.2', '9f2000'),
+                        ('10.13.6', '10b61'), ('10.14.3', '10g8'),
+                        ('10.14.4', '11b52'), ('10.15.4', '12a7209')]
+
 _RUNTIMESPATH = (
     'Contents/Developer/Platforms/iPhoneOS.platform/Library/'
     'Developer/CoreSimulator/Profiles/Runtimes'
@@ -79,6 +88,13 @@ class OSXSDKApi(recipe_api.RecipeApi):
     current_os = self.m.version.parse(find_os.stdout.strip())
     if 'sdk_version' in self._sdk_properties:
       self._sdk_version = self._sdk_properties['sdk_version'].lower()
+    else:
+      for target_os, xcode in reversed(_DEFAULT_VERSION_MAP):
+        if current_os >= self.m.version.parse(target_os):
+          self._sdk_version = xcode
+          break
+      else:
+        self._sdk_version = _DEFAULT_VERSION_MAP[0][-1]
 
     self.macos_13_or_later = current_os >= self.m.version.parse('13.0.0')
 
@@ -146,11 +162,6 @@ class OSXSDKApi(recipe_api.RecipeApi):
       yield
       return
 
-    if self._sdk_version is None:
-      self.m.step.empty('Xcode version is not set. Skipping.',)
-      yield
-      return
-
     try:
       with self.m.context(infra_steps=True):
         self._diagnose_unresponsive_mac(devicelab)
@@ -171,24 +182,7 @@ class OSXSDKApi(recipe_api.RecipeApi):
     if self._skip or not self.m.platform.is_mac:
       return
     with self.m.context(infra_steps=True):
-      self._delete_default_xcode()
       self.m.step('reset XCode', ['sudo', 'xcode-select', '--reset'])
-
-  def _delete_default_xcode(self):
-    '''Deletes default Xcode.
-
-    When an unmanged version of Xcode is on the default path it can have unintended
-    consequences, such as causing `flutter doctor` errors or Flutter tool errors.
-    Resetting the Xcode path with [reset_xcode] selects the default path.
-    '''
-    devicelab = self.m.os_utils.is_devicelab()
-    if not devicelab:
-      return
-
-    default_xcode_path = self.m.path.cast_to_path('/Applications/Xcode.app')
-    if not self.m.path.exists(default_xcode_path):
-      return
-    self.m.file.rmtree('Deleting default Xcode', default_xcode_path)
 
   def _missing_runtime(self, runtime_simulators):
     """Check if there is any missing runtime.

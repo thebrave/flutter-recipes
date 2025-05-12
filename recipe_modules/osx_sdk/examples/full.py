@@ -13,6 +13,7 @@ DEPS = [
     'recipe_engine/properties',
     'recipe_engine/raw_io',
     'recipe_engine/step',
+    'recipe_engine/swarming',
 ]
 
 from datetime import datetime
@@ -695,4 +696,13 @@ def GenTests(api):
       api.step_data(
           'check for Setup Assistant', stdout=api.raw_io.output_text('123')
       ),
+  )
+  yield api.test(
+      'delete_default_xcode',
+      api.platform.name('mac'),
+      api.properties(**{'$flutter/osx_sdk': {
+          'sdk_version': 'deadbeef',
+      }}),
+      api.swarming.properties(bot_id='flutter-devicelab-mac-1'),
+      api.path.exists((api.path.cast_to_path('/Applications/Xcode.app'))),
   )

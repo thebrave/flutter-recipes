@@ -124,8 +124,8 @@ def RunSteps(api):
       compute_last_engine_commit = ['bash', last_engine_script]
     else:
       compute_last_engine_commit = [
-          'git', '-C', checkout, 'log -1', '--pretty=format:%H', '--', 'DEPS',
-          'engine'
+          'git', '-C', checkout, 'log', '-1', '--pretty=format:%H', '--',
+          'DEPS', 'engine'
       ]
 
     last_commit_step = api.step(
@@ -347,9 +347,7 @@ def GenTests(api):
           force=False,
       ),
       api.repo_util.flutter_environment_data(checkout_dir=checkout_path),
-      api.path.exists(
-          checkout_path / 'bin' / 'internal' / 'engine.version',
-      ),
+      api.path.exists(checkout_path / 'bin' / 'internal' / 'engine.version',),
       api.step_data(
           'validate engine.version.compute last engine commit',
           stdout=api.raw_io.output_text('\tabc123\t'),

@@ -19,11 +19,11 @@
 # suitable to be used for a published release (i.e. a release candidate build
 # that will eventually be tagged and released as "beta" or "stable").
 #
-# Each *engine* target that is explicitly has the property release_build: "true" is scheduled:
+# For the engine, each target that is marked "release_build: "true" is scheduled:
 #
 # ##############################################################################
 # # CONTENTS of //engine/src/flutter/.ci.yaml
-# # ############################################################################
+# ##############################################################################
 # targets:
 #   # NOT SCHEDULED.
 #   - name: Linux linux_host_engine_test
@@ -34,6 +34,22 @@
 #     properties:
 #       release_build: "true"
 # ##############################################################################
+#
+# For the framework, each target that is marked "scheduler: release" or "schedule_during_release_override: true"
+# ##############################################################################
+# # CONTENTS of //.ci.yaml
+# ##############################################################################
+# targets:
+#   # SCHEDULED.
+#   - name: Linux flutter_packaging
+#     recipe: packaging/packagine
+#   # SCHEDULED.
+#   - name: Linux docs_publish
+#     recipe: flutter/docs
+#     schedule_during_release_override: true
+# ##############################################################################
+#
+# Note that "enabled_branches" still applies.
 #
 # Recipe is referenced here:
 # https://dart-internal.googlesource.com/dart-internal/+/99cf8f57df5164a99eba7155351c74fbf7d2599a/flutter-internal/flutter.star#33
@@ -69,7 +85,58 @@ DEPS = [
 RELEASE_CHANNELS = ('refs/heads/beta', 'refs/heads/stable')
 
 
-def ShouldRun(api, git_ref, target, release_branch, retry_override_list):
+def IsSpecialCaseTargetForReleaseBuild(api, target, git_ref):
+  # Whether this represents the "beta" or "stable" channel.
+  is_release_channel = git_ref in RELEASE_CHANNELS
+  is_release_candidate = not is_release_channel
+
+  if is_release_candidate:
+    # An engine build that is marked:
+    # - Linux engine_foo:
+    #   properties:
+    #     release_build: "true"
+    #
+    # Should be built during the Linux flutter_release_build orchestrator.
+    target_builds_engine_artifacts = target.get('properties', {}).get(
+        'release_build', ''
+    ) == 'true'
+    return target_builds_engine_artifacts
+
+  assert (is_release_channel)
+  # A framework build that is marked:
+  # - Linux framework_foo
+  #   scheduler: release
+  #
+  # or:
+  # - Linux farmework_foo
+  #   schedule_during_release_override: true
+  #
+  # Should be built during the Linux flutter_release_build orchestrator.
+  if target.get('scheduler') != 'release' and target.get(
+      'schedule_during_release_override', False) != True:
+    return False
+
+  # Ensure that this target is enabled for this release channel.
+  # TODO(matanlurey): Once "scheduler: release" opt-out is removed and replaced
+  # with "enabled_branches: ["flutter-\d+\.\d+-candidate\.\d+"]", then we remove
+  # this second enabled_branches test and just rely on the initial one.
+  #
+  # See https://github.com/flutter/flutter/issues/168745.
+  git_ref_branch = git_ref.replace('refs/heads/', '')
+  if not git_ref_branch in target.get('enabled_branches', []):
+    return False
+
+  # Skip targets that can't run on the current platform.
+  for_this_platform = target['name'].lower().startswith(api.platform.name)
+  if not for_this_platform:
+    return False
+
+  return True
+
+
+def ShouldRunInReleaseBuild(
+    api, git_ref, target, release_branch, retry_override_list
+):
   """Validates if a target should run based on platform, channel and repo."""
 
   # If retry_override_list list of targets to retry has been provided,
@@ -83,6 +150,13 @@ def ShouldRun(api, git_ref, target, release_branch, retry_override_list):
 
   # Enabled for current branch
   enabled_branches = target.get('enabled_branches', [])
+
+  # TODO(matanlurey): Add "flutter-\d+\.\d+-candidate\.\d+" to enabled_branches
+  # and remove "scheduler != release". As far as I can tell, this was a hack put
+  # in to work around https://github.com/flutter/flutter/issues/128459 and is
+  # not necessary otherwise.
+  #
+  # See https://github.com/flutter/flutter/issues/168745.
   if enabled_branches and target.get('scheduler') != 'release':
     for r in enabled_branches:
       # Enabled branches is a list of regex
@@ -92,18 +166,7 @@ def ShouldRun(api, git_ref, target, release_branch, retry_override_list):
       # Current branch didn't match any of the enabled branches.
       return False
 
-  # Postsubmit for the flutter repository.
-  release_build = target.get('properties',
-                             {}).get('release_build', '') == 'true'
-  if (release_build and git_ref not in RELEASE_CHANNELS):
-    return True
-  # Packaging for the flutter repository.
-  for_this_platform = target['name'].lower().startswith(api.platform.name)
-  if (target.get('scheduler') == 'release' and for_this_platform and
-      git_ref in RELEASE_CHANNELS and
-      git_ref.replace('refs/heads/', '') in target.get('enabled_branches', [])):
-    return True
-  return False
+  return IsSpecialCaseTargetForReleaseBuild(api, target, git_ref)
 
 
 def GetRepoInfo(properties, gitiles):
@@ -140,15 +203,24 @@ def ScheduleBuildsForRepo(api, checkout_path, git_ref, retry_override_list):
   build_results = []
   with api.step.nest('launch builds') as presentation:
     for target in ci_yaml.json.output['targets']:
-      if ShouldRun(api, git_ref, target, release_branch, retry_override_list):
-        target = api.shard_util.pre_process_properties(target)
-        properties = target.setdefault('properties', {})
-        properties['is_fusion'] = 'true'
-        tasks.update(
-            api.shard_util.schedule([target],
-                                    presentation,
-                                    branch=release_branch)
-        )
+      if not ShouldRunInReleaseBuild(
+          api,
+          git_ref,
+          target,
+          release_branch,
+          retry_override_list,
+      ):
+        continue
+      target = api.shard_util.pre_process_properties(target)
+      properties = target.setdefault('properties', {})
+      properties['is_fusion'] = 'true'
+      tasks.update(
+          api.shard_util.schedule(
+              [target],
+              presentation,
+              branch=release_branch,
+          )
+      )
   return tasks
 
 
@@ -261,14 +333,14 @@ def GenTests(api):
         ),
     )
 
-  git_ref = 'flutter-3.2-candidate.5'
+  RELEASE_CANDIDATE_GIT_REF = 'flutter-3.2-candidate.5'
   multiplatform_tasks = {
       'targets': [
           {
               'name': 'Linux flutter_test',
               'recipe': 'release/something',
               'properties': {},
-              'enabled_branches': [git_ref],
+              'enabled_branches': [RELEASE_CANDIDATE_GIT_REF],
               'drone_dimensions': ['os=Linux']
           },
           {
@@ -277,7 +349,7 @@ def GenTests(api):
               'properties': {
                   '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'
               },
-              'enabled_branches': [git_ref],
+              'enabled_branches': [RELEASE_CANDIDATE_GIT_REF],
               'drone_dimensions': ['os=Mac']
           },
       ]
@@ -290,7 +362,7 @@ def GenTests(api):
               'properties': {
                   'release_build': 'true',
               },
-              'enabled_branches': [git_ref],
+              'enabled_branches': [RELEASE_CANDIDATE_GIT_REF],
               'drone_dimensions': ['os=Linux']
           },
           {
@@ -300,34 +372,29 @@ def GenTests(api):
                   '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}',
                   'release_build': 'true',
               },
-              'enabled_branches': [git_ref],
+              'enabled_branches': [RELEASE_CANDIDATE_GIT_REF],
               'drone_dimensions': ['os=Mac']
           },
       ]
   }
   tasks_dict_scheduler = {
-      'targets': [
-          {
-              'name': 'linux packaging one',
-              'recipe': 'release/something',
-              #'scheduler': 'release',
-              'properties': {
-                  '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'
-              },
-              'enabled_branches': ['flutter-3.2-candidate.5'],
-              'drone_dimensions': ['os=Linux']
+      'targets': [{
+          'name': 'linux packaging one',
+          'recipe': 'release/something',
+          'properties': {
+              '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'
           },
-          {
-              'name': 'linux packaging two',
-              'recipe': 'release/something',
-              #'scheduler': 'release',
-              'properties': {
-                  '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'
-              },
-              'enabled_branches': ['beta', 'main'],
-              'drone_dimensions': ['os=Linux']
-          }
-      ]
+          'enabled_branches': ['flutter-3.2-candidate.5'],
+          'drone_dimensions': ['os=Linux']
+      }, {
+          'name': 'linux packaging two',
+          'recipe': 'release/something',
+          'properties': {
+              '$flutter/osx_sdk': '{"sdk_version": "14a5294e"}'
+          },
+          'enabled_branches': ['beta', 'main'],
+          'drone_dimensions': ['os=Linux']
+      }]
   }
   yield api.test(
       'filter_enabled_branches',
@@ -345,7 +412,7 @@ def GenTests(api):
           git_repo='https://flutter.googlesource.com/mirrors/flutter',
           revision='a' * 40,
           build_number=123,
-          git_ref='refs/heads/%s' % git_ref,
+          git_ref='refs/heads/%s' % RELEASE_CANDIDATE_GIT_REF,
       ),
       # Engine .ci.yaml
       api.step_data(
@@ -379,7 +446,7 @@ def GenTests(api):
             git_repo='https://flutter.googlesource.com/mirrors/flutter',
             revision='a' * 40,
             build_number=123,
-            git_ref='refs/heads/%s' % git_ref
+            git_ref='refs/heads/%s' % RELEASE_CANDIDATE_GIT_REF
         ),
         # Engine .ci.yaml
         api.step_data(
@@ -390,7 +457,150 @@ def GenTests(api):
             'read ci yaml (2).parse', api.json.output(tasks_dict_scheduler)
         ),
     )
-
+  yield api.test(
+      'filter_git_ref_not_stable_or_beta_on_release_channel',
+      api.properties(
+          environment='Staging',
+          repository='flutter',
+      ),
+      api.platform.name('linux'),
+      api.path.dirs_exist(
+          api.path.start_dir / 'mirrors' / 'flutter' / 'engine',
+      ),
+      api.buildbucket.try_build(
+          project='prod',
+          builder='try-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          revision='a' * 40,
+          build_number=123,
+          git_ref='refs/heads/%s' % 'beta',
+      ),
+      # Engine .ci.yaml
+      api.step_data(
+          'read ci yaml.parse', api.json.output(release_multiplatform_tasks)
+      ),
+      # Framework .ci.yaml
+      api.step_data(
+          'read ci yaml (2).parse',
+          api.json.output({
+              'targets': [
+                  {
+                      'name': 'Linux only_enabled_for_release_candidates',
+                      'recipe': 'release/something',
+                      'enabled_branches': ['flutter-\d+\.\d+-candidate\.\d+'],
+                      'drone_dimensions': ['os=Linux'],
+                      'scheduler': 'release',
+                  },
+                  {
+                      'name': 'Linux only_enabled_for_release_channels',
+                      'recipe': 'release/something',
+                      'enabled_branches': [
+                          'beta',
+                          'stable',
+                      ],
+                      'drone_dimensions': ['os=Linux'],
+                      'scheduler': 'release',
+                  },
+              ]
+          })
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io
+          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+      ),
+  )
+  yield api.test(
+      'filter_targets_not_on_current_platform',
+      api.properties(
+          environment='Staging',
+          repository='flutter',
+      ),
+      api.platform.name('linux'),
+      api.path.dirs_exist(
+          api.path.start_dir / 'mirrors' / 'flutter' / 'engine',
+      ),
+      api.buildbucket.try_build(
+          project='prod',
+          builder='try-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          revision='a' * 40,
+          build_number=123,
+          git_ref='refs/heads/beta',
+      ),
+      # Engine .ci.yaml
+      api.step_data(
+          'read ci yaml.parse', api.json.output(release_multiplatform_tasks)
+      ),
+      # Framework .ci.yaml
+      api.step_data(
+          'read ci yaml (2).parse',
+          api.json.output({
+              'targets': [
+                  {
+                      'name': 'Linux is_current_platform',
+                      'recipe': 'release/something',
+                      'enabled_branches': ['beta'],
+                      'drone_dimensions': ['os=Linux'],
+                      'scheduler': 'release',
+                  },
+                  {
+                      'name': 'Mac is_not_current_platform',
+                      'recipe': 'release/something',
+                      'enabled_branches': ['beta'],
+                      'drone_dimensions': ['os=Mac'],
+                      'scheduler': 'release',
+                  },
+              ]
+          })
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io
+          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+      ),
+  )
+  yield api.test(
+      'linux_schedule_during_release_override',
+      api.properties(
+          environment='Staging',
+          repository='flutter',
+      ),
+      api.platform.name('linux'),
+      api.path.dirs_exist(
+          api.path.start_dir / 'mirrors' / 'flutter' / 'engine',
+      ),
+      api.buildbucket.try_build(
+          project='prod',
+          builder='try-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          revision='a' * 40,
+          build_number=123,
+          git_ref='refs/heads/%s' % 'beta',
+      ),
+      # Engine .ci.yaml
+      api.step_data(
+          'read ci yaml.parse', api.json.output(release_multiplatform_tasks)
+      ),
+      # Framework .ci.yaml
+      api.step_data(
+          'read ci yaml (2).parse',
+          api.json.output({
+              'targets': [{
+                  'name': 'Linux schedule_during_release_override',
+                  'recipe': 'release/something',
+                  'enabled_branches': ['flutter-\d+\.\d+-candidate\.\d+'],
+                  'drone_dimensions': ['os=Linux'],
+                  'schedule_during_release_override': True,
+              },]
+          })
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io
+          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+      ),
+  )
   yield api.test(
       'linux_engine_monorepo_candidate',
       api.properties(
@@ -408,7 +618,7 @@ def GenTests(api):
           git_repo='https://flutter.googlesource.com/mirrors/flutter',
           revision='a' * 40,
           build_number=123,
-          git_ref='refs/heads/%s' % git_ref,
+          git_ref='refs/heads/%s' % RELEASE_CANDIDATE_GIT_REF,
       ),
       # Engine .ci.yaml
       api.step_data(

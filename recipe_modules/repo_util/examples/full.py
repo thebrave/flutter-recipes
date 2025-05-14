@@ -308,7 +308,8 @@ def GenTests(api):
       # Next line force a fail condition for the bot update
       # first execution.
       api.path.exists(
-          api.path.cache_dir / 'git', api.path.start_dir / 'engine'
+          api.path.cache_dir / 'git', api.path.start_dir / 'engine',
+          *api.repo_util.flutter_environment_path()
       ),
       api.step_data(
           "Checkout source code.bot_update",
@@ -321,8 +322,7 @@ def GenTests(api):
               'root': 'src/flutter',
               'patch_root': None,
           })
-      ),
-      api.repo_util.flutter_environment_data()
+      )
   )
   yield api.test(
       'fusion',
@@ -331,6 +331,6 @@ def GenTests(api):
           is_fusion=True,
           flutter_realm='foo-realm',
           flutter_prebuilt_engine_version='sha1234',
-          ),
+      ),
       api.repo_util.flutter_environment_data(),
   )

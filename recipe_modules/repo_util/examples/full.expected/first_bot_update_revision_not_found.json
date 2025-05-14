@@ -606,6 +606,22 @@
     "name": "ensure directory"
   },
   {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[CACHE]/git"
+    ],
+    "infra_step": true,
+    "name": "Empty [CACHE]/git",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
     "cmd": [],
     "name": "Mount caches"
   },

@@ -9,6 +9,7 @@ DEPS = [
     'depot_tools/gsutil',
     'flutter/flutter_bcid',
     'flutter/osx_sdk',
+    'flutter/repo_util',
     'flutter/signing',
     'flutter/zip',
     'recipe_engine/buildbucket',
@@ -87,7 +88,21 @@ def RunSteps(api):
   # If on macOS, reset Xcode in case a previous build failed to do so.
   api.osx_sdk.reset_xcode()
   # Only codesign if running in dart-internal
-  if api.flutter_bcid.is_official_build():
+  if not api.flutter_bcid.is_official_build():
+    return
+
+  start_path = api.path.start_dir
+  flutter_path = start_path / 'flutter'
+  api.repo_util.checkout(
+      'flutter',
+      flutter_path,
+      ref='refs/heads/master',
+      url='https://github.com/flutter/flutter',
+      override_sha=True
+  )
+  env, env_prefixes = api.repo_util.flutter_environment(flutter_path)
+  # The context adds dart-sdk tools to PATH and sets PUB_CACHE.
+  with api.context(env=env, env_prefixes=env_prefixes, cwd=start_path):
     with api.osx_sdk('ios', devicelab=False):
       DownloadAndCodesignPackage(api, 'ios-deploy')
       DownloadAndCodesignPackage(api, 'libimobiledeviceglue')
@@ -118,6 +133,9 @@ def GenTests(api):
           api.path.cleanup_dir / 'tmp_tmp_5/openssl.zip',
           api.path.cleanup_dir / 'tmp_tmp_6/latest_unsigned.version',
           api.path.cleanup_dir / 'tmp_tmp_6/libimobiledevice.zip',
+          *api.repo_util.flutter_environment_path(
+              api.path.start_dir / 'flutter'
+          )
       ),
       api.step_data(
           'Read latest_unsigned.version',
@@ -133,6 +151,7 @@ def GenTests(api):
           git_repo='https://flutter.googlesource.com/mirrors/engine',
           git_ref='refs/heads/main'
       ),
+      api.repo_util.flutter_environment_data(api.path.start_dir / 'flutter'),
       status='INFRA_FAILURE'
   )
   yield api.test(
@@ -146,6 +165,9 @@ def GenTests(api):
       ),
       api.path.exists(
           api.path.cleanup_dir / 'tmp_tmp_1/latest_unsigned.version',
+          *api.repo_util.flutter_environment_path(
+              api.path.start_dir / 'flutter'
+          )
       ),
       status='INFRA_FAILURE'
   )

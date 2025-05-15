@@ -95,25 +95,24 @@ def IsSpecialCaseTargetForReleaseBuild(api, target, git_ref):
     # - Linux engine_foo:
     #   properties:
     #     release_build: "true"
+    # or any build that is marked:
+    # - Linux framework_foo:
+    #   schedule_during_release_override: true
     #
     # Should be built during the Linux flutter_release_build orchestrator.
-    target_builds_engine_artifacts = target.get('properties', {}).get(
-        'release_build', ''
-    ) == 'true'
-    return target_builds_engine_artifacts
+    if target.get('properties', {}).get('release_build', '') == 'true':
+      return True
+    if target.get('schedule_during_release_override'):
+      return True
+    return False
 
   assert (is_release_channel)
   # A framework build that is marked:
   # - Linux framework_foo
   #   scheduler: release
   #
-  # or:
-  # - Linux farmework_foo
-  #   schedule_during_release_override: true
-  #
   # Should be built during the Linux flutter_release_build orchestrator.
-  if target.get('scheduler') != 'release' and target.get(
-      'schedule_during_release_override', False) != True:
+  if target.get('scheduler') != 'release':
     return False
 
   # Ensure that this target is enabled for this release channel.
@@ -149,6 +148,9 @@ def ShouldRunInReleaseBuild(
     return False
 
   # Enabled for current branch
+  #
+  # TODO(matanlurey): Consider the top-level enabled_branches as the default
+  # https://github.com/flutter/flutter/issues/168875
   enabled_branches = target.get('enabled_branches', [])
 
   # TODO(matanlurey): Add "flutter-\d+\.\d+-candidate\.\d+" to enabled_branches
@@ -188,17 +190,15 @@ def GetRepoInfo(properties, gitiles):
   return (repository, url, ref)
 
 
-def ScheduleBuildsForRepo(api, checkout_path, git_ref, retry_override_list):
+def ScheduleBuildsForRepo(
+    api,
+    checkout_path,
+    git_ref,
+    retry_override_list,
+    release_branch,
+):
   ci_yaml_path = checkout_path / '.ci.yaml'
   ci_yaml = api.yaml.read('read ci yaml', ci_yaml_path, api.json.output())
-
-  # Get release branch.
-  branches = api.repo_util.current_commit_branches(checkout_path)
-  branches = [b for b in branches if b.startswith('flutter')]
-  release_branch = branches[0] if branches else 'main'
-
-  # Foreach target defined in .ci.yaml, if it contains
-  # release_build: True, then spawn a subbuild.
   tasks = {}
   build_results = []
   with api.step.nest('launch builds') as presentation:
@@ -234,6 +234,11 @@ def RunSteps(api):
       repository, checkout_path=checkout_path, url=git_url, ref=git_ref
   )
 
+  # Get release branch.
+  branches = api.repo_util.current_commit_branches(checkout_path)
+  branches = [b for b in branches if b.startswith('flutter')]
+  release_branch = branches[0] if branches else 'main'
+
   # retry_override_list is optional and is a space separated string of
   # the config_name of targets to explitly retry
   retry_override_list = api.properties.get('retry_override_list', '').split()
@@ -247,23 +252,27 @@ def RunSteps(api):
         raise_on_failure=True,
     )
 
-  collect_and_display_builds(
-      ScheduleBuildsForRepo(
-          api,
-          checkout_path / 'engine' / 'src' / 'flutter',
-          git_ref,
-          retry_override_list,
-      )
-  )
+  with api.step.nest('engine'):
+    collect_and_display_builds(
+        ScheduleBuildsForRepo(
+            api,
+            checkout_path / 'engine' / 'src' / 'flutter',
+            git_ref,
+            retry_override_list,
+            release_branch,
+        )
+    )
 
-  collect_and_display_builds(
-      ScheduleBuildsForRepo(
-          api,
-          checkout_path,
-          git_ref,
-          retry_override_list,
-      )
-  )
+  with api.step.nest('framework'):
+    collect_and_display_builds(
+        ScheduleBuildsForRepo(
+            api,
+            checkout_path,
+            git_ref,
+            retry_override_list,
+            release_branch,
+        )
+    )
 
 
 def GenTests(api):
@@ -294,12 +303,11 @@ def GenTests(api):
         ),
         api.shard_util.child_build_steps(
             subbuilds=[try_subbuild1],
-            launch_step="launch builds.schedule",
-            collect_step="collect builds",
+            launch_step="engine.launch builds.schedule",
+            collect_step="engine.collect builds",
         ),
-        # Engine .ci.yaml
         api.step_data(
-            'read ci yaml.parse',
+            'engine.read ci yaml.parse',
             api.json.output({
                 'targets': [
                     {
@@ -327,9 +335,8 @@ def GenTests(api):
                 ]
             })
         ),
-        # Framework .ci.yaml
         api.step_data(
-            'read ci yaml (2).parse', api.json.output({"targets": []})
+            'framework.read ci yaml.parse', api.json.output({"targets": []})
         ),
     )
 
@@ -414,18 +421,17 @@ def GenTests(api):
           build_number=123,
           git_ref='refs/heads/%s' % RELEASE_CANDIDATE_GIT_REF,
       ),
-      # Engine .ci.yaml
       api.step_data(
-          'read ci yaml.parse', api.json.output(release_multiplatform_tasks)
+          'engine.read ci yaml.parse', api.json.output(release_multiplatform_tasks)
       ),
-      # Framework .ci.yaml
       api.step_data(
-          'read ci yaml (2).parse', api.json.output(tasks_dict_scheduler)
+          'framework.read ci yaml.parse', api.json.output(tasks_dict_scheduler)
       ),
       api.step_data(
           'Identify branches.git branch',
-          stdout=api.raw_io
-          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+          stdout=api.raw_io.output_text(
+              'remotes/origin/branch1\nremotes/origin/branch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
       ),
   )
   for retry_list in ['skip_target', 'skip_target linux_target']:
@@ -448,13 +454,13 @@ def GenTests(api):
             build_number=123,
             git_ref='refs/heads/%s' % RELEASE_CANDIDATE_GIT_REF
         ),
-        # Engine .ci.yaml
         api.step_data(
-            'read ci yaml.parse', api.json.output(release_multiplatform_tasks)
+            'engine.read ci yaml.parse',
+            api.json.output(release_multiplatform_tasks)
         ),
-        # Framework .ci.yaml
         api.step_data(
-            'read ci yaml (2).parse', api.json.output(tasks_dict_scheduler)
+            'framework.read ci yaml.parse',
+            api.json.output(tasks_dict_scheduler)
         ),
     )
   yield api.test(
@@ -475,13 +481,12 @@ def GenTests(api):
           build_number=123,
           git_ref='refs/heads/%s' % 'beta',
       ),
-      # Engine .ci.yaml
       api.step_data(
-          'read ci yaml.parse', api.json.output(release_multiplatform_tasks)
+          'engine.read ci yaml.parse',
+          api.json.output(release_multiplatform_tasks)
       ),
-      # Framework .ci.yaml
       api.step_data(
-          'read ci yaml (2).parse',
+          'framework.read ci yaml.parse',
           api.json.output({
               'targets': [
                   {
@@ -506,8 +511,9 @@ def GenTests(api):
       ),
       api.step_data(
           'Identify branches.git branch',
-          stdout=api.raw_io
-          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+          stdout=api.raw_io.output_text(
+              'remotes/origin/branch1\nremotes/origin/branch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
       ),
   )
   yield api.test(
@@ -528,13 +534,12 @@ def GenTests(api):
           build_number=123,
           git_ref='refs/heads/beta',
       ),
-      # Engine .ci.yaml
       api.step_data(
-          'read ci yaml.parse', api.json.output(release_multiplatform_tasks)
+          'engine.read ci yaml.parse',
+          api.json.output(release_multiplatform_tasks)
       ),
-      # Framework .ci.yaml
       api.step_data(
-          'read ci yaml (2).parse',
+          'framework.read ci yaml.parse',
           api.json.output({
               'targets': [
                   {
@@ -556,12 +561,13 @@ def GenTests(api):
       ),
       api.step_data(
           'Identify branches.git branch',
-          stdout=api.raw_io
-          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+          stdout=api.raw_io.output_text(
+              'remotes/origin/branch1\nremotes/origin/branch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
       ),
   )
   yield api.test(
-      'linux_schedule_during_release_override',
+      'linux_schedule_during_release_override_with_empty_enabled_branch',
       api.properties(
           environment='Staging',
           repository='flutter',
@@ -576,20 +582,18 @@ def GenTests(api):
           git_repo='https://flutter.googlesource.com/mirrors/flutter',
           revision='a' * 40,
           build_number=123,
-          git_ref='refs/heads/%s' % 'beta',
+          git_ref='refs/heads/%s' % RELEASE_CANDIDATE_GIT_REF,
       ),
-      # Engine .ci.yaml
       api.step_data(
-          'read ci yaml.parse', api.json.output(release_multiplatform_tasks)
+          'engine.read ci yaml.parse',
+          api.json.output(release_multiplatform_tasks)
       ),
-      # Framework .ci.yaml
       api.step_data(
-          'read ci yaml (2).parse',
+          'framework.read ci yaml.parse',
           api.json.output({
               'targets': [{
                   'name': 'Linux schedule_during_release_override',
                   'recipe': 'release/something',
-                  'enabled_branches': ['flutter-\d+\.\d+-candidate\.\d+'],
                   'drone_dimensions': ['os=Linux'],
                   'schedule_during_release_override': True,
               },]
@@ -597,8 +601,59 @@ def GenTests(api):
       ),
       api.step_data(
           'Identify branches.git branch',
-          stdout=api.raw_io
-          .output_text('branch1\nbranch2\nflutter-3.2-candidate.5')
+          stdout=api.raw_io.output_text(
+              'remotes/origin/branch1\nremotes/origin/branch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
+      ),
+      api.shard_util.child_build_steps(
+        subbuilds=[try_subbuild1],
+        launch_step="framework.launch builds.schedule",
+        collect_step="framework.collect builds",
+      ),
+  )
+  yield api.test(
+      'linux_schedule_during_release_override_with_matching_enabled_branch',
+      api.properties(
+          environment='Staging',
+          repository='flutter',
+      ),
+      api.platform.name('linux'),
+      api.path.dirs_exist(
+          api.path.start_dir / 'mirrors' / 'flutter' / 'engine',
+      ),
+      api.buildbucket.try_build(
+          project='prod',
+          builder='try-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          revision='a' * 40,
+          build_number=123,
+          git_ref='refs/heads/%s' % RELEASE_CANDIDATE_GIT_REF,
+      ),
+      api.step_data(
+          'engine.read ci yaml.parse',
+          api.json.output(release_multiplatform_tasks)
+      ),
+      api.step_data(
+          'framework.read ci yaml.parse',
+          api.json.output({
+              'targets': [{
+                  'name': 'Linux schedule_during_release_override',
+                  'recipe': 'release/something',
+                  'drone_dimensions': ['os=Linux'],
+                  'schedule_during_release_override': True,
+              },]
+          })
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io.output_text(
+              'remotes/origin/branch1\nremotes/origin/branch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
+      ),
+      api.shard_util.child_build_steps(
+        subbuilds=[try_subbuild1],
+        launch_step="framework.launch builds.schedule",
+        collect_step="framework.collect builds",
       ),
   )
   yield api.test(
@@ -620,13 +675,12 @@ def GenTests(api):
           build_number=123,
           git_ref='refs/heads/%s' % RELEASE_CANDIDATE_GIT_REF,
       ),
-      # Engine .ci.yaml
       api.step_data(
-          'read ci yaml.parse', api.json.output(release_multiplatform_tasks)
+          'framework.read ci yaml.parse',
+          api.json.output(release_multiplatform_tasks)
       ),
-      # Framework .ci.yaml
       api.step_data(
-          'read ci yaml (2).parse', api.json.output(tasks_dict_scheduler)
+          'engine.read ci yaml.parse', api.json.output(tasks_dict_scheduler)
       ),
       api.step_data(
           'Identify branches.git branch',

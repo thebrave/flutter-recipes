@@ -220,8 +220,69 @@
   },
   {
     "cmd": [],
-    "name": "read ci yaml",
+    "name": "Identify branches"
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[START_DIR]/mirrors/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "prod:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Identify branches.git rev-parse",
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "branch",
+      "-a",
+      "--contains",
+      "12345abcde12345abcde12345abcde12345abcde"
+    ],
+    "cwd": "[START_DIR]/mirrors/flutter",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "prod:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "Identify branches.git branch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "engine"
+  },
+  {
+    "cmd": [],
+    "name": "engine.read ci yaml",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@yaml@@@@",
       "@@@STEP_LOG_END@yaml@@@"
     ]
@@ -250,9 +311,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "read ci yaml.read",
+    "name": "engine.read ci yaml.read",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@.ci.yaml@@@"
     ]
   },
@@ -278,9 +339,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "read ci yaml.parse",
+    "name": "engine.read ci yaml.parse",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"targets\": [@@@",
       "@@@STEP_LOG_LINE@json.output@    {@@@",
@@ -316,69 +377,16 @@
   },
   {
     "cmd": [],
-    "name": "Identify branches"
-  },
-  {
-    "cmd": [
-      "git",
-      "rev-parse",
-      "HEAD"
-    ],
-    "cwd": "[START_DIR]/mirrors/flutter/engine/src/flutter",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "prod:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Identify branches.git rev-parse",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "branch",
-      "-a",
-      "--contains",
-      "12345abcde12345abcde12345abcde12345abcde"
-    ],
-    "cwd": "[START_DIR]/mirrors/flutter/engine/src/flutter",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "prod:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Identify branches.git branch",
+    "name": "engine.launch builds",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "launch builds"
-  },
-  {
-    "cmd": [],
-    "name": "launch builds.get buildbucket id",
+    "name": "engine.launch builds.get buildbucket id",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_TEXT@8945511751514863184@@@"
     ]
   },
@@ -402,10 +410,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "launch builds.schedule",
+    "name": "engine.launch builds.schedule",
     "stdin": "{\"requests\": [{\"scheduleBuild\": {\"builder\": {\"bucket\": \"try\", \"builder\": \"Linux Engine Drone\", \"project\": \"prod\"}, \"dimensions\": [{\"key\": \"os\", \"value\": \"Linux\"}], \"exe\": {\"cipdVersion\": \"refs/heads/main\"}, \"experimental\": \"NO\", \"experiments\": {\"luci.buildbucket.parent_tracking\": false}, \"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"gerritChanges\": [{\"change\": \"123456\", \"host\": \"flutter-review.googlesource.com\", \"patchset\": \"7\", \"project\": \"mirrors/flutter\"}], \"gitilesCommit\": {\"host\": \"flutter.googlesource.com\", \"id\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"project\": \"mirrors/flutter\", \"ref\": \"refs/heads/main\"}, \"priority\": 30, \"properties\": {\"$flutter/osx_sdk\": {\"sdk_version\": \"14a5294e\"}, \"build\": {\"drone_dimensions\": [\"os=Linux\"], \"name\": \"linux one\", \"properties\": {\"$flutter/osx_sdk\": {\"sdk_version\": \"14a5294e\"}, \"is_fusion\": \"true\", \"release_build\": \"true\"}, \"recipe\": \"engine/something\"}, \"build_identifier\": \"8945511751514863184\", \"environment\": \"Staging\", \"gclient_variables\": {}, \"is_fusion\": \"true\", \"parent_commit\": \"\", \"recipe\": \"engine/something\", \"release_build\": \"true\", \"repository\": \"flutter\"}, \"requestId\": \"8945511751514863184-00000000-0000-0000-0000-000000001337\", \"swarming\": {\"parentRunId\": \"fake-task-id\"}, \"tags\": [{\"key\": \"cq_experimental\", \"value\": \"false\"}, {\"key\": \"parent_buildbucket_id\", \"value\": \"8945511751514863184\"}, {\"key\": \"user_agent\", \"value\": \"recipe\"}]}}]}",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
       "@@@STEP_LOG_LINE@json.output@    {@@@",
@@ -514,13 +522,16 @@
   },
   {
     "cmd": [],
-    "name": "collect builds"
+    "name": "engine.collect builds",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [],
-    "name": "collect builds.collect",
+    "name": "engine.collect builds.collect",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@2@@@"
     ]
   },
   {
@@ -546,10 +557,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "collect builds.collect.wait",
+    "name": "engine.collect builds.collect.wait",
     "timeout": 86400,
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@"
+      "@@@STEP_NEST_LEVEL@3@@@"
     ]
   },
   {
@@ -572,10 +583,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "collect builds.collect.get",
+    "name": "engine.collect builds.collect.get",
     "stdin": "{\"requests\": [{\"getBuild\": {\"fields\": \"builder,createTime,createdBy,critical,endTime,id,infra,input,number,output,startTime,status,updateTime\", \"id\": \"8945511751514863186\"}}]}",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_NEST_LEVEL@3@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"responses\": [@@@",
       "@@@STEP_LOG_LINE@json.output@    {@@@",
@@ -646,20 +657,28 @@
   },
   {
     "cmd": [],
-    "name": "display builds"
+    "name": "engine.display builds",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [],
-    "name": "display builds.linux one",
+    "name": "engine.display builds.linux one",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LINK@8945511751514863186@https://cr-buildbucket.appspot.com/build/8945511751514863186@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "read ci yaml (2)",
+    "name": "framework"
+  },
+  {
+    "cmd": [],
+    "name": "framework.read ci yaml",
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@yaml@@@@",
       "@@@STEP_LOG_END@yaml@@@"
     ]
@@ -688,9 +707,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "read ci yaml (2).read",
+    "name": "framework.read ci yaml.read",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_END@.ci.yaml@@@"
     ]
   },
@@ -716,9 +735,9 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "read ci yaml (2).parse",
+    "name": "framework.read ci yaml.parse",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_NEST_LEVEL@2@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"targets\": []@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
@@ -727,71 +746,24 @@
   },
   {
     "cmd": [],
-    "name": "Identify branches (2)"
-  },
-  {
-    "cmd": [
-      "git",
-      "rev-parse",
-      "HEAD"
-    ],
-    "cwd": "[START_DIR]/mirrors/flutter",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "prod:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Identify branches (2).git rev-parse",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "branch",
-      "-a",
-      "--contains",
-      "12345abcde12345abcde12345abcde12345abcde"
-    ],
-    "cwd": "[START_DIR]/mirrors/flutter",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "prod:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "Identify branches (2).git branch",
+    "name": "framework.launch builds",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "launch builds (2)"
+    "name": "framework.collect builds",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [],
-    "name": "collect builds (2)"
-  },
-  {
-    "cmd": [],
-    "name": "display builds (2)"
+    "name": "framework.display builds",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "name": "$result"

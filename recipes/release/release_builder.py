@@ -141,10 +141,7 @@ def ShouldRunInReleaseBuild(
   # If retry_override_list list of targets to retry has been provided,
   # skip the target if not specified on list.
   config_name = target.get('properties', {}).get('config_name', False)
-  should_skip = retry_override_list and config_name not in retry_override_list
-  if should_skip:
-    # A list of targets to retry was provided
-    # and this target was not on the list.
+  if retry_override_list and config_name and config_name not in retry_override_list:
     return False
 
   # Enabled for current branch
@@ -422,7 +419,8 @@ def GenTests(api):
           git_ref='refs/heads/%s' % RELEASE_CANDIDATE_GIT_REF,
       ),
       api.step_data(
-          'engine.read ci yaml.parse', api.json.output(release_multiplatform_tasks)
+          'engine.read ci yaml.parse',
+          api.json.output(release_multiplatform_tasks)
       ),
       api.step_data(
           'framework.read ci yaml.parse', api.json.output(tasks_dict_scheduler)
@@ -434,35 +432,115 @@ def GenTests(api):
           )
       ),
   )
-  for retry_list in ['skip_target', 'skip_target linux_target']:
-    yield api.test(
-        'retry_override_%s' % retry_list,
-        api.properties(
-            environment='Staging',
-            repository='flutter',
-            retry_override_list=retry_list,
-        ),
-        api.platform.name('linux'),
-        api.path.dirs_exist(
-            api.path.start_dir / 'mirrors' / 'flutter' / 'engine',
-        ),
-        api.buildbucket.try_build(
-            project='prod',
-            builder='try-builder',
-            git_repo='https://flutter.googlesource.com/mirrors/flutter',
-            revision='a' * 40,
-            build_number=123,
-            git_ref='refs/heads/%s' % RELEASE_CANDIDATE_GIT_REF
-        ),
-        api.step_data(
-            'engine.read ci yaml.parse',
-            api.json.output(release_multiplatform_tasks)
-        ),
-        api.step_data(
-            'framework.read ci yaml.parse',
-            api.json.output(tasks_dict_scheduler)
-        ),
-    )
+  yield api.test(
+      'retry_override_skips_config_name_not_matched',
+      api.properties(
+          environment='Staging',
+          repository='flutter',
+          retry_override_list='foo',
+      ),
+      api.platform.name('linux'),
+      api.path.dirs_exist(
+          api.path.start_dir / 'mirrors' / 'flutter' / 'engine',
+      ),
+      api.buildbucket.try_build(
+          project='prod',
+          builder='try-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          revision='a' * 40,
+          build_number=123,
+          git_ref='refs/heads/%s' % RELEASE_CANDIDATE_GIT_REF
+      ),
+      api.step_data(
+          'engine.read ci yaml.parse',
+          api.json.output({
+              'targets': [
+                  {
+                      'name': 'Linux foo',
+                      'recipe': 'engine/something',
+                      'enabled_branches': ['flutter-\d+\.\d+-candidate\.\d+'],
+                      'drone_dimensions': ['os=Linux'],
+                      'properties': {
+                          'config_name': 'foo',
+                          'release_build': 'true',
+                      },
+                  },
+                  {
+                      'name': 'Linux bar',
+                      'recipe': 'engine/something',
+                      'enabled_branches': ['flutter-\d+\.\d+-candidate\.\d+'],
+                      'drone_dimensions': ['os=Linux'],
+                      'properties': {
+                          'config_name': 'bar',
+                          'release_build': 'true',
+                      },
+                  },
+              ]
+          })
+      ),
+      api.step_data(
+          'framework.read ci yaml.parse', api.json.output({'targets': []})
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io.output_text(
+              'remotes/origin/branch1\nremotes/origin/branch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
+      ),
+      api.shard_util.child_build_steps(
+          subbuilds=[try_subbuild1],
+          launch_step="engine.launch builds.schedule",
+          collect_step="engine.collect builds",
+      ),
+  )
+  yield api.test(
+      'retry_override_still_runs_non_config_name_target',
+      api.properties(
+          environment='Staging',
+          repository='flutter',
+          retry_override_list='foo',
+      ),
+      api.platform.name('linux'),
+      api.path.dirs_exist(
+          api.path.start_dir / 'mirrors' / 'flutter' / 'engine',
+      ),
+      api.buildbucket.try_build(
+          project='prod',
+          builder='try-builder',
+          git_repo='https://flutter.googlesource.com/mirrors/flutter',
+          revision='a' * 40,
+          build_number=123,
+          git_ref='refs/heads/%s' % RELEASE_CANDIDATE_GIT_REF
+      ),
+      api.step_data(
+          'engine.read ci yaml.parse', api.json.output({
+              'targets': [],
+          })
+      ),
+      api.step_data(
+          'framework.read ci yaml.parse',
+          api.json.output({
+              'targets': [{
+                  'name': 'Linux only_enabled_for_release_candidates',
+                  'recipe': 'release/something',
+                  'enabled_branches': ['flutter-\d+\.\d+-candidate\.\d+'],
+                  'drone_dimensions': ['os=Linux'],
+                  'schedule_during_release_override': True,
+              },]
+          })
+      ),
+      api.step_data(
+          'Identify branches.git branch',
+          stdout=api.raw_io.output_text(
+              'remotes/origin/branch1\nremotes/origin/branch2\nremotes/origin/flutter-3.2-candidate.5'
+          )
+      ),
+      api.shard_util.child_build_steps(
+          subbuilds=[try_subbuild1],
+          launch_step="framework.launch builds.schedule",
+          collect_step="framework.collect builds",
+      ),
+  )
   yield api.test(
       'filter_git_ref_not_stable_or_beta_on_release_channel',
       api.properties(
@@ -606,9 +684,9 @@ def GenTests(api):
           )
       ),
       api.shard_util.child_build_steps(
-        subbuilds=[try_subbuild1],
-        launch_step="framework.launch builds.schedule",
-        collect_step="framework.collect builds",
+          subbuilds=[try_subbuild1],
+          launch_step="framework.launch builds.schedule",
+          collect_step="framework.collect builds",
       ),
   )
   yield api.test(
@@ -651,9 +729,9 @@ def GenTests(api):
           )
       ),
       api.shard_util.child_build_steps(
-        subbuilds=[try_subbuild1],
-        launch_step="framework.launch builds.schedule",
-        collect_step="framework.collect builds",
+          subbuilds=[try_subbuild1],
+          launch_step="framework.launch builds.schedule",
+          collect_step="framework.collect builds",
       ),
   )
   yield api.test(

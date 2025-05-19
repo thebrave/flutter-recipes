@@ -70,8 +70,25 @@ class SetupKeychain {
         keychainName,
       ]);
 
-      await _downloadAndImportAppleCert('DeveloperIDG2CA', codesignPath);
-      await _downloadAndImportAppleCert('AppleWWDRCAG3', codesignPath);
+      await _downloadAndImportAppleCert(
+        'DeveloperIDG2CA',
+        codesignPath,
+        keychainName,
+      );
+
+      await _downloadAndImportAppleCert(
+        'AppleWWDRCAG3',
+        codesignPath,
+        keychainName,
+      );
+
+      // Allow non-zero exit code when adding to login.keychain as it may already exist in the keychain.
+      await _downloadAndImportAppleCert(
+        'AppleWWDRCAG3',
+        codesignPath,
+        'login.keychain',
+        allowNonzero: true,
+      );
 
       // Retrieve current list of keychains on the search list of current machine.
       final keychains =
@@ -197,7 +214,9 @@ class SetupKeychain {
   Future<void> _downloadAndImportAppleCert(
     String certName,
     String codesignPath,
-  ) async {
+    String targetKeychain, {
+    bool allowNonzero = false,
+  }) async {
     // TODO(vashworth): cache this via CIPD
     final io.File certFile = await _downloadFile(
       // Link from https://www.apple.com/certificateauthority
@@ -211,11 +230,11 @@ class SetupKeychain {
     await _security(<String>[
       'import',
       certFile.absolute.path,
-      '-k', keychainName,
+      '-k', targetKeychain,
       // -T allows the specified program to access this identity
       '-T', codesignPath,
       '-T', '/usr/bin/codesign',
-    ]);
+    ], allowNonzero: allowNonzero);
   }
 
   Future<io.File> _downloadFile({

@@ -77,17 +77,9 @@ class SetupKeychain {
       );
 
       await _downloadAndImportAppleCert(
-        'AppleWWDRCAG3',
+        'AppleWWDRCAG2',
         codesignPath,
         keychainName,
-      );
-
-      // Allow non-zero exit code when adding to login.keychain as it may already exist in the keychain.
-      await _downloadAndImportAppleCert(
-        'AppleWWDRCAG3',
-        codesignPath,
-        'login.keychain',
-        allowNonzero: true,
       );
 
       // Retrieve current list of keychains on the search list of current machine.

@@ -119,20 +119,28 @@ def RunSteps(api):
     # This provides backwards compatibility for older release candidates.
     # https://github.com/flutter/flutter/issues/168674
     compute_last_engine_commit = []
-    last_engine_script = checkout / 'bin' / 'internal' / 'last_engine_commit.sh'
-    if api.path.exists(last_engine_script):
+    last_engine_script = 'bin/internal/last_engine_commit.sh'
+    if api.path.exists(checkout / last_engine_script):
       compute_last_engine_commit = ['bash', last_engine_script]
     else:
       compute_last_engine_commit = [
-          'git', '-C', checkout, 'log', '-1', '--pretty=format:%H', '--',
-          'DEPS', 'engine'
+          'git',
+          'log',
+          '-1',
+          '--pretty=format:%H',
+          '--',
+          'DEPS',
+          'engine',
       ]
 
-    last_commit_step = api.step(
-        'compute last engine commit',
-        cmd=compute_last_engine_commit,
-        stdout=api.raw_io.output_text(),
-    )
+    # Both commands need to run in the context of "flutter/" (need flutter/.git)
+    with api.context(cwd=checkout):
+      last_commit_step = api.step(
+          'compute last engine commit',
+          cmd=compute_last_engine_commit,
+          stdout=api.raw_io.output_text(),
+      )
+
     last_commit_sha = last_commit_step.stdout.strip()
 
     engine_version_step = api.step(

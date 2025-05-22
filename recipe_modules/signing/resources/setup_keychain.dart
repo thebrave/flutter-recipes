@@ -158,6 +158,32 @@ class SetupKeychain {
           log(
             'successfully found a Flutter identity in the $keychainName keychain',
           );
+          if (identities.contains('CSSMERR_TP_NOT_TRUSTED')) {
+            // Find the FLUTTER.IO LLC certificate and convert it to a .pem file.
+            final String certContents = _security(const <String>[
+              'find-certificate',
+              '-c',
+              'FLUTTER.IO LLC',
+              '-p',
+            ]);
+            final io.Directory tempCertDirectory =
+                io.Directory.systemTemp.createTempSync();
+            final io.File tempCertFile = io.File(
+              '${tempCertDirectory.path}/temp_cert.pem',
+            );
+            tempCertFile.createSync();
+            tempCertFile.writeAsStringSync(certContents, flush: true);
+
+            // Verify the cert. This will log the certificate chain and trust
+            // evaluation results.
+            _security(<String>[
+              'verify-cert',
+              '-c',
+              tempCertFile.absolute.path,
+              '-vvv',
+            ]);
+            tempCertFile.deleteSync();
+          }
           return 0;
         }
         log(

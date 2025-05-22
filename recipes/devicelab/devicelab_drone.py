@@ -392,7 +392,6 @@ def GenTests(api):
       api.step_data(
           'run abc',
           times_out_after=2,
-          had_timeout=True,
       ),
       api.step_data(
           'Prepare iOS device.Dismiss Xcode automation dialogs.Find TCC directory',
